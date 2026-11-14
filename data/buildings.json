@@ -85,6 +85,7 @@
       "work_cost": 55,
       "additional_cost": [ { "planks": 150 }, { "@processed_construction_materials": 150 } ],
       "icon": "forge.png",
+      "profession": "blacksmith",
       "production_slots": 1.0,
       "unlock_tech": "native_metals",
       "default_recipes": [  ]

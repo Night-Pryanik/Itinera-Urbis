@@ -4787,6 +4787,10 @@ msgid "Grains and Pods"
 msgstr ""
 
 msgctxt "product_groups.name"
+msgid "Instruments"
+msgstr ""
+
+msgctxt "product_groups.name"
 msgid "Jewelry"
 msgstr ""
 

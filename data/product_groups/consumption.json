@@ -143,6 +143,15 @@
       "id": "perfumery",
       "name": "Perfumery",
       "products": [ "perfume", "incense", "attar" ]
+    },
+    {
+      // Work tools: the pick of the miner and quarryman, the axe of the lumberjack,
+      // the hoe of the farmer and planter, the shovel of the potter and the vinedresser.
+      // The order is the order of the write-off: the basic copper tools go first, the
+      // fine steel ones last — the workers take whatever is available in storage.
+      "id": "instruments",
+      "name": "Instruments",
+      "products": [ "copper_tools", "bronze_tools", "iron_tools", "steel_tools" ]
     }
   ]
 }

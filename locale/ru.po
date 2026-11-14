@@ -4856,6 +4856,10 @@ msgid "Grains and Pods"
 msgstr "Зерно и бобы"
 
 msgctxt "product_groups.name"
+msgid "Instruments"
+msgstr "Инструменты"
+
+msgctxt "product_groups.name"
 msgid "Jewelry"
 msgstr "Украшения"
 
