@@ -204,6 +204,11 @@
       "id": "dyer",
       "name": "Dyer",
       "description": "Makes dyes from natural materials."
+    },
+    {
+      "id": "weaver",
+      "name": "Weaver",
+      "description": "Weaves cloth and clothes from yarn and fibers."
     }
   ]
 }

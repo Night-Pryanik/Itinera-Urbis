@@ -76,6 +76,8 @@ func _run() -> void:
 
     if WATCHDOG.wants_case("dyer_alum_supply"):
         _test_dyer_alum_supply(state)
+    if WATCHDOG.wants_case("weaver_sulfur_supply"):
+        _test_weaver_sulfur_supply(state)
 
     # A building with a profession and its supply — from the data, not from a constant.
     var building_id := _pick_profession_building()
@@ -116,6 +118,20 @@ func _test_dyer_alum_supply(state: Dictionary) -> void:
             alum_bonus = float(entry.get("production_bonus", 0.0))
             break
     check(alum_bonus > 0.0, "alum consumption gives dyers a production bonus", state)
+
+
+func _test_weaver_sulfur_supply(state: Dictionary) -> void:
+    var profession := str(_gdata.get_profession_for_building("weaver_house"))
+    check(profession == "weaver", "the weaver's house assigns the weaver profession", state)
+    if profession != "weaver":
+        return
+
+    var sulfur_bonus := 0.0
+    for entry in _gdata.get_profession_consumption(profession):
+        if str(entry.get("display_key", "")) == "sulfur":
+            sulfur_bonus = float(entry.get("production_bonus", 0.0))
+            break
+    check(sulfur_bonus > 0.0, "sulfur consumption gives weavers a production bonus", state)
 
 
 # -------------------------------------------------------

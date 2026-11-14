@@ -152,6 +152,7 @@
       "work_cost": 25,
       "additional_cost": [ { "planks": 100 } ],
       "icon": "weaver_house.png",
+      "profession": "weaver",
       "production_slots": 1.0,
       "unlock_tech": "weaving",
       "default_recipes": [  ]
