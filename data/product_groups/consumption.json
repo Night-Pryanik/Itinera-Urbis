@@ -123,7 +123,7 @@
     {
       "id": "consumer_goods",
       "name": "Consumer Goods",
-      "products": [ "salt", "soap", "vegetable_oil", "sponge" ]
+      "products": [ "salt", "soap", "vegetable_oil", "sponge", "glue" ]
     },
     {
       // The empty vessel a good is stored and shipped in. Tare is generic: the winemaker, the brewer

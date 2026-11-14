@@ -531,6 +531,16 @@
       "category": "material",
       "unlock_tech": "plantations",
       "icon": "palm_sap.png"
+    },
+    {
+      // Raw rubber tapped from hevea and ficus: the sap coagulates in the air
+      // into an elastic mass, ready for the distillery.
+      "id": "rubber", "price": 12,
+      "name": "Rubber",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "wood_processing",
+      "icon": "rubber.png"
     }
   ]
 }

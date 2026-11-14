@@ -212,6 +212,16 @@
       "description": "Soaks ropes in tar to make them waterproof."
     },
     {
+      "id": "glue",
+      "name": "Glue",
+      "produced_in": [ "tar_distillery" ],
+      "resources": { "rubber": 20 },
+      "result": { "glue": 10 },
+      "time": 5.0,
+      "unlock_tech": "wood_processing",
+      "description": "Boils rubber into a sticky adhesive for wood, leather and pottery."
+    },
+    {
       "id": "soap",
       "name": "Soap",
       "produced_in": [ "soap_maker_house" ],

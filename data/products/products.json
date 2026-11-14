@@ -250,6 +250,16 @@
       "category": "containers",
       "unlock_tech": "wood_processing",
       "icon": "wooden_barrel.png"
+    },
+    {
+      // Glue boiled from rubber: binds wood, leather and pottery without the
+      // tar used for waterproofing.
+      "id": "glue", "price": 14,
+      "name": "Glue",
+      "type": "product",
+      "category": "household_items",
+      "unlock_tech": "wood_processing",
+      "icon": "glue.png"
     }
   ]
 }

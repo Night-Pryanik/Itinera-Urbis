@@ -757,6 +757,46 @@
       "color": [ 160, 140, 100 ]
     },
     {
+      // Hevea of the tropical lowlands: the milky sap is tapped from the bark
+      // and coagulates into rubber without felling the tree.
+      "id": "hevea_tree", "price": 14,
+      "name": "Hevea",
+      "type": "raw",
+      "category": "technical_plants",
+      "group": "technical_plants",
+      "subgroup": "rubber_plants",
+      "allowed_terrain": [ "plain", "hill" ],
+      "allowed_cover": [
+        "none", "tropical_rainforest_sparse"
+      ],
+      "allowed_climate_zones": [ "tropical_wet", "tropical_dry" ],
+      "improved_by": "lumberjack_hut",
+      "tech_required": "wood_processing",
+      "produces": { "rubber": 10 },
+      "icon": "hevea_tree.png",
+      "color": [ 120, 160, 100 ]
+    },
+    {
+      // Ficus of the tropical lowlands: its latex is collected in small cups
+      // cut into the bark, then thickened into rubber.
+      "id": "ficus_tree", "price": 12,
+      "name": "Ficus",
+      "type": "raw",
+      "category": "technical_plants",
+      "group": "technical_plants",
+      "subgroup": "rubber_plants",
+      "allowed_terrain": [ "plain", "hill" ],
+      "allowed_cover": [
+        "none", "tropical_rainforest_sparse"
+      ],
+      "allowed_climate_zones": [ "tropical_wet", "tropical_dry" ],
+      "improved_by": "lumberjack_hut",
+      "tech_required": "wood_processing",
+      "produces": { "rubber": 10 },
+      "icon": "ficus_tree.png",
+      "color": [ 140, 150, 110 ]
+    },
+    {
       // Sandalwood of the dry foothills: the heartwood is the incense wood.
       "id": "sandalwood_tree", "price": 14,
       "name": "Sandalwood",
