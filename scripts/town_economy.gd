@@ -45,8 +45,9 @@
 #   - the unlock_tech of the recipe. The town has no tech tree of its own, and a gate by
 #     the PLAYER's technologies would tie the trade pool to the progress of the player: a town at
 #     the edge of the map would "freeze" at the level of the era the player has not grown into yet.
-#   - the produced_in of the recipe. The town does not build city buildings; a forge,
-#     which it does not have, is not a reason to deny it the production of copper.
+#   - whether the town itself has the recipe's building. Towns can produce goods without
+#     constructing city buildings, but a recipe whose producer building was removed from
+#     the game is unavailable.
 #
 # --- DETERMINISM ---
 # The purchase decision is a probability roll, therefore it must be STABLE:
@@ -650,10 +651,25 @@ static func get_contract_supply(demand_per_tick: float) -> float:
 static func is_available(key: String, pool: Dictionary) -> bool:
     return GameData.is_key_available(key, pool)
 
+# Towns do not need to own a recipe's building, but the building must still exist in the game.
+static func _has_producer_in_game(craft: Dictionary) -> bool:
+    var produced_in = craft.get("produced_in", [])
+    if produced_in is String:
+        produced_in = [produced_in]
+    if produced_in.is_empty():
+        return true
+    for building_id in produced_in:
+        var id := str(building_id)
+        if id == "*" or not GameData.get_building_data(id).is_empty():
+            return true
+    return false
+
 # Whether the recipe is fully assembled by the pool: EVERY OR-group of the
 # ingredients must have at least one available variant (see the alternative
 # ingredients in GameData.gd). A recipe without the ingredients is trivially closed.
 static func is_recipe_ready(craft: Dictionary, pool: Dictionary) -> bool:
+    if not _has_producer_in_game(craft):
+        return false
     var alternatives: Array = GameData.craft_alternatives(craft)
     for or_group in alternatives:
         var ready := false
@@ -803,6 +819,8 @@ static func readiness_percent(recipe_id: String, pool: Dictionary) -> int:
     for craft in GameData.crafts:
         if str(craft.get("id", "")) != recipe_id:
             continue
+        if not _has_producer_in_game(craft):
+            return 0
         return _readiness_of(craft, pool)
     return 0
 
@@ -924,6 +942,8 @@ static func build_pools(town_id: String, base_ids: Array,
         for craft in GameData.crafts:
             var recipe_id := str(craft.get("id", ""))
             if recipe_id.is_empty():
+                continue
+            if not _has_producer_in_game(craft):
                 continue
             # A recipe without ingredients and a pseudo-recipe without a result in the purchase
             # do not participate: there is nothing to buy or nothing to produce.

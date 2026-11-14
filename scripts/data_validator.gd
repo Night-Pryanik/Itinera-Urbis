@@ -27,7 +27,7 @@
 #   blacklist          — a mod's blacklist names an entity that is neither in the data nor removed
 #   id_charset         — an identifier outside ASCII (the Cyrillic in an id is indistinguishable from the Latin)
 #   id_lookalike       — an identifier differs from another one only by the lookalike characters
-#   produced_in        — a recipe refers to a non-existent building
+#   produced_in        — a recipe refers to a building that is neither present nor blacklisted
 #   result             — a recipe (result / display_result) gives a non-existent resource
 #   improved_by        — a resource is improved by a non-existent improvement
 #   unlock_improvement — a product is unlocked by a non-existent improvement
@@ -1218,6 +1218,8 @@ func validate(gd: Object) -> Array:
     var all_resources: Dictionary = {}
     all_resources.merge(raw_resources)
     all_resources.merge(products)
+    var blacklisted: Dictionary = gd.get("blacklisted")
+    var blacklisted_buildings: Dictionary = blacklisted.get("buildings", {})
     var challenges := _index_by_id(gd.get("challenges"))
     # The task identifiers the gates of the data may name: the challenges of the era and the tiers of
     # the fame of a good. Built before the recipes, which are checked against them.
@@ -1226,8 +1228,8 @@ func validate(gd: Object) -> Array:
     _validate_schema(gd, problems)
     _validate_identifiers(gd, problems)
     _validate_blacklist(gd, problems)
-    _validate_crafts(gd.crafts, buildings, technologies, all_resources, product_groups,
-            challenge_ids, problems)
+    _validate_crafts(gd.crafts, buildings, blacklisted_buildings, technologies,
+            all_resources, product_groups, challenge_ids, problems)
     _validate_craft_extras(gd, all_resources, technologies, problems)
     _validate_buildings(gd.buildings, technologies, professions, problems)
     _validate_improvements(improvements, technologies, professions, problems)
@@ -1882,9 +1884,9 @@ func _validate_cover_belts(covers: Dictionary, problems: Array) -> void:
 # --- THE RECIPES ---------------------------------------------------------------
 # produced_in, result / display_result, the resources (including the @-groups), unlock_tech,
 # unlock_challenge.
-func _validate_crafts(crafts, buildings: Dictionary, technologies: Dictionary,
-        all_resources: Dictionary, product_groups: Dictionary, challenge_ids: Dictionary,
-        problems: Array) -> void:
+func _validate_crafts(crafts, buildings: Dictionary, blacklisted_buildings: Dictionary,
+        technologies: Dictionary, all_resources: Dictionary, product_groups: Dictionary,
+        challenge_ids: Dictionary, problems: Array) -> void:
     for craft in crafts:
         if not (craft is Dictionary):
             continue
@@ -1897,7 +1899,8 @@ func _validate_crafts(crafts, buildings: Dictionary, technologies: Dictionary,
         for building_id in _as_string_list(craft.get("produced_in", [])):
             if building_id == ANY_BUILDING_MARKER:
                 continue
-            if not buildings.has(building_id):
+            # A recipe tied only to a blacklisted building is dormant, not malformed.
+            if not buildings.has(building_id) and not blacklisted_buildings.has(building_id):
                 _add(problems, "produced_in", "building", building_id,
                         "recipe", craft_name, craft_id, "produced_in")
 

@@ -690,11 +690,12 @@ func _apply_mods(target: Dictionary, mod_dirs: Array) -> void:
 # stays the one of the overrides: a mod applied later (a dependent, or one the dependency
 # order put after it) may declare a blacklisted entity again, and it will be back.
 #
-# A removed entity leaves its references behind: a goods group that lists a removed
-# product, a recipe that spends a removed resource. They are NOT cleaned up
+# A removed entity usually leaves its references behind: a goods group that lists a removed
+# product or a recipe that spends a removed resource. They are NOT cleaned up
 # automatically — the runtime validator reports them, and the author removes the referrers
-# the same way (a blacklist entry or an override). An entry that names nothing is a
-# problem of its own (data_validator._validate_blacklist): what was removed is recorded
+# the same way (a blacklist entry or an override). A recipe whose only producer building was
+# blacklisted remains in the data but cannot be used in the game. An entry that names nothing
+# is a problem of its own (data_validator._validate_blacklist): what was removed is recorded
 # in `blacklisted`, so the check can tell it from a typo.
 func _apply_blacklist(target: Dictionary, mod_data: Dictionary) -> void:
     var blacklist = mod_data.get("blacklist", null)

@@ -212,15 +212,16 @@ to remove from it.
 - Keep the whole blacklist in **one** file: two files of one mod that both list the same
   collection do not add up, the one read later wins.
 
-**A removed entity leaves its references behind, and they are the mod's own business.**
-A goods group that lists a removed product, a recipe that spends a removed resource, a
-building whose `default_recipes` names a removed recipe — all of them are broken
-references now, and the check of §6 refuses the mod until they are cleaned. The referrers
-are removed the same two ways: a blacklist entry (remove the referrer too) or an
-override (rewrite the field without the removed id). `mods/test_mod` shows both: it
-blacklists the product `papyrus` and rewrites the two goods groups that listed it, and
-it removes the whole vitriol chain of the alchemist house — the building, its recipe,
-the recipe that spends the product, and the product itself.
+**A removed entity usually leaves its references behind, and they are the mod's own business.**
+A goods group that lists a removed product, a recipe that spends a removed resource, or a
+building whose `default_recipes` names a removed recipe are broken references. The check of
+§6 refuses the mod until they are cleaned. The referrers are removed the same two ways: a
+blacklist entry (remove the referrer too) or an override (rewrite the field without the
+removed id). A recipe whose `produced_in` names a blacklisted building is the exception:
+it remains defined but is unavailable in-game. `mods/test_mod` shows both behaviors: it
+blacklists the product `papyrus` and rewrites the two goods groups that listed it, removes
+the green-vitriol chain of the alchemist house, and leaves the sulfuric-acid recipes
+unavailable when that house is removed.
 
 `mods/blacklist_example` is the short version of the same idea, and it is the one to read
 first. It removes one whole chain — the winemaker's house, its two recipes and the two

@@ -2993,6 +2993,9 @@ func are_all_slots_empty(b_index: int) -> bool:
 # Checks whether the recipe can be executed in the specified building.
 # produced_in supports an array of values; "*" means "in any building" (the empty recipe).
 func can_craft_in(craft_id: String, building_id: String) -> bool:
+    if GameData.get_building_data(building_id).is_empty():
+        return false
+
     # get_craft_by_id resolves an id with the additional ingredient to the base recipe, so that
     # an upgraded building keeps a recipe with an addition whose base it still accepts.
     var recipe := get_craft_by_id(craft_id)

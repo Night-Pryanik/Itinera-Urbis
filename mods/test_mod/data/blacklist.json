@@ -11,10 +11,11 @@
   // itself:
   //   * the product "papyrus" is a member of two goods groups, and product_groups.json
   //     next to this file drops it from both;
-  //   * the recipe "green_vitriol" is the only consumer chain of the alchemist house,
-  //     and the recipe "ink_from_green_vitriol_galls" spends its product — so the whole
-  //     chain goes together. The second ink recipe ("ink_from_iron_galls_vinegar")
-  //     needs neither of them and stays.
+  //   * the recipe "green_vitriol" and the recipe "ink_from_green_vitriol_galls" are
+  //     removed with their product chain. The second ink recipe
+  //     ("ink_from_iron_galls_vinegar") needs neither of them and stays;
+  //   * the sulfuric-acid recipes stay in the data but cannot be used because their
+  //     producer building is removed.
   // "glass_bottle" nothing refers to, so it goes without a trace.
   "blacklist": {
     "buildings": [ "alchemist_house" ],

@@ -181,6 +181,15 @@ func _test_blacklist(state: Dictionary) -> void:
     check(not _has_craft("ink_from_green_vitriol_galls"), "the recipe that spent the removed product is removed", state)
     check(_find_building("alchemist_house").is_empty(), "the blacklisted building is removed", state)
     check(_count_buildings("alchemist_house") == 0, "the blacklisted building leaves no trace", state)
+    check(_has_craft("sulfuric_acid_from_sulfur"),
+            "a recipe not named by the blacklist remains in the data", state)
+    var city_data = get_root().get_node("CityData")
+    check(not city_data.can_craft_in("sulfuric_acid_from_sulfur", "alchemist_house"),
+            "a recipe cannot be used in a blacklisted building", state)
+    var town_economy = load("res://scripts/town_economy.gd")
+    check(not town_economy.is_recipe_ready(
+            _game_data.get_craft("sulfuric_acid_from_sulfur"), {"sulfur": true}),
+            "a recipe with no remaining producer is unavailable to towns too", state)
 
     # The same identifier in two collections is two entities: the recipe and the product
     # "papyrus" are both gone, and neither took the other's place.
@@ -190,8 +199,8 @@ func _test_blacklist(state: Dictionary) -> void:
     check((removed.get("crafts", {}) as Dictionary).has("papyrus"),
             "the removed recipe is recorded", state)
 
-    # The references to a removed entity are the mod's own business: the mod drops
-    # "papyrus" from the two goods groups that listed it, and they keep working.
+    # Product references are the mod's own business: the mod drops "papyrus" from the two
+    # goods groups that listed it, and they keep working.
     var rope_fibers = _game_data.product_groups.get("rope_fibers", [])
     check(not (rope_fibers as Array).has("papyrus"),
             "the removed product is dropped from the goods group", state)
