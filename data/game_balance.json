@@ -103,7 +103,12 @@
       //                        never shorter than time_to_mature: the herd matures only
       //                        when the fill time reaches time_to_mature, and the
       //                        milk/wool/eggs flow waits for that.
-      "breeding_cycle_multiplier": 1
+      "breeding_cycle_multiplier": 1,
+
+      // breeding_quality_interval_seconds — the mean time before selective breeding
+      //                        improves quality when exactly two improvements actively
+      //                        produce the same breedable plant or animal.
+      "breeding_quality_interval_seconds": 900
     },
 
     // --- EXPANSION: the cost of extending the city's territory over the map ---

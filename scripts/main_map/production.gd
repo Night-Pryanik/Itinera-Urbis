@@ -22,6 +22,7 @@ func _simulation_tick(delta: float) -> void:
         # itself: otherwise an upgraded road would leave the triangle on the screen until
         # the next assignment change.
         var overlay_flag_changed := false
+        var breeding_resource_counts := {}
         # The whole map, and not only the Region: an outpost — an improvement outside the
         # Region, opened by "Emporia" — produces on this very tick. The scan of the empty
         # hexes costs one null check, and the tick runs once a second.
@@ -153,6 +154,10 @@ func _simulation_tick(delta: float) -> void:
                 # there are the whole population). An extinct species (zero heads)
                 # leaves the pasture empty: it yields nothing and consumes no feed.
                 var herd_gone := live_pid != "" and CityData.get_storage_amount(live_pid) <= 0
+                if not herd_gone and _is_breedable_plant_or_animal(eff_res) \
+                        and MapHelpers.can_breed_resource_by(eff_res, str(tile.improvement)):
+                    breeding_resource_counts[eff_res] = \
+                            int(breeding_resource_counts.get(eff_res, 0)) + 1
                 if MapHelpers.is_growing_resource(res_data):
                     # The key "row,col" — so that the duplicates do not accumulate between the ticks.
                     _growing_pastures[str(row) + "," + str(col)] = {"row": row, "col": col}
@@ -226,6 +231,93 @@ func _simulation_tick(delta: float) -> void:
         # by the common city timer (see worker_manager.tick_city_consumption).
         # It gives no bonus to the production — a test of the infrastructure.
         worker_manager.tick_city_consumption(CityData.SIMULATION_TICK)
+        roll_breeding_quality_improvement(breeding_resource_counts, CityData.SIMULATION_TICK)
+
+func _is_breedable_plant_or_animal(res_id: String) -> bool:
+    var raw: Dictionary = GameData.raw_resources.get(res_id, {})
+    var category := str(raw.get("category", ""))
+    return category == "animals" or category == "plants" or category.ends_with("_plants")
+
+func breeding_quality_rate(improvement_count: int) -> float:
+    if improvement_count < 2:
+        return 0.0
+    # Each pair adds one event rate, so breeding opportunities grow quadratically.
+    var improvement_pairs := float(improvement_count * (improvement_count - 1)) / 2.0
+    var interval := float(GameData.game_balance.get("breeding_quality_interval_seconds", 900.0))
+    return improvement_pairs / interval
+
+func roll_breeding_quality_improvement(
+        producer_counts: Dictionary,
+        elapsed_seconds: float) -> bool:
+    var rates := {}
+    var total_rate := 0.0
+    for res_id in producer_counts:
+        var rate := breeding_quality_rate(int(producer_counts[res_id]))
+        if rate <= 0.0 or not _resource_quality_can_improve(str(res_id)):
+            continue
+        rates[res_id] = rate
+        total_rate += rate
+    if total_rate <= 0.0:
+        return false
+
+    var probability := 1.0 - exp(-total_rate * elapsed_seconds)
+    if randf() >= probability:
+        return false
+
+    var roll := randf() * total_rate
+    for res_id in rates:
+        roll -= float(rates[res_id])
+        if roll <= 0.0:
+            return _improve_breeding_resource_quality(str(res_id))
+    return false
+
+func _resource_quality_can_improve(res_id: String) -> bool:
+    var levels: Array = GameData.get_quality_levels()
+    if levels.size() < 2:
+        return false
+    for row in range(map_rows):
+        for col in range(map_cols):
+            var tile = tile_data[row][col]
+            if tile == null or tile.get("improvement") == null \
+                    or bool(tile.get("decorative", false)) \
+                    or MapHelpers.get_effective_resource(tile) != res_id \
+                    or not MapHelpers.can_breed_resource_by(
+                        res_id, str(tile.get("improvement", ""))):
+                continue
+            var quality_index := levels.find(str(tile.get("quality", "common")))
+            if quality_index >= 0 and quality_index < levels.size() - 1:
+                return true
+    return false
+
+func _improve_breeding_resource_quality(res_id: String) -> bool:
+    var levels: Array = GameData.get_quality_levels()
+    if levels.size() < 2:
+        return false
+    var changed := false
+    for row in range(map_rows):
+        for col in range(map_cols):
+            var tile = tile_data[row][col]
+            if tile == null or tile.get("improvement") == null \
+                    or bool(tile.get("decorative", false)) \
+                    or MapHelpers.get_effective_resource(tile) != res_id \
+                    or not MapHelpers.can_breed_resource_by(
+                        res_id, str(tile.get("improvement", ""))):
+                continue
+            var quality_index := levels.find(str(tile.get("quality", "common")))
+            if quality_index < 0 or quality_index >= levels.size() - 1:
+                continue
+            tile["quality"] = levels[quality_index + 1]
+            changed = true
+    if not changed:
+        return false
+
+    map_renderer.queue_redraw()
+    if control_panel != null:
+        control_panel.refresh()
+    var message: String = tr("Selective breeding has improved the quality of %s!") \
+            % GameData.get_product_name(res_id)
+    hud.show_message(message, GameData.HUD_MESSAGE_IMPORTANT)
+    return true
 
 func _tick_pasture_fill(delta: float):
     if _growing_pastures.is_empty():

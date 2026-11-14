@@ -7772,3 +7772,6 @@ msgstr ""
 msgctxt "validator_entity_title_trigger"
 msgid "Fame trigger"
 msgstr ""
+
+msgid "Selective breeding has improved the quality of %s!"
+msgstr ""

@@ -102,6 +102,32 @@ func _run() -> void:
     check(_cdata.get_storage_amount("live_cows") == cost,
             "the second build of a known species must grant nothing (got %d)"
                     % _cdata.get_storage_amount("live_cows"), state)
+    var tile_b: Dictionary = main_map.tile_data[int(spot_b.row)][int(spot_b.col)]
+
+    # --- 1a. Selective breeding improves every domesticated herd of the species ---
+    var quality_interval := float(_gdata.game_balance.get("breeding_quality_interval_seconds", 0.0))
+    var rate_two: float = main_map.breeding_quality_rate(2)
+    check(is_equal_approx(quality_interval, 900.0),
+            "the configured quality interval is 15 minutes", state)
+    check(is_equal_approx(rate_two, 1.0 / quality_interval),
+            "two active improvements have an average quality event every 15 minutes", state)
+    check(main_map.breeding_quality_rate(1) == 0.0,
+            "one active improvement cannot trigger a quality event", state)
+    check(main_map.breeding_quality_rate(3) > rate_two * 2.0,
+            "the quality event rate grows nonlinearly with more improvements", state)
+    var quality_levels: Array = _gdata.get_quality_levels()
+    var quality_before := quality_levels.find(str(tile_a.get("quality", "common")))
+    check(main_map.roll_breeding_quality_improvement({"cows": 2}, 1.0e9),
+            "a due quality event upgrades the bred resource", state)
+    check(quality_levels.find(str(tile_a.get("quality", "common"))) == quality_before + 1,
+            "the first herd advances by one quality level", state)
+    check(quality_levels.find(str(tile_b.get("quality", "common"))) == quality_before + 1,
+            "other herds of the same species advance together", state)
+    var expected_quality_message: String = main_map.tr(
+            "Selective breeding has improved the quality of %s!") % _gdata.get_product_name("cows")
+    check(not main_map.journal.entries.is_empty()
+            and str(main_map.journal.entries[0].get("text", "")) == expected_quality_message,
+            "the quality event is an important message recorded in the journal", state)
 
     # --- 2. The purchase registers the species, without an extra grant ---
     _cdata.add_to_storage("live_pigs", 3)

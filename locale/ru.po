@@ -7772,3 +7772,6 @@ msgstr "Семейство местности"
 msgctxt "validator_entity_title_trigger"
 msgid "Fame trigger"
 msgstr "Триггера славы"
+
+msgid "Selective breeding has improved the quality of %s!"
+msgstr "Качество %s улучшилось благодаря селекции!"
