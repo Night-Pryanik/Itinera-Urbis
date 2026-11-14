@@ -262,6 +262,16 @@
       "description": "Produces alum from alunite by roasting, leaching and crystallization."
     },
     {
+      "id": "sulfur_from_pyrite",
+      "name": "Sulfur",
+      "produced_in": [ "lime_kilns" ],
+      "resources": { "pyrite": 20, "charcoal": 10 },
+      "result": { "sulfur": 10 },
+      "time": 8.0,
+      "unlock_tech": "limestone_burning",
+      "description": "Roasts pyrite to obtain sulfur."
+    },
+    {
       "id": "papyrus",
       "name": "Papyrus",
       "produced_in": [ "papyrus_workshop" ],

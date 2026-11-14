@@ -60,6 +60,25 @@
       "production_bonus": 0.25
     },
     {
+      // Sulfuring the barrels: a small boost to the winemaker's output while sulfur
+      // is available in storage.
+      "resource": "sulfur",
+      "profession": [ "winemaker" ],
+      "amount": 10,
+      "interval": 10,
+      "production_bonus": 0.1
+    },
+    {
+      // Sulfuric acid consumption by metallurgists: a boost to production while
+      // sulfuric acid is available in storage, representing its use in metal
+      // refining, pickling, and other metallurgical processes.
+      "resource": "sulfuric_acid",
+      "profession": [ "smelter", "blacksmith" ],
+      "amount": 10,
+      "interval": 10,
+      "production_bonus": 0.15
+    },
+    {
       // Work tools are a consumable for everyone who digs, fells, mines or shapes: the
       // rule covers any instrument from the @instruments group, taken greedily from the
       // cheapest member available (copper first, steel last).

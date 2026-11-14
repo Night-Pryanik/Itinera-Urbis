@@ -15,63 +15,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-msgid "%s (%s)"
-msgstr "%s (%s)"
-
-msgid "A challenge of the era is completed."
-msgstr "Испытание эпохи выполнено."
-
-msgid "About"
-msgstr "О программе"
-
-msgid "About the game"
-msgstr "О программе"
-
-msgid "An economic simulator of a single city's development through historical eras."
-msgstr "Экономический симулятор развития одного города сквозь исторические эпохи."
-
-msgid "Anyone may read, change and share the code. It may not be used to make money, and a changed version must stay under the same license."
-msgstr "Любой может читать, изменять и распространять код. Его нельзя использовать для заработка, а изменённая версия должна оставаться под той же лицензией."
-
-msgid "Anyone may reuse the artwork and the data, including commercially, as long as The City is credited."
-msgstr "Любой может использовать графику и данные, в том числе за деньги, если указать авторство The City."
-
-msgid "Artwork and game data"
-msgstr "Графика и игровые данные"
-
-msgid "Author"
-msgstr "Автор"
-
-msgid "Game code"
-msgstr "Код игры"
-
-msgid "Godot Engine — MIT License"
-msgstr "Движок Godot — лицензия MIT"
-
-msgid "Inter font — SIL Open Font License 1.1"
-msgstr "Шрифт Inter — SIL Open Font License 1.1"
-
-msgid "Licenses"
-msgstr "Лицензии"
-
-msgid "Open the license text"
-msgstr "Открыть текст лицензии"
-
-msgid "Open the repository"
-msgstr "Открыть репозиторий"
-
-msgid "Project"
-msgstr "Проект"
-
-msgid "The artwork was made with the help of an image-generation model."
-msgstr "Графика создана при помощи генератора изображений."
-
-msgid "The full texts of the licenses are in the LICENSE and LICENSE-ASSETS.md files of the repository."
-msgstr "Полные тексты лицензий лежат в файлах LICENSE и LICENSE-ASSETS.md репозитория."
-
-msgid "Third-party components"
-msgstr "Сторонние компоненты"
-
 msgid "\n\nFound here: %s"
 msgstr "\n\nЗдесь обнаружено: %s"
 
@@ -567,6 +510,12 @@ msgstr "Целое число от %d до %d."
 msgid "A whole number from %d to %d. Zero leaves the map without towns."
 msgstr "Целое число от %d до %d. Ноль — карта без городков."
 
+msgid "About"
+msgstr "О программе"
+
+msgid "About the game"
+msgstr "О программе"
+
 msgid "Above average"
 msgstr "Выше среднего"
 
@@ -612,6 +561,9 @@ msgstr "Уже прочитано"
 msgid "Amount:"
 msgstr "Количество:"
 
+msgid "An economic simulator of a single city's development through historical eras."
+msgstr "Экономический симулятор развития одного города сквозь исторические эпохи."
+
 msgid "An effect still to be written (%s)"
 msgstr "Эффект ещё не написан (%s)"
 
@@ -627,6 +579,12 @@ msgstr "Здесь стоит чужой городок — нельзя стр�
 msgid "Any product from the group"
 msgstr "Любой товар из группы"
 
+msgid "Anyone may read, change and share the code. It may not be used to make money, and a changed version must stay under the same license."
+msgstr "Любой может читать, изменять и распространять код. Его нельзя использовать для заработка, а изменённая версия должна оставаться под той же лицензией."
+
+msgid "Anyone may reuse the artwork and the data, including commercially, as long as The City is credited."
+msgstr "Любой может использовать графику и данные, в том числе за деньги, если указать авторство The City."
+
 msgid "Appearance"
 msgstr "Внешний вид"
 
@@ -635,6 +593,9 @@ msgstr "Применение климата..."
 
 msgid "Area not scouted — information unavailable.\n\nTerrain, resources and improvements become known after scouting."
 msgstr "Область не разведана — информация недоступна.\n\nМестность, ресурсы и улучшения станут известны после разведки."
+
+msgid "Artwork and game data"
+msgstr "Графика и игровые данные"
 
 msgid "As long as the group has no goods in storage there is nothing to buy — no income."
 msgstr "Пока на складе нет товара этой группы, покупать нечего — дохода не будет."
@@ -647,6 +608,9 @@ msgstr "Назначить рабочего на улучшение"
 
 msgid "Audio"
 msgstr "Аудио"
+
+msgid "Author"
+msgstr "Автор"
 
 msgid "Authors: %s"
 msgstr "Авторы: %s"
@@ -1356,6 +1320,9 @@ msgstr "полноширинная латинская"
 msgid "Game"
 msgstr "Игра"
 
+msgid "Game code"
+msgstr "Код игры"
+
 msgid "Game saved."
 msgstr "Игра сохранена."
 
@@ -1376,6 +1343,9 @@ msgstr "Перейти к списку технологий"
 
 msgid "Go to the town"
 msgstr "Перейти к городку"
+
+msgid "Godot Engine — MIT License"
+msgstr "Движок Godot — лицензия MIT"
 
 msgid "Greek"
 msgstr "греческая"
@@ -1500,6 +1470,9 @@ msgstr "Доход: %s"
 msgid "Inside another town's influence ring"
 msgstr "В кольце влияния чужого городка"
 
+msgid "Inter font — SIL Open Font License 1.1"
+msgstr "Шрифт Inter — SIL Open Font License 1.1"
+
 msgid "Interface"
 msgstr "Интерфейс"
 
@@ -1562,6 +1535,9 @@ msgstr "Большая (100×100)"
 
 msgid "Left-click on a hex to place: %s"
 msgstr "Кликните левой кнопкой по гексу, чтобы разместить: %s"
+
+msgid "Licenses"
+msgstr "Лицензии"
 
 msgid "Load"
 msgstr "Загрузить"
@@ -1824,6 +1800,12 @@ msgstr "Открыть %s"
 msgid "Open the journal of important messages"
 msgstr "Открыть журнал важных сообщений"
 
+msgid "Open the license text"
+msgstr "Открыть текст лицензии"
+
+msgid "Open the repository"
+msgstr "Открыть репозиторий"
+
 msgid "Open the town interface"
 msgstr "Перейти в интерфейс городка"
 
@@ -1961,6 +1943,9 @@ msgstr "Слотов производства: %d"
 
 msgid "Profit (actual, average): %s / sec"
 msgstr "Прибыль (фактическая, средняя): %s / сек"
+
+msgid "Project"
+msgstr "Проект"
 
 msgid "Proportional"
 msgstr "Пропорционально"
@@ -2520,6 +2505,9 @@ msgstr "Область не граничит с исследованной те�
 msgid "The area does not border your territory"
 msgstr "Область не граничит с вашими владениями"
 
+msgid "The artwork was made with the help of an image-generation model."
+msgstr "Графика создана при помощи генератора изображений."
+
 msgid "The belts the generator rolls are: polar, cold, mild, subtropical, tropical. A cover is asked for its belts literally, so a misspelled belt is a belt that never happens and the cover simply does not grow there. If EVERY belt of the list is misspelled, the cover never appears on the map at all. An empty list means no restriction, not \"nowhere\"."
 msgstr "Поясов, которые генератор задаёт, пять: polar, cold, mild, subtropical, tropical. Написание значения сравнивается буквально, поэтому пояс с ошибкой — это пояс, которого на карте не бывает, и покров там просто не вырастет. Если с ошибкой написаны ВСЕ пояса списка, покров не появится на карте вовсе. Пустой список означает «никаких ограничений», а не «нигде»."
 
@@ -2582,6 +2570,9 @@ msgstr "Слава товара ссылается на несуществующ
 
 msgid "The fame of a good rewards a nonexistent entity"
 msgstr "Слава товара награждает несуществующую сущность"
+
+msgid "The full texts of the licenses are in the LICENSE and LICENSE-ASSETS.md files of the repository."
+msgstr "Полные тексты лицензий лежат в файлах LICENSE и LICENSE-ASSETS.md репозитория."
 
 msgid "The game does not read this field: its value is silently lost. Fields allowed here: %s."
 msgstr "Игра не читает это поле: значение молча теряется. Здесь допустимы поля: %s."
@@ -2765,6 +2756,9 @@ msgstr "От города нет сухопутного пути до этого
 
 msgid "There is nothing on the way for this deal."
 msgstr "По этой сделке ничего не в пути."
+
+msgid "Third-party components"
+msgstr "Сторонние компоненты"
 
 msgid "This building has no improved version"
 msgstr "У этого здания нет улучшенной версии"
@@ -3716,6 +3710,10 @@ msgid "Dissolves the fragrant resin in oil and keeps the scent in a jar."
 msgstr "Растворяет ароматическую смолу в масле и хранит запах в склянке."
 
 msgctxt "crafts.description"
+msgid "Distils sulfuric acid from green vitriol (iron sulfate)."
+msgstr "Создаёт письменный набор из писчих инструментов и чернил"
+
+msgctxt "crafts.description"
 msgid "Distils tar out of resin."
 msgstr "Выгоняет смолу из живицы."
 
@@ -3768,8 +3766,8 @@ msgid "Foldes the bloom of the city into the watered bar the smiths of other tow
 msgstr "Слиток города коётся в полосу с узором, которую просят кузнецы других городков."
 
 msgctxt "crafts.description"
-msgid "Grinds the resin with charcoal into a powder for the hearth."
-msgstr "Стирает смолу с углём в порошок для очага."
+msgid "Grinds the resin—or the sandalwood oil—with charcoal into a powder for the hearth."
+msgstr "Измельчает смолу — или сандаловое масло — с углём в порошок для очага."
 
 msgctxt "crafts.description"
 msgid "Makes a batch of weapons to defend the city."
@@ -3849,7 +3847,7 @@ msgstr "Создаёт набор инструментов для ремесле
 
 msgctxt "crafts.description"
 msgid "Makes a writing set from writing instruments and ink."
-msgstr "Создаёт письменный набор из писчих инструментов и чернил"
+msgstr "Изготавливает набор для письма из письменных принадлежностей и чернил."
 
 msgctxt "crafts.description"
 msgid "Makes ink from green vitriol and galls."
@@ -3946,6 +3944,14 @@ msgstr "Производит квасцы из алунита обжигом, в
 msgctxt "crafts.description"
 msgid "Produces parchment from animal hides by liming them."
 msgstr "Производит пергамент из шкур животных с помощью золения их в извести"
+
+msgctxt "crafts.description"
+msgid "Produces sulfuric acid (oil of vitriol) from sulfur."
+msgstr "Получает серную кислоту (купоросное масло) из серы"
+
+msgctxt "crafts.description"
+msgid "Roasts pyrite to obtain sulfur."
+msgstr "Получает серу обжигом пирита"
 
 msgctxt "crafts.description"
 msgid "Saws timber into planks for construction."
@@ -4500,6 +4506,14 @@ msgid "Sugar"
 msgstr "Сахар"
 
 msgctxt "crafts.name"
+msgid "Sulfur"
+msgstr "Сера"
+
+msgctxt "crafts.name"
+msgid "Sulfuric Acid"
+msgstr "Серная кислота"
+
+msgctxt "crafts.name"
 msgid "Sumac Yellow"
 msgstr "Сумаховый жёлтый"
 
@@ -4935,10 +4949,6 @@ msgctxt "product_groups.name"
 msgid "Writing Materials"
 msgstr "Писчие материалы"
 
-msgctxt "product_groups.name"
-msgid "Tannins"
-msgstr "Дубильные вещества"
-
 msgctxt "professions.description"
 msgid "A pseudo-profession that covers the whole population of the city, including employed citizens."
 msgstr "Псевдо-профессия: охватывает всё население города, включая занятых жителей."
@@ -5372,6 +5382,10 @@ msgid "Cassava"
 msgstr "Кассава"
 
 msgctxt "resources.name"
+msgid "Castilla"
+msgstr "Кастилья"
+
+msgctxt "resources.name"
 msgid "Cattle"
 msgstr "Коровы"
 
@@ -5432,10 +5446,6 @@ msgid "Cinnamon"
 msgstr "Корица"
 
 msgctxt "resources.name"
-msgid "Castilla"
-msgstr "Кастилья"
-
-msgctxt "resources.name"
 msgid "Clay"
 msgstr "Глина"
 
@@ -5446,6 +5456,10 @@ msgstr "Глиняные таблички"
 msgctxt "resources.name"
 msgid "Cloth Clothes"
 msgstr "Тканевая одежда"
+
+msgctxt "resources.name"
+msgid "Coca"
+msgstr "Кока"
 
 msgctxt "resources.name"
 msgid "Coca Leaf"
@@ -5564,12 +5578,12 @@ msgid "Feathers"
 msgstr "Перья"
 
 msgctxt "resources.name"
-msgid "Figs"
-msgstr "Инжир"
-
-msgctxt "resources.name"
 msgid "Ficus"
 msgstr "Фикус"
+
+msgctxt "resources.name"
+msgid "Figs"
+msgstr "Инжир"
 
 msgctxt "resources.name"
 msgid "Fish"
@@ -6152,6 +6166,14 @@ msgid "Salt"
 msgstr "Соль"
 
 msgctxt "resources.name"
+msgid "Sandalwood"
+msgstr "Сандаловое дерево"
+
+msgctxt "resources.name"
+msgid "Sandalwood Oil"
+msgstr "Сандаловое масло"
+
+msgctxt "resources.name"
 msgid "Sandstone"
 msgstr "Песчаник"
 
@@ -6262,6 +6284,14 @@ msgstr "Сахар"
 msgctxt "resources.name"
 msgid "Sugar Cane"
 msgstr "Сахарный тростник"
+
+msgctxt "resources.name"
+msgid "Sulfur"
+msgstr "Сера"
+
+msgctxt "resources.name"
+msgid "Sulfuric Acid"
+msgstr "Серная кислота"
 
 msgctxt "resources.name"
 msgid "Sumac"
@@ -6455,10 +6485,6 @@ msgctxt "resources.name"
 msgid "Zebu"
 msgstr "Зебу"
 
-msgctxt "resources.name"
-msgid "Pottery of <city_name>"
-msgstr "Глиняная посуда <city_name>"
-
 msgctxt "roads.description"
 msgid "A leveled road for carts. Three times the load of a trail."
 msgstr "Ровная дорога для телег. Позволяет перевозить втрое больше, чем тропка."
@@ -6547,10 +6573,6 @@ msgctxt "specializations.description"
 msgid "Workshops and mills of the city work faster. Every building that turns raw materials into goods produces more."
 msgstr "Мастерские и мельницы города работают быстрее. Каждое здание, превращающее сырьё в товары, производит больше."
 
-msgctxt "specializations.description"
-msgid "The kilns of the city are known beyond its walls. Pottery brings more, and the workshops of the city fill it faster."
-msgstr "Печи города знают за его стенами. Керамика приносит больше, а мастерские наполняют её быстрее."
-
 msgctxt "specializations.full_name"
 msgid "Specialization of ceramics"
 msgstr "Специализация керамики"
@@ -6574,10 +6596,6 @@ msgstr "Специализация оружия"
 msgctxt "specializations.full_name"
 msgid "Specialization of wool"
 msgstr "Специализация шерсти"
-
-msgctxt "specializations.full_name"
-msgid "Specialization of pottery"
-msgstr "Специализация керамики"
 
 msgctxt "specializations.name"
 msgid "Agrarian"
@@ -6622,10 +6640,6 @@ msgstr "Оружейная"
 msgctxt "specializations.name"
 msgid "Wool"
 msgstr "Шерсть"
-
-msgctxt "specializations.name"
-msgid "Pottery"
-msgstr "Глиняная посуда"
 
 msgctxt "technologies.description"
 msgid "+10% to the production of mines and quarries."

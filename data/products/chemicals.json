@@ -7,6 +7,15 @@
       "type": "product",
       "category": "chemicals",
       "icon": "green_vitriol.png"
+    },
+    {
+      "id": "sulfuric_acid",
+      "price": 14,
+      "name": "Sulfuric Acid",
+      "type": "product",
+      "category": "chemicals",
+      "unlock_tech": "alchemy",
+      "icon": "sulfuric_acid.png"
     }
   ]
 }

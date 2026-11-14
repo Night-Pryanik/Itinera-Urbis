@@ -510,6 +510,12 @@ msgstr ""
 msgid "A whole number from %d to %d. Zero leaves the map without towns."
 msgstr ""
 
+msgid "About"
+msgstr ""
+
+msgid "About the game"
+msgstr ""
+
 msgid "Above average"
 msgstr ""
 
@@ -555,6 +561,9 @@ msgstr ""
 msgid "Amount:"
 msgstr ""
 
+msgid "An economic simulator of a single city's development through historical eras."
+msgstr ""
+
 msgid "An effect still to be written (%s)"
 msgstr ""
 
@@ -570,6 +579,12 @@ msgstr ""
 msgid "Any product from the group"
 msgstr ""
 
+msgid "Anyone may read, change and share the code. It may not be used to make money, and a changed version must stay under the same license."
+msgstr ""
+
+msgid "Anyone may reuse the artwork and the data, including commercially, as long as The City is credited."
+msgstr ""
+
 msgid "Appearance"
 msgstr ""
 
@@ -577,6 +592,9 @@ msgid "Applying climate..."
 msgstr ""
 
 msgid "Area not scouted — information unavailable.\n\nTerrain, resources and improvements become known after scouting."
+msgstr ""
+
+msgid "Artwork and game data"
 msgstr ""
 
 msgid "As long as the group has no goods in storage there is nothing to buy — no income."
@@ -589,6 +607,9 @@ msgid "Assign a worker to the improvement"
 msgstr ""
 
 msgid "Audio"
+msgstr ""
+
+msgid "Author"
 msgstr ""
 
 msgid "Authors: %s"
@@ -1299,6 +1320,9 @@ msgstr ""
 msgid "Game"
 msgstr ""
 
+msgid "Game code"
+msgstr ""
+
 msgid "Game saved."
 msgstr ""
 
@@ -1318,6 +1342,9 @@ msgid "Go to the technology list"
 msgstr ""
 
 msgid "Go to the town"
+msgstr ""
+
+msgid "Godot Engine — MIT License"
 msgstr ""
 
 msgid "Greek"
@@ -1443,6 +1470,9 @@ msgstr ""
 msgid "Inside another town's influence ring"
 msgstr ""
 
+msgid "Inter font — SIL Open Font License 1.1"
+msgstr ""
+
 msgid "Interface"
 msgstr ""
 
@@ -1504,6 +1534,9 @@ msgid "Large (100×100)"
 msgstr ""
 
 msgid "Left-click on a hex to place: %s"
+msgstr ""
+
+msgid "Licenses"
 msgstr ""
 
 msgid "Load"
@@ -1767,6 +1800,12 @@ msgstr ""
 msgid "Open the journal of important messages"
 msgstr ""
 
+msgid "Open the license text"
+msgstr ""
+
+msgid "Open the repository"
+msgstr ""
+
 msgid "Open the town interface"
 msgstr ""
 
@@ -1903,6 +1942,9 @@ msgid "Production slots: %d"
 msgstr ""
 
 msgid "Profit (actual, average): %s / sec"
+msgstr ""
+
+msgid "Project"
 msgstr ""
 
 msgid "Proportional"
@@ -2463,6 +2505,9 @@ msgstr ""
 msgid "The area does not border your territory"
 msgstr ""
 
+msgid "The artwork was made with the help of an image-generation model."
+msgstr ""
+
 msgid "The belts the generator rolls are: polar, cold, mild, subtropical, tropical. A cover is asked for its belts literally, so a misspelled belt is a belt that never happens and the cover simply does not grow there. If EVERY belt of the list is misspelled, the cover never appears on the map at all. An empty list means no restriction, not \"nowhere\"."
 msgstr ""
 
@@ -2524,6 +2569,9 @@ msgid "The fame of a good names a nonexistent quality"
 msgstr ""
 
 msgid "The fame of a good rewards a nonexistent entity"
+msgstr ""
+
+msgid "The full texts of the licenses are in the LICENSE and LICENSE-ASSETS.md files of the repository."
 msgstr ""
 
 msgid "The game does not read this field: its value is silently lost. Fields allowed here: %s."
@@ -2707,6 +2755,9 @@ msgid "There is no land route from the city to this hex"
 msgstr ""
 
 msgid "There is nothing on the way for this deal."
+msgstr ""
+
+msgid "Third-party components"
 msgstr ""
 
 msgid "This building has no improved version"
@@ -3375,6 +3426,10 @@ msgid "Clothes"
 msgstr ""
 
 msgctxt "categories.name"
+msgid "Coca"
+msgstr ""
+
+msgctxt "categories.name"
 msgid "Containers"
 msgstr ""
 
@@ -3583,6 +3638,10 @@ msgid "Boils a sweet juice down to sugar."
 msgstr ""
 
 msgctxt "crafts.description"
+msgid "Boils rubber into a sticky adhesive for wood, leather and pottery."
+msgstr ""
+
+msgctxt "crafts.description"
 msgid "Boils the crushed pods down to a dark syrup."
 msgstr ""
 
@@ -3651,6 +3710,10 @@ msgid "Dissolves the fragrant resin in oil and keeps the scent in a jar."
 msgstr ""
 
 msgctxt "crafts.description"
+msgid "Distils sulfuric acid from green vitriol (iron sulfate)."
+msgstr ""
+
+msgctxt "crafts.description"
 msgid "Distils tar out of resin."
 msgstr ""
 
@@ -3703,7 +3766,7 @@ msgid "Foldes the bloom of the city into the watered bar the smiths of other tow
 msgstr ""
 
 msgctxt "crafts.description"
-msgid "Grinds the resin with charcoal into a powder for the hearth."
+msgid "Grinds the resin—or the sandalwood oil—with charcoal into a powder for the hearth."
 msgstr ""
 
 msgctxt "crafts.description"
@@ -3880,6 +3943,14 @@ msgstr ""
 
 msgctxt "crafts.description"
 msgid "Produces parchment from animal hides by liming them."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Produces sulfuric acid (oil of vitriol) from sulfur."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Roasts pyrite to obtain sulfur."
 msgstr ""
 
 msgctxt "crafts.description"
@@ -4175,6 +4246,10 @@ msgid "Glassware"
 msgstr ""
 
 msgctxt "crafts.name"
+msgid "Glue"
+msgstr ""
+
+msgctxt "crafts.name"
 msgid "Goat Meat"
 msgstr ""
 
@@ -4428,6 +4503,14 @@ msgstr ""
 
 msgctxt "crafts.name"
 msgid "Sugar"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Sulfur"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Sulfuric Acid"
 msgstr ""
 
 msgctxt "crafts.name"
@@ -4792,10 +4875,6 @@ msgstr ""
 
 msgctxt "product_groups.name"
 msgid "Jewelry"
-msgstr ""
-
-msgctxt "product_groups.name"
-msgid "Millable Grains"
 msgstr ""
 
 msgctxt "product_groups.name"
@@ -5303,6 +5382,10 @@ msgid "Cassava"
 msgstr ""
 
 msgctxt "resources.name"
+msgid "Castilla"
+msgstr ""
+
+msgctxt "resources.name"
 msgid "Cattle"
 msgstr ""
 
@@ -5372,6 +5455,14 @@ msgstr ""
 
 msgctxt "resources.name"
 msgid "Cloth Clothes"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Coca"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Coca Leaf"
 msgstr ""
 
 msgctxt "resources.name"
@@ -5487,6 +5578,10 @@ msgid "Feathers"
 msgstr ""
 
 msgctxt "resources.name"
+msgid "Ficus"
+msgstr ""
+
+msgctxt "resources.name"
 msgid "Figs"
 msgstr ""
 
@@ -5539,6 +5634,10 @@ msgid "Glassware"
 msgstr ""
 
 msgctxt "resources.name"
+msgid "Glue"
+msgstr ""
+
+msgctxt "resources.name"
 msgid "Goat Meat"
 msgstr ""
 
@@ -5588,6 +5687,10 @@ msgstr ""
 
 msgctxt "resources.name"
 msgid "Henna"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Hevea"
 msgstr ""
 
 msgctxt "resources.name"
@@ -6035,6 +6138,10 @@ msgid "Roses"
 msgstr ""
 
 msgctxt "resources.name"
+msgid "Rubber"
+msgstr ""
+
+msgctxt "resources.name"
 msgid "Rye"
 msgstr ""
 
@@ -6056,6 +6163,14 @@ msgstr ""
 
 msgctxt "resources.name"
 msgid "Salt"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Sandalwood"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Sandalwood Oil"
 msgstr ""
 
 msgctxt "resources.name"
@@ -6168,6 +6283,14 @@ msgstr ""
 
 msgctxt "resources.name"
 msgid "Sugar Cane"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Sulfur"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Sulfuric Acid"
 msgstr ""
 
 msgctxt "resources.name"

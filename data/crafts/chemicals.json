@@ -9,6 +9,26 @@
       "time": 10.0,
       "unlock_tech": "alchemy",
       "description": "Makes a green vitriol from pyrite and iron."
+    },
+    {
+      "id": "sulfuric_acid_from_sulfur",
+      "name": "Sulfuric Acid",
+      "produced_in": [ "alchemist_house" ],
+      "resources": { "sulfur": 20 },
+      "result": { "sulfuric_acid": 10 },
+      "time": 10.0,
+      "unlock_tech": "alchemy",
+      "description": "Produces sulfuric acid (oil of vitriol) from sulfur."
+    },
+    {
+      "id": "sulfuric_acid_from_green_vitriol",
+      "name": "Sulfuric Acid",
+      "produced_in": [ "alchemist_house" ],
+      "resources": [ { "green_vitriol": 20 } ],
+      "result": { "sulfuric_acid": 10 },
+      "time": 10.0,
+      "unlock_tech": "alchemy",
+      "description": "Distils sulfuric acid from green vitriol (iron sulfate)."
     }
   ]
 }
