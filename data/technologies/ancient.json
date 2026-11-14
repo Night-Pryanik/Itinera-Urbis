@@ -182,8 +182,8 @@
       "science_cost": 3.0,
       "icon": "weaving.png",
       "prerequisites": [ [ "animal_husbandry" ] ],
-      "description": "Allows you to build the weaver's house: various materials → clothes.",
-      "flavor": "The loom turned wool and flax into cloth, from which clothes were sewn."
+      "description": "Allows you to build the weaver's house and weave clothes and carpets from fibers.",
+      "flavor": "The loom turned animal and plant fibers into cloth for garments and carpets."
     },
     {
       "id": "oil_making",

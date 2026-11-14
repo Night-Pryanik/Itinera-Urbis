@@ -119,6 +119,7 @@ register it in `project.godot` under
 | зерно | grain |
 | мука | flour |
 | ткань | cloth |
+| ковёр | carpet |
 | пряжа | yarn |
 | краситель | dye |
 | кожа | leather |

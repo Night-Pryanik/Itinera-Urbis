@@ -3126,8 +3126,8 @@ msgid "A long shed for twisting ropes and cables."
 msgstr "Длинное помещение для свивания канатов и тросов."
 
 msgctxt "buildings.description"
-msgid "A loom for weaving cloth out of yarn."
-msgstr "Ткацкий станок для производства тканей из нитей."
+msgid "A loom for weaving cloth, clothes and carpets from fibers."
+msgstr "Ткацкий станок для производства тканей, одежды и ковров из волокон."
 
 msgctxt "buildings.description"
 msgid "A mill that uses draft animals to turn the millstones."
@@ -4053,6 +4053,10 @@ msgctxt "crafts.description"
 msgid "Weaves clothes out of wool."
 msgstr "Ткёт одежду из шерсти"
 
+msgctxt "crafts.description"
+msgid "Weaves durable carpets from wool or plant fibers."
+msgstr "Ткёт долговечные ковры из шерсти или растительных волокон."
+
 msgctxt "crafts.name"
 msgid "Aged Cheese"
 msgstr "Выдержанный сыр"
@@ -4136,6 +4140,10 @@ msgstr "Рожковый сироп"
 msgctxt "crafts.name"
 msgid "Carob Wine"
 msgstr "Рожковое вино"
+
+msgctxt "crafts.name"
+msgid "Carpet"
+msgstr "Ковёр"
 
 msgctxt "crafts.name"
 msgid "Carthamin"
@@ -5022,6 +5030,10 @@ msgid "Grows technical and spice crops."
 msgstr "Возделывает технические и пряные культуры."
 
 msgctxt "professions.description"
+msgid "Makes dyes from natural materials."
+msgstr "Изготавливает красители из природных материалов."
+
+msgctxt "professions.description"
 msgid "Smelts ore into pure metals."
 msgstr "Плавит руду в чистые металлы."
 
@@ -5040,6 +5052,10 @@ msgstr "Ходит за свиньями и держит свинарник в �
 msgctxt "professions.description"
 msgid "Turns sand and soda into glass."
 msgstr "Превращает песок и соду в стекло."
+
+msgctxt "professions.description"
+msgid "Weaves cloth, clothes and carpets from fibers."
+msgstr "Ткёт ткани, одежду и ковры из волокон."
 
 msgctxt "professions.description"
 msgid "Works the fields and tends the crops."
@@ -5140,6 +5156,10 @@ msgstr "Смолокур"
 msgctxt "professions.name"
 msgid "Vinedresser"
 msgstr "Виноградарь"
+
+msgctxt "professions.name"
+msgid "Weaver"
+msgstr "Ткач"
 
 msgctxt "professions.name"
 msgid "Winemaker"
@@ -5376,6 +5396,10 @@ msgstr "Рожковое дерево"
 msgctxt "resources.name"
 msgid "Carob Wine"
 msgstr "Рожковое вино"
+
+msgctxt "resources.name"
+msgid "Carpet"
+msgstr "Ковёр"
 
 msgctxt "resources.name"
 msgid "Carthamin"
@@ -6798,8 +6822,8 @@ msgid "Allows you to build the vineyard."
 msgstr "Даёт возможность строить виноградник."
 
 msgctxt "technologies.description"
-msgid "Allows you to build the weaver's house: various materials → clothes."
-msgstr "Даёт возможность строить дом ткача: различные материалы → одежда."
+msgid "Allows you to build the weaver's house and weave clothes and carpets from fibers."
+msgstr "Позволяет построить дом ткача, где из волокон ткут одежду и ковры."
 
 msgctxt "technologies.description"
 msgid "Allows you to build the winemaker's house: grapes → wine."
@@ -7054,8 +7078,8 @@ msgid "The idea of value and exchange led to money, the basis of trade and city 
 msgstr "Понятие стоимости и обмена привело к появлению денег — основы торговли и роста городов."
 
 msgctxt "technologies.flavor"
-msgid "The loom turned wool and flax into cloth, from which clothes were sewn."
-msgstr "Ткацкий станок превратил шерсть и лён в ткань, из которой шили одежду."
+msgid "The loom turned animal and plant fibers into cloth for garments and carpets."
+msgstr "Ткацкий станок превращал животные и растительные волокна в ткань для одежды и ковров."
 
 msgctxt "technologies.flavor"
 msgid "The perfumer's workshop held both goods at once: the resin ground with charcoal for the temple, and the resin dissolved in oil for the body. The people of the warm south had mixed the tears of the boswellia tree with oil long before anyone thought of distilling them."

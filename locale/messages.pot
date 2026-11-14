@@ -3126,7 +3126,7 @@ msgid "A long shed for twisting ropes and cables."
 msgstr ""
 
 msgctxt "buildings.description"
-msgid "A loom for weaving cloth out of yarn."
+msgid "A loom for weaving cloth, clothes and carpets from fibers."
 msgstr ""
 
 msgctxt "buildings.description"
@@ -4053,6 +4053,10 @@ msgctxt "crafts.description"
 msgid "Weaves clothes out of wool."
 msgstr ""
 
+msgctxt "crafts.description"
+msgid "Weaves durable carpets from wool or plant fibers."
+msgstr ""
+
 msgctxt "crafts.name"
 msgid "Aged Cheese"
 msgstr ""
@@ -4135,6 +4139,10 @@ msgstr ""
 
 msgctxt "crafts.name"
 msgid "Carob Wine"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Carpet"
 msgstr ""
 
 msgctxt "crafts.name"
@@ -5022,6 +5030,10 @@ msgid "Grows technical and spice crops."
 msgstr ""
 
 msgctxt "professions.description"
+msgid "Makes dyes from natural materials."
+msgstr ""
+
+msgctxt "professions.description"
 msgid "Smelts ore into pure metals."
 msgstr ""
 
@@ -5039,6 +5051,10 @@ msgstr ""
 
 msgctxt "professions.description"
 msgid "Turns sand and soda into glass."
+msgstr ""
+
+msgctxt "professions.description"
+msgid "Weaves cloth, clothes and carpets from fibers."
 msgstr ""
 
 msgctxt "professions.description"
@@ -5139,6 +5155,10 @@ msgstr ""
 
 msgctxt "professions.name"
 msgid "Vinedresser"
+msgstr ""
+
+msgctxt "professions.name"
+msgid "Weaver"
 msgstr ""
 
 msgctxt "professions.name"
@@ -5375,6 +5395,10 @@ msgstr ""
 
 msgctxt "resources.name"
 msgid "Carob Wine"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Carpet"
 msgstr ""
 
 msgctxt "resources.name"
@@ -6798,7 +6822,7 @@ msgid "Allows you to build the vineyard."
 msgstr ""
 
 msgctxt "technologies.description"
-msgid "Allows you to build the weaver's house: various materials → clothes."
+msgid "Allows you to build the weaver's house and weave clothes and carpets from fibers."
 msgstr ""
 
 msgctxt "technologies.description"
@@ -7054,7 +7078,7 @@ msgid "The idea of value and exchange led to money, the basis of trade and city 
 msgstr ""
 
 msgctxt "technologies.flavor"
-msgid "The loom turned wool and flax into cloth, from which clothes were sewn."
+msgid "The loom turned animal and plant fibers into cloth for garments and carpets."
 msgstr ""
 
 msgctxt "technologies.flavor"

@@ -78,6 +78,15 @@
       "icon": "wool_clothes.png"
     },
     {
+      "id": "carpet",
+      "price": 30,
+      "name": "Carpet",
+      "type": "product",
+      "category": "household_items",
+      "unlock_tech": "weaving",
+      "icon": "carpet.png"
+    },
+    {
       "id": "leather_clothes",
       "price": 28,
       "name": "Leather Clothes",

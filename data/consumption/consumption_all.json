@@ -102,6 +102,14 @@
       "production_bonus": 0.0
     },
     {
+      // Carpets are durable furnishings, so citizens use them less often than clothes.
+      "resource": "carpet",
+      "profession": [ "all" ],
+      "amount": 10,
+      "interval": 20,
+      "production_bonus": 0.0
+    },
+    {
       "resource": "@spices",
       "profession": [ "all" ],
       "amount": 10,

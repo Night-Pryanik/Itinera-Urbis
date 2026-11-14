@@ -148,7 +148,7 @@
     {
       "id": "weaver_house",
       "name": "Weaver's House",
-      "description": "A loom for weaving cloth out of yarn.",
+      "description": "A loom for weaving cloth, clothes and carpets from fibers.",
       "work_cost": 25,
       "additional_cost": [ { "planks": 100 } ],
       "icon": "weaver_house.png",

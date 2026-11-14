@@ -109,6 +109,16 @@
       "description": "Weaves clothes out of wool."
     },
     {
+      "id": "carpet",
+      "name": "Carpet",
+      "produced_in": [ "weaver_house" ],
+      "resources": [ [ { "wool": 20 }, { "@textile_crops": 20 } ] ],
+      "result": { "carpet": 10 },
+      "time": 8.0,
+      "unlock_tech": "weaving",
+      "description": "Weaves durable carpets from wool or plant fibers."
+    },
+    {
       // The prestige good of the wool line (see the header comment of
       // data/products/food.json).
       "id": "cashmere",
