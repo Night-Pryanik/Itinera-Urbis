@@ -797,6 +797,26 @@
       "color": [ 140, 150, 110 ]
     },
     {
+      // Castilla of the tropical lowlands: the milky sap of this tree supplied
+      // the Mesoamerican rubber ball and adhesive without felling the tree.
+      "id": "castilla_tree", "price": 13,
+      "name": "Castilla",
+      "type": "raw",
+      "category": "technical_plants",
+      "group": "technical_plants",
+      "subgroup": "rubber_plants",
+      "allowed_terrain": [ "plain", "hill" ],
+      "allowed_cover": [
+        "none", "tropical_rainforest_sparse"
+      ],
+      "allowed_climate_zones": [ "tropical_wet", "tropical_dry" ],
+      "improved_by": "lumberjack_hut",
+      "tech_required": "wood_processing",
+      "produces": { "rubber": 10 },
+      "icon": "castilla_tree.png",
+      "color": [ 100, 150, 90 ]
+    },
+    {
       // Sandalwood of the dry foothills: the heartwood is the incense wood.
       "id": "sandalwood_tree", "price": 14,
       "name": "Sandalwood",
