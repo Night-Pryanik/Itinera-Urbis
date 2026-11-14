@@ -60,10 +60,9 @@
       "production_bonus": 0.25
     },
     {
-      // Sulfuring the barrels: a small boost to the winemaker's output while sulfur
-      // is available in storage.
+      // Sulfur supports production for every profession that consumes tare.
       "resource": "sulfur",
-      "profession": [ "winemaker" ],
+      "profession": [ "winemaker", "brewer", "oilmaker" ],
       "amount": 10,
       "interval": 10,
       "production_bonus": 0.1
