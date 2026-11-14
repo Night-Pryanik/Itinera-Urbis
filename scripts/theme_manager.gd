@@ -250,6 +250,7 @@ func apply_palette(palette: Dictionary, metrics: Dictionary, id: String) -> bool
     _palette = palette
     _metrics = metrics.duplicate()
     current_id = id
+    UI_ICONS.clear_cache()
     _apply_theme()
     theme_applied.emit()
     _repaint()
@@ -314,18 +315,19 @@ func _style_buttons(theme: Theme) -> void:
         theme.set_color("font_pressed_color", type, color("text"))
         theme.set_color("font_focus_color", type, color("text"))
         theme.set_color("font_disabled_color", type, color("text_muted"))
-    # The glyphs are textures, so the theme cannot derive them from a colour: they are
-    # rasterised from the palette here and replaced whenever a palette is applied.
-    theme.set_icon("unchecked", "CheckBox", UI_ICONS.checkbox(false))
-    theme.set_icon("checked", "CheckBox", UI_ICONS.checkbox(true))
+    # The glyphs are textures, so the theme cannot derive them from a colour: each state
+    # uses its cached rasterization for the current palette.
+    theme.set_icon("unchecked", "CheckBox", UI_ICONS.checkbox(false, current_id))
+    theme.set_icon("checked", "CheckBox", UI_ICONS.checkbox(true, current_id))
     # A CheckBox that belongs to a ButtonGroup is drawn as a radio button, and the engine takes
     # its glyphs from the radio_* items (the additional ingredient of a recipe, building panel).
-    theme.set_icon("radio_unchecked", "CheckBox", UI_ICONS.radio(false))
-    theme.set_icon("radio_checked", "CheckBox", UI_ICONS.radio(true))
-    theme.set_icon("radio_unchecked_disabled", "CheckBox", UI_ICONS.radio(false, true))
-    theme.set_icon("radio_checked_disabled", "CheckBox", UI_ICONS.radio(true, true))
-    theme.set_icon("unchecked", "CheckButton", UI_ICONS.switch_button(false))
-    theme.set_icon("checked", "CheckButton", UI_ICONS.switch_button(true))
+    theme.set_icon("radio_unchecked", "CheckBox", UI_ICONS.radio(false, false, current_id))
+    theme.set_icon("radio_checked", "CheckBox", UI_ICONS.radio(true, false, current_id))
+    theme.set_icon("radio_unchecked_disabled", "CheckBox",
+        UI_ICONS.radio(false, true, current_id))
+    theme.set_icon("radio_checked_disabled", "CheckBox", UI_ICONS.radio(true, true, current_id))
+    theme.set_icon("unchecked", "CheckButton", UI_ICONS.switch_button(false, current_id))
+    theme.set_icon("checked", "CheckButton", UI_ICONS.switch_button(true, current_id))
 
 func _style_text_inputs(theme: Theme) -> void:
     theme.set_stylebox("normal", "LineEdit", _field_frame(false))
@@ -361,9 +363,12 @@ func _style_sliders(theme: Theme) -> void:
         theme.set_stylebox("slider", type, track)
         theme.set_stylebox("grabber_area", type, fill)
         theme.set_stylebox("grabber_area_highlight", type, fill_highlight)
-        theme.set_icon("grabber", type, UI_ICONS.knob(color("control_border")))
-        theme.set_icon("grabber_highlight", type, UI_ICONS.knob(color("control_border").lightened(0.18)))
-        theme.set_icon("grabber_pressed", type, UI_ICONS.knob(color("accent")))
+        theme.set_icon("grabber", type,
+            UI_ICONS.knob(color("control_border"), current_id, "normal"))
+        theme.set_icon("grabber_highlight", type,
+            UI_ICONS.knob(color("control_border").lightened(0.18), current_id, "highlight"))
+        theme.set_icon("grabber_pressed", type,
+            UI_ICONS.knob(color("accent"), current_id, "pressed"))
 
 func _style_tabs(theme: Theme) -> void:
     var selected := _tab_frame(color("tab_active_bg"))
@@ -439,11 +444,12 @@ func _style_windows(theme: Theme) -> void:
     # texture only while the button is held — so the resting item is the one that carries the
     # hover, and _process replaces it when the pointer comes over the mark.
     theme.set_icon("close", "Window", _close_mark_texture())
-    theme.set_icon("close_pressed", "Window", UI_ICONS.close(UI_ICONS.CloseState.PRESSED))
+    theme.set_icon("close_pressed", "Window", UI_ICONS.close(
+        UI_ICONS.CloseState.PRESSED, current_id))
 
 func _close_mark_texture() -> ImageTexture:
     return UI_ICONS.close(UI_ICONS.CloseState.HOVER if _close_mark_hovered
-        else UI_ICONS.CloseState.REST)
+        else UI_ICONS.CloseState.REST, current_id)
 
 # The rectangle the engine answers a click on the close mark with, in the coordinates of the
 # window that embeds the dialog: it anchors the mark by its top left, eighteen pixels left of the

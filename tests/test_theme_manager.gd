@@ -30,6 +30,7 @@ extends SceneTree
 const WATCHDOG = preload("res://tests/watchdog.gd")
 const THEME_SCRIPT = preload("res://scripts/theme_manager.gd")
 const UI_THEME = preload("res://scripts/ui_theme.gd")
+const UI_ICONS = preload("res://scripts/ui_icons.gd")
 
 const SETTINGS_PATH := "user://settings.cfg"
 const PRESET_DIR := "res://theme/presets"
@@ -142,6 +143,12 @@ func _run() -> void:
     manager.theme_applied.connect(func(): fired["count"] += 1)
     manager.apply_preset(DEFAULT_PRESET)
     check(fired["count"] == 1, "theme_applied fires on an apply", state)
+    var close_icon := UI_ICONS.close(UI_ICONS.CloseState.REST, manager.current_id)
+    check(close_icon == UI_ICONS.close(UI_ICONS.CloseState.REST, manager.current_id),
+        "a glyph state reuses its rasterized texture", state)
+    manager.apply_preset(DEFAULT_PRESET)
+    check(close_icon != UI_ICONS.close(UI_ICONS.CloseState.REST, manager.current_id),
+        "applying a palette invalidates cached glyph textures", state)
 
     # --- 5. The contrast of every preset ---
     for entry in available:
