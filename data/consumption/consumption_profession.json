@@ -42,7 +42,7 @@
       "resource": "@boats",
       "profession": [ "fisherman" ],
       "amount": 10,
-      "interval": 10,
+      "interval": 30,
       "production_bonus": 0.5
     },
     {
