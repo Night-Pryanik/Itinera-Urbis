@@ -74,6 +74,9 @@ func _run() -> void:
     _wm = main_map.get_node("WorkerManager")
     _tm = main_map.get_node("TownsfolkManager")
 
+    if WATCHDOG.wants_case("dyer_alum_supply"):
+        _test_dyer_alum_supply(state)
+
     # A building with a profession and its supply — from the data, not from a constant.
     var building_id := _pick_profession_building()
     check(not building_id.is_empty(),
@@ -99,6 +102,20 @@ func _run() -> void:
         _test_actual_consumption(state, building_id)
 
     _finish(main_map, state)
+
+
+func _test_dyer_alum_supply(state: Dictionary) -> void:
+    var profession := str(_gdata.get_profession_for_building("dyer_house"))
+    check(profession == "dyer", "the dyer's house assigns the dyer profession", state)
+    if profession != "dyer":
+        return
+
+    var alum_bonus := 0.0
+    for entry in _gdata.get_profession_consumption(profession):
+        if str(entry.get("display_key", "")) == "alum":
+            alum_bonus = float(entry.get("production_bonus", 0.0))
+            break
+    check(alum_bonus > 0.0, "alum consumption gives dyers a production bonus", state)
 
 
 # -------------------------------------------------------

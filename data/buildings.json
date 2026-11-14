@@ -379,6 +379,7 @@
       "work_cost": 35,
       "additional_cost": [ { "planks": 100 }, { "@processed_construction_materials": 50 } ],
       "icon": "dyer_house.png",
+      "profession": "dyer",
       "production_slots": 1.0,
       "unlock_tech": "dyeing",
       "default_recipes": [  ]

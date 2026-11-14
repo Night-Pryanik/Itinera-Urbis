@@ -69,6 +69,13 @@
       "production_bonus": 0.1
     },
     {
+      "resource": "alum",
+      "profession": [ "dyer" ],
+      "amount": 10,
+      "interval": 10,
+      "production_bonus": 0.1
+    },
+    {
       // Sulfuric acid consumption by metallurgists: a boost to production while
       // sulfuric acid is available in storage, representing its use in metal
       // refining, pickling, and other metallurgical processes.

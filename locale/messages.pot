@@ -5066,6 +5066,10 @@ msgid "Charcoal Burner"
 msgstr ""
 
 msgctxt "professions.name"
+msgid "Dyer"
+msgstr ""
+
+msgctxt "professions.name"
 msgid "Farmer"
 msgstr ""
 

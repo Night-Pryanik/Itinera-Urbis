@@ -14,8 +14,7 @@
   //   * an improvement (data/improvements.json) may have a "profession" field —
   //     the id of the profession that works on it;
   //   * the same field for a city building (data/buildings.json) — the id of the
-  //     profession of the citizen working in the building (currently: Library and
-  //     Scriptorium — "scientist").
+  //     profession of the citizen working in the building.
   //   If the field is absent — the object has no profession. An improvement marked
   //   with the "no_worker": true field (infrastructure, for example a harbor)
   //   requires no workers at all: they cannot be assigned to it.
@@ -200,6 +199,11 @@
       "name": "Perfumer",
       "icon": "profession_perfumer.png",
       "description": "Grinds aromatic resins into perfumes and incense."
+    },
+    {
+      "id": "dyer",
+      "name": "Dyer",
+      "description": "Makes dyes from natural materials."
     }
   ]
 }
