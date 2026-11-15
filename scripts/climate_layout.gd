@@ -142,6 +142,8 @@ static func layout(rows: int, cols: int, geo: Dictionary, chosen: String, salt: 
     if fixed:
         pin_city_belt(temperature_rows, rows, cols, int(rows / 2.0), equator, chosen, geo)
     var bounds := polar_bounds(rows, cols, temperature_rows, geo, equator)
+    var polar_top: PackedFloat64Array = bounds["top"]
+    var polar_bottom: PackedFloat64Array = bounds["bottom"]
 
     # The belt of every cell. The geometry is read into locals first: the picture of the preview
     # is a grid of thousands of cells, and a dictionary lookup in every one of them costs more
@@ -152,9 +154,9 @@ static func layout(rows: int, cols: int, geo: Dictionary, chosen: String, salt: 
     var belts := PackedByteArray()
     belts.resize(rows * cols)
     for row in range(rows):
-        var line: Array = temperature_rows[row]
+        var base := row * cols
         for col in range(cols):
-            var temperature_row := float(line[col])
+            var temperature_row := temperature_rows[base + col]
             var distance := absf(temperature_row - equator)
             var temperature := TEMPERATURE_TROPICAL
             if distance > tropical_half:
@@ -164,10 +166,9 @@ static func layout(rows: int, cols: int, geo: Dictionary, chosen: String, salt: 
                     temperature = TEMPERATURE_MILD
                 else:
                     temperature = TEMPERATURE_COLD
-            var polar: Array = bounds[col]
-            if temperature_row <= float(polar[0]) or temperature_row >= float(polar[1]):
+            if temperature_row <= polar_top[col] or temperature_row >= polar_bottom[col]:
                 temperature = TEMPERATURE_POLAR
-            belts[row * cols + col] = belt_code(temperature)
+            belts[base + col] = belt_code(temperature)
     return {"equator": equator, "belts": belts}
 
 # The temperature row of every cell: its own row shifted by the climate meander.
@@ -176,8 +177,12 @@ static func layout(rows: int, cols: int, geo: Dictionary, chosen: String, salt: 
 # average of monotone columns is monotone itself. A chosen climate caps the meander so the city
 # stays in its belt and leaves the edges as they fall: the edge shift of the random climate would
 # drag the city out of the belt it was placed in.
+#
+# The field is one flat array of the cells (row * cols + col), and it is 64-bit: the belts are read
+# off these numbers by comparing them with the geometry, and a rounded field would move a boundary
+# hex by a fraction of a row.
 static func temperature_rows(rows: int, cols: int, geo: Dictionary, equator: float, salt: int,
-        warp_cap: float, fixed: bool) -> Array:
+        warp_cap: float, fixed: bool) -> PackedFloat64Array:
     var amplitude := minf(float(geo["amplitude"]), warp_cap)
     var scale := maxf(2.0 * float(geo["scale"]),
             float(mini(rows, cols)) * float(geo["warp_scale"]))
@@ -189,22 +194,24 @@ static func temperature_rows(rows: int, cols: int, geo: Dictionary, equator: flo
     var room := minf(equator, float(rows - 1) - equator) - belt - float(geo["min_cold"])
     amplitude = clampf(amplitude, 0.0, maxf(0.0, room))
 
-    var grid: Array = []
+    var grid := PackedFloat64Array()
+    grid.resize(rows * cols)
     for r in range(rows):
-        var line: Array = []
+        var base := r * cols
         for c in range(cols):
             var warp := (fbm(float(r) / scale, float(c) / scale, salt, 2) - 0.5) * 2.0 * amplitude
-            line.append(float(r) + warp)
-        grid.append(line)
+            grid[base + c] = float(r) + warp
 
     for c in range(cols):
         for r in range(1, rows):
-            var previous: float = grid[r - 1][c]
-            grid[r][c] = clampf(grid[r][c], previous, previous + step)
+            var index := r * cols + c
+            var previous := grid[index - cols]
+            grid[index] = clampf(grid[index], previous, previous + step)
 
-    var smoothed: Array = []
+    var smoothed := PackedFloat64Array()
+    smoothed.resize(rows * cols)
     for r in range(rows):
-        var line: Array = []
+        var base := r * cols
         for c in range(cols):
             var sum := 0.0
             var count := 0
@@ -212,10 +219,9 @@ static func temperature_rows(rows: int, cols: int, geo: Dictionary, equator: flo
                 var cc: int = c + offset
                 if cc < 0 or cc >= cols:
                     continue
-                sum += float(grid[r][cc])
+                sum += grid[base + cc]
                 count += 1
-            line.append(sum / float(count))
-        smoothed.append(line)
+            smoothed[base + c] = sum / float(count)
 
     # The polar edges are guaranteed: if the meander has brought the warm belt too close to an edge,
     # the whole column is shifted. A uniform shift keeps the column monotone and cannot create a
@@ -228,10 +234,10 @@ static func temperature_rows(rows: int, cols: int, geo: Dictionary, equator: flo
     for c in range(cols):
         var top_max := -INF
         for r in range(mini(edge, rows)):
-            top_max = maxf(top_max, float(smoothed[r][c]))
+            top_max = maxf(top_max, smoothed[r * cols + c])
         var bottom_min := INF
         for r in range(maxi(0, rows - edge), rows):
-            bottom_min = minf(bottom_min, float(smoothed[r][c]))
+            bottom_min = minf(bottom_min, smoothed[r * cols + c])
         var shift := 0.0
         if top_max > top_limit:
             shift += top_limit - top_max
@@ -239,7 +245,8 @@ static func temperature_rows(rows: int, cols: int, geo: Dictionary, equator: flo
             shift += bottom_limit - bottom_min
         if shift != 0.0:
             for r in range(rows):
-                smoothed[r][c] = float(smoothed[r][c]) + shift
+                var index := r * cols + c
+                smoothed[index] = smoothed[index] + shift
     return smoothed
 
 # The polar belt of every column: the outer share of its cold region. It is measured from the
@@ -247,27 +254,33 @@ static func temperature_rows(rows: int, cols: int, geo: Dictionary, equator: flo
 # A cold region thinner than the minimum keeps no polar share: the tundra would sit next to a
 # warm belt with no taiga between them. The random climate always keeps its edges thicker; a
 # chosen cold climate on a short map can end up with a cold edge instead of a polar one.
-static func polar_bounds(rows: int, cols: int, temperature_rows: Array, geo: Dictionary,
-        equator: float) -> Array:
+#
+# The two bounds are a pair of arrays of the columns: the top of the polar belt and its bottom.
+static func polar_bounds(rows: int, cols: int, temperature_rows: PackedFloat64Array,
+        geo: Dictionary, equator: float) -> Dictionary:
     var belt: float = geo["belt"]
     var min_cold: float = geo["min_cold"]
     var polar_share: float = geo["polar_share"]
-    var bounds: Array = []
+    var top_bounds := PackedFloat64Array()
+    top_bounds.resize(cols)
+    var bottom_bounds := PackedFloat64Array()
+    bottom_bounds.resize(cols)
+    var last_row := (rows - 1) * cols
     for c in range(cols):
-        var top := float(temperature_rows[0][c])
-        var bottom := float(temperature_rows[rows - 1][c])
+        var top := temperature_rows[c]
+        var bottom := temperature_rows[last_row + c]
         var cold_top := maxf(0.0, equator - belt - top)
         var cold_bottom := maxf(0.0, bottom - equator - belt)
-        var polar_top := top + cold_top * polar_share if cold_top >= min_cold else top - 1.0
-        var polar_bottom := bottom - cold_bottom * polar_share if cold_bottom >= min_cold else bottom + 1.0
-        bounds.append([polar_top, polar_bottom])
-    return bounds
+        top_bounds[c] = top + cold_top * polar_share if cold_top >= min_cold else top - 1.0
+        bottom_bounds[c] = bottom - cold_bottom * polar_share if cold_bottom >= min_cold \
+                else bottom + 1.0
+    return {"top": top_bounds, "bottom": bottom_bounds}
 
 # The city of a chosen climate stays in its belt: if the meander has carried its temperature row
 # across a belt edge, the whole column is shifted back. A uniform shift keeps the column monotone,
 # so the order of the belts survives it.
-static func pin_city_belt(temperature_rows: Array, rows: int, cols: int, city_row: int,
-        equator: float, chosen: String, geo: Dictionary) -> void:
+static func pin_city_belt(temperature_rows: PackedFloat64Array, rows: int, cols: int,
+        city_row: int, equator: float, chosen: String, geo: Dictionary) -> void:
     var lo := 0.0
     var hi := float(geo["tropical_half"])
     match chosen:
@@ -281,14 +294,15 @@ static func pin_city_belt(temperature_rows: Array, rows: int, cols: int, city_ro
             lo = float(geo["belt"])
             hi = INF
     var city_col := int(cols / 2.0)
-    var distance := float(temperature_rows[city_row][city_col]) - equator
+    var distance := temperature_rows[city_row * cols + city_col] - equator
     var inside := absf(distance) <= hi and (lo == 0.0 or absf(distance) > lo)
     if inside:
         return
     var magnitude := clampf(absf(distance), lo + 0.5 if lo > 0.0 else 0.0, hi)
     var shift := (magnitude if distance >= 0.0 else -magnitude) - distance
     for r in range(rows):
-        temperature_rows[r][city_col] = float(temperature_rows[r][city_col]) + shift
+        var index := r * cols + city_col
+        temperature_rows[index] = temperature_rows[index] + shift
 
 # Fractal noise: a few octaves of the value noise, each one weaker (persistence) and twice as fine.
 # A lower persistence keeps the field smooth, which the moisture needs: the fine octaves alone

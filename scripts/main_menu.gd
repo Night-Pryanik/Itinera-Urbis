@@ -35,7 +35,13 @@ const STEP_FIELD_WIDTH := 58
 # seconds per rebuild. It is kept while the settings that shape it are unchanged, and a number
 # being typed rebuilds it once the typing pauses rather than on every keystroke.
 const RELIEF_CACHE_LIMIT := 8
+const RIVER_CACHE_LIMIT := 16
 const PREVIEW_DEBOUNCE := 0.2
+
+# From this side of the map up, the picture is built in stages, a frame apart (see
+# WorldPreview.RELIEF_STAGES): a map that is built in a tenth of a second is built on the spot, and
+# a huge one is built while the window keeps repainting.
+const STAGED_PREVIEW_MAP_SIZE := 150
 
 const TAB_CITY := 0
 const TAB_WORLD := 1
@@ -124,11 +130,15 @@ var mod_list = null
 # The preview seed stays fixed while settings change, keeping those changes comparable. The
 # player can reroll it explicitly with the button beside either preview.
 var _preview_seed: int = 0
-# The reliefs already built, oldest first, and the timer of a rebuild waiting for the typing to
-# pause.
+# The reliefs already built and the rivers drawn over them, oldest first; the timer of a rebuild
+# waiting for the typing to pause; and the build in flight, when the picture is being built stage by
+# stage (empty when nothing is running).
 var _relief_cache: Dictionary = {}
 var _relief_order: Array[String] = []
+var _river_cache: Dictionary = {}
+var _river_order: Array[String] = []
 var _preview_timer: Timer = null
+var _preview_build: Dictionary = {}
 
 func _ready():
     # The data comes first: the tooltip of "Continue game" names the era of the save,
@@ -317,6 +327,7 @@ func _build_city_tab() -> Control:
     random_button.tooltip_text = tr("Suggest another name")
     random_button.pressed.connect(func():
         _ensure_game_data()
+        _drop_preview_build()
         city_name_edit.text = GameData.get_random_city_name()
         city_name_edit.select_all()
         city_name_edit.grab_focus()
@@ -457,27 +468,106 @@ func _resolved_sea_config(seed_value: int = 0) -> Dictionary:
 func _refresh_preview():
     if _preview_timer != null:
         _preview_timer.stop()
+    # The newest settings win: a picture still being built is dropped where it stands. Two builds
+    # must never run at once, because the generator draws from the one sequence of dice and two of
+    # them would spoil each other's world.
+    _drop_preview_build()
     var side := _selected_map_size()
+    var sea := _resolved_sea_config(_preview_seed)
+    var climate := _selected_climate()
+    var key := _relief_key(side, sea, climate)
+    if _relief_cache.has(key):
+        _show_preview(key, side, _relief_cache[key])
+    elif side < STAGED_PREVIEW_MAP_SIZE:
+        _show_preview(key, side, _remember(_relief_cache, _relief_order, key,
+                WorldPreview.build_relief(side, sea, _preview_seed, climate), RELIEF_CACHE_LIMIT))
+    else:
+        _start_staged_build(side, sea, climate, key)
+
+# Only the size, the sea, the seed and the climate shape the relief. The key names all four, so a
+# relief is rebuilt exactly when one of them moves.
+func _relief_key(side: int, sea: Dictionary, climate: String) -> String:
+    return "%d|%d|%s|%s" % [side, _preview_seed, JSON.stringify(sea), climate]
+
+# The oldest entries are dropped, so a long session of comparing settings does not keep a giant map
+# (nor the courses of its rivers) per attempt.
+func _remember(cache: Dictionary, order: Array, key: String, value, limit: int):
+    cache[key] = value
+    order.append(key)
+    while order.size() > limit:
+        cache.erase(order.pop_front())
+    return value
+
+# The picture with its rivers drawn over it. A course is a search over the whole picture, so the
+# courses are kept while the relief and the river settings stay put: the towns, the density and
+# everything else drawn over the picture move no river.
+func _show_preview(key: String, side: int, picture: Dictionary) -> void:
+    var river_key := "%s|%s" % [key, JSON.stringify(_selected_river_config())]
+    if _river_cache.has(river_key):
+        picture["rivers"] = _river_cache[river_key]
+    else:
+        picture["rivers"] = _remember(_river_cache, _river_order, river_key,
+                WorldPreview.build_rivers(picture, side, _selected_river_config(), _preview_seed),
+                RIVER_CACHE_LIMIT)
     var towns := _selected_town_count()
-    var picture := _cached_relief(side, _resolved_sea_config(_preview_seed), _selected_climate())
-    picture["rivers"] = WorldPreview.build_rivers(picture, side, _selected_river_config(),
-            _preview_seed)
     for preview in world_previews:
         preview.set_world(side, towns, picture)
 
-# Only the size, the sea, the seed and the climate shape the relief; the rivers, the towns and the
-# resource density are drawn over it. The oldest reliefs are dropped, so a long session of
-# comparing settings does not keep a giant map per attempt.
-func _cached_relief(side: int, sea: Dictionary, climate: String) -> Dictionary:
-    var key := "%d|%d|%s|%s" % [side, _preview_seed, JSON.stringify(sea), climate]
-    if _relief_cache.has(key):
-        return _relief_cache[key]
-    var picture := WorldPreview.build_relief(side, sea, _preview_seed, climate)
-    _relief_cache[key] = picture
-    _relief_order.append(key)
-    while _relief_order.size() > RELIEF_CACHE_LIMIT:
-        _relief_cache.erase(_relief_order.pop_front())
-    return picture
+# The picture of a huge map, built in stages with a frame between them: building it in one go
+# freezes the window for as long as it takes, and the player is watching the picture to compare
+# settings. The first stage starts at once, so the picture on the screen is veiled at the first
+# frame rather than after the first stage.
+func _start_staged_build(side: int, sea: Dictionary, climate: String, key: String) -> void:
+    _preview_build = {
+        "side": side,
+        "key": key,
+        "relief": WorldPreview.begin_relief(side, sea, _preview_seed, climate),
+        "stage": 0,
+    }
+    for preview in world_previews:
+        preview.set_busy(true)
+    # The steps come from the tree's own frame signal rather than from a coroutine of this node: a
+    # window that closes mid-build leaves nothing behind to resume, and the connection dies with the
+    # node it belongs to.
+    if not get_tree().process_frame.is_connected(_on_preview_step):
+        get_tree().process_frame.connect(_on_preview_step)
+    _on_preview_step()
+
+# One stage of the staged build, and no more than one per frame: the frame between the stages is
+# what lets the window repaint and answer the player while a huge map is being built.
+func _on_preview_step() -> void:
+    if _preview_build.is_empty():
+        return
+    var relief: Dictionary = _preview_build["relief"]
+    var stage: int = _preview_build["stage"]
+    WorldPreview.run_relief_stage(relief, stage)
+    _preview_build["stage"] = stage + 1
+    if _preview_build["stage"] < WorldPreview.RELIEF_STAGES.size():
+        return
+    var side: int = _preview_build["side"]
+    var key: String = _preview_build["key"]
+    var picture := WorldPreview.build_picture(WorldPreview.finish_relief(relief), side)
+    _preview_build = {}
+    _show_preview(key, side, _remember(_relief_cache, _relief_order, key, picture,
+            RELIEF_CACHE_LIMIT))
+
+# A staged build holds the global sequence of dice while it runs, so anything else that draws from
+# that sequence (the dice of the city name, a new preview seed) must drop the build first: it would
+# otherwise hand the picture a world of its own.
+func _drop_preview_build() -> void:
+    if _preview_build.is_empty():
+        return
+    WorldPreview.abort_relief(_preview_build["relief"])
+    _preview_build = {}
+    for preview in world_previews:
+        preview.set_busy(false)
+
+# A build cut short by the window going away keeps the generator it was using: nothing will step it
+# again, and an orphan node is a leak.
+func _exit_tree() -> void:
+    if not _preview_build.is_empty():
+        WorldPreview.abort_relief(_preview_build["relief"])
+        _preview_build = {}
 
 # A rebuild waits for the typing to pause. A discrete change refreshes at once and cancels the
 # wait, so a pending rebuild never draws a value the player has already left behind.

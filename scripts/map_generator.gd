@@ -194,12 +194,17 @@ func _apply_marshes(tile_data: Array, rows: int, cols: int) -> void:
 # progress indicator between them (see MainMap._initialize_map). The monolithic
 # generate_map below stays a thin wrapper over the same stages, in the same order.
 func init_tile_data(rows: int, cols: int) -> Array:
-    var tile_data = []
+    # Every hex is a copy of the empty one: the stages write into the hexes of the map, so a shared
+    # record would move half the map at once.
+    var empty_tile := {"terrain": "plain", "cover": "none", "resource": null, "improvement": null}
+    var tile_data := []
+    tile_data.resize(rows)
     for row in range(rows):
-        var col_array = []
+        var col_array := []
+        col_array.resize(cols)
         for col in range(cols):
-            col_array.append({"terrain": "plain", "cover": "none", "resource": null, "improvement": null})
-        tile_data.append(col_array)
+            col_array[col] = empty_tile.duplicate()
+        tile_data[row] = col_array
     return tile_data
 
 func apply_sea_mask(tile_data: Array, rows: int, cols: int, city_row: int, city_col: int,
