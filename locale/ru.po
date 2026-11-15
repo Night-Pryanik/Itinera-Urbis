@@ -3706,8 +3706,8 @@ msgid "Cuts stone into plates, bowls, and cups."
 msgstr "Вырезает из камня тарелки, миски и чашки."
 
 msgctxt "crafts.description"
-msgid "Dissolves the fragrant resin in oil and keeps the scent in a jar."
-msgstr "Растворяет ароматическую смолу в масле и хранит запах в склянке."
+msgid "Dissolves the fragrant material in oil and keeps the scent in a jar."
+msgstr "Растворяет ароматическое сырьё в масле и хранит запах в склянке."
 
 msgctxt "crafts.description"
 msgid "Distils sulfuric acid from green vitriol (iron sulfate)."
@@ -3718,8 +3718,12 @@ msgid "Distils tar out of resin."
 msgstr "Выгоняет смолу из живицы."
 
 msgctxt "crafts.description"
-msgid "Distils the scent of the resin into a pure oil."
-msgstr "Перегоняет запах смолы в чистое масло."
+msgid "Distils the scent of the fragrant material into a pure oil."
+msgstr "Извлекает аромат из сырья и перегоняет его в чистое масло."
+
+msgctxt "crafts.description"
+msgid "Distils fragrant oil from sandalwood heartwood."
+msgstr "Перегоняет ароматическое масло из сердцевины сандалового дерева."
 
 msgctxt "crafts.description"
 msgid "Dries and roasts coffee beans."
@@ -3766,8 +3770,8 @@ msgid "Foldes the bloom of the city into the watered bar the smiths of other tow
 msgstr "Слиток города коётся в полосу с узором, которую просят кузнецы других городков."
 
 msgctxt "crafts.description"
-msgid "Grinds the resin—or the sandalwood oil—with charcoal into a powder for the hearth."
-msgstr "Измельчает смолу — или сандаловое масло — с углём в порошок для очага."
+msgid "Grinds a fragrant material with charcoal into a powder for the hearth."
+msgstr "Измельчает ароматическое сырьё с углём в порошок для очага."
 
 msgctxt "crafts.description"
 msgid "Makes a batch of weapons to defend the city."
@@ -4308,6 +4312,10 @@ msgstr "Конина"
 msgctxt "crafts.name"
 msgid "Incense"
 msgstr "Благовония"
+
+msgctxt "crafts.name"
+msgid "Sandalwood Oil"
+msgstr "Сандаловое масло"
 
 msgctxt "crafts.name"
 msgid "Indigo"
@@ -6902,6 +6910,10 @@ msgid "Unlocks the ability to grow water-loving crops: rice and taro.\nAllows fa
 msgstr "Открывает возможность возделывать влаголюбивые культуры: рис и таро.\nПозволяет фермам и плантациям передавать пресную воду по цепочке (до 3 гексов).\nПозволяет осушать болота."
 
 msgctxt "technologies.description"
+msgid "Unlocks sandalwood oil and attar: the perfumer's house distils heartwood and fragrant materials into oils."
+msgstr "Открывает сандаловое масло и аттар: парфюмерный дом перегоняет древесину и ароматическое сырьё в масла."
+
+msgctxt "technologies.description"
 msgid "Unlocks the recipe for hopped beer."
 msgstr "Открывает рецепт хмелевого пива."
 
@@ -7126,6 +7138,10 @@ msgid "This revolutionary invention made it possible to create an affordable, pr
 msgstr "Революционное изобретение позволило создать доступный и практичный материал для письма."
 
 msgctxt "technologies.flavor"
+msgid "To boil a liquid and to catch its breath in a cold vessel is to take the spirit of a thing and leave the thing behind. The still stood in the workshops of Alexandria and in the courts of the caliphate, and the physicians of Song China distilled the liquor of the millet. What came out of the alembic was worth more than what was poured into it."
+msgstr "Чтобы вскипятить жидкость и поймать её дыхание в холодном сосуде — значит взять дух вещи, оставив саму вещь. Перегонный куб стоял в мастерских Александрии и при дворах халифата, а в Китайской Сун перегоняли хлебную водку. То, что выходило из алембика, стоило дороже, чем то, что в него наливали."
+
+msgctxt "technologies.flavor"
 msgid "Vegetable oil became an important food and a source of light."
 msgstr "Растительное масло стало важным продуктом питания и основой для освещения."
 
@@ -7180,6 +7196,10 @@ msgstr "Сыроварение"
 msgctxt "technologies.name"
 msgid "Cog Wheel"
 msgstr "Зубчатое колесо"
+
+msgctxt "technologies.name"
+msgid "Distillation"
+msgstr "Дистилляция"
 
 msgctxt "technologies.name"
 msgid "Draft Animals"

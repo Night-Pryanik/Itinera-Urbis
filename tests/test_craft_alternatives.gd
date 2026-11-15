@@ -86,6 +86,44 @@ func _test_normalization(gd, state: Dictionary) -> void:
     check(recipe.size() == 2, "iron_tools has two AND-terms", state)
     check(recipe[0].size() == 2, "the first term of iron_tools is an OR-group", state)
 
+    for recipe_id in ["perfume", "attar"]:
+        var perfumery_recipe = gd.crafts.filter(
+            func(c): return str(c.get("id", "")) == recipe_id)[0]
+        var alternatives: Array = gd.craft_alternatives(perfumery_recipe)
+        var cinnamon_group: Array = []
+        for group in alternatives:
+            if group.any(func(variant): return str(variant.get("key", "")) == "cinnamon"):
+                cinnamon_group = group
+                break
+        check(cinnamon_group.size() > 1,
+            "%s accepts cinnamon as an optional fragrant material" % recipe_id, state)
+        if not cinnamon_group.is_empty():
+            check(str(cinnamon_group.back().get("key", "")) == "cinnamon",
+                "%s keeps cinnamon last among its fragrant materials" % recipe_id, state)
+
+    var incense_recipe = gd.crafts.filter(
+        func(c): return str(c.get("id", "")) == "incense")[0]
+    var incense_has_cinnamon := false
+    for group in gd.craft_alternatives(incense_recipe):
+        if group.any(func(variant): return str(variant.get("key", "")) == "cinnamon"):
+            incense_has_cinnamon = true
+    check(not incense_has_cinnamon, "incense does not use cinnamon", state)
+
+    var sandalwood_oil_recipes: Array = gd.crafts.filter(
+        func(c): return str(c.get("id", "")) == "sandalwood_oil")
+    check(sandalwood_oil_recipes.size() == 1, "sandalwood oil has one distillation recipe", state)
+    if sandalwood_oil_recipes.size() == 1:
+        var sandalwood_oil_recipe: Dictionary = sandalwood_oil_recipes[0]
+        var oil_ingredients: Array = gd.craft_alternatives(sandalwood_oil_recipe)
+        check(str(sandalwood_oil_recipe.get("unlock_tech", "")) == "distillation",
+            "sandalwood oil recipe requires distillation", state)
+        check(oil_ingredients.size() == 1 and str(oil_ingredients[0][0].get("key", "")) == "sandalwood",
+            "sandalwood oil is distilled from harvested sandalwood", state)
+    check(str(gd.products.get("sandalwood", {}).get("unlock_tech", "")) == "wood_processing",
+        "harvested sandalwood is available after wood processing", state)
+    check(str(gd.products.get("sandalwood_oil", {}).get("unlock_tech", "")) == "distillation",
+        "sandalwood oil is unavailable until distillation", state)
+
     # A non-positive and a missing amount are dropped.
     var filtered = gd.parse_craft_resources({"iron": 0, "charcoal": 10})
     check(filtered.size() == 1, "an amount of 0 does not create an ingredient", state)

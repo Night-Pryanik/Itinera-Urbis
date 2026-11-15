@@ -1,0 +1,14 @@
+{
+  "technologies": [
+    {
+      "id": "distillation",
+      "name": "Distillation",
+      "era": "medieval",
+      "science_cost": 5.0,
+      "icon": "distillation.png",
+      "prerequisites": [ [ "fermentation", "alchemy" ] ],
+      "description": "Unlocks sandalwood oil and attar: the perfumer's house distils heartwood and fragrant materials into oils.",
+      "flavor": "To boil a liquid and to catch its breath in a cold vessel is to take the spirit of a thing and leave the thing behind. The still stood in the workshops of Alexandria and in the courts of the caliphate, and the physicians of Song China distilled the liquor of the millet. What came out of the alembic was worth more than what was poured into it."
+    }
+  ]
+}

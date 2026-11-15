@@ -3706,7 +3706,7 @@ msgid "Cuts stone into plates, bowls, and cups."
 msgstr ""
 
 msgctxt "crafts.description"
-msgid "Dissolves the fragrant resin in oil and keeps the scent in a jar."
+msgid "Dissolves the fragrant material in oil and keeps the scent in a jar."
 msgstr ""
 
 msgctxt "crafts.description"
@@ -3718,7 +3718,11 @@ msgid "Distils tar out of resin."
 msgstr ""
 
 msgctxt "crafts.description"
-msgid "Distils the scent of the resin into a pure oil."
+msgid "Distils the scent of the fragrant material into a pure oil."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Distils fragrant oil from sandalwood heartwood."
 msgstr ""
 
 msgctxt "crafts.description"
@@ -3766,7 +3770,7 @@ msgid "Foldes the bloom of the city into the watered bar the smiths of other tow
 msgstr ""
 
 msgctxt "crafts.description"
-msgid "Grinds the resin—or the sandalwood oil—with charcoal into a powder for the hearth."
+msgid "Grinds a fragrant material with charcoal into a powder for the hearth."
 msgstr ""
 
 msgctxt "crafts.description"
@@ -4307,6 +4311,10 @@ msgstr ""
 
 msgctxt "crafts.name"
 msgid "Incense"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Sandalwood Oil"
 msgstr ""
 
 msgctxt "crafts.name"
@@ -6902,6 +6910,10 @@ msgid "Unlocks the ability to grow water-loving crops: rice and taro.\nAllows fa
 msgstr ""
 
 msgctxt "technologies.description"
+msgid "Unlocks sandalwood oil and attar: the perfumer's house distils heartwood and fragrant materials into oils."
+msgstr ""
+
+msgctxt "technologies.description"
 msgid "Unlocks the recipe for hopped beer."
 msgstr ""
 
@@ -7126,6 +7138,10 @@ msgid "This revolutionary invention made it possible to create an affordable, pr
 msgstr ""
 
 msgctxt "technologies.flavor"
+msgid "To boil a liquid and to catch its breath in a cold vessel is to take the spirit of a thing and leave the thing behind. The still stood in the workshops of Alexandria and in the courts of the caliphate, and the physicians of Song China distilled the liquor of the millet. What came out of the alembic was worth more than what was poured into it."
+msgstr ""
+
+msgctxt "technologies.flavor"
 msgid "Vegetable oil became an important food and a source of light."
 msgstr ""
 
@@ -7179,6 +7195,10 @@ msgstr ""
 
 msgctxt "technologies.name"
 msgid "Cog Wheel"
+msgstr ""
+
+msgctxt "technologies.name"
+msgid "Distillation"
 msgstr ""
 
 msgctxt "technologies.name"

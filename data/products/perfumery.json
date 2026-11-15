@@ -1,7 +1,5 @@
 {
-  // The resins of the perfumer's art and the goods made out of them. The resins are cut
-  // out of the bark of a living tree and hardened in the air; the tree gives them as it
-  // stands (see data/resources/plants/technical_plants.json).
+  // The aromatic materials of the perfumer's art and the goods made from them.
   "resources": [
     {
       "id": "frankincense",
@@ -22,6 +20,15 @@
       "icon": "myrrh.png"
     },
     {
+      "id": "sandalwood",
+      "price": 14,
+      "name": "Sandalwood",
+      "type": "product",
+      "category": "perfumery",
+      "unlock_tech": "wood_processing",
+      "icon": "sandalwood.png"
+    },
+    {
       "id": "perfume",
       "price": 50,
       "name": "Perfume",
@@ -31,8 +38,7 @@
       "icon": "perfume.png"
     },
     {
-      // The incense is the resin ground with charcoal: the raw gum is worth more than
-      // the gum alone, and it is sold as the product of the perfumer's art.
+      // Incense is a fragrant material ground with charcoal and sold as the perfumer's art.
       "id": "incense",
       "price": 45,
       "name": "Incense",
@@ -47,17 +53,17 @@
       "name": "Attar",
       "type": "product",
       "category": "perfumery",
-      "unlock_tech": "alchemy",
+      "unlock_tech": "distillation",
       "icon": "attar.png"
     },
     {
-      // Sandalwood oil pressed from the heartwood: a fragrant oil of the perfumer's art.
+      // Sandalwood oil distilled from the heartwood.
       "id": "sandalwood_oil",
       "price": 45,
       "name": "Sandalwood Oil",
       "type": "product",
       "category": "perfumery",
-      "unlock_tech": "wood_processing",
+      "unlock_tech": "distillation",
       "icon": "sandalwood.png"
     }
   ]
