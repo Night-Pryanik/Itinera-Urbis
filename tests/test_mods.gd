@@ -179,6 +179,8 @@ func _test_blacklist(state: Dictionary) -> void:
     check(not _game_data.products.has("green_vitriol"), "the third blacklisted product is removed", state)
     check(not _has_craft("green_vitriol"), "the third blacklisted recipe is removed", state)
     check(not _has_craft("ink_from_green_vitriol_galls"), "the recipe that spent the removed product is removed", state)
+    check(not _has_craft("sulfuric_acid_from_green_vitriol"),
+            "the recipe that spent the removed product is removed", state)
     check(_find_building("alchemist_house").is_empty(), "the blacklisted building is removed", state)
     check(_count_buildings("alchemist_house") == 0, "the blacklisted building leaves no trace", state)
     check(_has_craft("sulfuric_acid_from_sulfur"),

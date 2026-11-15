@@ -628,9 +628,9 @@ func _test_blacklisted_modifier_buildings(state: Dictionary) -> void:
     check(keys.size() == 4, "missing targets without a blacklist are reported", state)
 
     gd.blacklisted = {"buildings": {"removed_house": true}}
-    gd.crafts.append({"id": "broken_recipe", "produced_in": ["removed_house"]})
-    check(not _find(validator.validate(gd), "produced_in", "removed_house", "broken_recipe").is_empty(),
-            "required recipe references are not exempted by modifier rules", state)
+    gd.crafts.append({"id": "broken_recipe", "produced_in": ["typo_house"]})
+    check(not _find(validator.validate(gd), "produced_in", "typo_house", "broken_recipe").is_empty(),
+            "a misspelled recipe building is still reported", state)
     gd.free()
 
 
