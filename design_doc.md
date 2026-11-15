@@ -224,7 +224,7 @@ Its geography is fictional, its chronology is an approximate technological frame
 
 ### 3.3. Relief generation
 
-- Base land relief: **Voronoi + JFA**, densities and `target_cluster` **per type** in `map_config.terrain_config`.
+- Base land relief: **Voronoi** (a multi-source wave over the hex grid, so the boundaries are exact in the hex metric), densities and `target_cluster` **per type** in `map_config.terrain_config`.
 - `target_cluster` — the average size of a patch; smaller → finer clusters.
 - Guarantees around the city:
   - `CENTER_EXCLUSION_RADIUS` — impassable centres (lake/sea) are not placed nearby;

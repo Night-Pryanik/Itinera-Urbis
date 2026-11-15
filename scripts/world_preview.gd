@@ -53,6 +53,11 @@ const RIVER_COLOR := Color(0.36, 0.62, 0.90)
 const TITLE_COLOR := Color(0.90, 0.90, 0.90)
 const CAPTION_COLOR := Color(0.62, 0.62, 0.62)
 
+# The codes of the belts in the order they run from the pole to the equator: the order breaks a tie
+# of the belt votes of a cell, and a tie has to fall to the higher latitude as it falls to the
+# higher ground.
+const BELT_ORDER: Array[int] = [0, 1, 2, 3, 4]
+
 # The colours of the belts on the picture, from the pole to the equator. They are picked for the
 # picture and not for the game: the five belts have to be told apart at a glance, and the towns
 # (pale) and the city (gold) have to stay readable on every one of them.
@@ -77,8 +82,22 @@ const CELL_HILL := 5
 const CELL_MOUNTAIN := 6
 const CELL_WETLAND := 7
 
+# The same relief, cut into the stages the caller can run one at a time with a frame between them:
+# the picture of a huge map is the generator's own work on the whole map, and building it in one go
+# freezes the window of the new game for the whole of it.
+const RELIEF_STAGES: Array[String] = [
+    "counts", "hexes", "sea", "relief", "after_relief", "climate", "corridor"
+]
+
+# The kinds of a cell in the order a tie of their votes falls to: the higher ground wins, and the
+# water of a cell that reads as water is picked apart in the same way.
+const KIND_ORDER: Array[int] = [CELL_MOUNTAIN, CELL_HILL, CELL_WETLAND, CELL_LAND]
+const WATER_ORDER: Array[int] = [CELL_DEEP_SEA, CELL_SHALLOW_SEA, CELL_LAKE]
+
 const PADDING := 14.0
 const CAPTION_HEIGHT := 116.0
+const BUSY_VEIL_COLOR := Color(0.05, 0.06, 0.07, 0.55)
+const BUSY_TEXT_COLOR := Color(0.95, 0.93, 0.85)
 const MIN_SIDE := 30.0
 const TITLE_FONT_SIZE := 17
 const CAPTION_FONT_SIZE := 12
@@ -129,6 +148,9 @@ var town_count := 16
 
 var _picture: Dictionary = {}
 var _texture: ImageTexture = null
+# The picture of a huge map is built in stages, a frame apart (see WorldPreview.RELIEF_STAGES):
+# until it lands, the panel says so over the picture of the settings the player has left behind.
+var _busy := false
 var _panel := StyleBoxFlat.new()
 var _caption_layer: CaptionLayer
 
@@ -158,15 +180,20 @@ static func build(size: int, sea: Dictionary, preview_seed: int = 20261026,
 # The expensive half of the picture: the hexes of the world (see relief_tiles) averaged down to
 # the cells of the picture. The caller caches it by (size, sea, seed, climate), because the
 # rivers, the towns and the resource density do not change it.
+static func build_relief(size: int, sea: Dictionary, preview_seed: int = 20261026,
+        climate: String = ClimateLayout.CLIMATE_RANDOM) -> Dictionary:
+    return build_picture(relief_tiles(size, sea, preview_seed, climate), size)
+
+# The second half of the relief: the hexes averaged down to the cells of the picture. It is apart
+# from the hexes themselves because a huge map is built in stages (see begin_relief), and the stages
+# end here.
 #
 # A cell of the picture takes the majority kind of the hexes it covers; a tie goes to the higher
 # ground, so a mountain ridge is not averaged away into a plain. The beach is drawn where the
 # world has beach hexes and the cell touches the water of the picture.
-static func build_relief(size: int, sea: Dictionary, preview_seed: int = 20261026,
-        climate: String = ClimateLayout.CLIMATE_RANDOM) -> Dictionary:
+static func build_picture(tiles: Array, size: int) -> Dictionary:
     var grid := mini(maxi(size, 1), GRID_MAX)
     var city := int(size / 2.0)
-    var tiles := relief_tiles(size, sea, preview_seed, climate)
 
     var cells := PackedByteArray()
     cells.resize(grid * grid)
@@ -176,6 +203,14 @@ static func build_relief(size: int, sea: Dictionary, preview_seed: int = 2026102
     water.resize(grid * grid)
     var fallback := PackedByteArray()
     fallback.resize(grid * grid)
+    # The votes of a cell are counted per kind and per belt, and the kinds and the belts are a
+    # handful: the counters are arrays, not dictionaries, and they are reused by every cell of the
+    # picture. The kind of a terrain is resolved once per terrain, not once per hex.
+    var votes := PackedInt32Array()
+    votes.resize(CELL_WETLAND + 1)
+    var belt_votes := PackedInt32Array()
+    belt_votes.resize(ClimateLayout.BELTS.size())
+    var kind_of_terrain: Dictionary = {}
     var sea_cells := 0
     for cell_y in range(grid):
         var row_from := int(float(cell_y) * float(size) / float(grid))
@@ -183,15 +218,20 @@ static func build_relief(size: int, sea: Dictionary, preview_seed: int = 2026102
         for cell_x in range(grid):
             var col_from := int(float(cell_x) * float(size) / float(grid))
             var col_to := maxi(col_from + 1, int(float(cell_x + 1) * float(size) / float(grid)))
-            var votes := {}
-            var belt_votes := {}
+            votes.fill(0)
+            belt_votes.fill(0)
             var total := 0
             var wet := 0
             var beach_votes := 0
             for row in range(row_from, row_to):
                 for col in range(col_from, col_to):
-                    var code := _cell_code(str(tiles[row][col]["terrain"]))
-                    votes[code] = int(votes.get(code, 0)) + 1
+                    var tile: Dictionary = tiles[row][col]
+                    var terrain := str(tile["terrain"])
+                    var code: int = kind_of_terrain.get(terrain, -1)
+                    if code < 0:
+                        code = _cell_code(terrain)
+                        kind_of_terrain[terrain] = code
+                    votes[code] += 1
                     total += 1
                     if code == CELL_DEEP_SEA or code == CELL_SHALLOW_SEA:
                         sea_cells += 1
@@ -199,20 +239,17 @@ static func build_relief(size: int, sea: Dictionary, preview_seed: int = 2026102
                         wet += 1
                     elif code == CELL_BEACH:
                         beach_votes += 1
-                    var belt := maxi(0, ClimateLayout.BELTS.find(
-                            str(tiles[row][col].get("temperature", ""))))
-                    belt_votes[belt] = int(belt_votes.get(belt, 0)) + 1
+                    belt_votes[ClimateLayout.belt_code(str(tile.get("temperature", "")))] += 1
             var index := cell_y * grid + cell_x
             water[index] = 1 if wet * 2 >= total else 0
-            fallback[index] = _majority(votes,
-                    [CELL_MOUNTAIN, CELL_HILL, CELL_WETLAND, CELL_LAND])
+            fallback[index] = _majority(votes, KIND_ORDER)
             if water[index] == 1:
-                cells[index] = _majority(votes, [CELL_DEEP_SEA, CELL_SHALLOW_SEA, CELL_LAKE])
+                cells[index] = _majority(votes, WATER_ORDER)
             elif beach_votes > 0:
                 cells[index] = CELL_BEACH
             else:
                 cells[index] = fallback[index]
-            belts[index] = _majority(belt_votes, [0, 1, 2, 3, 4])
+            belts[index] = _majority(belt_votes, BELT_ORDER)
 
     # A beach only outlines a coast the picture actually draws: a block of hexes can hold beach
     # hexes of an inlet thinner than one cell, and that sand would float on dry land.
@@ -240,20 +277,69 @@ static func build_relief(size: int, sea: Dictionary, preview_seed: int = 2026102
 # picture leaves, and the world seeds itself before its first stage as well.
 static func relief_tiles(size: int, sea: Dictionary, preview_seed: int,
         climate: String) -> Array:
-    var city := int(size / 2.0)
+    var state := begin_relief(size, sea, preview_seed, climate)
+    for stage in range(RELIEF_STAGES.size()):
+        run_relief_stage(state, stage)
+    return finish_relief(state)
+
+# The start of a relief: the dice of the preview are pinned to its seed, and the generator is put
+# together. The state goes through run_relief_stage and ends in one of two ways — finish_relief for
+# a relief that is done, abort_relief for one that is dropped halfway. Either way the generator is
+# freed and the global dice are let go, so a build that never finishes leaves nothing behind.
+static func begin_relief(size: int, sea: Dictionary, preview_seed: int,
+        climate: String) -> Dictionary:
     seed(preview_seed)
     var generator := MapGenerator.new()
     generator.log_stages = false
-    var counts := generator.make_terrain_counts(size, size)
-    var tiles := generator.init_tile_data(size, size)
-    var mask := generator.apply_sea_mask(tiles, size, size, city, city, sea, false)
-    generator.generate_relief(tiles, size, size, city, city, counts)
-    generator.post_process_relief(tiles, size, size, mask, city, city)
-    generator.apply_climate(tiles, size, size, climate)
-    generator.ensure_outward_corridor(tiles, size, size, city, city)
-    generator.free()
-    randomize()
+    return {
+        "generator": generator,
+        "size": size,
+        "sea": sea,
+        "climate": climate,
+        "counts": {},
+        "tiles": [],
+        "mask": PackedByteArray(),
+    }
+
+# One stage of a relief: the same order the world runs its stages in (see MainMap._initialize_map).
+static func run_relief_stage(state: Dictionary, stage: int) -> void:
+    var generator = state["generator"]
+    var size: int = state["size"]
+    var city := int(size / 2.0)
+    match RELIEF_STAGES[stage]:
+        "counts":
+            state["counts"] = generator.make_terrain_counts(size, size)
+        "hexes":
+            state["tiles"] = generator.init_tile_data(size, size)
+        "sea":
+            state["mask"] = generator.apply_sea_mask(state["tiles"], size, size, city, city,
+                    state["sea"], false)
+        "relief":
+            generator.generate_relief(state["tiles"], size, size, city, city, state["counts"])
+        "after_relief":
+            generator.post_process_relief(state["tiles"], size, size, state["mask"], city, city)
+        "climate":
+            generator.apply_climate(state["tiles"], size, size, state["climate"])
+        "corridor":
+            generator.ensure_outward_corridor(state["tiles"], size, size, city, city)
+
+# The end of a relief: the hexes of the world, and the dice of the game randomized again — nothing
+# may depend on the state the picture leaves, and the world seeds itself before its first stage.
+static func finish_relief(state: Dictionary) -> Array:
+    var tiles: Array = state["tiles"]
+    _drop_relief(state)
     return tiles
+
+# A relief abandoned halfway, because the settings moved on while it was being built.
+static func abort_relief(state: Dictionary) -> void:
+    _drop_relief(state)
+
+static func _drop_relief(state: Dictionary) -> void:
+    var generator = state.get("generator", null)
+    if generator != null:
+        generator.free()
+    state.clear()
+    randomize()
 
 # The schematic main rivers over the water of the picture (see _build_rivers).
 static func build_rivers(picture: Dictionary, size: int, cfg: Dictionary,
@@ -290,11 +376,11 @@ static func _is_water_code(code: int) -> bool:
 
 # The majority of the votes; the order of the list breaks a tie, so the caller puts the kind it
 # wants to survive a tie first.
-static func _majority(votes: Dictionary, order: Array) -> int:
+static func _majority(votes: PackedInt32Array, order: Array) -> int:
     var best: int = order[order.size() - 1]
     var best_count := -1
     for code in order:
-        var count := int(votes.get(code, 0))
+        var count: int = votes[code]
         if count > best_count:
             best = code
             best_count = count
@@ -791,14 +877,24 @@ func set_world(size: int, towns: int, picture: Dictionary) -> void:
     town_count = towns
     _picture = picture
     _texture = _make_texture(picture)
+    set_busy(false)
+
+func set_busy(busy: bool) -> void:
+    if _busy == busy:
+        return
+    _busy = busy
     queue_redraw()
     _caption_layer.queue_redraw()
+
+# The room the picture is drawn in.
+func _area() -> Rect2:
+    return Rect2(PADDING, PADDING,
+            size.x - PADDING * 2.0, size.y - PADDING * 2.0 - CAPTION_HEIGHT)
 
 func _draw() -> void:
     draw_style_box(_panel, Rect2(Vector2.ZERO, size))
 
-    var area := Rect2(PADDING, PADDING,
-            size.x - PADDING * 2.0, size.y - PADDING * 2.0 - CAPTION_HEIGHT)
+    var area := _area()
     if area.size.x <= 0.0 or area.size.y <= 0.0:
         return
 
@@ -816,6 +912,8 @@ func _draw() -> void:
     _draw_rivers(square)
     _draw_towns(square)
     _draw_city(square)
+    if _busy:
+        draw_rect(square, BUSY_VEIL_COLOR)
 
 func _square(area: Rect2, side_in_hexes: int) -> Rect2:
     var full := minf(area.size.x, area.size.y)
@@ -944,6 +1042,19 @@ func _draw_caption(layer: Control) -> void:
             _facts_caption(), HORIZONTAL_ALIGNMENT_CENTER, width, CAPTION_FONT_SIZE,
             CAPTION_COLOR)
     _draw_legend(layer, font, title_y + float(CAPTION_FONT_SIZE) * 3.0 + 18.0)
+    if _busy:
+        _draw_busy_label(layer, font)
+
+# The word over the picture of the settings the player has left behind: the new picture is being
+# built, and the window is still answering.
+func _draw_busy_label(layer: Control, font: Font) -> void:
+    var area := _area()
+    if area.size.x <= 0.0 or area.size.y <= 0.0:
+        return
+    var centre := _square(area, map_size).get_center()
+    layer.draw_string(font, Vector2(0.0, centre.y + float(TITLE_FONT_SIZE) * 0.35),
+            tr("Generating relief..."), HORIZONTAL_ALIGNMENT_CENTER, layer.size.x, TITLE_FONT_SIZE,
+            BUSY_TEXT_COLOR)
 
 # What the picture cannot show itself: how much of the map the water takes and in which belt the
 # city stands. The two share one line, so the caption keeps its height.

@@ -232,26 +232,59 @@ static func reapply_sea_mask(tile_data: Array) -> void:
                 tile["cover"] = "none"
 
 
-static func _build_shallow_sea_mask(sea_mask: Array, rows: int, cols: int, max_depth: int) -> Array:
-    var shallow_mask: Array = []
+# The bit mask of the water, as a flat array: the loops below read it for every sea hex and for
+# every neighbour of it, and a flat bit is read without the dictionary of the hex.
+static func _flat_mask(mask: Array, rows: int, cols: int) -> PackedByteArray:
+    var flat := PackedByteArray()
+    flat.resize(rows * cols)
     for r in range(rows):
-        var row_arr: Array = []
-        row_arr.resize(cols)
-        row_arr.fill(false)
-        shallow_mask.append(row_arr)
+        var line: Array = mask[r]
+        var base := r * cols
+        for c in range(cols):
+            if line[c]:
+                flat[base + c] = 1
+    return flat
+
+
+# The shallows: a band of the given depth along the coast, the depth itself rolling per coastal hex
+# from the coast noise. Every coastal hex spreads its own depth over the water around it, so the
+# band is walked as a flood of its own from that hex.
+#
+# The walk is kept in flat arrays — the indices of the hexes, their distance from the start of the
+# walk and the stamp of the walk that has visited them — because a band of a giant map is thousands
+# of walks of a few hundred hexes each, and a dictionary of string keys per hex would cost more
+# than the water it describes. The stamp is what marks a hex as visited by the current walk, so the
+# arrays are allocated once for the whole band.
+static func _build_shallow_sea_mask(sea_mask: Array, rows: int, cols: int, max_depth: int) -> Array:
+    var sea := _flat_mask(sea_mask, rows, cols)
+    var shallow := PackedByteArray()
+    shallow.resize(rows * cols)
 
     var coast_noise := FastNoiseLite.new()
     coast_noise.noise_type = FastNoiseLite.TYPE_SIMPLEX
     coast_noise.seed = randi()
     coast_noise.frequency = 0.08
 
+    var cells := rows * cols
+    var visited := PackedInt32Array()
+    visited.resize(cells)
+    var distance := PackedInt32Array()
+    distance.resize(cells)
+    var queue := PackedInt32Array()
+    queue.resize(cells)
+    var neighbors := PackedInt32Array()
+    neighbors.resize(6)
+    var stamp := 0
+
     for r in range(rows):
         for c in range(cols):
-            if not sea_mask[r][c]:
+            var start := r * cols + c
+            if sea[start] == 0:
                 continue
             var is_coast := false
-            for neighbor in HexUtils.get_neighbors_odd_r(r, c, rows, cols):
-                if not sea_mask[neighbor.row][neighbor.col]:
+            var count := HexUtils.fill_neighbor_indices(r, c, rows, cols, neighbors)
+            for i in range(count):
+                if sea[neighbors[i]] == 0:
                     is_coast = true
                     break
             if not is_coast:
@@ -259,28 +292,38 @@ static func _build_shallow_sea_mask(sea_mask: Array, rows: int, cols: int, max_d
 
             var noise_value := 0.5 + 0.5 * coast_noise.get_noise_2d(float(r), float(c))
             var local_depth := 1 + int(round(noise_value * float(max_depth - 1)))
-            var queue: Array = [ {"row": r, "col": c, "depth": 1}]
-            var visited := {"%d,%d" % [r, c]: true}
-            var queue_index := 0
-            while queue_index < queue.size():
-                var current: Dictionary = queue[queue_index]
-                queue_index += 1
-                shallow_mask[current.row][current.col] = true
-                if current.depth >= local_depth:
+            stamp += 1
+            var head := 0
+            var tail := 1
+            queue[0] = start
+            visited[start] = stamp
+            distance[start] = 1
+            while head < tail:
+                var current := queue[head]
+                head += 1
+                shallow[current] = 1
+                var depth := distance[current]
+                if depth >= local_depth:
                     continue
-                for neighbor in HexUtils.get_neighbors_odd_r(current.row, current.col, rows, cols):
-                    if not sea_mask[neighbor.row][neighbor.col]:
+                var count_here := HexUtils.fill_neighbor_indices(current / cols, current % cols,
+                        rows, cols, neighbors)
+                for i in range(count_here):
+                    var neighbor := neighbors[i]
+                    if sea[neighbor] == 0 or visited[neighbor] == stamp:
                         continue
-                    var key := "%d,%d" % [neighbor.row, neighbor.col]
-                    if visited.has(key):
-                        continue
-                    visited[key] = true
-                    queue.append({
-                        "row": neighbor.row,
-                        "col": neighbor.col,
-                        "depth": current.depth + 1
-                    })
+                    visited[neighbor] = stamp
+                    distance[neighbor] = depth + 1
+                    queue[tail] = neighbor
+                    tail += 1
 
+    var shallow_mask: Array = []
+    for r in range(rows):
+        var row_arr: Array = []
+        row_arr.resize(cols)
+        var base := r * cols
+        for c in range(cols):
+            row_arr[c] = shallow[base + c] == 1
+        shallow_mask.append(row_arr)
     return shallow_mask
 
 
@@ -582,45 +625,63 @@ static func _hash_noise(row: int, col: int) -> float:
     return float((h & 0x7fffffff) % 10000) / 10000.0
 
 
-# Turns land adjacent to the sea into a beach (beach).
-static func _apply_beach(tile_data: Array, sea_mask: Array, rows: int, cols: int) -> void:
-    # The beach is formed only on land connected to the edge of the map. The areas
-    # enclosed by the sea keep the Voronoi relief and do not turn into marshes.
-    var edge_connected_land := []
-    for r in range(rows):
-        var row_arr = []
-        row_arr.resize(cols)
-        row_arr.fill(false)
-        edge_connected_land.append(row_arr)
-
-    var queue: Array = []
+# The land reachable from the edge of the map over land: the flat bits of the hexes that belong to
+# the mainland. The pieces of land the sea has cut off keep the Voronoi relief and are not the
+# coast the player walks out of. Both the beach and the lakes of the sea islands ask for it, and a
+# flood over the whole map is the most expensive thing either of them does, so it is walked once.
+static func _edge_connected_land(sea: PackedByteArray, rows: int, cols: int) -> PackedByteArray:
+    var land := PackedByteArray()
+    land.resize(rows * cols)
+    var queue := PackedInt32Array()
+    queue.resize(rows * cols)
+    var neighbors := PackedInt32Array()
+    neighbors.resize(6)
+    var head := 0
+    var tail := 0
     for r in range(rows):
         for c in range(cols):
             if r != 0 and r != rows - 1 and c != 0 and c != cols - 1:
                 continue
-            if sea_mask[r][c] or edge_connected_land[r][c]:
+            var index := r * cols + c
+            if sea[index] == 1 or land[index] == 1:
                 continue
-            edge_connected_land[r][c] = true
-            queue.append({"row": r, "col": c})
+            land[index] = 1
+            queue[tail] = index
+            tail += 1
 
-    var queue_index := 0
-    while queue_index < queue.size():
-        var current = queue[queue_index]
-        queue_index += 1
-        for n in HexUtils.get_neighbors_odd_r(current.row, current.col, rows, cols):
-            if sea_mask[n.row][n.col] or edge_connected_land[n.row][n.col]:
+    while head < tail:
+        var current := queue[head]
+        head += 1
+        var count := HexUtils.fill_neighbor_indices(current / cols, current % cols, rows, cols,
+                neighbors)
+        for i in range(count):
+            var neighbor := neighbors[i]
+            if sea[neighbor] == 1 or land[neighbor] == 1:
                 continue
-            edge_connected_land[n.row][n.col] = true
-            queue.append(n)
+            land[neighbor] = 1
+            queue[tail] = neighbor
+            tail += 1
+    return land
 
+
+# Turns land adjacent to the sea into a beach (beach).
+static func _apply_beach(tile_data: Array, sea_mask: Array, rows: int, cols: int) -> void:
+    # The beach is formed only on land connected to the edge of the map. The areas
+    # enclosed by the sea keep the Voronoi relief and do not turn into marshes.
+    var sea := _flat_mask(sea_mask, rows, cols)
+    var land := _edge_connected_land(sea, rows, cols)
+    var neighbors := PackedInt32Array()
+    neighbors.resize(6)
     for r in range(rows):
         for c in range(cols):
-            if sea_mask[r][c] or not edge_connected_land[r][c]:
+            var index := r * cols + c
+            if sea[index] == 1 or land[index] == 0:
                 continue
             # A land hex: we check whether there is a sea neighbour.
             var has_sea_neighbor := false
-            for n in HexUtils.get_neighbors_odd_r(r, c, rows, cols):
-                if sea_mask[n.row][n.col]:
+            var count := HexUtils.fill_neighbor_indices(r, c, rows, cols, neighbors)
+            for i in range(count):
+                if sea[neighbors[i]] == 1:
                     has_sea_neighbor = true
                     break
             if has_sea_neighbor:
@@ -632,36 +693,12 @@ static func _apply_beach(tile_data: Array, sea_mask: Array, rows: int, cols: int
 # enclosed by the sea with a plain. It is called BEFORE the check of the minimum
 # number of lakes on the map.
 static func replace_island_lakes(tile_data: Array, sea_mask: Array, rows: int, cols: int) -> void:
-    var edge_connected_land := []
-    for r in range(rows):
-        var row_arr = []
-        row_arr.resize(cols)
-        row_arr.fill(false)
-        edge_connected_land.append(row_arr)
-
-    var queue: Array = []
+    var sea := _flat_mask(sea_mask, rows, cols)
+    var land := _edge_connected_land(sea, rows, cols)
     for r in range(rows):
         for c in range(cols):
-            if r != 0 and r != rows - 1 and c != 0 and c != cols - 1:
-                continue
-            if sea_mask[r][c] or edge_connected_land[r][c]:
-                continue
-            edge_connected_land[r][c] = true
-            queue.append({"row": r, "col": c})
-
-    var queue_index := 0
-    while queue_index < queue.size():
-        var current = queue[queue_index]
-        queue_index += 1
-        for n in HexUtils.get_neighbors_odd_r(current.row, current.col, rows, cols):
-            if sea_mask[n.row][n.col] or edge_connected_land[n.row][n.col]:
-                continue
-            edge_connected_land[n.row][n.col] = true
-            queue.append(n)
-
-    for r in range(rows):
-        for c in range(cols):
-            if sea_mask[r][c] or edge_connected_land[r][c]:
+            var index := r * cols + c
+            if sea[index] == 1 or land[index] == 1:
                 continue
             if tile_data[r][c].get("terrain", "plain") == "lake":
                 tile_data[r][c]["terrain"] = "plain"
@@ -673,18 +710,24 @@ static func replace_island_lakes(tile_data: Array, sea_mask: Array, rows: int, c
 # is NOT affected — only the coastal zone. It is called AFTER the
 # sea/beach mask is applied (when terrain == "sea" and "beach" are already set).
 static func apply_sea_coast_marshes(tile_data: Array, rows: int, cols: int) -> void:
-    var sea_hexes: Array = []
+    var sea_hexes := PackedInt32Array()
     for r in range(rows):
         for c in range(cols):
-            if tile_data[r][c].get("terrain", "plain") in ["sea", "shallow_sea"]:
-                sea_hexes.append({"row": r, "col": c})
+            var terrain := str(tile_data[r][c].get("terrain", "plain"))
+            if terrain == "sea" or terrain == "shallow_sea":
+                sea_hexes.append(r * cols + c)
 
     # For the seas: the marshes are formed ONLY on the coast (the beach beach), and not on
     # the inner land of the islets. The beach is the coastal swamp zone.
+    var neighbors := PackedInt32Array()
+    neighbors.resize(6)
     for water in sea_hexes:
-        var neighbors = HexUtils.get_neighbors_odd_r(water.row, water.col, rows, cols)
-        for n in neighbors:
-            var t = tile_data[n.row][n.col]
+        var water_row := water / cols
+        var water_col := water % cols
+        var count := HexUtils.fill_neighbor_indices(water_row, water_col, rows, cols, neighbors)
+        for i in range(count):
+            var index := neighbors[i]
+            var t: Dictionary = tile_data[index / cols][index % cols]
             if t.get("terrain", "plain") != "beach":
                 continue
             if randf() < MARSH_CHANCE:

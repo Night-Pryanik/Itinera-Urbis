@@ -36,6 +36,8 @@ func _run() -> void:
         _test_world_agrees(state, 40, _sea("noise", [1, 4], false), "random")
     if WATCHDOG.wants_case("dry_world"):
         _test_world_agrees(state, 30, _sea("none", [0, 0], false), "cold")
+    if WATCHDOG.wants_case("staged"):
+        _test_stages_agree(state)
 
     WATCHDOG.report_skipped()
     if state["failed"]:
@@ -88,6 +90,40 @@ func _test_world_agrees(state: Dictionary, size: int, sea: Dictionary, climate: 
     check(differences.is_empty(),
             "the %s sea in the %s climate is the world hex for hex (%s)"
                     % [str(sea["mode"]), climate, "; ".join(differences)], state)
+
+# The stages of a relief are the relief itself: the window of the new game builds the picture of a
+# huge map one stage at a time, and the picture it lands on must be the one a single run gives,
+# because the world is compared with that one. A build abandoned halfway must leave nothing behind
+# either: its generator is freed and the dice are let go, so the build after it starts from the
+# same seed with the same numbers.
+func _test_stages_agree(state: Dictionary) -> void:
+    var size := 30
+    var sea := _sea("edge", [1, 2], true)
+    var climate := "mild"
+    var expected: Array = _preview.relief_tiles(size, sea, SEED, climate)
+
+    var abandoned: Dictionary = _preview.begin_relief(size, sea, SEED, climate)
+    for stage in range(2):
+        _preview.run_relief_stage(abandoned, stage)
+    _preview.abort_relief(abandoned)
+    check(abandoned.is_empty(), "an abandoned build forgets its state", state)
+
+    var build: Dictionary = _preview.begin_relief(size, sea, SEED, climate)
+    for stage in range(_preview.RELIEF_STAGES.size()):
+        _preview.run_relief_stage(build, stage)
+    var staged: Array = _preview.finish_relief(build)
+
+    var differences: Array[String] = []
+    for row in range(size):
+        for col in range(size):
+            for field in ["terrain", "climate", "temperature"]:
+                var run := str(expected[row][col].get(field, ""))
+                var stepped := str(staged[row][col].get(field, ""))
+                if run != stepped and differences.size() < 5:
+                    differences.append("%s (%d,%d): one run has %s, the stages %s"
+                            % [field, row, col, run, stepped])
+    check(differences.is_empty(),
+            "the stages of a picture are the picture itself (%s)" % "; ".join(differences), state)
 
 func check(condition: bool, message: String, state: Dictionary) -> void:
     if not condition:
