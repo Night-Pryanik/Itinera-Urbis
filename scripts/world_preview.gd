@@ -878,6 +878,8 @@ func set_world(size: int, towns: int, picture: Dictionary) -> void:
     _picture = picture
     _texture = _make_texture(picture)
     set_busy(false)
+    queue_redraw()
+    _caption_layer.queue_redraw()
 
 func set_busy(busy: bool) -> void:
     if _busy == busy:
