@@ -269,6 +269,24 @@
       "category": "household_items",
       "unlock_tech": "wood_processing",
       "icon": "glue.png"
+    },
+    {
+      "id": "furniture",
+      "price": 18,
+      "name": "Furniture",
+      "type": "product",
+      "category": "household_items",
+      "unlock_tech": "wood_processing",
+      "icon": "furniture.png"
+    },
+    {
+      "id": "luxury_furniture",
+      "price": 55,
+      "name": "Luxury Furniture",
+      "type": "product",
+      "category": "household_items",
+      "unlock_tech": "wood_processing",
+      "icon": "luxury_furniture.png"
     }
   ]
 }

@@ -97,7 +97,17 @@
       // rule covers any instrument from the @instruments group, taken greedily from the
       // cheapest member available (copper first, steel last).
       "resource": "@instruments",
-      "profession": [ "miner", "quarryman", "lumberjack", "farmer", "planter", "potter", "vinedresser", "blacksmith" ],
+      "profession": [ 
+        "miner",
+        "quarryman",
+        "lumberjack",
+        "farmer",
+        "planter",
+        "potter",
+        "vinedresser",
+        "blacksmith",
+        "furniture_maker"
+      ],
       "amount": 10,
       "interval": 10,
       "production_bonus": 0.25

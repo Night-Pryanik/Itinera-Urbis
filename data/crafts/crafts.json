@@ -400,6 +400,26 @@
       "time": 5.0,
       "unlock_tech": "wood_processing",
       "description": "Makes wooden barrels."
+    },
+    {
+      "id": "furniture",
+      "name": "Furniture",
+      "produced_in": [ "furniture_maker_house" ],
+      "resources": { "wood": 20 },
+      "result": { "furniture": 10 },
+      "time": 8.0,
+      "unlock_tech": "wood_processing",
+      "description": "Makes simple furniture from common timber."
+    },
+    {
+      "id": "luxury_furniture",
+      "name": "Luxury Furniture",
+      "produced_in": [ "furniture_maker_house" ],
+      "resources": { "@precious_woods": 20 },
+      "result": { "luxury_furniture": 5 },
+      "time": 14.0,
+      "unlock_tech": "wood_processing",
+      "description": "Makes fine furniture from precious hardwoods."
     }
   ]
 }

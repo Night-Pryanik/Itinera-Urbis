@@ -440,6 +440,18 @@
       "production_slots": 1.0,
       "unlock_tech": "sugar_making",
       "default_recipes": [ "sugar" ]
+    },
+    {
+      "id": "furniture_maker_house",
+      "name": "Furniture Maker's House",
+      "description": "A building where a furniture maker crafts furniture and luxury furniture from wood.",
+      "work_cost": 35,
+      "additional_cost": [ { "planks": 100 }, { "@processed_construction_materials": 50 } ],
+      "icon": "furniture_maker_house.png",
+      "profession": "furniture_maker",
+      "production_slots": 1.0,
+      "unlock_tech": "wood_processing",
+      "default_recipes": [ "furniture" ]
     }
   ]
 }

@@ -209,6 +209,12 @@
       "id": "weaver",
       "name": "Weaver",
       "description": "Weaves cloth, clothes and carpets from fibers."
+    },
+    {
+      "id": "furniture_maker",
+      "name": "Furniture Maker",
+      "icon": "furniture_maker.png",
+      "description": "Crafts furniture and luxury furniture from timber."
     }
   ]
 }

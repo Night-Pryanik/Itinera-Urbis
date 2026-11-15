@@ -3150,6 +3150,10 @@ msgid "Boils a sweet juice down to sugar."
 msgstr ""
 
 msgctxt "buildings.description"
+msgid "A building where a furniture maker crafts furniture and luxury furniture from wood."
+msgstr ""
+
+msgctxt "buildings.description"
 msgid "Brews various low-alcohol drinks by fermentation."
 msgstr ""
 
@@ -3379,6 +3383,10 @@ msgstr ""
 
 msgctxt "buildings.name"
 msgid "Sugar Boiler"
+msgstr ""
+
+msgctxt "buildings.name"
+msgid "Furniture Maker's House"
 msgstr ""
 
 msgctxt "buildings.name"
@@ -3931,6 +3939,14 @@ msgstr ""
 
 msgctxt "crafts.description"
 msgid "Makes wooden barrels."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Makes simple furniture from common timber."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Makes fine furniture from precious hardwoods."
 msgstr ""
 
 msgctxt "crafts.description"
@@ -4609,6 +4625,14 @@ msgctxt "crafts.name"
 msgid "Writing Set"
 msgstr ""
 
+msgctxt "crafts.name"
+msgid "Furniture"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Luxury Furniture"
+msgstr ""
+
 msgctxt "eras.name"
 msgid "Ancient"
 msgstr ""
@@ -4973,6 +4997,10 @@ msgctxt "product_groups.name"
 msgid "Writing Materials"
 msgstr ""
 
+msgctxt "product_groups.name"
+msgid "Precious Woods"
+msgstr ""
+
 msgctxt "professions.description"
 msgid "A pseudo-profession that covers the whole population of the city, including employed citizens."
 msgstr ""
@@ -5175,6 +5203,10 @@ msgstr ""
 
 msgctxt "professions.name"
 msgid "Weaver"
+msgstr ""
+
+msgctxt "professions.name"
+msgid "Furniture Maker"
 msgstr ""
 
 msgctxt "professions.name"
@@ -6195,6 +6227,14 @@ msgstr ""
 
 msgctxt "resources.name"
 msgid "Rubber"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Furniture"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Luxury Furniture"
 msgstr ""
 
 msgctxt "resources.name"

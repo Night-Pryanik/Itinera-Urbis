@@ -153,6 +153,13 @@
       "id": "instruments",
       "name": "Instruments",
       "products": [ "copper_tools", "bronze_tools", "iron_tools", "steel_tools" ]
+    },
+    {
+      // Furniture the citizens write off: the everyday piece goes first,
+      // the costly one last.
+      "id": "furniture",
+      "name": "Furniture",
+      "products": [ "furniture", "luxury_furniture" ]
     }
   ]
 }

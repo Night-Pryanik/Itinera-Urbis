@@ -3150,6 +3150,10 @@ msgid "Boils a sweet juice down to sugar."
 msgstr "Уваривает сладкий сок до сахара."
 
 msgctxt "buildings.description"
+msgid "A building where a furniture maker crafts furniture and luxury furniture from wood."
+msgstr "Здание, где мебельщик изготавливает простую и элитную мебель из древесины разных пород."
+
+msgctxt "buildings.description"
 msgid "Brews various low-alcohol drinks by fermentation."
 msgstr "Варка различных слабоалкогольных напитков путём ферментации."
 
@@ -3380,6 +3384,10 @@ msgstr "Дом мыловара"
 msgctxt "buildings.name"
 msgid "Sugar Boiler"
 msgstr "Сахароварня"
+
+msgctxt "buildings.name"
+msgid "Furniture Maker's House"
+msgstr "Дом мебельщика"
 
 msgctxt "buildings.name"
 msgid "Tanner's House"
@@ -3932,6 +3940,14 @@ msgstr "Варит вино из винограда"
 msgctxt "crafts.description"
 msgid "Makes wooden barrels."
 msgstr "Изготавливает деревянные бочки."
+
+msgctxt "crafts.description"
+msgid "Makes simple furniture from common timber."
+msgstr "Изготавливает простую мебель из обычной древесины."
+
+msgctxt "crafts.description"
+msgid "Makes fine furniture from precious hardwoods."
+msgstr "Изготавливает изящную мебель из ценных твёрдых пород древесины."
 
 msgctxt "crafts.description"
 msgid "Makes wooden tablets with a hollow filled with wax."
@@ -4609,6 +4625,14 @@ msgctxt "crafts.name"
 msgid "Writing Set"
 msgstr "Письменный набор"
 
+msgctxt "crafts.name"
+msgid "Furniture"
+msgstr "Мебель"
+
+msgctxt "crafts.name"
+msgid "Luxury Furniture"
+msgstr "Элитная мебель"
+
 msgctxt "eras.name"
 msgid "Ancient"
 msgstr "Древняя"
@@ -4973,6 +4997,10 @@ msgctxt "product_groups.name"
 msgid "Writing Materials"
 msgstr "Писчие материалы"
 
+msgctxt "product_groups.name"
+msgid "Precious Woods"
+msgstr "Ценные породы древесины"
+
 msgctxt "professions.description"
 msgid "A pseudo-profession that covers the whole population of the city, including employed citizens."
 msgstr "Псевдо-профессия: охватывает всё население города, включая занятых жителей."
@@ -5176,6 +5204,10 @@ msgstr "Виноградарь"
 msgctxt "professions.name"
 msgid "Weaver"
 msgstr "Ткач"
+
+msgctxt "professions.name"
+msgid "Furniture Maker"
+msgstr "Мебельщик"
 
 msgctxt "professions.name"
 msgid "Winemaker"
@@ -6196,6 +6228,14 @@ msgstr "Розы"
 msgctxt "resources.name"
 msgid "Rubber"
 msgstr "Каучук"
+
+msgctxt "resources.name"
+msgid "Furniture"
+msgstr "Мебель"
+
+msgctxt "resources.name"
+msgid "Luxury Furniture"
+msgstr "Элитная мебель"
 
 msgctxt "resources.name"
 msgid "Rye"
