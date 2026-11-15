@@ -236,6 +236,16 @@ Check it in the real window, not in a screenshot of the viewport: a viewport ren
 
 ---
 
+## The Active Pause and the Ticks of the Interface
+
+The active pause (the button in the corner and the space bar) stops the simulation but keeps the interface on the screen: the tree is paused and the nodes of the interface are switched to `PROCESS_MODE_ALWAYS`. `main_map._process` does NOT run then — it IS the simulation.
+
+A per-frame behavior of the interface therefore does not work from `main_map._process`: it silently freezes while the world is stopped. The polling of the cursor over the label of the treasury of the HUD lives in `main_map._process_treasury_tooltip`, and the mode forwards the tick to it from `active_pause._process` — the same way it forwards the tick of the input handler. A new per-frame behavior of the interface belongs to that forwarding.
+
+A tooltip of the HUD belongs to the interface of the map and must not outlive it: `hide_map_treasury_tooltip` is called on every change of the pause state (`main_map.apply_pause_state`), on the opening of the interface of the city and on the window of a learned technology.
+
+---
+
 ## The City: Historical, Geographical, and Cultural Context
 
 ### The Fundamental Principle

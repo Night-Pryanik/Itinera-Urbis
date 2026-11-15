@@ -567,25 +567,7 @@ func _process(delta):
     # The tooltip of the breakdown of the treasury by the sources of income/expense: polling + the sticking
     # (the logic repeats city_ui.gd — there the same thing for the tooltip over
     # TopFoodLabel; a single rhythm, a single delay building_detail_delay).
-    var mouse_pos_now: Vector2 = get_viewport().get_mouse_position()
-    var hovered_treasury := _is_treasury_hovered(mouse_pos_now)
-    var hovered_treasury_label := _is_treasury_label_hovered(mouse_pos_now)
-    if hovered_treasury:
-        _treasury_hover_leave_timer = 0.0
-        if hovered_treasury_label and not _treasury_locked:
-            _treasury_hover_timer += delta
-            if _treasury_hover_timer >= building_detail_delay:
-                _treasury_locked = _show_treasury_tooltip(mouse_pos_now)
-    else:
-        _treasury_hover_timer = 0.0
-        # The cursor has left the label and the tooltip: we hold the "stuck" panel for
-        # the grace window (the transition of the cursor onto the tooltip itself must not blink), then
-        # we remove the sticking and hide it. NOT return — below is the tick of the simulation.
-        _treasury_hover_leave_timer += delta
-        if not _treasury_locked or _treasury_hover_leave_timer >= MAP_TOOLTIP_LEAVE_GRACE:
-            _treasury_hover_leave_timer = 0.0
-            _treasury_locked = false
-            _map_ui_helpers.hide_treasury_tooltip()
+    _process_treasury_tooltip(delta)
 
     # The tick of the simulation of the towns: every discovered town adds its per-tick
     # rate to its warehouse. It runs on its OWN clock, several times slower than the

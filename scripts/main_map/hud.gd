@@ -503,6 +503,54 @@ func _show_treasury_tooltip(mouse_pos: Vector2, keep_position: bool = false) -> 
     var panel = _map_ui_helpers.treasury_tooltip_panel if is_instance_valid(_map_ui_helpers) else null
     return is_instance_valid(panel) and panel.visible
 
+# The polling of the cursor over the label of the treasury of the HUD: the tooltip of the
+# breakdown appears after the delay and "sticks" — the cursor can be moved onto the panel
+# itself, and the panel stands until the cursor leaves both of them.
+#
+# It is called from main_map._process (the tick of the simulation) and from the active
+# pause: the world stands still there, but the interface lives, and the player must be
+# able to read the breakdown of the treasury exactly as while the world is running.
+func _process_treasury_tooltip(delta: float) -> void:
+    _update_treasury_tooltip(delta, get_viewport().get_mouse_position())
+
+# The state machine of the tooltip of the breakdown of the treasury. The position of the
+# cursor is a parameter and is not read from the viewport here: the test must be able to
+# put the cursor where it needs it.
+func _update_treasury_tooltip(delta: float, mouse_pos: Vector2) -> void:
+    # The HUD is hidden while the interface of the city is open, and the menu of the pause
+    # covers the screen: the tooltip of the label has no place over them, and it must not
+    # hang there.
+    if not (hud and is_instance_valid(hud)) or not hud.visible \
+            or (pause_menu != null and pause_menu.visible):
+        hide_map_treasury_tooltip()
+        return
+    var hovered_treasury := _is_treasury_hovered(mouse_pos)
+    var hovered_treasury_label := _is_treasury_label_hovered(mouse_pos)
+    if hovered_treasury:
+        _treasury_hover_leave_timer = 0.0
+        if hovered_treasury_label and not _treasury_locked:
+            _treasury_hover_timer += delta
+            if _treasury_hover_timer >= building_detail_delay:
+                _treasury_locked = _show_treasury_tooltip(mouse_pos)
+    else:
+        _treasury_hover_timer = 0.0
+        # The cursor has left the label and the tooltip: we hold the "stuck" panel for
+        # the grace window (the transition of the cursor onto the tooltip itself must not
+        # blink), then we remove the sticking and hide it.
+        _treasury_hover_leave_timer += delta
+        if not _treasury_locked or _treasury_hover_leave_timer >= MAP_TOOLTIP_LEAVE_GRACE:
+            hide_map_treasury_tooltip()
+
+# Hides the tooltip of the breakdown of the treasury of the HUD and forgets the state of
+# the "sticking": the panel must not outlive the interface it belongs to (the pause, the
+# interface of the city).
+func hide_map_treasury_tooltip() -> void:
+    _treasury_hover_timer = 0.0
+    _treasury_hover_leave_timer = 0.0
+    _treasury_locked = false
+    if _map_ui_helpers and is_instance_valid(_map_ui_helpers):
+        _map_ui_helpers.hide_treasury_tooltip()
+
 # The tick handler: it updates the label of the treasury in the HUD with the display interval of the
 # resources. It is analogous to control_panel.on_city_updated and city_ui._refresh_light —
 # everything is subordinated to one era (CityData.resource_display_epoch), so that all

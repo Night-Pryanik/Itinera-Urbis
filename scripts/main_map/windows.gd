@@ -15,6 +15,9 @@ func open_city():
     city_ui.show()
     city_ui.show_resources_tab()
     hud.hide()
+    # The tooltip of the breakdown of the treasury hangs over the interface of the city
+    # otherwise: the HUD with its label is hidden, and the panel has no place here.
+    hide_map_treasury_tooltip()
     # The control panel of the hex is not needed while the interface of the city is open.
     control_panel.hide()
 
@@ -197,6 +200,8 @@ func _on_research_completed(tech_id: String):
     # so that the player cannot interact with the map and the HUD while the window is open.
     if tech_popup and tech_popup.has_method("show_tech"):
         get_tree().paused = true
+        # The window covers the map: the tooltip of the treasury must not stay over it.
+        hide_map_treasury_tooltip()
         tech_popup.show_tech(tech_id, CityData.last_research_messages)
     # The messages are passed into the popup — we clear them.
     CityData.last_research_messages = []
@@ -313,6 +318,9 @@ func apply_pause_state():
             or pause_menu.visible or journal_ui.visible \
             or (specialization_popup != null and specialization_popup.visible) \
             or (challenge_news_dialog != null and challenge_news_dialog.visible)
+    # The tooltip of the breakdown of the treasury belongs to the interface of the map:
+    # it must not hang over a stopped world (the pause, the menu, the journal).
+    hide_map_treasury_tooltip()
 
 # The journal is a window over the map: opening it stops the simulation, because the
 # player is reading, not playing. The pause flag itself is recomputed, not written: the

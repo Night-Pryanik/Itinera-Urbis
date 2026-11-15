@@ -74,6 +74,13 @@ func _process(delta: float) -> void:
     var handler = main_map.get_node_or_null("InputHandler")
     if handler != null and handler.has_method("handle_process"):
         handler.handle_process(delta)
+    # The polling of the cursor over the label of the treasury of the HUD lives in
+    # main_map._process too — and that one stands still with the simulation. The interface
+    # lives here, therefore the polling is forwarded as well: the player reads the breakdown
+    # of the treasury exactly as while the world is running, and a tooltip left over from
+    # before the pause does not hang over a stopped world.
+    if main_map.has_method("_process_treasury_tooltip"):
+        main_map._process_treasury_tooltip(delta)
 
 
 # --- THE MODE ---
