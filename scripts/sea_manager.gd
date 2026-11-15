@@ -675,7 +675,7 @@ static func _apply_beach(tile_data: Array, sea_mask: Array, rows: int, cols: int
     for r in range(rows):
         for c in range(cols):
             var index := r * cols + c
-            if sea[index] == 1 or land[index] == 1:
+            if sea[index] == 1 or land[index] == 0:
                 continue
             # A land hex: we check whether there is a sea neighbour.
             var has_sea_neighbor := false

@@ -238,7 +238,7 @@ func generate_relief(tile_data: Array, rows: int, cols: int, city_row: int, city
             centers.append({"r": r, "c": c, "terrain": terrain_id})
 
     var t_voronoi = Time.get_ticks_msec()
-    var voronoi = _build_voronoi(rows, cols, centers)
+    var voronoi: PackedInt32Array = _build_voronoi(rows, cols, centers)
     if log_stages:
         print("Voronoi stage: ", Time.get_ticks_msec() - t_voronoi, " ms")
     var center_terrain := PackedStringArray()
@@ -996,7 +996,8 @@ func _remove_small_zone_islands(tile_data: Array, rows: int, cols: int, min_size
             stack.append(start)
             visited[start] = 1
             while stack.size() > 0:
-                var cell := stack.pop_back()
+                var cell: int = stack[stack.size() - 1]
+                stack.resize(stack.size() - 1)
                 patch.append(cell)
                 var count := HexUtils.fill_neighbor_indices(cell / cols, cell % cols,
                         rows, cols, neighbors)
@@ -1028,7 +1029,8 @@ func _remove_small_zone_islands(tile_data: Array, rows: int, cols: int, min_size
             merged[start] = 1
             members[start] = 1
             while stack.size() > 0:
-                var cell := stack.pop_back()
+                var cell: int = stack[stack.size() - 1]
+                stack.resize(stack.size() - 1)
                 patch.append(cell)
                 var count := HexUtils.fill_neighbor_indices(cell / cols, cell % cols,
                         rows, cols, neighbors)
