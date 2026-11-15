@@ -5642,6 +5642,10 @@ msgid "Cuttlefish"
 msgstr "Каракатица"
 
 msgctxt "resources.name"
+msgid "Dalbergia"
+msgstr "Дальбергия"
+
+msgctxt "resources.name"
 msgid "Dates"
 msgstr "Финики"
 
@@ -5656,6 +5660,14 @@ msgstr "Утятина"
 msgctxt "resources.name"
 msgid "Ducks"
 msgstr "Утки"
+
+msgctxt "resources.name"
+msgid "Ebony"
+msgstr "Эбен"
+
+msgctxt "resources.name"
+msgid "Ebony Tree"
+msgstr "Эбеновое дерево"
 
 msgctxt "resources.name"
 msgid "Eggs"
@@ -5912,6 +5924,10 @@ msgstr "Марена"
 msgctxt "resources.name"
 msgid "Madder Root"
 msgstr "Корень марены"
+
+msgctxt "resources.name"
+msgid "Mahogany"
+msgstr "Махагони"
 
 msgctxt "resources.name"
 msgid "Malachite"
@@ -6226,6 +6242,10 @@ msgid "Roses"
 msgstr "Розы"
 
 msgctxt "resources.name"
+msgid "Rosewood"
+msgstr "Палисандр"
+
+msgctxt "resources.name"
 msgid "Rubber"
 msgstr "Каучук"
 
@@ -6408,6 +6428,10 @@ msgstr "Подсолнечник"
 msgctxt "resources.name"
 msgid "Sunflower Seeds"
 msgstr "Семена подсолнечника"
+
+msgctxt "resources.name"
+msgid "Swietenia"
+msgstr "Свитения"
 
 msgctxt "resources.name"
 msgid "Tar"
