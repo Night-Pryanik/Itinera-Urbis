@@ -616,6 +616,7 @@ const GAME_BALANCE_BLOCKS := {
     "breeding": {
         "livestock_breeding_cost": LEAF,
         "breeding_cycle_multiplier": LEAF,
+        "breeding_quality_interval_seconds": LEAF,
     },
     "expansion": {
         "expansion_cost_per_hex": LEAF,

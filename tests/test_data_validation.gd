@@ -409,7 +409,10 @@ func _test_schema_whitelist(state: Dictionary):
         # The breakage: a collection the loader does not read.
         "era_bonus": [{"id": "x"}],
         # The breakage: a constant that is not in its block (the block itself is right).
-        "game_balance": {"city": {"food_per_citizen": 1, "food_per_citizn": 2}},
+        "game_balance": {
+            "city": {"food_per_citizen": 1, "food_per_citizn": 2},
+            "breeding": {"breeding_quality_interval_seconds": 900},
+        },
     }
     # The origin of two of them: a record by its own id, a collection by "@key:<name>".
     gd.entity_sources = {
