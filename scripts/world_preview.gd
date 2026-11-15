@@ -1053,7 +1053,7 @@ func _draw_busy_label(layer: Control, font: Font) -> void:
         return
     var centre := _square(area, map_size).get_center()
     layer.draw_string(font, Vector2(0.0, centre.y + float(TITLE_FONT_SIZE) * 0.35),
-            tr("Generating..."), HORIZONTAL_ALIGNMENT_CENTER, layer.size.x, TITLE_FONT_SIZE,
+            tr("Generating relief..."), HORIZONTAL_ALIGNMENT_CENTER, layer.size.x, TITLE_FONT_SIZE,
             BUSY_TEXT_COLOR)
 
 # What the picture cannot show itself: how much of the map the water takes and in which belt the
