@@ -196,6 +196,7 @@ func _apply_marshes(tile_data: Array, rows: int, cols: int) -> void:
 func init_tile_data(rows: int, cols: int) -> Array:
     # Every hex is a copy of the empty one: the stages write into the hexes of the map, so a shared
     # record would move half the map at once.
+    var t_hexes = Time.get_ticks_msec()
     var empty_tile := {"terrain": "plain", "cover": "none", "resource": null, "improvement": null}
     var tile_data := []
     tile_data.resize(rows)
@@ -205,6 +206,8 @@ func init_tile_data(rows: int, cols: int) -> Array:
         for col in range(cols):
             col_array[col] = empty_tile.duplicate()
         tile_data[row] = col_array
+    if log_stages:
+        print("hexes stage: ", Time.get_ticks_msec() - t_hexes, " ms")
     return tile_data
 
 func apply_sea_mask(tile_data: Array, rows: int, cols: int, city_row: int, city_col: int,
@@ -255,6 +258,7 @@ func post_process_relief(tile_data: Array, rows: int, cols: int, sea_mask: Array
     # we re-apply the sea (by the flag _is_sea) and the beach (by the flag _is_beach),
     # so that they are not overwritten. It is done by SeaManager according to the flags set
     # at the apply_sea stage BEFORE the Voronoi.
+    var t_after = Time.get_ticks_msec()
     SeaManager.reapply_sea_mask(tile_data)
 
     # The sea islands must not consist of lakes: we replace the lakes in the land components
@@ -308,6 +312,8 @@ func post_process_relief(tile_data: Array, rows: int, cols: int, sea_mask: Array
     # It is performed AFTER the placement of the unique terrains and BEFORE the generation
     # of the cover and the resources.
     _ensure_plain_zone(tile_data, rows, cols, city_row, city_col, PLAIN_ZONE_RADIUS)
+    if log_stages:
+        print("after_relief stage: ", Time.get_ticks_msec() - t_after, " ms")
 
 func apply_climate_and_covers(tile_data: Array, rows: int, cols: int) -> void:
     apply_climate(tile_data, rows, cols)
@@ -369,7 +375,8 @@ func place_all_resources(tile_data: Array, raw_res: Dictionary, rows: int, cols:
     # of specimens is taken from spawn_count, the output on gathering — from produces.
     # The wild plants (wild_food) are placed separately (see place_wild_food).
     place_one_time_resources(tile_data, raw_res, rows, cols, city_row, city_col, hex_index)
-    print("resources stage: ", Time.get_ticks_msec() - t_res, " ms")
+    if log_stages:
+        print("resources stage: ", Time.get_ticks_msec() - t_res, " ms")
 
 func ensure_outward_corridor(tile_data: Array, rows: int, cols: int, city_row: int, city_col: int) -> void:
     # --- THE GUARANTEE OF A WAY OUT ---
@@ -377,7 +384,10 @@ func ensure_outward_corridor(tile_data: Array, rows: int, cols: int, city_row: i
     # been isolated by an impassable terrain, we lay a corridor of a plain
     # to the outside world. It is performed at the very end, so as to take into account all the already
     # placed marshes and unique lakes.
+    var t_corridor = Time.get_ticks_msec()
     _ensure_outward_corridor(tile_data, rows, cols, city_row, city_col)
+    if log_stages:
+        print("corridor stage: ", Time.get_ticks_msec() - t_corridor, " ms")
 
 func generate_map(rows: int, cols: int, city_row: int, city_col: int, raw_res: Dictionary, terrain_counts: Dictionary) -> Array:
     var t0 = Time.get_ticks_msec()
@@ -388,7 +398,8 @@ func generate_map(rows: int, cols: int, city_row: int, city_col: int, raw_res: D
     apply_climate_and_covers(tile_data, rows, cols)
     place_all_resources(tile_data, raw_res, rows, cols, city_row, city_col)
     ensure_outward_corridor(tile_data, rows, cols, city_row, city_col)
-    print("generate_map stage: ", Time.get_ticks_msec() - t0, " ms")
+    if log_stages:
+        print("generate_map stage: ", Time.get_ticks_msec() - t0, " ms")
     return tile_data
 
 # The universal function that places all the unique terrain types on the map.
