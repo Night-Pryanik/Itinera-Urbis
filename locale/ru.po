@@ -3938,6 +3938,10 @@ msgid "Presses oil from the seeds and fruits of oil crops."
 msgstr "Выжимает масло из семян и плодов масличных культур"
 
 msgctxt "crafts.description"
+msgid "Presses the apples and ferments the juice into cider."
+msgstr "Давит яблоки и сбраживает сок в сидр"
+
+msgctxt "crafts.description"
 msgid "Produces alum from alunite by roasting, leaching and crystallization."
 msgstr "Производит квасцы из алунита обжигом, выщелачиванием и кристаллизацией."
 
@@ -4164,6 +4168,10 @@ msgstr "Сыр"
 msgctxt "crafts.name"
 msgid "Chicken"
 msgstr "Курятина"
+
+msgctxt "crafts.name"
+msgid "Cider"
+msgstr "Сидр"
 
 msgctxt "crafts.name"
 msgid "Cinnabar"
@@ -5258,6 +5266,14 @@ msgid "Antimony Ore"
 msgstr "Сурьмяная руда"
 
 msgctxt "resources.name"
+msgid "Apple Tree"
+msgstr "Яблоня"
+
+msgctxt "resources.name"
+msgid "Apples"
+msgstr "Яблоки"
+
+msgctxt "resources.name"
 msgid "Arsenic"
 msgstr "Мышьяк"
 
@@ -5460,6 +5476,10 @@ msgstr "Нут"
 msgctxt "resources.name"
 msgid "Chili"
 msgstr "Чили"
+
+msgctxt "resources.name"
+msgid "Cider"
+msgstr "Сидр"
 
 msgctxt "resources.name"
 msgid "Cinnabar"

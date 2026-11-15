@@ -246,6 +246,16 @@
       "description": "Brews toddy from palm sap."
     },
     {
+      "id": "cider",
+      "name": "Cider",
+      "produced_in": [ "brewer_house" ],
+      "resources": { "apples": 20 },
+      "result": { "cider": 10 },
+      "time": 5.0,
+      "unlock_tech": "fermentation",
+      "description": "Presses the apples and ferments the juice into cider."
+    },
+    {
       "id": "wine",
       "name": "Grape Wine",
       "produced_in": [ "winemaker_house" ],

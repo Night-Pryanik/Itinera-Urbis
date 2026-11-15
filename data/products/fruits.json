@@ -54,6 +54,14 @@
       "type": "product",
       "category": "fruits",
       "icon": "carob_pods.png"
+    },
+    {
+      "id": "apples",
+      "price": 6,
+      "name": "Apples",
+      "type": "product",
+      "category": "fruits",
+      "icon": "apples.png"
     }
   ]
 }

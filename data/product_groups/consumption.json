@@ -32,7 +32,8 @@
         "agave",
         "pomegranates",
         "yucca_fruit",
-        "carob_pods"
+        "carob_pods",
+        "apples"
       ]
     },
     {
@@ -50,7 +51,7 @@
       // drawn by what is drunk, not by what is soured.
       "id": "alcohol",
       "name": "Alcohol",
-      "products": [ "beer", "mead", "sake", "pulque", "toddy", "wine", "fruit_wine", "hopped_beer", "carob_wine" ]
+      "products": [ "beer", "mead", "sake", "pulque", "toddy", "wine", "fruit_wine", "hopped_beer", "carob_wine", "cider" ]
     },
     {
       "id": "non_alcoholic_beverages",

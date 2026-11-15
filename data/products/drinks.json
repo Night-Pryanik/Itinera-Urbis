@@ -133,6 +133,15 @@
       "category": "drinks",
       "unlock_tech": "winemaking",
       "icon": "carob_wine.png"
+    },
+    {
+      "id": "cider",
+      "price": 15,
+      "name": "Cider",
+      "type": "product",
+      "category": "drinks",
+      "unlock_tech": "fermentation",
+      "icon": "cider.png"
     }
   ]
 }

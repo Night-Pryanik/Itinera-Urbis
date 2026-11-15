@@ -10,7 +10,7 @@
   "product_groups": [
     {
       "id": "alcohol",
-      "products": [ "beer", "mead", "sake", "pulque", "toddy", "hopped_beer" ]
+      "products": [ "beer", "mead", "sake", "pulque", "toddy", "hopped_beer", "cider" ]
     }
   ]
 }

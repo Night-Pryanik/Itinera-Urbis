@@ -3938,6 +3938,10 @@ msgid "Presses oil from the seeds and fruits of oil crops."
 msgstr ""
 
 msgctxt "crafts.description"
+msgid "Presses the apples and ferments the juice into cider."
+msgstr ""
+
+msgctxt "crafts.description"
 msgid "Produces alum from alunite by roasting, leaching and crystallization."
 msgstr ""
 
@@ -4163,6 +4167,10 @@ msgstr ""
 
 msgctxt "crafts.name"
 msgid "Chicken"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Cider"
 msgstr ""
 
 msgctxt "crafts.name"
@@ -5258,6 +5266,14 @@ msgid "Antimony Ore"
 msgstr ""
 
 msgctxt "resources.name"
+msgid "Apple Tree"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Apples"
+msgstr ""
+
+msgctxt "resources.name"
 msgid "Arsenic"
 msgstr ""
 
@@ -5459,6 +5475,10 @@ msgstr ""
 
 msgctxt "resources.name"
 msgid "Chili"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Cider"
 msgstr ""
 
 msgctxt "resources.name"
