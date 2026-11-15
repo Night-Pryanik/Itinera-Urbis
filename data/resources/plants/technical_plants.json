@@ -516,6 +516,70 @@
       "color": [ 175, 200, 120 ]
     },
     {
+      // Swietenia of the tropical forests: yields common timber alongside
+      // mahogany for fine furniture.
+      "id": "swietenia_tree", "price": 11,
+      "name": "Swietenia",
+      "type": "raw",
+      "category": "technical_plants",
+      "group": "technical_plants",
+      "subgroup": "technical_plants",
+      "tech_required": "wood_processing",
+      "allowed_terrain": [ "plain", "hill" ],
+      "allowed_cover": [
+        "tropical_rainforest", "tropical_rainforest_sparse",
+        "tropical_dry_forest", "tropical_dry_forest_sparse"
+      ],
+      "allowed_climate_zones": [ "tropical_dry", "tropical_wet" ],
+      "improved_by": "lumberjack_hut",
+      "produces": { "wood": 10, "mahogany": 10 },
+      "icon": "swietenia_tree.png",
+      "color": [ 165, 75, 55 ]
+    },
+    {
+      // Dalbergia of the tropical and humid subtropical forests: yields common
+      // timber alongside rosewood for fine furniture.
+      "id": "dalbergia_tree", "price": 12,
+      "name": "Dalbergia",
+      "type": "raw",
+      "category": "technical_plants",
+      "group": "technical_plants",
+      "subgroup": "technical_plants",
+      "tech_required": "wood_processing",
+      "allowed_terrain": [ "plain", "hill" ],
+      "allowed_cover": [
+        "tropical_rainforest", "tropical_rainforest_sparse",
+        "tropical_dry_forest", "tropical_dry_forest_sparse",
+        "temperate_rainforest", "temperate_rainforest_sparse"
+      ],
+      "allowed_climate_zones": [ "savanna_wet", "tropical_dry", "tropical_wet" ],
+      "improved_by": "lumberjack_hut",
+      "produces": { "wood": 10, "rosewood": 10 },
+      "icon": "dalbergia_tree.png",
+      "color": [ 120, 55, 75 ]
+    },
+    {
+      // Ebony tree of the tropical forests: yields common timber alongside
+      // dense black ebony for fine furniture.
+      "id": "ebony_tree", "price": 13,
+      "name": "Ebony Tree",
+      "type": "raw",
+      "category": "technical_plants",
+      "group": "technical_plants",
+      "subgroup": "technical_plants",
+      "tech_required": "wood_processing",
+      "allowed_terrain": [ "plain", "hill" ],
+      "allowed_cover": [
+        "tropical_rainforest", "tropical_rainforest_sparse",
+        "tropical_dry_forest", "tropical_dry_forest_sparse"
+      ],
+      "allowed_climate_zones": [ "tropical_dry", "tropical_wet" ],
+      "improved_by": "lumberjack_hut",
+      "produces": { "wood": 10, "ebony": 10 },
+      "icon": "ebony_tree.png",
+      "color": [ 65, 55, 55 ]
+    },
+    {
       "id": "velvetleaf_field", "price": 6,
       "name": "Velvetleaf",
       "type": "raw",

@@ -479,6 +479,32 @@
       "icon": "quebracho_wood.png"
     },
     {
+      // Precious tropical hardwoods of the "@precious_woods" group used for
+      // fine furniture.
+      "id": "mahogany", "price": 11,
+      "name": "Mahogany",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "wood_processing",
+      "icon": "mahogany.png"
+    },
+    {
+      "id": "rosewood", "price": 12,
+      "name": "Rosewood",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "wood_processing",
+      "icon": "rosewood.png"
+    },
+    {
+      "id": "ebony", "price": 13,
+      "name": "Ebony",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "wood_processing",
+      "icon": "ebony.png"
+    },
+    {
       "id": "resin", "price": 4,
       "name": "Resin",
       "type": "product",

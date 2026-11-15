@@ -5642,6 +5642,10 @@ msgid "Cuttlefish"
 msgstr ""
 
 msgctxt "resources.name"
+msgid "Dalbergia"
+msgstr ""
+
+msgctxt "resources.name"
 msgid "Dates"
 msgstr ""
 
@@ -5655,6 +5659,14 @@ msgstr ""
 
 msgctxt "resources.name"
 msgid "Ducks"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Ebony"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Ebony Tree"
 msgstr ""
 
 msgctxt "resources.name"
@@ -5911,6 +5923,10 @@ msgstr ""
 
 msgctxt "resources.name"
 msgid "Madder Root"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Mahogany"
 msgstr ""
 
 msgctxt "resources.name"
@@ -6226,6 +6242,10 @@ msgid "Roses"
 msgstr ""
 
 msgctxt "resources.name"
+msgid "Rosewood"
+msgstr ""
+
+msgctxt "resources.name"
 msgid "Rubber"
 msgstr ""
 
@@ -6407,6 +6427,10 @@ msgstr ""
 
 msgctxt "resources.name"
 msgid "Sunflower Seeds"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Swietenia"
 msgstr ""
 
 msgctxt "resources.name"

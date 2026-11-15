@@ -143,11 +143,11 @@
       "products": [ "oak_bark", "chestnut_bark", "walnuts", "galls", "campeche_wood", "sumac_leaves", "quebracho_wood", "alum" ]
     },
     {
-      // Precious hardwoods used for fine furniture: oak and maple.
+      // Precious hardwoods used for fine furniture: oak, maple, mahogany, rosewood and ebony.
       // The furniture maker takes whichever species is available in storage.
       "id": "precious_woods",
       "name": "Precious Woods",
-      "products": [ "oak_wood", "maple_wood" ]
+      "products": [ "oak_wood", "maple_wood", "mahogany", "rosewood", "ebony" ]
     }
   ]
 }
