@@ -163,17 +163,22 @@ func _default_density(terrain_id: String) -> float:
 const MARSH_CHANCE := 0.15
 
 func _apply_marshes(tile_data: Array, rows: int, cols: int) -> void:
-    var lake_hexes: Array = []
+    var lake_hexes := PackedInt32Array()
     for r in range(rows):
         for c in range(cols):
             if tile_data[r][c].get("terrain", "plain") == "lake":
-                lake_hexes.append({"row": r, "col": c})
+                lake_hexes.append(r * cols + c)
 
     # At the lakes: the marshes are formed on the surrounding plain (a ring around the lake).
+    var neighbors := PackedInt32Array()
+    neighbors.resize(6)
     for water in lake_hexes:
-        var neighbors = HexUtils.get_neighbors_odd_r(water.row, water.col, rows, cols)
-        for n in neighbors:
-            var t = tile_data[n.row][n.col]
+        var water_row := water / cols
+        var water_col := water % cols
+        var count := HexUtils.fill_neighbor_indices(water_row, water_col, rows, cols, neighbors)
+        for i in range(count):
+            var neighbor := neighbors[i]
+            var t: Dictionary = tile_data[neighbor / cols][neighbor % cols]
             if t.get("terrain", "plain") != "plain":
                 continue
             if randf() < MARSH_CHANCE:
@@ -224,16 +229,20 @@ func generate_relief(tile_data: Array, rows: int, cols: int, city_row: int, city
                         break
             centers.append({"r": r, "c": c, "terrain": terrain_id})
 
-    # Jump Flood Algorithm (JFA): we build the Voronoi diagram in O(n log n)
-    # instead of the naive O(n * centers). For a 200x200 map this is ~2.5 million operations
-    # instead of ~73 million, which speeds up the relief generation by tens of times.
-    var t_jfa = Time.get_ticks_msec()
-    var voronoi = _jump_flood_voronoi(rows, cols, centers)
+    var t_voronoi = Time.get_ticks_msec()
+    var voronoi = _build_voronoi(rows, cols, centers)
     if log_stages:
-        print("JFA stage: ", Time.get_ticks_msec() - t_jfa, " ms")
+        print("Voronoi stage: ", Time.get_ticks_msec() - t_voronoi, " ms")
+    var center_terrain := PackedStringArray()
+    center_terrain.resize(centers.size())
+    for ci in range(centers.size()):
+        center_terrain[ci] = str(centers[ci].terrain)
     for row in range(rows):
+        var base := row * cols
         for col in range(cols):
-            tile_data[row][col]["terrain"] = voronoi[row][col]
+            var ci := voronoi[base + col]
+            if ci >= 0:
+                tile_data[row][col]["terrain"] = center_terrain[ci]
 
 func post_process_relief(tile_data: Array, rows: int, cols: int, sea_mask: Array, city_row: int, city_col: int) -> void:
     # --- THE REPEATED APPLICATION OF THE SEA/BEACH MASK ---
@@ -393,15 +402,17 @@ func place_unique_terrains(tile_data: Array, rows: int, cols: int, city_row: int
     var inf_start_col: int = int(floor(city_col - ring_cols / 2.0))
     var inf_end_col: int = inf_start_col + ring_cols - 1
 
-    # We collect all the hexes outside the Ring that are not occupied by the city.
-    var candidates: Array = []
+    # We collect all the hexes outside the Ring that are not occupied by the city. They are the
+    # flat indices of the hexes: the type is placed once per world, and the list of a giant map is
+    # the whole map.
+    var candidates := PackedInt32Array()
     for r in range(rows):
         for c in range(cols):
             if r >= inf_start_row and r <= inf_end_row and c >= inf_start_col and c <= inf_end_col:
                 continue
             if r == city_row and c == city_col:
                 continue
-            candidates.append({"row": r, "col": c})
+            candidates.append(r * cols + c)
     if candidates.is_empty():
         print("ERROR place_unique_terrains: there are no hexes outside the Influence Ring!")
         return
@@ -414,20 +425,23 @@ func place_unique_terrains(tile_data: Array, rows: int, cols: int, city_row: int
         var cluster_size: int = randi_range(1, maxi(1, max_cluster_size))
 
         # A random start point within the allowed area.
-        var start = candidates[randi() % candidates.size()]
+        var start: int = candidates[randi() % candidates.size()]
 
         # BFS: we build a connected cluster of cluster_size hexes adjacent to the start.
-        var cluster: Array = [start]
+        var cluster := PackedInt32Array()
+        cluster.append(start)
         var visited := {}
-        visited["%d,%d" % [start.row, start.col]] = true
-        var frontier: Array = [start]
+        visited[start] = true
+        var frontier := PackedInt32Array()
+        frontier.append(start)
         while cluster.size() < cluster_size and frontier.size() > 0:
-            var next_frontier: Array = []
-            for hex in frontier:
-                var neighbors = HexUtils.get_neighbors_odd_r(hex.row, hex.col, rows, cols)
+            var next_frontier := PackedInt32Array()
+            for index in frontier:
+                var neighbors = HexUtils.get_neighbors_odd_r(index / cols, index % cols,
+                        rows, cols)
                 neighbors.shuffle()
                 for n in neighbors:
-                    var key = "%d,%d" % [n.row, n.col]
+                    var key: int = n.row * cols + n.col
                     if visited.has(key):
                         continue
                     if n.row >= inf_start_row and n.row <= inf_end_row and n.col >= inf_start_col and n.col <= inf_end_col:
@@ -435,8 +449,8 @@ func place_unique_terrains(tile_data: Array, rows: int, cols: int, city_row: int
                     if n.row == city_row and n.col == city_col:
                         continue
                     visited[key] = true
-                    cluster.append(n)
-                    next_frontier.append(n)
+                    cluster.append(key)
+                    next_frontier.append(key)
                     if cluster.size() >= cluster_size:
                         break
                 if cluster.size() >= cluster_size:
@@ -444,8 +458,8 @@ func place_unique_terrains(tile_data: Array, rows: int, cols: int, city_row: int
             frontier = next_frontier
 
         # We change the terrain to the unique one for the chosen hexes (only if there is no improvement there).
-        for hex in cluster:
-            var tile = tile_data[hex.row][hex.col]
+        for index in cluster:
+            var tile: Dictionary = tile_data[index / cols][index % cols]
             if tile.get("improvement", null) == null:
                 tile["terrain"] = terrain_type
                 tile["cover"] = _roll_cover(tile)
@@ -453,134 +467,47 @@ func place_unique_terrains(tile_data: Array, rows: int, cols: int, city_row: int
         if log_stages:
             print("The unique terrain type %s is placed: %d hexes" % [terrain_type, cluster.size()])
 
-# The Jump Flood Algorithm (JFA) for building the Voronoi diagram on
-# a hexagonal grid (odd-r). The complexity is O(rows * cols * log2(max(rows, cols)))
-# instead of the naive O(rows * cols * centers.size()).
-# It returns a 2D array of terrain_id for each cell.
-func _jump_flood_voronoi(rows: int, cols: int, centers: Array) -> Array:
-    # The grid of the indices of the nearest centres (-1 = empty).
-    var grid = []
-    for r in range(rows):
-        var row_arr = []
-        row_arr.resize(cols)
-        row_arr.fill(-1)
-        grid.append(row_arr)
-
-    # We precompute the q-coordinates of the centres (for a fast hex_distance).
-    var center_q = []
+# The Voronoi diagram of the relief: the nearest centre of every hex, as the flat array of the
+# indices of the centres (-1 for a hex of a map without centres).
+#
+# The hexes are taken in order of their distance from the centres: every centre starts its own wave
+# and a hex is claimed by the wave that reaches it first, which is the nearest centre — the
+# boundaries are therefore exact in the hex metric, not approximated. One wave covers the map, so
+# the walk costs a visit of every hex and its six neighbours, whatever the number of centres.
+func _build_voronoi(rows: int, cols: int, centers: Array) -> PackedInt32Array:
+    var cells := rows * cols
+    var owner := PackedInt32Array()
+    owner.resize(cells)
+    owner.fill(-1)
+    var queue := PackedInt32Array()
+    queue.resize(cells)
+    var neighbors := PackedInt32Array()
+    neighbors.resize(6)
+    var head := 0
+    var tail := 0
     for ci in range(centers.size()):
-        var center = centers[ci]
-        center_q.append(center.c - ((center.r - (center.r & 1)) >> 1))
-
-    # We place the centres on the grid.
-    for ci in range(centers.size()):
-        var center = centers[ci]
-        grid[center.r][center.c] = ci
-
-    # The initial step: the largest power of two not exceeding max(rows, cols).
-    var max_dim = maxi(rows, cols)
-    var step = 1
-    while step * 2 <= max_dim:
-        step *= 2
-
-    # The 8 directions of the JFA (a rectangular template).
-    var dirs = [
-        Vector2i(-1, -1), Vector2i(-1, 0), Vector2i(-1, 1),
-        Vector2i(0, -1), Vector2i(0, 1),
-        Vector2i(1, -1), Vector2i(1, 0), Vector2i(1, 1)
-    ]
-
-    # Double buffering (ping-pong), so that the information spreads
-    # exactly by one "jump" per iteration.
-    var read_grid = grid
-    var write_grid = []
-    for r in range(rows):
-        var row_arr = []
-        row_arr.resize(cols)
-        row_arr.fill(-1)
-        write_grid.append(row_arr)
-
-    while step >= 1:
-        for r in range(rows):
-            var q_base = (r - (r & 1)) >> 1
-            for c in range(cols):
-                var q = c - q_base
-                var best_ci = read_grid[r][c]
-                var best_dist = INF
-                if best_ci >= 0:
-                    var cr = centers[best_ci].r
-                    var cq = center_q[best_ci]
-                    best_dist = (abs(q - cq) + abs(r - cr) + abs((q + r) - (cq + cr))) >> 1
-                for d in dirs:
-                    var nr = r + d.x * step
-                    var nc = c + d.y * step
-                    if nr < 0 or nr >= rows or nc < 0 or nc >= cols:
-                        continue
-                    var neighbor_ci = read_grid[nr][nc]
-                    if neighbor_ci < 0:
-                        continue
-                    var ncr = centers[neighbor_ci].r
-                    var ncq = center_q[neighbor_ci]
-                    var dist3 = (abs(q - ncq) + abs(r - ncr) + abs((q + r) - (ncq + ncr))) >> 1
-                    if dist3 < best_dist:
-                        best_dist = dist3
-                        best_ci = neighbor_ci
-                write_grid[r][c] = best_ci
-        # We swap the buffers.
-        var tmp = read_grid
-        read_grid = write_grid
-        write_grid = tmp
-        step >>= 1
-
-    # The final pass over the 6 hexagonal neighbours: it removes the artefacts
-    # of the rectangular JFA template and brings the boundaries to the hexagonal metric.
-    var even_dirs = [
-        Vector2i(0, -1), Vector2i(0, 1),
-        Vector2i(-1, -1), Vector2i(-1, 0),
-        Vector2i(1, -1), Vector2i(1, 0)
-    ]
-    var odd_dirs = [
-        Vector2i(0, -1), Vector2i(0, 1),
-        Vector2i(-1, 0), Vector2i(-1, 1),
-        Vector2i(1, 0), Vector2i(1, 1)
-    ]
-    for r in range(rows):
-        var rdirs = even_dirs if r % 2 == 0 else odd_dirs
-        var q_base = (r - (r & 1)) >> 1
-        for c in range(cols):
-            var q = c - q_base
-            var best_ci = read_grid[r][c]
-            var best_dist = INF
-            if best_ci >= 0:
-                var cr = centers[best_ci].r
-                var cq = center_q[best_ci]
-                best_dist = (abs(q - cq) + abs(r - cr) + abs((q + r) - (cq + cr))) >> 1
-            for d in rdirs:
-                var nr = r + d.x
-                var nc = c + d.y
-                if nr < 0 or nr >= rows or nc < 0 or nc >= cols:
-                    continue
-                var nb_ci = read_grid[nr][nc]
-                if nb_ci < 0:
-                    continue
-                var nc_r = centers[nb_ci].r
-                var nc_q = center_q[nb_ci]
-                var dist4 = (abs(q - nc_q) + abs(r - nc_r) + abs((q + r) - (nc_q + nc_r))) >> 1
-                if dist4 < best_dist:
-                    best_dist = dist4
-                    best_ci = nb_ci
-            read_grid[r][c] = best_ci
-
-    # We turn the centre indices into terrain_id.
-    var result = []
-    for r in range(rows):
-        var row_arr = []
-        row_arr.resize(cols)
-        for c in range(cols):
-            var ci = read_grid[r][c]
-            row_arr[c] = centers[ci].terrain if ci >= 0 else "plain"
-        result.append(row_arr)
-    return result
+        var center: Dictionary = centers[ci]
+        var index := int(center.r) * cols + int(center.c)
+        # A centre cannot share a hex with another one; the first one placed keeps it.
+        if owner[index] != -1:
+            continue
+        owner[index] = ci
+        queue[tail] = index
+        tail += 1
+    while head < tail:
+        var current := queue[head]
+        head += 1
+        var current_owner := owner[current]
+        var count := HexUtils.fill_neighbor_indices(current / cols, current % cols, rows, cols,
+                neighbors)
+        for i in range(count):
+            var neighbor := neighbors[i]
+            if owner[neighbor] != -1:
+                continue
+            owner[neighbor] = current_owner
+            queue[tail] = neighbor
+            tail += 1
+    return owner
 
 # Returns true if the terrain type is impassable (move_cost >= 999).
 # Such types (the lakes: lake, soda_lake, asphalt_lake, salt_lake) block
@@ -589,11 +516,6 @@ func _is_impassable_terrain_id(terrain_id: String) -> bool:
     var t: Dictionary = GameData.terrains.get(terrain_id, {})
     return int(t.get("move_cost", 1)) >= 999
 
-# Returns true if the hex (row, col) is impassable.
-func _is_impassable_hex(tile_data: Array, row: int, col: int) -> bool:
-    var terrain_id = tile_data[row][col].get("terrain", "plain")
-    return _is_impassable_terrain_id(terrain_id)
-
 # Forcibly turns all the hexes within the radius `radius` around the city
 # into a plain without a cover. It resets the temporary flag _is_marsh.
 # It is called AFTER the placement of the unique terrains and BEFORE the climate, so that the zone
@@ -601,8 +523,15 @@ func _is_impassable_hex(tile_data: Array, row: int, col: int) -> bool:
 # is rolled later, together with the cover of every other hex.
 func _ensure_plain_zone(tile_data: Array, rows: int, cols: int,
         city_row: int, city_col: int, radius: int) -> void:
-    for r in range(rows):
-        for c in range(cols):
+    # Only the box around the city is walked: a hex further than `radius` rows away is further
+    # than `radius` in hexes as well, and the yard of the city is a dozen hexes of a map of
+    # thousands.
+    var row_from := maxi(0, city_row - radius - 1)
+    var row_to := mini(rows, city_row + radius + 2)
+    var col_from := maxi(0, city_col - radius - 2)
+    var col_to := mini(cols, city_col + radius + 3)
+    for r in range(row_from, row_to):
+        for c in range(col_from, col_to):
             if HexUtils.hex_distance(r, c, city_row, city_col) <= radius:
                 var tile = tile_data[r][c]
                 tile["terrain"] = "plain"
@@ -619,24 +548,60 @@ func _ensure_plain_zone(tile_data: Array, rows: int, cols: int,
 # (as is a lake), and the coast (beach, move_cost: 1) is a valid exit.
 # It repeats until the city gets an exit to the edge of the map
 # (or until it hits the limit of the iterations).
+#
+# The walks are kept in flat arrays: the hexes are numbered row * cols + col, the visited set of a
+# walk is a byte per hex, and the queue is an array read by an index. A walk of this stage covers
+# the whole land of the map, which on a giant map is tens of thousands of hexes, so a dictionary of
+# string keys or a queue whose head is taken from its front would cost more than the walk itself.
+# The terrain is read into `blocked` once per iteration: it does not change until the corridor of
+# that iteration is laid.
 func _ensure_outward_corridor(tile_data: Array, rows: int, cols: int,
         city_row: int, city_col: int) -> void:
+    var cells := rows * cols
+    var neighbors := PackedInt32Array()
+    neighbors.resize(6)
+    var blocked := PackedByteArray()
+    blocked.resize(cells)
+    var impassable := {}
+    var reachable := PackedByteArray()
+    reachable.resize(cells)
+    var order := PackedInt32Array()
+    var queue := PackedInt32Array()
+    var from := PackedInt32Array()
+    from.resize(cells)
+    var from_set := PackedByteArray()
+    from_set.resize(cells)
+
     for _iter in range(10):
+        # 0) The impassable hexes of the current relief.
+        for r in range(rows):
+            var base := r * cols
+            for c in range(cols):
+                var terrain_id := str(tile_data[r][c].get("terrain", "plain"))
+                if not impassable.has(terrain_id):
+                    impassable[terrain_id] = _is_impassable_terrain_id(terrain_id)
+                blocked[base + c] = 1 if impassable[terrain_id] else 0
+
         # 1) The area reachable from the city over the passable hexes.
-        var reachable := {}
-        var key_city = "%d,%d" % [city_row, city_col]
-        reachable[key_city] = true
-        var queue: Array = [ {"row": city_row, "col": city_col}]
-        while queue.size() > 0:
-            var cur = queue.pop_front()
-            for n in HexUtils.get_neighbors_odd_r(cur.row, cur.col, rows, cols):
-                var nk = "%d,%d" % [n.row, n.col]
-                if reachable.has(nk):
+        reachable.fill(0)
+        order.clear()
+        queue.clear()
+        var city_index := city_row * cols + city_col
+        reachable[city_index] = 1
+        queue.append(city_index)
+        var head := 0
+        while head < queue.size():
+            var current := queue[head]
+            head += 1
+            order.append(current)
+            var count := HexUtils.fill_neighbor_indices(current / cols, current % cols,
+                    rows, cols, neighbors)
+            for i in range(count):
+                var neighbor := neighbors[i]
+                if reachable[neighbor] == 1 or blocked[neighbor] == 1:
                     continue
-                if _is_impassable_hex(tile_data, n.row, n.col):
-                    continue
-                reachable[nk] = true
-                queue.append(n)
+                reachable[neighbor] = 1
+                queue.append(neighbor)
 
         # 2) If the city has reached a passable edge of the map — the exit exists.
         if _has_exit_to_edge(reachable, rows, cols):
@@ -644,81 +609,76 @@ func _ensure_outward_corridor(tile_data: Array, rows: int, cols: int,
 
         # 3) We look for a water way from the reachable area to the nearest outer
         #    passable hex. The BFS starts from all the impassable neighbours of A.
-        var from := {}
-        var water_queue: Array = []
-        for key in reachable:
-            var parts = key.split(",")
-            var r = int(parts[0])
-            var c = int(parts[1])
-            for n in HexUtils.get_neighbors_odd_r(r, c, rows, cols):
-                var nk = "%d,%d" % [n.row, n.col]
-                if reachable.has(nk):
+        from.fill(-1)
+        from_set.fill(0)
+        queue.clear()
+        for current in order:
+            var count := HexUtils.fill_neighbor_indices(current / cols, current % cols,
+                    rows, cols, neighbors)
+            for i in range(count):
+                var neighbor := neighbors[i]
+                if reachable[neighbor] == 1 or blocked[neighbor] == 0:
                     continue
-                if not _is_impassable_hex(tile_data, n.row, n.col):
+                if from_set[neighbor] == 1:
                     continue
-                if not from.has(nk):
-                    from[nk] = key
-                    water_queue.append({"row": n.row, "col": n.col})
+                from_set[neighbor] = 1
+                from[neighbor] = current
+                queue.append(neighbor)
 
-        var target_key := ""
+        var target := -1
         var qi := 0
-        while qi < water_queue.size() and target_key == "":
-            var cur = water_queue[qi]
+        while qi < queue.size() and target < 0:
+            var current := queue[qi]
             qi += 1
-            var ck = "%d,%d" % [cur.row, cur.col]
-            for n in HexUtils.get_neighbors_odd_r(cur.row, cur.col, rows, cols):
-                var nk = "%d,%d" % [n.row, n.col]
-                if from.has(nk):
+            var count := HexUtils.fill_neighbor_indices(current / cols, current % cols,
+                    rows, cols, neighbors)
+            for i in range(count):
+                var neighbor := neighbors[i]
+                if from_set[neighbor] == 1:
                     continue
-                if _is_impassable_hex(tile_data, n.row, n.col):
-                    from[nk] = ck
-                    water_queue.append({"row": n.row, "col": n.col})
-                else:
-                    if not reachable.has(nk):
-                        target_key = nk
-                        from[nk] = ck
-                        break
+                if blocked[neighbor] == 1:
+                    from_set[neighbor] = 1
+                    from[neighbor] = current
+                    queue.append(neighbor)
+                elif reachable[neighbor] == 0:
+                    target = neighbor
+                    from_set[neighbor] = 1
+                    from[neighbor] = current
+                    break
 
-        if target_key == "":
+        if target < 0:
             # We have not found an outer passable hex (the whole world is water/islands).
             # We lay a corridor directly to the edge of the map through the water.
-            if not _punch_corridor_to_edge(tile_data, rows, cols, city_row, city_col, reachable):
+            if not _punch_corridor_to_edge(tile_data, rows, cols, reachable, order, blocked):
                 return
-
-        # 4) We restore the path: the impassable hexes are turned into a plain.
-        if target_key != "":
-            var step = target_key
+        else:
+            # 4) We restore the path: the impassable hexes are turned into a plain.
+            var step := target
             while true:
-                var prev = from.get(step, "")
-                if prev == "":
+                var prev := from[step]
+                if prev < 0 or reachable[prev] == 1:
                     break
-                if reachable.has(prev):
-                    break
-                _punch_hex(tile_data, prev)
+                _punch_hex(tile_data, prev, cols)
                 step = prev
 
 # Returns true if at least one hex of the reachable area is on the edge of the map.
-func _has_exit_to_edge(reachable: Dictionary, rows: int, cols: int) -> bool:
-    for r in [0, rows - 1]:
-        for c in range(cols):
-            if reachable.has("%d,%d" % [r, c]):
-                return true
-    for c in [0, cols - 1]:
-        for r in range(rows):
-            if reachable.has("%d,%d" % [r, c]):
-                return true
+func _has_exit_to_edge(reachable: PackedByteArray, rows: int, cols: int) -> bool:
+    var last_row := (rows - 1) * cols
+    for c in range(cols):
+        if reachable[c] == 1 or reachable[last_row + c] == 1:
+            return true
+    for r in range(rows):
+        if reachable[r * cols] == 1 or reachable[r * cols + cols - 1] == 1:
+            return true
     return false
 
-# Turns the hex (key "r,c") into a plain without a cover.
+# Turns the hex with the flat index `index` into a plain without a cover.
 # It is used for laying the exit corridor through the impassable hexes
 # (the lakes and the seas). It resets the temporary flags _is_marsh and _is_sea.
 # The corridor is laid after the climate, so the plain is resolved through the zone of the hex:
 # a corridor through the boreal zone is a boreal plain, not a green plain in the middle of the north.
-func _punch_hex(tile_data: Array, key: String) -> void:
-    var parts = key.split(",")
-    var r = int(parts[0])
-    var c = int(parts[1])
-    var tile = tile_data[r][c]
+func _punch_hex(tile_data: Array, index: int, cols: int) -> void:
+    var tile: Dictionary = tile_data[index / cols][index % cols]
     var zone_id := str(tile.get("climate", ""))
     var terrain_id := GameData.zone_terrain(zone_id, "plain")
     tile["terrain"] = terrain_id if terrain_id != "" else "plain"
@@ -731,47 +691,58 @@ func _punch_hex(tile_data: Array, key: String) -> void:
 # Lays a corridor from the reachable area directly to the edge of the map through
 # the impassable hexes. It returns true if the corridor has been laid.
 func _punch_corridor_to_edge(tile_data: Array, rows: int, cols: int,
-        _city_row: int, _city_col: int, reachable: Dictionary) -> bool:
-    var from := {}
-    var queue: Array = []
-    for key in reachable:
-        var parts = key.split(",")
-        var r = int(parts[0])
-        var c = int(parts[1])
-        for n in HexUtils.get_neighbors_odd_r(r, c, rows, cols):
-            var nk = "%d,%d" % [n.row, n.col]
-            if reachable.has(nk):
+        reachable: PackedByteArray, order: PackedInt32Array,
+        blocked: PackedByteArray) -> bool:
+    var cells := rows * cols
+    var from := PackedInt32Array()
+    from.resize(cells)
+    from.fill(-1)
+    var from_set := PackedByteArray()
+    from_set.resize(cells)
+    var neighbors := PackedInt32Array()
+    neighbors.resize(6)
+    var queue := PackedInt32Array()
+    for current in order:
+        var count := HexUtils.fill_neighbor_indices(current / cols, current % cols,
+                rows, cols, neighbors)
+        for i in range(count):
+            var neighbor := neighbors[i]
+            if reachable[neighbor] == 1 or blocked[neighbor] == 0:
                 continue
-            if not _is_impassable_hex(tile_data, n.row, n.col):
+            if from_set[neighbor] == 1:
                 continue
-            if not from.has(nk):
-                from[nk] = key
-                queue.append({"row": n.row, "col": n.col})
+            from_set[neighbor] = 1
+            from[neighbor] = current
+            queue.append(neighbor)
     var qi := 0
-    var target_key := ""
-    while qi < queue.size() and target_key == "":
-        var cur = queue[qi]
+    var target := -1
+    while qi < queue.size() and target < 0:
+        var current := queue[qi]
         qi += 1
-        var ck = "%d,%d" % [cur.row, cur.col]
-        if cur.row == 0 or cur.row == rows - 1 or cur.col == 0 or cur.col == cols - 1:
-            target_key = ck
+        var current_row := current / cols
+        var current_col := current % cols
+        if current_row == 0 or current_row == rows - 1 or current_col == 0 or current_col == cols - 1:
+            target = current
             break
-        for n in HexUtils.get_neighbors_odd_r(cur.row, cur.col, rows, cols):
-            var nk = "%d,%d" % [n.row, n.col]
-            if from.has(nk):
+        var count := HexUtils.fill_neighbor_indices(current_row, current_col, rows, cols,
+                neighbors)
+        for i in range(count):
+            var neighbor := neighbors[i]
+            if from_set[neighbor] == 1:
                 continue
-            if not _is_impassable_hex(tile_data, n.row, n.col):
+            if blocked[neighbor] == 0:
                 continue
-            from[nk] = ck
-            queue.append({"row": n.row, "col": n.col})
-    if target_key == "":
+            from_set[neighbor] = 1
+            from[neighbor] = current
+            queue.append(neighbor)
+    if target < 0:
         return false
     # We lay the path from the target edge impassable cell back to A.
-    var step = target_key
+    var step := target
     while true:
-        _punch_hex(tile_data, step)
-        var prev = from.get(step, "")
-        if prev == "" or reachable.has(prev):
+        _punch_hex(tile_data, step, cols)
+        var prev := from[step]
+        if prev < 0 or reachable[prev] == 1:
             break
         step = prev
     return true
@@ -862,17 +833,33 @@ func _apply_climate(tile_data: Array, rows: int, cols: int, chosen: String = "")
     var moisture_threshold := float(cfg.get("moisture_threshold", 0.5))
     var moisture_salt := randi()
 
-    var lookup := _zone_lookup()
+    # The zone of a belt and a humidity, ready to be read per hex: a map of a giant size asks for
+    # it forty thousand times, and a lookup that builds a string key would cost more than the
+    # climate it resolves.
+    var zone_of_belt := _zone_lookup()
+    # The zone for a belt that has none at all: the first zone of the data, as the fallback of the
+    # lookup has always been.
+    var fallback_zones: Array = ["", ""]
+    if not zone_of_belt.is_empty():
+        var first_zone := str(GameData.climate_zones.keys()[0])
+        fallback_zones = [first_zone, first_zone]
+    var impassable := {}
     for r in range(rows):
+        var base := r * cols
         for c in range(cols):
-            var temperature := ClimateLayout.belt_name(belts[r * cols + c])
-            tile_data[r][c]["temperature"] = temperature
-            if _is_impassable_terrain_id(tile_data[r][c].get("terrain", "")):
+            var index := base + c
+            var temperature: String = ClimateLayout.BELTS[belts[index]]
+            var tile: Dictionary = tile_data[r][c]
+            tile["temperature"] = temperature
+            var terrain_id := str(tile.get("terrain", ""))
+            if not impassable.has(terrain_id):
+                impassable[terrain_id] = _is_impassable_terrain_id(terrain_id)
+            if impassable[terrain_id]:
                 continue
             var moisture := ClimateLayout.fbm(float(r) / moisture_scale, float(c) / moisture_scale,
                     moisture_salt, 2, 0.35)
-            var humidity := HUMIDITY_WET if moisture >= moisture_threshold else HUMIDITY_DRY
-            tile_data[r][c]["climate"] = _pick_zone(lookup, temperature, humidity)
+            var zones: Array = zone_of_belt.get(temperature, fallback_zones)
+            tile["climate"] = zones[0] if moisture >= moisture_threshold else zones[1]
 
 # Turns the families the Voronoi placed into the varieties of their climate zone: every plain
 # becomes the plain of its belt (a tundra plain, a boreal plain, a steppe, a prairie, a savanna, a
@@ -880,38 +867,50 @@ func _apply_climate(tile_data: Array, rows: int, cols: int, chosen: String = "")
 # belt and the marsh becomes the mudflat of its belt. The water and the deserts have no family
 # and stay as they are.
 func _convert_families(tile_data: Array, rows: int, cols: int) -> void:
+    # The terrain of a (zone, family) pair is resolved once and remembered: the pairs of a map are
+    # a handful, while the hexes are tens of thousands.
+    var resolved: Dictionary = {}
     for r in range(rows):
         for c in range(cols):
-            var tile = tile_data[r][c]
+            var tile: Dictionary = tile_data[r][c]
             var family := str(tile.get("terrain", ""))
             if not CLIMATE_FAMILIES.has(family):
                 continue
-            var terrain_id := GameData.zone_terrain(str(tile.get("climate", "")), family)
+            var zone_id := str(tile.get("climate", ""))
+            var of_zone: Dictionary = resolved.get(zone_id, {})
+            if not of_zone.has(family):
+                of_zone[family] = GameData.zone_terrain(zone_id, family)
+                resolved[zone_id] = of_zone
+            var terrain_id: String = of_zone[family]
             if terrain_id != "":
                 tile["terrain"] = terrain_id
 
-# The pairs (temperature, humidity) → the zone id. The first zone of a pair wins, so a mod that
-# adds a second zone for an occupied pair has to override the vanilla record instead.
+# The zone of every belt, ready to be read by the humidity: {temperature: [wet zone, dry zone]}.
+# The first zone of a (temperature, humidity) pair wins, so a mod that adds a second zone for an
+# occupied pair has to override the vanilla record instead.
+#
+# A pair with no zone is a data problem (data_validator reports it): the generator falls back to
+# the first zone of the same temperature, so that a mod that removes a record does not strip the
+# map of its climate.
 func _zone_lookup() -> Dictionary:
-    var lookup: Dictionary = {}
+    var by_pair: Dictionary = {}
     for zone_id in GameData.climate_zones.keys():
         var zone: Dictionary = GameData.climate_zones[zone_id]
-        var key := "%s|%s" % [str(zone.get("temperature", "")), str(zone.get("humidity", ""))]
-        if not lookup.has(key):
-            lookup[key] = zone_id
+        var temperature := str(zone.get("temperature", ""))
+        var humidity := str(zone.get("humidity", ""))
+        var humidity_zones: Dictionary = by_pair.get(temperature, {})
+        if not humidity_zones.has(humidity):
+            humidity_zones[humidity] = zone_id
+        by_pair[temperature] = humidity_zones
+    var lookup: Dictionary = {}
+    for temperature in by_pair.keys():
+        var humidity_zones: Dictionary = by_pair[temperature]
+        var first := str(humidity_zones.values()[0])
+        lookup[temperature] = [
+            str(humidity_zones.get(HUMIDITY_WET, first)),
+            str(humidity_zones.get(HUMIDITY_DRY, first))
+        ]
     return lookup
-
-# A pair with no zone is a data problem (data_validator reports it): the generator falls back to
-# any zone of the same temperature, so that a mod that removes a record does not strip the map of
-# its climate.
-func _pick_zone(lookup: Dictionary, temperature: String, humidity: String) -> String:
-    var key := "%s|%s" % [temperature, humidity]
-    if lookup.has(key):
-        return lookup[key]
-    for other_key in lookup.keys():
-        if str(other_key).begins_with(temperature + "|"):
-            return lookup[other_key]
-    return str(lookup.values()[0]) if not lookup.is_empty() else ""
 
 # The deserts are a relief of the zones that allow them (data/climate.json → "deserts": the hot dry
 # belts). Outside them the deserts are levelled into the plain of their zone: a sandy desert in the
@@ -949,72 +948,88 @@ func _remove_small_zone_islands(tile_data: Array, rows: int, cols: int, min_size
     if min_size <= 1:
         return
 
-    var visited: Array = []
-    for _r in range(rows):
-        var line: Array = []
-        line.resize(cols)
-        line.fill(false)
-        visited.append(line)
+    # The walk is kept in flat arrays (the hexes are numbered row * cols + col): the stage visits
+    # the whole map twice, and a dictionary of vector keys per visit costs more than the walk.
+    var cells := rows * cols
+    var visited := PackedByteArray()
+    visited.resize(cells)
+    var small := PackedByteArray()
+    small.resize(cells)
+    var merged := PackedByteArray()
+    merged.resize(cells)
+    var members := PackedByteArray()
+    members.resize(cells)
+    var neighbors := PackedInt32Array()
+    neighbors.resize(6)
+    var stack := PackedInt32Array()
+    var patch := PackedInt32Array()
 
-    var small: Dictionary = {}
     for r in range(rows):
+        var base := r * cols
         for c in range(cols):
-            if visited[r][c]:
+            var start := base + c
+            if visited[start] == 1:
                 continue
             var zone_id := str(tile_data[r][c].get("climate", ""))
             if zone_id == "":
-                visited[r][c] = true
+                visited[start] = 1
                 continue
 
-            var cells: Array = []
-            var stack: Array = [Vector2i(r, c)]
-            visited[r][c] = true
-            while not stack.is_empty():
-                var cell: Vector2i = stack.pop_back()
-                cells.append(cell)
-                for neighbour in HexUtils.get_neighbors_odd_r(cell.x, cell.y, rows, cols):
-                    if visited[neighbour.row][neighbour.col]:
+            patch.clear()
+            stack.clear()
+            stack.append(start)
+            visited[start] = 1
+            while stack.size() > 0:
+                var cell := stack.pop_back()
+                patch.append(cell)
+                var count := HexUtils.fill_neighbor_indices(cell / cols, cell % cols,
+                        rows, cols, neighbors)
+                for i in range(count):
+                    var neighbour := neighbors[i]
+                    if visited[neighbour] == 1:
                         continue
-                    if str(tile_data[neighbour.row][neighbour.col].get("climate", "")) != zone_id:
+                    if str(tile_data[neighbour / cols][neighbour % cols].get("climate", "")) != zone_id:
                         continue
-                    visited[neighbour.row][neighbour.col] = true
-                    stack.append(Vector2i(neighbour.row, neighbour.col))
+                    visited[neighbour] = 1
+                    stack.append(neighbour)
 
-            if cells.size() >= min_size:
+            if patch.size() >= min_size:
                 continue
-            if _touches_pole(cells, rows):
+            if _touches_pole(patch, rows, cols):
                 continue
-            for cell in cells:
-                small[cell] = true
+            for cell in patch:
+                small[cell] = 1
 
-    var merged: Dictionary = {}
     for r in range(rows):
+        var base := r * cols
         for c in range(cols):
-            var start := Vector2i(r, c)
-            if not small.has(start) or merged.has(start):
+            var start := base + c
+            if small[start] == 0 or merged[start] == 1:
                 continue
-            var cluster: Array = []
-            var members: Dictionary = {}
-            var stack: Array = [start]
-            merged[start] = true
-            members[start] = true
-            while not stack.is_empty():
-                var cell: Vector2i = stack.pop_back()
-                cluster.append(cell)
-                for neighbour in HexUtils.get_neighbors_odd_r(cell.x, cell.y, rows, cols):
-                    var key := Vector2i(neighbour.row, neighbour.col)
-                    if not small.has(key) or merged.has(key):
+            patch.clear()
+            stack.clear()
+            stack.append(start)
+            merged[start] = 1
+            members[start] = 1
+            while stack.size() > 0:
+                var cell := stack.pop_back()
+                patch.append(cell)
+                var count := HexUtils.fill_neighbor_indices(cell / cols, cell % cols,
+                        rows, cols, neighbors)
+                for i in range(count):
+                    var neighbour := neighbors[i]
+                    if small[neighbour] == 0 or merged[neighbour] == 1:
                         continue
-                    merged[key] = true
-                    members[key] = true
-                    stack.append(key)
+                    merged[neighbour] = 1
+                    members[neighbour] = 1
+                    stack.append(neighbour)
             # The belt of a hex is pinned by its latitude, so a speck is dissolved into the zone
             # of ITS OWN belt and takes only the humidity of the zone around it. A speck that
             # takes the zone of another belt would carry the vegetation of a belt it does not
             # stand in, and two neighbouring hexes could end up two belts apart.
             var groups: Dictionary = {}
-            for cell in cluster:
-                var belt := str(tile_data[cell.x][cell.y].get("temperature", ""))
+            for cell in patch:
+                var belt := str(tile_data[cell / cols][cell % cols].get("temperature", ""))
                 if not groups.has(belt):
                     groups[belt] = []
                 (groups[belt] as Array).append(cell)
@@ -1025,42 +1040,50 @@ func _remove_small_zone_islands(tile_data: Array, rows: int, cols: int, min_size
                 if target == "":
                     # Nothing of the belt around: an island, or a belt that is narrow here.
                     # The speck keeps its own zone — there is nothing of its belt to merge into.
-                    target = _dominant_zone_of_cells(tile_data, cells_of_belt)
+                    target = _dominant_zone_of_cells(tile_data, cols, cells_of_belt)
                 if target != "":
                     for cell in cells_of_belt:
-                        tile_data[cell.x][cell.y]["climate"] = target
+                        tile_data[cell / cols][cell % cols]["climate"] = target
+            for cell in patch:
+                members[cell] = 0
 
 # Whether a patch reaches the pole row of the map, whose belt is pinned by the latitude.
-func _touches_pole(cells: Array, rows: int) -> bool:
-    for cell in cells:
-        if cell.x == 0 or cell.x == rows - 1:
+func _touches_pole(patch: PackedInt32Array, rows: int, cols: int) -> bool:
+    for cell in patch:
+        var row := cell / cols
+        if row == 0 or row == rows - 1:
             return true
     return false
 
 # The zone that surrounds a cluster of specks: the most frequent one among the land neighbours of
 # its hexes that are not a part of the cluster and that stand in the same belt. Ties are broken by
 # the id, so that the result does not depend on the dictionary order.
-func _dominant_neighbour_zone(tile_data: Array, rows: int, cols: int, members: Dictionary,
-        cells: Array, belt: String) -> String:
+func _dominant_neighbour_zone(tile_data: Array, rows: int, cols: int, members: PackedByteArray,
+        patch: Array, belt: String) -> String:
     var counts: Dictionary = {}
-    for cell in cells:
-        for neighbour in HexUtils.get_neighbors_odd_r(cell.x, cell.y, rows, cols):
-            var key := Vector2i(neighbour.row, neighbour.col)
-            if members.has(key):
+    var neighbors := PackedInt32Array()
+    neighbors.resize(6)
+    for cell in patch:
+        var count := HexUtils.fill_neighbor_indices(cell / cols, cell % cols, rows, cols,
+                neighbors)
+        for i in range(count):
+            var neighbour := neighbors[i]
+            if members[neighbour] == 1:
                 continue
-            if str(tile_data[neighbour.row][neighbour.col].get("temperature", "")) != belt:
+            var tile: Dictionary = tile_data[neighbour / cols][neighbour % cols]
+            if str(tile.get("temperature", "")) != belt:
                 continue
-            var zone_id := str(tile_data[neighbour.row][neighbour.col].get("climate", ""))
+            var zone_id := str(tile.get("climate", ""))
             if zone_id == "":
                 continue
             counts[zone_id] = int(counts.get(zone_id, 0)) + 1
     return _most_frequent(counts)
 
 # The most frequent zone of the hexes themselves — for an island, which has no zone around it.
-func _dominant_zone_of_cells(tile_data: Array, cells: Array) -> String:
+func _dominant_zone_of_cells(tile_data: Array, cols: int, patch: Array) -> String:
     var counts: Dictionary = {}
-    for cell in cells:
-        var zone_id := str(tile_data[cell.x][cell.y].get("climate", ""))
+    for cell in patch:
+        var zone_id := str(tile_data[cell / cols][cell % cols].get("climate", ""))
         if zone_id == "":
             continue
         counts[zone_id] = int(counts.get(zone_id, 0)) + 1

@@ -53,6 +53,11 @@ const RIVER_COLOR := Color(0.36, 0.62, 0.90)
 const TITLE_COLOR := Color(0.90, 0.90, 0.90)
 const CAPTION_COLOR := Color(0.62, 0.62, 0.62)
 
+# The codes of the belts in the order they run from the pole to the equator: the order breaks a tie
+# of the belt votes of a cell, and a tie has to fall to the higher latitude as it falls to the
+# higher ground.
+const BELT_ORDER: Array[int] = [0, 1, 2, 3, 4]
+
 # The colours of the belts on the picture, from the pole to the equator. They are picked for the
 # picture and not for the game: the five belts have to be told apart at a glance, and the towns
 # (pale) and the city (gold) have to stay readable on every one of them.
@@ -76,6 +81,11 @@ const CELL_LAKE := 4
 const CELL_HILL := 5
 const CELL_MOUNTAIN := 6
 const CELL_WETLAND := 7
+
+# The kinds of a cell in the order a tie of their votes falls to: the higher ground wins, and the
+# water of a cell that reads as water is picked apart in the same way.
+const KIND_ORDER: Array[int] = [CELL_MOUNTAIN, CELL_HILL, CELL_WETLAND, CELL_LAND]
+const WATER_ORDER: Array[int] = [CELL_DEEP_SEA, CELL_SHALLOW_SEA, CELL_LAKE]
 
 const PADDING := 14.0
 const CAPTION_HEIGHT := 116.0
@@ -176,6 +186,14 @@ static func build_relief(size: int, sea: Dictionary, preview_seed: int = 2026102
     water.resize(grid * grid)
     var fallback := PackedByteArray()
     fallback.resize(grid * grid)
+    # The votes of a cell are counted per kind and per belt, and the kinds and the belts are a
+    # handful: the counters are arrays, not dictionaries, and they are reused by every cell of the
+    # picture. The kind of a terrain is resolved once per terrain, not once per hex.
+    var votes := PackedInt32Array()
+    votes.resize(CELL_WETLAND + 1)
+    var belt_votes := PackedInt32Array()
+    belt_votes.resize(ClimateLayout.BELTS.size())
+    var kind_of_terrain: Dictionary = {}
     var sea_cells := 0
     for cell_y in range(grid):
         var row_from := int(float(cell_y) * float(size) / float(grid))
@@ -183,15 +201,20 @@ static func build_relief(size: int, sea: Dictionary, preview_seed: int = 2026102
         for cell_x in range(grid):
             var col_from := int(float(cell_x) * float(size) / float(grid))
             var col_to := maxi(col_from + 1, int(float(cell_x + 1) * float(size) / float(grid)))
-            var votes := {}
-            var belt_votes := {}
+            votes.fill(0)
+            belt_votes.fill(0)
             var total := 0
             var wet := 0
             var beach_votes := 0
             for row in range(row_from, row_to):
                 for col in range(col_from, col_to):
-                    var code := _cell_code(str(tiles[row][col]["terrain"]))
-                    votes[code] = int(votes.get(code, 0)) + 1
+                    var tile: Dictionary = tiles[row][col]
+                    var terrain := str(tile["terrain"])
+                    var code: int = kind_of_terrain.get(terrain, -1)
+                    if code < 0:
+                        code = _cell_code(terrain)
+                        kind_of_terrain[terrain] = code
+                    votes[code] += 1
                     total += 1
                     if code == CELL_DEEP_SEA or code == CELL_SHALLOW_SEA:
                         sea_cells += 1
@@ -199,20 +222,17 @@ static func build_relief(size: int, sea: Dictionary, preview_seed: int = 2026102
                         wet += 1
                     elif code == CELL_BEACH:
                         beach_votes += 1
-                    var belt := maxi(0, ClimateLayout.BELTS.find(
-                            str(tiles[row][col].get("temperature", ""))))
-                    belt_votes[belt] = int(belt_votes.get(belt, 0)) + 1
+                    belt_votes[ClimateLayout.belt_code(str(tile.get("temperature", "")))] += 1
             var index := cell_y * grid + cell_x
             water[index] = 1 if wet * 2 >= total else 0
-            fallback[index] = _majority(votes,
-                    [CELL_MOUNTAIN, CELL_HILL, CELL_WETLAND, CELL_LAND])
+            fallback[index] = _majority(votes, KIND_ORDER)
             if water[index] == 1:
-                cells[index] = _majority(votes, [CELL_DEEP_SEA, CELL_SHALLOW_SEA, CELL_LAKE])
+                cells[index] = _majority(votes, WATER_ORDER)
             elif beach_votes > 0:
                 cells[index] = CELL_BEACH
             else:
                 cells[index] = fallback[index]
-            belts[index] = _majority(belt_votes, [0, 1, 2, 3, 4])
+            belts[index] = _majority(belt_votes, BELT_ORDER)
 
     # A beach only outlines a coast the picture actually draws: a block of hexes can hold beach
     # hexes of an inlet thinner than one cell, and that sand would float on dry land.
@@ -290,11 +310,11 @@ static func _is_water_code(code: int) -> bool:
 
 # The majority of the votes; the order of the list breaks a tie, so the caller puts the kind it
 # wants to survive a tie first.
-static func _majority(votes: Dictionary, order: Array) -> int:
+static func _majority(votes: PackedInt32Array, order: Array) -> int:
     var best: int = order[order.size() - 1]
     var best_count := -1
     for code in order:
-        var count := int(votes.get(code, 0))
+        var count: int = votes[code]
         if count > best_count:
             best = code
             best_count = count
