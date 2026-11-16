@@ -6858,6 +6858,10 @@ msgid "Adds one production slot to the animal mill and the water mill.\n+10% to 
 msgstr ""
 
 msgctxt "technologies.description"
+msgid "Adds one production slot to the bookbinder's workshop."
+msgstr ""
+
+msgctxt "technologies.description"
 msgid "Adds one production slot to the winemaker's house, the oilmaker's house, the dairy, the paper workshop and the jeweler's house."
 msgstr ""
 
@@ -7071,6 +7075,10 @@ msgstr ""
 
 msgctxt "technologies.description"
 msgid "Unlocks the water mill: the running water sets the millstones in motion.\n+25% to the production of mines, quarries, the bloomery, the smelter and the forge only where fresh water is available: without water the wheel gives no bonus, for the water washes the ore and drives the bellows."
+msgstr ""
+
+msgctxt "technologies.flavor"
+msgid "A page cut in wood or cast in metal gives as many copies as the press can pull, and no copy argues with another. The woodblock came first in China, movable type followed there and in Korea, where the letters were cast in bronze; Gutenberg set the same idea in lead and gave it the screw press and paper. A scribe copies a book in a year, a workshop prints it in a season."
 msgstr ""
 
 msgctxt "technologies.flavor"
@@ -7467,6 +7475,10 @@ msgstr ""
 
 msgctxt "technologies.name"
 msgid "Plow"
+msgstr ""
+
+msgctxt "technologies.name"
+msgid "Printing"
 msgstr ""
 
 msgctxt "technologies.name"

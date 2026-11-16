@@ -6858,6 +6858,10 @@ msgid "Adds one production slot to the animal mill and the water mill.\n+10% to 
 msgstr "Добавляет один слот производства мельнице с животной тягой и водяной мельнице.\n+10% к производству лесной делянки."
 
 msgctxt "technologies.description"
+msgid "Adds one production slot to the bookbinder's workshop."
+msgstr "Добавляет один слот производства переплётной мастерской."
+
+msgctxt "technologies.description"
 msgid "Adds one production slot to the winemaker's house, the oilmaker's house, the dairy, the paper workshop and the jeweler's house."
 msgstr "Добавляет один слот производства дому винодела, дому маслодела, сыроварне, бумажной мастерской и дому ювелира."
 
@@ -7072,6 +7076,10 @@ msgstr "Открывает использование тягловых живо�
 msgctxt "technologies.description"
 msgid "Unlocks the water mill: the running water sets the millstones in motion.\n+25% to the production of mines, quarries, the bloomery, the smelter and the forge only where fresh water is available: without water the wheel gives no bonus, for the water washes the ore and drives the bellows."
 msgstr "Открывает водяную мельницу: течение воды приводит в движение мельничные жернова.\n+25% к производству шахт и каменоломен, сыродутной печи, плавильни и кузницы только при наличии пресной воды: без воды колесо бонуса не даёт, поскольку именно вода промывает руду и приводит в движение меха."
+
+msgctxt "technologies.flavor"
+msgid "A page cut in wood or cast in metal gives as many copies as the press can pull, and no copy argues with another. The woodblock came first in China, movable type followed there and in Korea, where the letters were cast in bronze; Gutenberg set the same idea in lead and gave it the screw press and paper. A scribe copies a book in a year, a workshop prints it in a season."
+msgstr "Страница, вырезанная на дереве или отлитая в металле, даёт столько оттисков, сколько вытянет пресс, и ни один оттиск не спорит с другим. Ксилография появилась первой в Китае, наборный шрифт — там же и в Корее, где литеры отливали из бронзы; Гутенберг отлил ту же мысль в свинце и соединил её с винтовым прессом и бумагой. Переписчик делает книгу за год, мастерская печатает её за сезон."
 
 msgctxt "technologies.flavor"
 msgid "A plow yoked to oxen made it possible to work heavy soils and raised yields."
@@ -7468,6 +7476,10 @@ msgstr "Плантации"
 msgctxt "technologies.name"
 msgid "Plow"
 msgstr "Плуг"
+
+msgctxt "technologies.name"
+msgid "Printing"
+msgstr "Книгопечатание"
 
 msgctxt "technologies.name"
 msgid "Rope Making"
