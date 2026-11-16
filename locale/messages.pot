@@ -5074,6 +5074,10 @@ msgid "Fishes from boats on any water body with a dock."
 msgstr ""
 
 msgctxt "professions.description"
+msgid "Fits staves into barrels and seals them with tar."
+msgstr ""
+
+msgctxt "professions.description"
 msgid "Forges tools, weapons and ornaments from metal."
 msgstr ""
 
@@ -5175,6 +5179,10 @@ msgstr ""
 
 msgctxt "professions.name"
 msgid "Clay Digger"
+msgstr ""
+
+msgctxt "professions.name"
+msgid "Cooper"
 msgstr ""
 
 msgctxt "professions.name"

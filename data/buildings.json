@@ -434,6 +434,7 @@
       "work_cost": 35,
       "additional_cost": [ { "planks": 100 }, { "@processed_construction_materials": 50 } ],
       "icon": "cooper_house.png",
+      "profession": "cooper",
       "production_slots": 1.0,
       "unlock_tech": "wood_processing",
       "default_recipes": [ "wooden_barrel" ]

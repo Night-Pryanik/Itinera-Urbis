@@ -5074,6 +5074,10 @@ msgid "Fishes from boats on any water body with a dock."
 msgstr "Ловит рыбу с лодок на водоёмах с пристанью."
 
 msgctxt "professions.description"
+msgid "Fits staves into barrels and seals them with tar."
+msgstr "Собирает клёпки в бочки и запечатывает их смолой."
+
+msgctxt "professions.description"
 msgid "Forges tools, weapons and ornaments from metal."
 msgstr "Кует инструменты, оружие и украшения из металла."
 
@@ -5176,6 +5180,10 @@ msgstr "Углежог"
 msgctxt "professions.name"
 msgid "Clay Digger"
 msgstr "Глинокоп"
+
+msgctxt "professions.name"
+msgid "Cooper"
+msgstr "Бондарь"
 
 msgctxt "professions.name"
 msgid "Dyer"

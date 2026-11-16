@@ -131,6 +131,15 @@
       "amount": 10,
       "interval": 10,
       "production_bonus": 0.1
+    },
+    {
+      // The cooper seals the barrel with tar: the staves hold the vessel together, but only
+      // the coating makes it watertight.
+      "resource": "tar",
+      "profession": [ "cooper" ],
+      "amount": 10,
+      "interval": 10,
+      "production_bonus": 0.1
     }
   ]
 }

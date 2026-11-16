@@ -247,6 +247,12 @@
       "description": "Saws timber into planks and shapes wood for construction and crafts."
     },
     {
+      "id": "cooper",
+      "name": "Cooper",
+      "icon": "profession_cooper.png",
+      "description": "Fits staves into barrels and seals them with tar."
+    },
+    {
       "id": "furniture_maker",
       "name": "Furniture Maker",
       "icon": "furniture_maker.png",
