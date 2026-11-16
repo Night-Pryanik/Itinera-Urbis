@@ -120,18 +120,57 @@ func _test_dyer_alum_supply(state: Dictionary) -> void:
     check(alum_bonus > 0.0, "alum consumption gives dyers a production bonus", state)
 
 
+# Sulfur is spent by the weaver together with the winemaker, the brewer and the oilmaker:
+# one rule covers the whole group, therefore the weaver must find the same norm and bonus
+# in its consumption as the three tare consumers, and the sulfur must be written off by
+# the profession exactly once (two rules for one profession would double the expense).
 func _test_weaver_sulfur_supply(state: Dictionary) -> void:
     var profession := str(_gdata.get_profession_for_building("weaver_house"))
     check(profession == "weaver", "the weaver's house assigns the weaver profession", state)
     if profession != "weaver":
         return
 
-    var sulfur_bonus := 0.0
+    var sulfur_entries: Array = []
     for entry in _gdata.get_profession_consumption(profession):
         if str(entry.get("display_key", "")) == "sulfur":
-            sulfur_bonus = float(entry.get("production_bonus", 0.0))
-            break
-    check(sulfur_bonus > 0.0, "sulfur consumption gives weavers a production bonus", state)
+            sulfur_entries.append(entry)
+    check(sulfur_entries.size() == 1,
+        "the weaver must consume sulfur by exactly one rule (got: %d)" % sulfur_entries.size(), state)
+    if sulfur_entries.is_empty():
+        return
+    var weaver_rule: Dictionary = sulfur_entries[0]
+    check(float(weaver_rule.get("production_bonus", 0.0)) > 0.0,
+        "sulfur consumption gives weavers a production bonus", state)
+
+    # The rule is shared: each tare consumer takes sulfur with the same norm and bonus.
+    for tare_prof in ["winemaker", "brewer", "oilmaker"]:
+        var shared: Array = []
+        for entry in _gdata.get_profession_consumption(str(tare_prof)):
+            if str(entry.get("display_key", "")) == "sulfur":
+                shared.append(entry)
+        check(shared.size() == 1,
+            "the profession \"%s\" must share the sulfur rule with the weaver (got: %d rules)"
+                % [tare_prof, shared.size()], state)
+        if shared.is_empty():
+            continue
+        check(int(shared[0].get("amount", 0)) == int(weaver_rule.get("amount", 0))
+                and is_equal_approx(float(shared[0].get("interval", 0.0)),
+                        float(weaver_rule.get("interval", 0.0)))
+                and is_equal_approx(float(shared[0].get("production_bonus", 0.0)),
+                        float(weaver_rule.get("production_bonus", 0.0))),
+            "the sulfur norm and bonus of \"%s\" must match the weaver's" % tare_prof, state)
+
+    # The reverse index sees the weaver among the consumers, and the row is a single one.
+    var consumers: Array = _gdata.get_consumption_consumers("sulfur")
+    var weaver_found := false
+    var weaver_count := 0
+    for consumer in consumers:
+        if str(consumer.get("profession_id", "")) == profession:
+            weaver_found = true
+            weaver_count += 1
+    check(weaver_found, "the reverse index must list the weaver among the consumers of sulfur", state)
+    check(weaver_count == 1,
+        "the reverse index must list the weaver once for sulfur (got: %d)" % weaver_count, state)
 
 
 # -------------------------------------------------------
