@@ -6918,6 +6918,10 @@ msgid "Allows you to build the apiary."
 msgstr "Даёт возможность строить пасеку."
 
 msgctxt "technologies.description"
+msgid "Allows you to build the bookbinder's workshop.\nAllows you to bind sheets of parchment or paper into books with leather and glue."
+msgstr "Позволяет строить переплётную мастерскую.\nПозволяет сшивать листы пергамента или бумаги в книги, скрепляя их кожей и клеем."
+
+msgctxt "technologies.description"
 msgid "Allows you to build the brewer's house. Unlocks recipes for brewing beer, pulque, sake and toddy."
 msgstr "Даёт возможность строить дом варщика. Открывает рецепты варки пива, пульке, саке и тодди."
 
@@ -7234,6 +7238,10 @@ msgid "The art of exploring the land and drawing maps of it."
 msgstr "Наука об исследовании местности и рисовании карт."
 
 msgctxt "technologies.flavor"
+msgid "The codex did not need to be unrolled: it opened at any page the reader chose and held the whole work between two covers. Sewing the sheets through the fold and gluing a tanned hide into a cover turned a sheaf of writing into a thing that could be shelved, carried and sold."
+msgstr "Кодекс не нужно было разворачивать: он открывался на любой странице и держал всё сочинение между двумя крышками. Сшитые через сгиб листы и кожаный переплёт превращали кипу письма в вещь, которую можно поставить на полку, увезти и продать."
+
+msgctxt "technologies.flavor"
 msgid "The first farmers noticed that seeds thrown into the ground grew again. Thus began the age of settled life."
 msgstr "Первые земледельцы заметили, что брошенные в землю семена дают новые всходы. Так началась эпоха оседлой жизни."
 
@@ -7308,6 +7316,10 @@ msgstr "Животноводство"
 msgctxt "technologies.name"
 msgid "Beekeeping"
 msgstr "Пчеловодство"
+
+msgctxt "technologies.name"
+msgid "Bookbinding"
+msgstr "Переплётное дело"
 
 msgctxt "technologies.name"
 msgid "Bronze"

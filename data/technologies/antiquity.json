@@ -111,6 +111,18 @@
       "flavor": "In scriptoriums scribes copied, translated, rewrote and recensioned texts on administration, the worship of the gods, magic and the curing of disease."
     },
     {
+      // Parchment OR paper: a city without the herds of the tanner reaches the bound book
+      // through paper, and does not have to learn the craft of the hide first.
+      "id": "bookbinding",
+      "name": "Bookbinding",
+      "era": "antiquity",
+      "science_cost": 3.0,
+      "icon": "bookbinding_tech.png",
+      "prerequisites": [ [ "parchment" ], [ "paper" ] ],
+      "description": "Allows you to build the bookbinder's workshop.\nAllows you to bind sheets of parchment or paper into books with leather and glue.",
+      "flavor": "The codex did not need to be unrolled: it opened at any page the reader chose and held the whole work between two covers. Sewing the sheets through the fold and gluing a tanned hide into a cover turned a sheaf of writing into a thing that could be shelved, carried and sold."
+    },
+    {
       "id": "cartography",
       "name": "Cartography",
       "era": "antiquity",

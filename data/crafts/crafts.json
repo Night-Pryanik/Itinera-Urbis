@@ -398,7 +398,7 @@
       "resources": [ [ { "parchment": 10 }, { "paper": 10 } ], { "leather": 10 }, { "glue": 10 } ],
       "result": { "book": 10 },
       "time": 8.0,
-      "unlock_tech": "parchment",
+      "unlock_tech": "bookbinding",
       "description": "Binds sheets of parchment or paper with leather and glue into a book."
     },
     {

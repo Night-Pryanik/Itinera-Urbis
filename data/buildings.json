@@ -307,7 +307,7 @@
       "icon": "bookbinder_workshop.png",
       "profession": "bookbinder",
       "production_slots": 1.0,
-      "unlock_tech": "parchment",
+      "unlock_tech": "bookbinding",
       "default_recipes": [ "book" ]
     },
     {

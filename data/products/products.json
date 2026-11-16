@@ -250,7 +250,7 @@
       "name": "Book",
       "type": "product",
       "category": "writing_materials",
-      "unlock_tech": "parchment",
+      "unlock_tech": "bookbinding",
       "icon": "book.png",
       "special_yield": { "science": 8 }
     },
