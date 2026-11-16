@@ -5074,6 +5074,10 @@ msgid "Grows technical and spice crops."
 msgstr ""
 
 msgctxt "professions.description"
+msgid "Limes, scrapes and dries hides into parchment."
+msgstr ""
+
+msgctxt "professions.description"
 msgid "Makes dyes from natural materials."
 msgstr ""
 
@@ -5087,6 +5091,10 @@ msgstr ""
 
 msgctxt "professions.description"
 msgid "Smelts ore into pure metals."
+msgstr ""
+
+msgctxt "professions.description"
+msgid "Strains plant fibers into sheets of paper."
 msgstr ""
 
 msgctxt "professions.description"
@@ -5175,6 +5183,14 @@ msgstr ""
 
 msgctxt "professions.name"
 msgid "Oilmaker"
+msgstr ""
+
+msgctxt "professions.name"
+msgid "Paper Maker"
+msgstr ""
+
+msgctxt "professions.name"
+msgid "Parchment Maker"
 msgstr ""
 
 msgctxt "professions.name"

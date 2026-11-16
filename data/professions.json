@@ -217,6 +217,18 @@
       "description": "Weaves cloth, clothes and carpets from fibers."
     },
     {
+      "id": "paper_maker",
+      "name": "Paper Maker",
+      "icon": "profession_paper_maker.png",
+      "description": "Strains plant fibers into sheets of paper."
+    },
+    {
+      "id": "parchment_maker",
+      "name": "Parchment Maker",
+      "icon": "profession_parchment_maker.png",
+      "description": "Limes, scrapes and dries hides into parchment."
+    },
+    {
       "id": "tanner",
       "name": "Tanner",
       "icon": "profession_tanner.png",

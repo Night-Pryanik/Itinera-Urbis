@@ -293,6 +293,7 @@
       "work_cost": 30,
       "additional_cost": [ { "planks": 120 } ],
       "icon": "parchment_workshop.png",
+      "profession": "parchment_maker",
       "production_slots": 1.0,
       "unlock_tech": "parchment",
       "default_recipes": [ "parchment" ]
@@ -340,6 +341,7 @@
       "work_cost": 30,
       "additional_cost": [ { "planks": 100 }, { "@processed_construction_materials": 50 } ],
       "icon": "paper_workshop.png",
+      "profession": "paper_maker",
       "production_slots": 1.0,
       "unlock_tech": "paper",
       "default_recipes": [  ]

@@ -5074,6 +5074,10 @@ msgid "Grows technical and spice crops."
 msgstr "Возделывает технические и пряные культуры."
 
 msgctxt "professions.description"
+msgid "Limes, scrapes and dries hides into parchment."
+msgstr "Обрабатывает известью, скоблит и сушит шкуры в пергамент."
+
+msgctxt "professions.description"
 msgid "Makes dyes from natural materials."
 msgstr "Изготавливает красители из природных материалов."
 
@@ -5088,6 +5092,10 @@ msgstr "Формует и обжигает глину в горшки, кирп�
 msgctxt "professions.description"
 msgid "Smelts ore into pure metals."
 msgstr "Плавит руду в чистые металлы."
+
+msgctxt "professions.description"
+msgid "Strains plant fibers into sheets of paper."
+msgstr "Отливает растительные волокна в листы бумаги."
 
 msgctxt "professions.description"
 msgid "Tans hides and sews leather goods."
@@ -5176,6 +5184,14 @@ msgstr "Шахтёр"
 msgctxt "professions.name"
 msgid "Oilmaker"
 msgstr "Маслодел"
+
+msgctxt "professions.name"
+msgid "Paper Maker"
+msgstr "Бумагодел"
+
+msgctxt "professions.name"
+msgid "Parchment Maker"
+msgstr "Пергаментщик"
 
 msgctxt "professions.name"
 msgid "Perfumer"
