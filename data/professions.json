@@ -229,6 +229,12 @@
       "description": "Limes, scrapes and dries hides into parchment."
     },
     {
+      "id": "bookbinder",
+      "name": "Bookbinder",
+      "icon": "profession_bookbinder.png",
+      "description": "Sews the sheets into books and glues the spine under a leather cover."
+    },
+    {
       "id": "tanner",
       "name": "Tanner",
       "icon": "profession_tanner.png",

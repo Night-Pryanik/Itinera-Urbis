@@ -3230,6 +3230,10 @@ msgid "Saws timber into planks for construction and crafts."
 msgstr ""
 
 msgctxt "buildings.description"
+msgid "Sews sheets of parchment or paper into books under a leather cover."
+msgstr ""
+
+msgctxt "buildings.description"
 msgid "Smelts iron ore into metal for the forge."
 msgstr ""
 
@@ -3267,6 +3271,10 @@ msgstr ""
 
 msgctxt "buildings.name"
 msgid "Bloomery"
+msgstr ""
+
+msgctxt "buildings.name"
+msgid "Bookbinder's Workshop"
 msgstr ""
 
 msgctxt "buildings.name"
@@ -3635,6 +3643,10 @@ msgstr ""
 
 msgctxt "crafts.description"
 msgid "Awards the milk of the city to the cheese the world asks for by the name of the city."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Binds sheets of parchment or paper with leather and glue into a book."
 msgstr ""
 
 msgctxt "crafts.description"
@@ -4115,6 +4127,10 @@ msgstr ""
 
 msgctxt "crafts.name"
 msgid "Beer"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Book"
 msgstr ""
 
 msgctxt "crafts.name"
@@ -5086,6 +5102,10 @@ msgid "Saws timber into planks and shapes wood for construction and crafts."
 msgstr ""
 
 msgctxt "professions.description"
+msgid "Sews the sheets into books and glues the spine under a leather cover."
+msgstr ""
+
+msgctxt "professions.description"
 msgid "Shapes and fires clay into pots, bricks and tablets."
 msgstr ""
 
@@ -5135,6 +5155,10 @@ msgstr ""
 
 msgctxt "professions.name"
 msgid "Blacksmith"
+msgstr ""
+
+msgctxt "professions.name"
+msgid "Bookbinder"
 msgstr ""
 
 msgctxt "professions.name"
@@ -5411,6 +5435,10 @@ msgstr ""
 
 msgctxt "resources.name"
 msgid "Bitumen"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Book"
 msgstr ""
 
 msgctxt "resources.name"

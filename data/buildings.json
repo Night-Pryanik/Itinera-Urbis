@@ -299,6 +299,18 @@
       "default_recipes": [ "parchment" ]
     },
     {
+      "id": "bookbinder_workshop",
+      "name": "Bookbinder's Workshop",
+      "description": "Sews sheets of parchment or paper into books under a leather cover.",
+      "work_cost": 35,
+      "additional_cost": [ { "planks": 100 }, { "@processed_construction_materials": 50 } ],
+      "icon": "bookbinder_workshop.png",
+      "profession": "bookbinder",
+      "production_slots": 1.0,
+      "unlock_tech": "parchment",
+      "default_recipes": [ "book" ]
+    },
+    {
       "id": "library",
       "name": "Library",
       "description": "A collection of written works, where scholars produce science.",

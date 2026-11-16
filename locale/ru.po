@@ -3230,6 +3230,10 @@ msgid "Saws timber into planks for construction and crafts."
 msgstr "Распиливает древесину на доски для строительства и ремёсел."
 
 msgctxt "buildings.description"
+msgid "Sews sheets of parchment or paper into books under a leather cover."
+msgstr "Сшивает листы пергамента или бумаги в книги под кожаным переплётом."
+
+msgctxt "buildings.description"
 msgid "Smelts iron ore into metal for the forge."
 msgstr "Плавит железную руду в металл, который затем используется кузнецами."
 
@@ -3268,6 +3272,10 @@ msgstr "Пекарня"
 msgctxt "buildings.name"
 msgid "Bloomery"
 msgstr "Сыродутная печь"
+
+msgctxt "buildings.name"
+msgid "Bookbinder's Workshop"
+msgstr "Переплётная мастерская"
 
 msgctxt "buildings.name"
 msgid "Brewer's House"
@@ -3636,6 +3644,10 @@ msgstr "Малахит"
 msgctxt "crafts.description"
 msgid "Awards the milk of the city to the cheese the world asks for by the name of the city."
 msgstr "Молоко города идёт в тот сыр, о котором спрашивают по имени города."
+
+msgctxt "crafts.description"
+msgid "Binds sheets of parchment or paper with leather and glue into a book."
+msgstr "Связывает листы пергамента или бумаги кожей и клеем в книгу."
 
 msgctxt "crafts.description"
 msgid "Blows bottles from molten glass."
@@ -4116,6 +4128,10 @@ msgstr "Говядина"
 msgctxt "crafts.name"
 msgid "Beer"
 msgstr "Пиво"
+
+msgctxt "crafts.name"
+msgid "Book"
+msgstr "Книга"
 
 msgctxt "crafts.name"
 msgid "Bread"
@@ -5086,6 +5102,10 @@ msgid "Saws timber into planks and shapes wood for construction and crafts."
 msgstr "Пилит брёвна на доски и обрабатывает дерево для строительства и ремёсел."
 
 msgctxt "professions.description"
+msgid "Sews the sheets into books and glues the spine under a leather cover."
+msgstr "Сшивает листы в книги и проклеивает корешок под кожаным переплётом."
+
+msgctxt "professions.description"
 msgid "Shapes and fires clay into pots, bricks and tablets."
 msgstr "Формует и обжигает глину в горшки, кирпичи и таблички."
 
@@ -5136,6 +5156,10 @@ msgstr "Пчеловод"
 msgctxt "professions.name"
 msgid "Blacksmith"
 msgstr "Кузнец"
+
+msgctxt "professions.name"
+msgid "Bookbinder"
+msgstr "Переплётчик"
 
 msgctxt "professions.name"
 msgid "Brewer"
@@ -5412,6 +5436,10 @@ msgstr "Бизоны"
 msgctxt "resources.name"
 msgid "Bitumen"
 msgstr "Битум"
+
+msgctxt "resources.name"
+msgid "Book"
+msgstr "Книга"
 
 msgctxt "resources.name"
 msgid "Boswellia"
