@@ -60,9 +60,11 @@
       "production_bonus": 0.25
     },
     {
-      // Sulfur supports production for every profession that consumes tare.
+      // Sulfur preserves the drink and the oil while they stand in the vessel and
+      // bleaches the cloth in finishing, therefore the one rule covers both the
+      // professions that consume tare and the weaver.
       "resource": "sulfur",
-      "profession": [ "winemaker", "brewer", "oilmaker" ],
+      "profession": [ "winemaker", "brewer", "oilmaker", "weaver" ],
       "amount": 10,
       "interval": 10,
       "production_bonus": 0.1
@@ -70,14 +72,6 @@
     {
       "resource": "alum",
       "profession": [ "dyer" ],
-      "amount": 10,
-      "interval": 10,
-      "production_bonus": 0.1
-    },
-    {
-      // Sulfur dioxide bleaches cloth during finishing.
-      "resource": "sulfur",
-      "profession": [ "weaver" ],
       "amount": 10,
       "interval": 10,
       "production_bonus": 0.1
