@@ -111,10 +111,16 @@
       "description": "Cultivates the vineyard and gathers the harvest."
     },
     {
+      "id": "clay_digger",
+      "name": "Clay Digger",
+      "icon": "profession_clay_digger.png",
+      "description": "Digs and sorts clay for firing."
+    },
+    {
       "id": "potter",
       "name": "Potter",
       "icon": "profession_potter.png",
-      "description": "Digs and sorts clay for firing."
+      "description": "Shapes and fires clay into pots, bricks and tablets."
     },
     {
       "id": "planter",
@@ -209,6 +215,18 @@
       "id": "weaver",
       "name": "Weaver",
       "description": "Weaves cloth, clothes and carpets from fibers."
+    },
+    {
+      "id": "tanner",
+      "name": "Tanner",
+      "icon": "profession_tanner.png",
+      "description": "Tans hides and sews leather goods."
+    },
+    {
+      "id": "carpenter",
+      "name": "Carpenter",
+      "icon": "profession_carpenter.png",
+      "description": "Saws timber into planks and shapes wood for construction and crafts."
     },
     {
       "id": "furniture_maker",

@@ -103,6 +103,7 @@
         "lumberjack",
         "farmer",
         "planter",
+        "clay_digger",
         "potter",
         "vinedresser",
         "blacksmith",
@@ -111,6 +112,16 @@
       "amount": 10,
       "interval": 10,
       "production_bonus": 0.25
+    },
+    {
+      // Glue binds the three materials of the crafts that shape them: the tanner glues
+      // the tanned hide, the carpenter and the furniture maker glue the timber, and the
+      // potter joins and finishes the fired clay with it.
+      "resource": "glue",
+      "profession": [ "tanner", "potter", "carpenter", "furniture_maker" ],
+      "amount": 10,
+      "interval": 10,
+      "production_bonus": 0.1
     }
   ]
 }

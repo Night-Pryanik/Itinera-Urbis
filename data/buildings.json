@@ -119,6 +119,7 @@
       "work_cost": 35,
       "additional_cost": [ { "planks": 120 }, { "@processed_construction_materials": 80 } ],
       "icon": "pottery.png",
+      "profession": "potter",
       "production_slots": 1.0,
       "unlock_tech": "pottery",
       "default_recipes": [  ]
@@ -141,6 +142,7 @@
       "work_cost": 25,
       "additional_cost": [ { "planks": 100 } ],
       "icon": "leatherworker_house.png",
+      "profession": "tanner",
       "production_slots": 1.0,
       "unlock_tech": "leatherworking",
       "default_recipes": [ "leather" ]
@@ -313,6 +315,7 @@
       "work_cost": 30,
       "additional_cost": [ { "wood": 120 } ],
       "icon": "carpenter_workshop.png",
+      "profession": "carpenter",
       "production_slots": 1.0,
       "unlock_tech": "wood_processing",
       "default_recipes": [ "planks" ]

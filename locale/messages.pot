@@ -5078,7 +5078,19 @@ msgid "Makes dyes from natural materials."
 msgstr ""
 
 msgctxt "professions.description"
+msgid "Saws timber into planks and shapes wood for construction and crafts."
+msgstr ""
+
+msgctxt "professions.description"
+msgid "Shapes and fires clay into pots, bricks and tablets."
+msgstr ""
+
+msgctxt "professions.description"
 msgid "Smelts ore into pure metals."
+msgstr ""
+
+msgctxt "professions.description"
+msgid "Tans hides and sews leather goods."
 msgstr ""
 
 msgctxt "professions.description"
@@ -5122,7 +5134,15 @@ msgid "Brewer"
 msgstr ""
 
 msgctxt "professions.name"
+msgid "Carpenter"
+msgstr ""
+
+msgctxt "professions.name"
 msgid "Charcoal Burner"
+msgstr ""
+
+msgctxt "professions.name"
+msgid "Clay Digger"
 msgstr ""
 
 msgctxt "professions.name"
@@ -5191,6 +5211,10 @@ msgstr ""
 
 msgctxt "professions.name"
 msgid "Swineherd"
+msgstr ""
+
+msgctxt "professions.name"
+msgid "Tanner"
 msgstr ""
 
 msgctxt "professions.name"

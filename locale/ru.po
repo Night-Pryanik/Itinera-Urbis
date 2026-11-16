@@ -5078,8 +5078,20 @@ msgid "Makes dyes from natural materials."
 msgstr "Изготавливает красители из природных материалов."
 
 msgctxt "professions.description"
+msgid "Saws timber into planks and shapes wood for construction and crafts."
+msgstr "Пилит брёвна на доски и обрабатывает дерево для строительства и ремёсел."
+
+msgctxt "professions.description"
+msgid "Shapes and fires clay into pots, bricks and tablets."
+msgstr "Формует и обжигает глину в горшки, кирпичи и таблички."
+
+msgctxt "professions.description"
 msgid "Smelts ore into pure metals."
 msgstr "Плавит руду в чистые металлы."
+
+msgctxt "professions.description"
+msgid "Tans hides and sews leather goods."
+msgstr "Дубит шкуры и шьёт кожаные изделия."
 
 msgctxt "professions.description"
 msgid "Tends the herd and keeps count of the livestock."
@@ -5122,8 +5134,16 @@ msgid "Brewer"
 msgstr "Варщик"
 
 msgctxt "professions.name"
+msgid "Carpenter"
+msgstr "Плотник"
+
+msgctxt "professions.name"
 msgid "Charcoal Burner"
 msgstr "Углежог"
+
+msgctxt "professions.name"
+msgid "Clay Digger"
+msgstr "Глинокоп"
 
 msgctxt "professions.name"
 msgid "Dyer"
@@ -5192,6 +5212,10 @@ msgstr "Животновод"
 msgctxt "professions.name"
 msgid "Swineherd"
 msgstr "Свиновод"
+
+msgctxt "professions.name"
+msgid "Tanner"
+msgstr "Кожевник"
 
 msgctxt "professions.name"
 msgid "Tar Burner"
