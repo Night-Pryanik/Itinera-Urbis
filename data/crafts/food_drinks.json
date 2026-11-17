@@ -395,6 +395,110 @@
       // The copy is neutral on purpose: the boiler takes any sweet juice, so
       // naming one of them would tie this text to a single plant.
       "description": "Boils a sweet juice down to sugar."
+    },
+    {
+      // Hopped beer is deliberately omitted: hop oils turn harsh in the still, so
+      // plain beer keeps its own industrial niche alongside rice sake.
+      "id": "grain_spirit",
+      "name": "Grain Spirit",
+      "produced_in": [ "distillery" ],
+      "resources": [ [ { "beer": 20 }, { "sake": 20 } ] ],
+      "result": { "grain_spirit": 10 },
+      "time": 8.0,
+      "unlock_tech": "distillation",
+      "description": "Distils unhopped beer or rice sake into a strong grain spirit."
+    },
+    {
+      "id": "brandy",
+      "name": "Brandy",
+      "produced_in": [ "distillery" ],
+      "resources": { "wine": 20 },
+      "result": { "brandy": 10 },
+      "time": 8.0,
+      "unlock_tech": "distillation",
+      "description": "Distils grape wine into brandy."
+    },
+    {
+      // Split from the cider recipe so that blacklisting winemaking leaves cider
+      // distillation intact.
+      "id": "fruit_brandy",
+      "name": "Fruit Brandy (from wine)",
+      "produced_in": [ "distillery" ],
+      "resources": [ [ { "fruit_wine": 20 }, { "carob_wine": 20 } ] ],
+      "result": { "fruit_brandy": 10 },
+      "time": 8.0,
+      "unlock_tech": "distillation",
+      "description": "Distils fruit wine or carob wine into fruit brandy."
+    },
+    {
+      "id": "fruit_brandy_from_cider",
+      "name": "Fruit Brandy (from cider)",
+      "produced_in": [ "distillery" ],
+      "resources": { "cider": 20 },
+      "result": { "fruit_brandy": 10 },
+      "time": 8.0,
+      "unlock_tech": "distillation",
+      "description": "Distils apple cider into fruit brandy."
+    },
+    {
+      // Palm toddy goes in already fermented, while crushed cane and tapped maple
+      // sap are fermented and distilled in one workshop cycle.
+      "id": "arrack",
+      "name": "Arrack",
+      "produced_in": [ "distillery" ],
+      "resources": [ [ { "toddy": 20 }, { "sugar_cane": 20 }, { "maple_sap": 20 } ] ],
+      "result": { "arrack": 10 },
+      "time": 8.0,
+      "unlock_tech": "distillation",
+      "description": "Distils palm toddy or a fermented sweet juice into arrack."
+    },
+    {
+      "id": "mezcal",
+      "name": "Mezcal",
+      "produced_in": [ "distillery" ],
+      "resources": { "pulque": 20 },
+      "result": { "mezcal": 10 },
+      "time": 8.0,
+      "unlock_tech": "distillation",
+      "description": "Distils fermented agave drink into mezcal."
+    },
+    {
+      "id": "honey_spirit",
+      "name": "Honey Spirit",
+      "produced_in": [ "distillery" ],
+      "resources": { "mead": 20 },
+      "result": { "honey_spirit": 10 },
+      "time": 8.0,
+      "unlock_tech": "distillation",
+      "description": "Distils mead into a strong honey spirit."
+    },
+    {
+      // Fermenting and distilling milk in a single workshop cycle gives herding
+      // cities a spirit line alongside cheese.
+      "id": "arkhi",
+      "name": "Arkhi",
+      "produced_in": [ "distillery" ],
+      "resources": { "raw_milk": 20 },
+      "result": { "arkhi": 10 },
+      "time": 8.0,
+      "unlock_tech": "distillation",
+      "description": "Ferments and distils raw milk into arkhi."
+    },
+    {
+      // Chamomile stands before the table spices so the workshop spends dedicated
+      // herbs before drawing down the citizens' spice shelf.
+      "id": "cordial",
+      "name": "Cordial",
+      "produced_in": [ "distillery" ],
+      "resources": [
+        { "rectified_spirit": 10 },
+        [ { "chamomile": 10 }, { "cinnamon": 10 }, { "nutmeg": 10 }, { "vanilla": 10 } ],
+        { "@sweeteners": 10 }
+      ],
+      "result": { "cordial": 10 },
+      "time": 10.0,
+      "unlock_tech": "distillation",
+      "description": "Infuses rectified spirit with herbs or spices and sweetens it into a cordial."
     }
   ]
 }

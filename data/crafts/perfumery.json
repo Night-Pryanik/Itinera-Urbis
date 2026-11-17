@@ -34,14 +34,50 @@
     },
     {
       // The alembic concentrates the scent of the fragrant material into a small, valuable yield.
+      // Cinnamon stays last so dedicated fragrant botanicals are spent before table spices.
       "id": "attar",
       "name": "Attar",
       "produced_in": [ "perfumer_house" ],
-      "resources": [ [ { "frankincense": 20 }, { "myrrh": 20 }, { "roses": 20 }, { "cinnamon": 20 } ] ],
+      "resources": [ [ { "frankincense": 20 }, { "myrrh": 20 }, { "roses": 20 }, { "chamomile": 20 }, { "cinnamon": 20 } ] ],
       "result": { "attar": 5 },
       "time": 8.0,
       "unlock_tech": "distillation",
       "description": "Distils the scent of the fragrant material into a pure oil."
+    },
+    {
+      "id": "floral_water",
+      "name": "Floral Water",
+      "produced_in": [ "perfumer_house" ],
+      "resources": [ [ { "roses": 20 }, { "chamomile": 20 } ] ],
+      "result": { "floral_water": 10 },
+      "time": 6.0,
+      "unlock_tech": "distillation",
+      "description": "Steam-distils rose petals or chamomile blossoms into fragrant floral water."
+    },
+    {
+      "id": "chamomile_oil",
+      "name": "Chamomile Oil",
+      "produced_in": [ "perfumer_house" ],
+      "resources": { "chamomile": 20 },
+      "result": { "chamomile_oil": 5 },
+      "time": 8.0,
+      "unlock_tech": "distillation",
+      "description": "Steam-distils deep-blue essential oil from chamomile blossoms."
+    },
+    {
+      // Essential oils come before table spices in the alternatives list so the
+      // perfumer uses workshop oils first and draws on spices only when needed.
+      "id": "spirit_perfume",
+      "name": "Fragrant Spirit",
+      "produced_in": [ "perfumer_house" ],
+      "resources": [
+        { "rectified_spirit": 10 },
+        [ { "sandalwood_oil": 10 }, { "chamomile_oil": 10 }, { "nutmeg": 10 }, { "vanilla": 10 }, { "saffron": 10 } ]
+      ],
+      "result": { "spirit_perfume": 10 },
+      "time": 10.0,
+      "unlock_tech": "distillation",
+      "description": "Dissolves distilled oils or rare spices in rectified spirit to make a lasting perfume."
     }
   ]
 }

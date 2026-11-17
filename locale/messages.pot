@@ -3260,6 +3260,10 @@ msgctxt "buildings.description"
 msgid "Works stone into hewn blocks and stone goods for construction."
 msgstr ""
 
+msgctxt "buildings.description"
+msgid "Distils fermented drinks and sweet mashes into strong spirits, rectified spirit and fragrant cordials."
+msgstr ""
+
 msgctxt "buildings.name"
 msgid "Alchemist's House"
 msgstr ""
@@ -3422,6 +3426,10 @@ msgstr ""
 
 msgctxt "buildings.name"
 msgid "Winemaker's House"
+msgstr ""
+
+msgctxt "buildings.name"
+msgid "Distillery"
 msgstr ""
 
 msgctxt "categories.name"
@@ -4096,6 +4104,82 @@ msgctxt "crafts.description"
 msgid "Weaves durable carpets from wool or plant fibers."
 msgstr ""
 
+msgctxt "crafts.description"
+msgid "Distils unhopped beer or rice sake into a strong grain spirit."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Distils grape wine into brandy."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Distils fruit wine or carob wine into fruit brandy."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Distils apple cider into fruit brandy."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Distils palm toddy or a fermented sweet juice into arrack."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Distils fermented agave drink into mezcal."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Distils mead into a strong honey spirit."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Ferments and distils raw milk into arkhi."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Infuses rectified spirit with herbs or spices and sweetens it into a cordial."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Steam-distils rose petals or chamomile blossoms into fragrant floral water."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Steam-distils deep-blue essential oil from chamomile blossoms."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Dissolves distilled oils or rare spices in rectified spirit to make a lasting perfume."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Redistils a fermented drink into concentrated rectified spirit."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Distils pine resin into volatile turpentine and solid rosin."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Dissolves rosin in turpentine or rectified spirit into a clear protective varnish."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Distils bitumen into clear white naphtha and residual tar."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Roasts cinnabar ore in a retort and condenses the vapor into liquid mercury."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Distils hydrochloric acid (spirit of salt) from salt and green vitriol."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Distils hydrochloric acid (spirit of salt) from salt with alum or sulfuric acid."
+msgstr ""
+
 msgctxt "crafts.name"
 msgid "Aged Cheese"
 msgstr ""
@@ -4652,6 +4736,82 @@ msgctxt "crafts.name"
 msgid "Luxury Furniture"
 msgstr ""
 
+msgctxt "crafts.name"
+msgid "Grain Spirit"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Brandy"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Fruit Brandy (from wine)"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Fruit Brandy (from cider)"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Arrack"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Mezcal"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Honey Spirit"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Arkhi"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Cordial"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Floral Water"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Chamomile Oil"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Fragrant Spirit"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Rectified Spirit"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Turpentine and Rosin"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Varnish"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "White Naphtha"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Mercury"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Hydrochloric Acid (from green vitriol)"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Hydrochloric Acid (from alum)"
+msgstr ""
+
 msgctxt "eras.name"
 msgid "Ancient"
 msgstr ""
@@ -5020,6 +5180,10 @@ msgctxt "product_groups.name"
 msgid "Precious Woods"
 msgstr ""
 
+msgctxt "product_groups.name"
+msgid "Strong Spirits"
+msgstr ""
+
 msgctxt "professions.description"
 msgid "A pseudo-profession that covers the whole population of the city, including employed citizens."
 msgstr ""
@@ -5150,6 +5314,22 @@ msgstr ""
 
 msgctxt "professions.description"
 msgid "Works the fields and tends the crops."
+msgstr ""
+
+msgctxt "professions.description"
+msgid "Tends the still and draws strong spirits and rectified spirit from fermented drinks and sweet mashes."
+msgstr ""
+
+msgctxt "professions.description"
+msgid "Distils acids, solvents and reagents in retorts and alembics."
+msgstr ""
+
+msgctxt "professions.description"
+msgid "Cuts stones and works precious metals into jewelry."
+msgstr ""
+
+msgctxt "professions.description"
+msgid "Boils oils, alkali and resin into soap."
 msgstr ""
 
 msgctxt "professions.name"
@@ -5286,6 +5466,22 @@ msgstr ""
 
 msgctxt "professions.name"
 msgid "Winemaker"
+msgstr ""
+
+msgctxt "professions.name"
+msgid "Distiller"
+msgstr ""
+
+msgctxt "professions.name"
+msgid "Alchemist"
+msgstr ""
+
+msgctxt "professions.name"
+msgid "Jeweler"
+msgstr ""
+
+msgctxt "professions.name"
+msgid "Soapmaker"
 msgstr ""
 
 msgctxt "quality_levels.name"
@@ -6684,6 +6880,78 @@ msgctxt "resources.name"
 msgid "Zebu"
 msgstr ""
 
+msgctxt "resources.name"
+msgid "Grain Spirit"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Brandy"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Fruit Brandy"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Arrack"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Mezcal"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Honey Spirit"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Arkhi"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Cordial"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Floral Water"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Chamomile Oil"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Fragrant Spirit"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Rectified Spirit"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Turpentine"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Rosin"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Varnish"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "White Naphtha"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Hydrochloric Acid"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Mercury"
+msgstr ""
+
 msgctxt "roads.description"
 msgid "A leveled road for carts. Three times the load of a trail."
 msgstr ""
@@ -7061,7 +7329,7 @@ msgid "Unlocks the ability to grow water-loving crops: rice and taro.\nAllows fa
 msgstr ""
 
 msgctxt "technologies.description"
-msgid "Unlocks sandalwood oil and attar: the perfumer's house distils heartwood and fragrant materials into oils."
+msgid "Allows you to build the distillery and unlocks distillation across the workshops: strong spirits, rectified spirit, floral water, fragrant oils, turpentine, rosin, varnish, white naphtha, mercury and hydrochloric acid."
 msgstr ""
 
 msgctxt "technologies.description"

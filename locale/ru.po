@@ -3260,6 +3260,10 @@ msgctxt "buildings.description"
 msgid "Works stone into hewn blocks and stone goods for construction."
 msgstr "Обработка камня: тесаные блоки и каменные изделия для строительства."
 
+msgctxt "buildings.description"
+msgid "Distils fermented drinks and sweet mashes into strong spirits, rectified spirit and fragrant cordials."
+msgstr "Перегоняет сброженные напитки и сладкое сусло в крепкие напитки, спирт-ректификат и ароматные настойки."
+
 msgctxt "buildings.name"
 msgid "Alchemist's House"
 msgstr "Дом алхимика"
@@ -3423,6 +3427,10 @@ msgstr "Дом ткача"
 msgctxt "buildings.name"
 msgid "Winemaker's House"
 msgstr "Дом винодела"
+
+msgctxt "buildings.name"
+msgid "Distillery"
+msgstr "Винокурня"
 
 msgctxt "categories.name"
 msgid "Additional Food"
@@ -4096,6 +4104,82 @@ msgctxt "crafts.description"
 msgid "Weaves durable carpets from wool or plant fibers."
 msgstr "Ткёт долговечные ковры из шерсти или растительных волокон."
 
+msgctxt "crafts.description"
+msgid "Distils unhopped beer or rice sake into a strong grain spirit."
+msgstr "Перегоняет неохмелённое пиво или рисовое саке в крепкое хлебное вино."
+
+msgctxt "crafts.description"
+msgid "Distils grape wine into brandy."
+msgstr "Перегоняет виноградное вино в бренди."
+
+msgctxt "crafts.description"
+msgid "Distils fruit wine or carob wine into fruit brandy."
+msgstr "Перегоняет плодовое или рожковое вино во фруктовый дистиллят."
+
+msgctxt "crafts.description"
+msgid "Distils apple cider into fruit brandy."
+msgstr "Перегоняет яблочный сидр во фруктовый дистиллят."
+
+msgctxt "crafts.description"
+msgid "Distils palm toddy or a fermented sweet juice into arrack."
+msgstr "Перегоняет пальмовый тодди или сброженный сладкий сок в арак."
+
+msgctxt "crafts.description"
+msgid "Distils fermented agave drink into mezcal."
+msgstr "Перегоняет сброженный напиток из агавы в мескаль."
+
+msgctxt "crafts.description"
+msgid "Distils mead into a strong honey spirit."
+msgstr "Перегоняет медовуху в крепкий медовый дистиллят."
+
+msgctxt "crafts.description"
+msgid "Ferments and distils raw milk into arkhi."
+msgstr "Сбраживает и перегоняет сырое молоко в архи."
+
+msgctxt "crafts.description"
+msgid "Infuses rectified spirit with herbs or spices and sweetens it into a cordial."
+msgstr "Настаивает спирт-ректификат на травах или пряностях и подслащивает в настойку."
+
+msgctxt "crafts.description"
+msgid "Steam-distils rose petals or chamomile blossoms into fragrant floral water."
+msgstr "Перегоняет с паром лепестки роз или соцветия ромашки в душистую цветочную воду."
+
+msgctxt "crafts.description"
+msgid "Steam-distils deep-blue essential oil from chamomile blossoms."
+msgstr "Перегоняет с паром густо-синее эфирное масло из соцветий ромашки."
+
+msgctxt "crafts.description"
+msgid "Dissolves distilled oils or rare spices in rectified spirit to make a lasting perfume."
+msgstr "Растворяет эфирные масла или редкие пряности в спирте-ректификате, получая стойкую душистую воду."
+
+msgctxt "crafts.description"
+msgid "Redistils a fermented drink into concentrated rectified spirit."
+msgstr "Повторно перегоняет сброженный напиток в крепкий спирт-ректификат."
+
+msgctxt "crafts.description"
+msgid "Distils pine resin into volatile turpentine and solid rosin."
+msgstr "Перегоняет сосновую живицу в летучий скипидар и твёрдую канифоль."
+
+msgctxt "crafts.description"
+msgid "Dissolves rosin in turpentine or rectified spirit into a clear protective varnish."
+msgstr "Растворяет канифоль в скипидаре или спирте-ректификате в прозрачный защитный лак."
+
+msgctxt "crafts.description"
+msgid "Distils bitumen into clear white naphtha and residual tar."
+msgstr "Перегоняет битум в прозрачную белую нефть и остаточную смолу."
+
+msgctxt "crafts.description"
+msgid "Roasts cinnabar ore in a retort and condenses the vapor into liquid mercury."
+msgstr "Обжигает киноварную руду в реторте и осаждает пары в жидкую ртуть."
+
+msgctxt "crafts.description"
+msgid "Distils hydrochloric acid (spirit of salt) from salt and green vitriol."
+msgstr "Перегоняет соляную кислоту (соляной спирт) из соли и железного купороса."
+
+msgctxt "crafts.description"
+msgid "Distils hydrochloric acid (spirit of salt) from salt with alum or sulfuric acid."
+msgstr "Перегоняет соляную кислоту (соляной спирт) из соли с квасцами или серной кислотой."
+
 msgctxt "crafts.name"
 msgid "Aged Cheese"
 msgstr "Выдержанный сыр"
@@ -4652,6 +4736,82 @@ msgctxt "crafts.name"
 msgid "Luxury Furniture"
 msgstr "Элитная мебель"
 
+msgctxt "crafts.name"
+msgid "Grain Spirit"
+msgstr "Хлебное вино"
+
+msgctxt "crafts.name"
+msgid "Brandy"
+msgstr "Бренди"
+
+msgctxt "crafts.name"
+msgid "Fruit Brandy (from wine)"
+msgstr "Фруктовый дистиллят (из вина)"
+
+msgctxt "crafts.name"
+msgid "Fruit Brandy (from cider)"
+msgstr "Фруктовый дистиллят (из сидра)"
+
+msgctxt "crafts.name"
+msgid "Arrack"
+msgstr "Арак"
+
+msgctxt "crafts.name"
+msgid "Mezcal"
+msgstr "Мескаль"
+
+msgctxt "crafts.name"
+msgid "Honey Spirit"
+msgstr "Медовый дистиллят"
+
+msgctxt "crafts.name"
+msgid "Arkhi"
+msgstr "Архи"
+
+msgctxt "crafts.name"
+msgid "Cordial"
+msgstr "Настойка"
+
+msgctxt "crafts.name"
+msgid "Floral Water"
+msgstr "Цветочная вода"
+
+msgctxt "crafts.name"
+msgid "Chamomile Oil"
+msgstr "Ромашковое масло"
+
+msgctxt "crafts.name"
+msgid "Fragrant Spirit"
+msgstr "Душистая вода"
+
+msgctxt "crafts.name"
+msgid "Rectified Spirit"
+msgstr "Спирт-ректификат"
+
+msgctxt "crafts.name"
+msgid "Turpentine and Rosin"
+msgstr "Скипидар и канифоль"
+
+msgctxt "crafts.name"
+msgid "Varnish"
+msgstr "Лак"
+
+msgctxt "crafts.name"
+msgid "White Naphtha"
+msgstr "Белая нефть"
+
+msgctxt "crafts.name"
+msgid "Mercury"
+msgstr "Ртуть"
+
+msgctxt "crafts.name"
+msgid "Hydrochloric Acid (from green vitriol)"
+msgstr "Соляная кислота (из купороса)"
+
+msgctxt "crafts.name"
+msgid "Hydrochloric Acid (from alum)"
+msgstr "Соляная кислота (из квасцов)"
+
 msgctxt "eras.name"
 msgid "Ancient"
 msgstr "Древняя"
@@ -5020,6 +5180,10 @@ msgctxt "product_groups.name"
 msgid "Precious Woods"
 msgstr "Ценные породы древесины"
 
+msgctxt "product_groups.name"
+msgid "Strong Spirits"
+msgstr "Крепкий алкоголь"
+
 msgctxt "professions.description"
 msgid "A pseudo-profession that covers the whole population of the city, including employed citizens."
 msgstr "Псевдо-профессия: охватывает всё население города, включая занятых жителей."
@@ -5151,6 +5315,22 @@ msgstr "Ткёт ткани, одежду и ковры из волокон."
 msgctxt "professions.description"
 msgid "Works the fields and tends the crops."
 msgstr "Возделывает поля, ухаживает за посевами."
+
+msgctxt "professions.description"
+msgid "Tends the still and draws strong spirits and rectified spirit from fermented drinks and sweet mashes."
+msgstr "Следит за перегонным кубом и выгоняет крепкие напитки и спирт-ректификат из сброженных напитков и сладкого сусла."
+
+msgctxt "professions.description"
+msgid "Distils acids, solvents and reagents in retorts and alembics."
+msgstr "Перегоняет кислоты, растворители и реактивы в ретортах и аламбиках."
+
+msgctxt "professions.description"
+msgid "Cuts stones and works precious metals into jewelry."
+msgstr "Ограняет камни и выделывает украшения из благородных металлов."
+
+msgctxt "professions.description"
+msgid "Boils oils, alkali and resin into soap."
+msgstr "Варит мыло из масел, щёлочи и смолы."
 
 msgctxt "professions.name"
 msgid "All Citizens"
@@ -5287,6 +5467,22 @@ msgstr "Мебельщик"
 msgctxt "professions.name"
 msgid "Winemaker"
 msgstr "Винодел"
+
+msgctxt "professions.name"
+msgid "Distiller"
+msgstr "Винокур"
+
+msgctxt "professions.name"
+msgid "Alchemist"
+msgstr "Алхимик"
+
+msgctxt "professions.name"
+msgid "Jeweler"
+msgstr "Ювелир"
+
+msgctxt "professions.name"
+msgid "Soapmaker"
+msgstr "Мыловар"
 
 msgctxt "quality_levels.name"
 msgid "Common"
@@ -6684,6 +6880,78 @@ msgctxt "resources.name"
 msgid "Zebu"
 msgstr "Зебу"
 
+msgctxt "resources.name"
+msgid "Grain Spirit"
+msgstr "Хлебное вино"
+
+msgctxt "resources.name"
+msgid "Brandy"
+msgstr "Бренди"
+
+msgctxt "resources.name"
+msgid "Fruit Brandy"
+msgstr "Фруктовый дистиллят"
+
+msgctxt "resources.name"
+msgid "Arrack"
+msgstr "Арак"
+
+msgctxt "resources.name"
+msgid "Mezcal"
+msgstr "Мескаль"
+
+msgctxt "resources.name"
+msgid "Honey Spirit"
+msgstr "Медовый дистиллят"
+
+msgctxt "resources.name"
+msgid "Arkhi"
+msgstr "Архи"
+
+msgctxt "resources.name"
+msgid "Cordial"
+msgstr "Настойка"
+
+msgctxt "resources.name"
+msgid "Floral Water"
+msgstr "Цветочная вода"
+
+msgctxt "resources.name"
+msgid "Chamomile Oil"
+msgstr "Ромашковое масло"
+
+msgctxt "resources.name"
+msgid "Fragrant Spirit"
+msgstr "Душистая вода"
+
+msgctxt "resources.name"
+msgid "Rectified Spirit"
+msgstr "Спирт-ректификат"
+
+msgctxt "resources.name"
+msgid "Turpentine"
+msgstr "Скипидар"
+
+msgctxt "resources.name"
+msgid "Rosin"
+msgstr "Канифоль"
+
+msgctxt "resources.name"
+msgid "Varnish"
+msgstr "Лак"
+
+msgctxt "resources.name"
+msgid "White Naphtha"
+msgstr "Белая нефть"
+
+msgctxt "resources.name"
+msgid "Hydrochloric Acid"
+msgstr "Соляная кислота"
+
+msgctxt "resources.name"
+msgid "Mercury"
+msgstr "Ртуть"
+
 msgctxt "roads.description"
 msgid "A leveled road for carts. Three times the load of a trail."
 msgstr "Ровная дорога для телег. Позволяет перевозить втрое больше, чем тропка."
@@ -7061,8 +7329,8 @@ msgid "Unlocks the ability to grow water-loving crops: rice and taro.\nAllows fa
 msgstr "Открывает возможность возделывать влаголюбивые культуры: рис и таро.\nПозволяет фермам и плантациям передавать пресную воду по цепочке (до 3 гексов).\nПозволяет осушать болота."
 
 msgctxt "technologies.description"
-msgid "Unlocks sandalwood oil and attar: the perfumer's house distils heartwood and fragrant materials into oils."
-msgstr "Открывает сандаловое масло и аттар: парфюмерный дом перегоняет древесину и ароматическое сырьё в масла."
+msgid "Allows you to build the distillery and unlocks distillation across the workshops: strong spirits, rectified spirit, floral water, fragrant oils, turpentine, rosin, varnish, white naphtha, mercury and hydrochloric acid."
+msgstr "Позволяет строить винокурню и открывает перегонку в мастерских: крепкие напитки, спирт-ректификат, цветочную воду, эфирные масла, скипидар, канифоль, лак, белую нефть, ртуть и соляную кислоту."
 
 msgctxt "technologies.description"
 msgid "Unlocks the recipe for hopped beer."

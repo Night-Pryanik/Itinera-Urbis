@@ -12,11 +12,11 @@
   //   * the product "papyrus" is a member of two goods groups, and product_groups.json
   //     next to this file drops it from both;
   //   * the recipe "green_vitriol", the recipe "ink_from_green_vitriol_galls" and the
-  //     sulfuric-acid recipe that consumes green vitriol are removed with that product.
-  //     The second ink recipe ("ink_from_iron_galls_vinegar") and the sulfuric-acid recipe
-  //     that uses sulfur need neither of them and stay;
-  //   * the remaining sulfuric-acid recipe cannot be used because its producer building is removed.
-  // "glass_bottle" nothing refers to, so it goes without a trace.
+  //     acid recipes that consume green vitriol are removed with that product. The
+  //     second ink recipe ("ink_from_iron_galls_vinegar") and the alternate acid recipes
+  //     need neither of them and stay;
+  //   * the remaining alchemist-only recipes cannot be used because their producer building is removed.
+  // "glass_bottle" stays referenced only through "@tare", which product_groups.json rewrites.
   "blacklist": {
     "buildings": [ "alchemist_house" ],
     "crafts": [
@@ -24,7 +24,8 @@
       "glass_bottle",
       "green_vitriol",
       "ink_from_green_vitriol_galls",
-      "sulfuric_acid_from_green_vitriol"
+      "sulfuric_acid_from_green_vitriol",
+      "hydrochloric_acid_from_green_vitriol"
     ],
     "resources": [ "papyrus", "glass_bottle", "green_vitriol" ]
   }

@@ -65,6 +65,39 @@
       "category": "perfumery",
       "unlock_tech": "distillation",
       "icon": "sandalwood_oil.png"
+    },
+    {
+      // Fragrant hydrosol condensed from rose petals or chamomile blossoms,
+      // sold directly to citizens for table, bath and household use.
+      "id": "floral_water",
+      "price": 38,
+      "name": "Floral Water",
+      "type": "product",
+      "category": "perfumery",
+      "unlock_tech": "distillation",
+      "icon": "floral_water.png"
+    },
+    {
+      // Concentrated essential oil steam-distilled from chamomile blossoms;
+      // an aromatic base for alcohol perfumery, like sandalwood oil.
+      "id": "chamomile_oil",
+      "price": 50,
+      "name": "Chamomile Oil",
+      "type": "product",
+      "category": "perfumery",
+      "unlock_tech": "distillation",
+      "icon": "chamomile_oil.png"
+    },
+    {
+      // Alcohol-based luxury perfume made by dissolving essential oils or fine
+      // spices in rectified spirit.
+      "id": "spirit_perfume",
+      "price": 105,
+      "name": "Fragrant Spirit",
+      "type": "product",
+      "category": "perfumery",
+      "unlock_tech": "distillation",
+      "icon": "spirit_perfume.png"
     }
   ]
 }

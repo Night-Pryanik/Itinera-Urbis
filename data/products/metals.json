@@ -27,6 +27,17 @@
     { "id": "tin", "price": 16, "name": "Tin", "type": "product", "category": "metals", "icon": "tin.png" },
     { "id": "antimony", "price": 18, "name": "Antimony", "type": "product", "category": "metals", "icon": "antimony.png" },
     { "id": "arsenic", "price": 18, "name": "Arsenic", "type": "product", "category": "metals", "icon": "arsenic.png" },
-    { "id": "bronze", "price": 34, "name": "Bronze", "type": "product", "category": "metals", "icon": "bronze.png" }
+    { "id": "bronze", "price": 34, "name": "Bronze", "type": "product", "category": "metals", "icon": "bronze.png" },
+    {
+      // Liquid metal condensed from roasted cinnabar vapor; used by smelters for
+      // precious-metal amalgamation and by jewelers for fire-gilding.
+      "id": "mercury",
+      "price": 42,
+      "name": "Mercury",
+      "type": "product",
+      "category": "metals",
+      "unlock_tech": "distillation",
+      "icon": "mercury.png"
+    }
   ]
 }

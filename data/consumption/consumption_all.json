@@ -74,6 +74,15 @@
       "production_bonus": 0.0
     },
     {
+      // Strong spirits are drunk in smaller measure than everyday fermented drinks
+      // and sit on their own rule so domestic sales can be managed apart from @alcohol.
+      "resource": "@spirits",
+      "profession": [ "all" ],
+      "amount": 5,
+      "interval": 5,
+      "production_bonus": 0.0
+    },
+    {
       "resource": "@non_alcoholic_beverages",
       "profession": [ "all" ],
       "amount": 10,

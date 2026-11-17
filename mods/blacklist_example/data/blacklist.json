@@ -6,12 +6,13 @@
   // PRODUCT in "resources" — two different entities that share a name, and both have to
   // be named. Inside one collection a repeated id changes nothing.
   //
-  // The whole chain goes, because a building without its recipes produces nothing and a
-  // recipe without its building cannot be produced anywhere:
-  //   winemaker_house -> wine, fruit_wine, carob_wine -> wine, fruit_wine, carob_wine
+  // The whole chain goes, because a building without its recipes produces nothing, a
+  // recipe without its building or feedstock cannot run, and a product with no recipe left
+  // has no source (fruit_brandy stays because its cider recipe needs no winemaking):
+  //   winemaker_house -> wine, fruit_wine, carob_wine -> brandy, fruit_brandy
   "blacklist": {
     "buildings": [ "winemaker_house" ],
-    "crafts": [ "wine", "fruit_wine", "carob_wine" ],
-    "resources": [ "wine", "fruit_wine", "carob_wine" ]
+    "crafts": [ "wine", "fruit_wine", "carob_wine", "brandy", "fruit_brandy" ],
+    "resources": [ "wine", "fruit_wine", "carob_wine", "brandy" ]
   }
 }
