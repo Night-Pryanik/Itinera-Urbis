@@ -1761,6 +1761,53 @@ func get_consumption_consumers(res_key: String) -> Array:
                     })
     return result
 
+# The professions that consume a resource by a dedicated rule, i.e. not through the
+# pseudo-profession "all". The resource is addressed by its display_key — the bare id of
+# a product ("coca_leaf") or the "@id" of a group ("@boats"). Both the registry and the
+# legacy product-side rules are taken into account.
+#
+# Such a profession has priority: its citizens are excluded from the headcount of "all"
+# for the same resource (see worker_manager._resident_consumer_count), so a resource
+# declared for both a profession and all residents is written off only once.
+func get_resource_consumer_professions(display_key: String) -> Array:
+    var result: Array = []
+    if display_key.is_empty():
+        return result
+    # A rule with an unresolvable resource is skipped by _build_consumption_entry,
+    # therefore it must not exclude anybody from the "all" headcount either.
+    var valid: bool
+    if is_group_key(display_key):
+        valid = not product_groups.get(display_key.trim_prefix("@"), []).is_empty()
+    else:
+        valid = products.has(display_key)
+    if not valid:
+        return result
+    for rule in consumption_rules:
+        if not (rule is Dictionary):
+            continue
+        if str(rule.get("resource", "")) != display_key:
+            continue
+        if int(rule.get("amount", 0)) <= 0 or float(rule.get("interval", 0)) <= 0.0:
+            continue
+        for prof_id in rule.get("profession", []):
+            var pid := str(prof_id)
+            if pid.is_empty() or pid == "all" or result.has(pid):
+                continue
+            result.append(pid)
+    # The legacy "from the resource" rules live on the product itself and always
+    # address a bare product id.
+    if not is_group_key(display_key) and products.has(display_key):
+        var prod: Dictionary = products[display_key]
+        if prod.has("consumption"):
+            var cons: Dictionary = prod["consumption"]
+            if int(cons.get("amount", 0)) > 0 and float(cons.get("interval", 0)) > 0.0:
+                for prof_id in cons.get("profession", []):
+                    var pid := str(prof_id)
+                    if pid.is_empty() or pid == "all" or result.has(pid):
+                        continue
+                    result.append(pid)
+    return result
+
 # Returns the array of the consumption records for a profession. The sources (in the order of
 # priority):
 #   1) the registry data/consumption.json — the records of the kind

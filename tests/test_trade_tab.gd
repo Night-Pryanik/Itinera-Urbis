@@ -18,7 +18,7 @@
 #     write off the storage and does not pay into the treasury; the plan has no source; the production
 #     bonus is removed; the card stays in the map with enabled = false.
 #  5. get_population_consumption_map: the row key is display_key, the group is NOT
-#     expanded, consumers_total = max("All Citizens", Σ professions).
+#     expanded, consumers_total = "All Citizens" + Σ professions.
 #  6. The fact of the market counter is filled on the write-off and cleared in
 #     reset_counters (lives exactly one tick).
 #  7. SaveManager: the market settings survive saving; in an old save without the
@@ -227,7 +227,7 @@ func _run() -> void:
     var has_group_row := pop_map2.has("@boats")
     check(has_group_row or not pop_map2.has("reed_boat"),
         "the rows of the cards must be keyed by display_key, and not by pid", state)
-    # The fisherman is also part of "All Citizens": consumers_total = max(3, 1) = 3.
+    # No "all" rule writes off boats, so the card has one buyer: the fisherman.
     if has_group_row:
         var boats_row: Dictionary = pop_map2["@boats"]
         check(int(boats_row.get("consumers_total", 0)) == 1,

@@ -51,6 +51,11 @@
   // the entry from this file takes priority; the duplicate entry is ignored.
   // "Resource-side" consumption is left for the single cases where a product
   // has no analogue or assembling a group is not reasonable.
+  //
+  // A resource listed both here and for a profession (consumption_profession.json)
+  // is written off ONCE: the profession has priority, and its citizens are
+  // subtracted from the headcount of the "all" rule for the same resource. The
+  // amount of such an "all" rule is still PER ONE remaining resident.
   "consumption": [
     {
       "resource": "@fruits",
@@ -156,6 +161,9 @@
     {
       // The citizens chew coca leaf raw — the leaf is the good itself,
       // not the raw material of a workshop, so it is written off directly.
+      // Heavy labour professions have their own coca rule and take priority:
+      // their workers are excluded from this headcount (see the header), so the
+      // leaf is written off once per citizen and grants them +10% production.
       "resource": "coca_leaf",
       "profession": [ "all" ],
       "amount": 10,
