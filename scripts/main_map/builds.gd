@@ -53,6 +53,7 @@ func _on_build_completed(row: int, col: int, imp_id: String, target_res_id = nul
             # for which there is no improvement any more.
             tile.improvement = null
             tile.crop_bred = null
+            invalidate_improvement_index()
             # The herd disappears on the demolition — the accumulated occupancy is reset.
             tile["fill_time"] = 0.0
             tile["herd_mature"] = false
@@ -77,6 +78,7 @@ func _on_build_completed(row: int, col: int, imp_id: String, target_res_id = nul
             tile.resource = null
             tile.improvement = null
             tile.crop_bred = null
+            invalidate_improvement_index()
             tile.cover = "none"
             tile["fill_time"] = 0.0
             tile["herd_mature"] = false
@@ -117,6 +119,7 @@ func _on_build_completed(row: int, col: int, imp_id: String, target_res_id = nul
 func _apply_improvement(row: int, col: int, imp_id: String, target_res_id = null) -> void:
     var tile = tile_data[row][col]
     tile.improvement = imp_id
+    invalidate_improvement_index()
     tile["fill_time"] = 0.0
     tile["herd_mature"] = false
     # The production cycle of the new improvement starts from zero.

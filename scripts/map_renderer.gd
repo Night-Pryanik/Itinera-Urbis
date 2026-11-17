@@ -70,6 +70,12 @@ const OUTPOST_FLAG_ICON = "outpost_flag.svg"
 const RIVER_HEX_EVEN_NEIGHBORS := [[0, -1], [0, 1], [-1, -1], [-1, 0], [1, -1], [1, 0]]
 const RIVER_HEX_ODD_NEIGHBORS := [[0, -1], [0, 1], [-1, 0], [-1, 1], [1, 0], [1, 1]]
 
+# Up to this many hexes the whole reachable area is recorded once and panning only
+# moves the transform. Above it the command count dominates every frame, so the
+# drawing is limited to the view plus a margin, and re-recorded when the view leaves it.
+const FULL_DRAW_HEX_LIMIT := 3600
+const CULL_MARGIN_SCREENS := 0.5
+
 var tile_data = []
 # A local texture cache for the drawing of the map (a hot path: an access for
 # every hex on every frame). The paths and the loading are given by IconRegistry - it has
@@ -191,6 +197,7 @@ func initialize(td, main_node):
     # so as not to keep the outdated smoothed points of the previous map.
     _river_smooth_cache.clear()
     _river_frame_cache.clear()
+    _culled_hex_range = {}
     # The rings of the towns could have changed (a new map / a load of a save):
     # we reset the cache of their render - it will be lazily rebuilt from the next frame.
     invalidate_town_influence_cache()
@@ -203,9 +210,9 @@ func _get_viewport_size() -> Vector2:
     return get_viewport_rect().size
 
 # The hexes the map is drawn for. The drawing is recorded in world coordinates and the map
-# pans and zooms by the transform of this node, so the range cannot follow the cursor: it
-# has to cover every position the scroll clamp allows at the zoom the drawing was made for.
-# That is exactly main_map.get_scout_reach_bounds() — the scrollable area of the map.
+# pans and zooms by the transform of this node. While the reachable area is small it is
+# recorded whole (main_map.get_scout_reach_bounds()); once it grows past FULL_DRAW_HEX_LIMIT
+# the range holds only the view plus a margin, and the view re-records it when it leaves.
 #
 # The area is wider than the Region - this is needed for the two scenarios:
 #   1. After the scouting, the hexes in the fog of war (outside the Region) must
@@ -218,15 +225,74 @@ func _get_viewport_size() -> Vector2:
 # `_draw_hex` and `_draw_hex_overlays` themselves decide what to draw:
 # the unexplored hexes outside the Region are a real fog of war, and
 # for them the function simply returns early.
+var _culled_hex_range: Dictionary = {}
+var _culled_rect: Rect2 = Rect2()
+
+# The recorded strip is wider than the screen, so a pan can move the transform for a while
+# without re-recording anything: the world-space commands already cover the next position.
+func _cull_margin() -> float:
+    var screen_size: Vector2 = _get_screen_rect().size
+    return minf(screen_size.x, screen_size.y) * CULL_MARGIN_SCREENS
+
 func _get_draw_hex_range() -> Dictionary:
     if main_map == null:
         return {"row_start": 0, "row_end": 0, "col_start": 0, "col_end": 0}
-    return main_map.get_scout_reach_bounds()
+    var reach: Dictionary = main_map.get_scout_reach_bounds()
+    if not _reach_needs_culling(reach):
+        _culled_hex_range = {}
+        return reach
+    if _culled_hex_range.is_empty() or not _culled_rect.encloses(_get_screen_rect()):
+        _record_culled_range(reach)
+    return _culled_hex_range
+
+func _record_culled_range(reach: Dictionary) -> void:
+    _culled_rect = _get_screen_rect().grow(_cull_margin())
+    _culled_hex_range = _range_for_rect(_culled_rect, reach)
+
+# The screen rectangle already includes the strip a running zoom-out animation is about to
+# uncover (see main_map.get_draw_screen_rect). The hex range is clamped by the reachable area.
+func _range_for_rect(rect: Rect2, reach: Dictionary) -> Dictionary:
+    var radius: float = main_map.HEX_RADIUS
+    var x_spacing := radius * sqrt(3.0)
+    var y_spacing := radius * 1.5
+    var margin := 2
+    var col_start := int(floor(rect.position.x / x_spacing)) - margin
+    var col_end := int(ceil(rect.end.x / x_spacing)) + margin
+    var row_start := int(floor(rect.position.y / y_spacing)) - margin
+    var row_end := int(ceil(rect.end.y / y_spacing)) + margin
+    return {
+        "row_start": maxi(row_start, reach.row_start),
+        "row_end": mini(row_end, reach.row_end),
+        "col_start": maxi(col_start, reach.col_start),
+        "col_end": mini(col_end, reach.col_end)
+    }
+
+func _reach_needs_culling(reach: Dictionary) -> bool:
+    var rows: int = int(reach.row_end) - int(reach.row_start) + 1
+    var cols: int = int(reach.col_end) - int(reach.col_start) + 1
+    return rows > 0 and cols > 0 and rows * cols > FULL_DRAW_HEX_LIMIT
+
+# True only when the view has moved close enough to the edge of the recorded strip that the
+# next pan could uncover an unrecorded hex. A small map records the whole reachable area once
+# and never asks for a re-record.
+func view_needs_record() -> bool:
+    if main_map == null or not _reach_needs_culling(main_map.get_scout_reach_bounds()):
+        return false
+    if _culled_hex_range.is_empty():
+        return true
+    return not _culled_rect.encloses(_get_screen_rect())
 
 # The rectangle of the world covered by the drawing: the hex range grown by the hex radius,
 # used to cull the geometry which is not bound to the hex grid (the roads, the rivers).
 func _get_draw_rect() -> Rect2:
-    var hex_range: Dictionary = _get_draw_hex_range()
+    return _rect_for_hex_range(_get_draw_hex_range())
+
+# The rectangle of the whole reachable area. The river geometry is built against it, so a
+# change of the view does not invalidate the cache; the drawing culls it to the screen.
+func _get_reachable_draw_rect() -> Rect2:
+    return _rect_for_hex_range(main_map.get_scout_reach_bounds())
+
+func _rect_for_hex_range(hex_range: Dictionary) -> Rect2:
     var radius: float = main_map.HEX_RADIUS
     var x_spacing := radius * sqrt(3.0)
     var y_spacing := radius * 1.5
@@ -313,9 +379,9 @@ func _draw():
         return
 
     # The drawing is in WORLD coordinates; the view is applied by the transform of this node.
-    # A scroll therefore does not re-record anything: the recorded commands are replayed
-    # where the transform puts them. This is why the range is the whole scrollable area
-    # (see _get_draw_hex_range) and not the screen rectangle.
+    # While the reachable area is small the whole of it is recorded once and a scroll only
+    # replays those commands. Once the area grows past FULL_DRAW_HEX_LIMIT the range follows
+    # the view instead (see _get_draw_hex_range), and a change of the view re-records it.
     var visible_range = _get_draw_hex_range()
 
     # PHASE 1: The hexes of the drawn area. The hexes of the Region - in detail, the
@@ -529,6 +595,9 @@ func invalidate_town_influence_cache() -> void:
     # The old ImageTexture is released automatically (ref-count) on
     # the overwrite of the reference in _build_town_fill_texture().
     _town_cache_version += 1
+    # The recorded strip is tied to the reachable area and to the fog: a new game or a reveal
+    # changes both, so the next draw builds it from the current view.
+    _culled_hex_range = {}
     # The river geometry is clipped by the fog of war (see _collect_river_segments), so a change
     # of the fog makes it stale too. This is the single hook of the fog changes (the scouting,
     # the claiming, the transition to the next era, the debug reveal), therefore the river cache
@@ -2243,12 +2312,16 @@ func _draw_river_list(river_list: Array,
         body_color: Color, body_width: float,
         highlight_color: Color, highlight_width: float):
     # The rivers are drawn in runs, not as whole polylines: a lightly meandering river
-    # has ~50 points per hex, and the geometry of the drawn area is far larger than one screen.
+    # has ~50 points per hex, and the cached geometry spans the whole reachable area.
+    var visible_rect: Rect2 = _get_draw_rect()
     for river in river_list:
         var entry = _river_frame_cache.get(_river_index(river))
         if entry == null:
             continue
         for seg in entry["segments"]:
+            var seg_rect: Rect2 = seg["rect"]
+            if not seg_rect.intersects(visible_rect):
+                continue
             var run: PackedVector2Array = seg["points"]
             draw_polyline(run, shore_color, shore_width, true)
             draw_polyline(run, body_color, body_width, true)
@@ -2269,14 +2342,13 @@ func _points_hash(river: Array) -> int:
     return roundi(p.x * 10.0) * 31 + roundi(p.y * 10.0)
 
 
-# Rebuilds the geometry of the rivers: the culling by the drawn area, the smoothing (cached),
-# the clipping by the drawn area and by the fog of war. The geometry is in world coordinates
-# and does not depend on the view, therefore it is rebuilt only when the fog of war or the
-# river list changes - never on a scroll.
+# Rebuilds the geometry of the rivers: the culling by the reachable area, the smoothing
+# (cached), the clipping by that area and by the fog of war. The area is independent of the
+# view, so the cache survives panning; the drawing culls the finished segments to the screen.
 func _build_river_frame_cache(radius: float) -> void:
     var river_manager = main_map.get_node("RiverManager")
     var all_rivers: Array = river_manager.get_main_rivers() + river_manager.get_tributaries()
-    var draw_rect: Rect2 = _get_draw_rect()
+    var draw_rect: Rect2 = _get_reachable_draw_rect()
 
     if not _river_frame_cache.is_empty() and _river_cache_rect.encloses(draw_rect):
         # A new river (or a changed path) invalidates the cache: the list of the rivers is
@@ -2348,7 +2420,7 @@ func _collect_river_segments(river: Array, radius: float) -> Array:
     # drawn at all (see _draw_hex), so a river drawn there would float over the black void.
     # The clipping by the drawn area comes first, so the fog of war is tested only for
     # the points that can actually be seen.
-    for line in _clip_river_to_rect(smooth_points, _get_draw_rect()):
+    for line in _clip_river_to_rect(smooth_points, _get_reachable_draw_rect()):
         if line.size() < 2:
             continue
         for run in _split_line_by_fog(line, radius):

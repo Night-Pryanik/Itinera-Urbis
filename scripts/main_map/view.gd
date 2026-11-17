@@ -23,12 +23,19 @@ func _calc_offsets():
     apply_view_transform()
 
 # Applies the current camera (the offset and the scroll) to the renderer. The map is drawn in
-# the world coordinates, so this transform IS the pan and the zoom: no drawing is re-recorded.
+# world coordinates, so the transform is the pan and the zoom. When the reachable area is
+# small the recorded commands already cover it; on a large map the recording is culled to
+# the view and moving it has to re-record the next strip of hexes.
 func apply_view_transform() -> void:
     if map_renderer == null:
         return
     map_renderer.scale = Vector2(zoom, zoom)
     map_renderer.position = _view_position(zoom)
+    # A culled drawing covers only the hexes near the view, so moving the view has to bring
+    # the next strip of hexes into the command list. On a small map the whole reachable area
+    # is recorded once and the transform alone is enough.
+    if map_renderer.view_needs_record():
+        map_renderer.queue_redraw()
 
 # Where the renderer must sit for the camera of scroll_offset read through offsets at `value`.
 func _view_position(value: float) -> Vector2:
@@ -89,9 +96,9 @@ func finish_zoom() -> void:
 # _process of the map: the latter is the simulation and stands still while the active
 # pause is on, and the player must be able to zoom a paused map.
 #
-# A frame of the gesture does NOT redraw the map. The recorded draw commands are reused and
-# only the transform of the renderer changes, so the cost of the animation is the same on a
-# starting Region and on a fully revealed map.
+# On a small map a frame of the gesture only changes the transform, reusing the recorded
+# commands. On a large map the recording is culled to the view, so each frame of the gesture
+# re-records the hexes the transform brings into sight.
 func process_zoom(delta: float) -> void:
     if is_equal_approx(zoom, zoom_target):
         return
@@ -116,6 +123,8 @@ func _apply_zoom_view() -> void:
         return
     map_renderer.scale = Vector2(zoom, zoom)
     map_renderer.position = _zoom_view_position(zoom)
+    if map_renderer.view_needs_record():
+        map_renderer.queue_redraw()
 
 # The position of the renderer for a zoom of the running gesture (see _apply_zoom_view).
 # The scroll the gesture will settle on is clamped by the same limit the drag obeys: without

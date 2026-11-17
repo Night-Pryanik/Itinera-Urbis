@@ -370,8 +370,9 @@ func _set_scroll_offset(offset: Vector2):
     main_map.scroll_offset = Vector2(
         clamp(offset.x, -max_scroll.x, max_scroll.x),
         clamp(offset.y, -max_scroll.y, max_scroll.y))
-    # The map is drawn in the world coordinates, so the pan is only a transform of the
-    # renderer: panning never re-records the drawing.
+    # The map is drawn in world coordinates, so the pan is normally only a transform of the
+    # renderer. On a large map the drawing is culled to the view, and apply_view_transform
+    # re-records the hexes the transform brings into sight.
     main_map.apply_view_transform()
 
 func _apply_scroll(scroll: Vector2):
