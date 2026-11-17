@@ -282,6 +282,24 @@
       "name": "Soapmaker",
       "icon": "profession_soap_maker.png",
       "description": "Boils oils, alkali and resin into soap."
+    },
+    {
+      "id": "chandler",
+      "name": "Chandler",
+      "icon": "profession_chandler.png",
+      "description": "Dips and moulds tallow and beeswax into candles."
+    },
+    {
+      "id": "mason",
+      "name": "Mason",
+      "icon": "profession_mason.png",
+      "description": "Dresses rough stone into ashlar blocks, tableware and mortar."
+    },
+    {
+      "id": "smoker",
+      "name": "Smoker",
+      "icon": "profession_smoker.png",
+      "description": "Cures and smokes fish over slow wood fires."
     }
   ]
 }

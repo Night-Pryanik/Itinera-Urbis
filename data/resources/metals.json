@@ -254,6 +254,50 @@
       "spawn_count": [ 1, 10 ],
       "icon": "arsenic.png",
       "color": [ 192, 192, 192 ]
+    },
+    {
+      "id": "calamine_deposit",
+      "price": 9,
+      "name": "Calamine",
+      "type": "raw",
+      "category": "metals",
+      "group": "",
+      "subgroup": "",
+      "strategic": true,
+      "tech_reveal": "native_metals",
+      "tech_required": "brass_working",
+      "allowed_terrain": [ "hill", "mountain", "rocky_desert" ],
+      "allowed_cover": [
+        "none", "temperate_rainforest_sparse", "temperate_dry_forest_sparse",
+        "temperate_rainforest", "temperate_dry_forest"
+      ],
+      "improved_by": "mine",
+      "produces": { "calamine_ore": 10 },
+      "spawn_count": [ 1, 10 ],
+      "icon": "calamine.png",
+      "color": [ 215, 205, 175 ]
+    },
+    {
+      "id": "galena_deposit",
+      "price": 8,
+      "name": "Galena",
+      "type": "raw",
+      "category": "metals",
+      "group": "",
+      "subgroup": "",
+      "strategic": true,
+      "tech_reveal": "native_metals",
+      "tech_required": "metallurgy",
+      "allowed_terrain": [ "hill", "mountain", "rocky_desert" ],
+      "allowed_cover": [
+        "none", "temperate_rainforest_sparse", "temperate_dry_forest_sparse",
+        "temperate_rainforest", "temperate_dry_forest"
+      ],
+      "improved_by": "mine",
+      "produces": { "galena_ore": 10 },
+      "spawn_count": [ 1, 10 ],
+      "icon": "galena.png",
+      "color": [ 130, 135, 145 ]
     }
   ]
 }

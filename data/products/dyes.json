@@ -134,6 +134,51 @@
       "category": "material",
       "unlock_tech": "dyeing",
       "icon": "quebracho_brown.png"
+    },
+    {
+      "id": "lead_white",
+      "price": 38,
+      "name": "Lead White",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "dyeing",
+      "icon": "lead_white.png"
+    },
+    {
+      "id": "minium",
+      "price": 26,
+      "name": "Minium",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "limestone_burning",
+      "icon": "minium.png"
+    },
+    {
+      "id": "verdigris",
+      "price": 36,
+      "name": "Verdigris",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "dyeing",
+      "icon": "verdigris.png"
+    },
+    {
+      "id": "orpiment",
+      "price": 28,
+      "name": "Orpiment",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "dyeing",
+      "icon": "orpiment.png"
+    },
+    {
+      "id": "smalt",
+      "price": 44,
+      "name": "Smalt",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "potash_making",
+      "icon": "smalt.png"
     }
   ]
 }

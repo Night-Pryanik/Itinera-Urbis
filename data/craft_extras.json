@@ -53,6 +53,11 @@
     { "id": "ultramarine", "kind": "dye", "amount": 10, "unlock_tech": "dyeing" },
     { "id": "purple", "kind": "dye", "amount": 10, "unlock_tech": "dyeing" },
     { "id": "sumac_yellow", "kind": "dye", "amount": 10, "unlock_tech": "dyeing" },
-    { "id": "quebracho_brown", "kind": "dye", "amount": 10, "unlock_tech": "dyeing" }
+    { "id": "quebracho_brown", "kind": "dye", "amount": 10, "unlock_tech": "dyeing" },
+    { "id": "lead_white", "kind": "dye", "amount": 10, "unlock_tech": "dyeing" },
+    { "id": "minium", "kind": "dye", "amount": 10, "unlock_tech": "limestone_burning" },
+    { "id": "verdigris", "kind": "dye", "amount": 10, "unlock_tech": "dyeing" },
+    { "id": "orpiment", "kind": "dye", "amount": 10, "unlock_tech": "dyeing" },
+    { "id": "smalt", "kind": "dye", "amount": 10, "unlock_tech": "potash_making" }
   ]
 }

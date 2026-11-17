@@ -1,5 +1,14 @@
 {
   "resources": [
-    
+    {
+      // Graduated brass scales, dividers and astrolabes used by scholars in libraries and scriptoriums.
+      "id": "precision_instruments",
+      "price": 95,
+      "name": "Precision Instruments",
+      "type": "product",
+      "category": "equipment",
+      "unlock_tech": "brass_working",
+      "icon": "precision_instruments.png"
+    }
   ]
 }

@@ -31,7 +31,7 @@
     {
       "id": "processed_construction_materials",
       "name": "Processed Building Materials",
-      "products": [ "processed_building_stone", "bricks" ]
+      "products": [ "processed_building_stone", "bricks", "mortar" ]
     }
   ]
 }

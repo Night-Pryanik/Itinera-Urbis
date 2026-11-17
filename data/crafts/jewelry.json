@@ -135,6 +135,28 @@
       "time": 18,
       "unlock_tech": "jewelry",
       "description": "Makes jewelry out of coral."
+    },
+    {
+      "id": "brass_jewelry",
+      "name": "Brass Jewelry",
+      "produced_in": [ "jeweler_house" ],
+      "resources": { "brass": 10, "charcoal": 10 },
+      "result": { "brass_jewelry": 10 },
+      "extra_kinds": ["gemstone"],
+      "time": 15,
+      "unlock_tech": "brass_working",
+      "description": "Makes jewelry out of golden brass."
+    },
+    {
+      "id": "silver_tableware",
+      "name": "Silver Tableware",
+      "produced_in": [ "jeweler_house" ],
+      "resources": { "silver": 10, "charcoal": 10 },
+      "result": { "silver_tableware": 10 },
+      "extra_kinds": ["gemstone"],
+      "time": 15,
+      "unlock_tech": "jewelry",
+      "description": "Hammers and chases silver into fine goblets, dishes and ewers."
     }
   ]
 }

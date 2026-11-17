@@ -149,6 +149,57 @@
       "time": 5.0,
       "unlock_tech": "dyeing",
       "description": "Makes a dye (quebracho brown) from quebracho wood."
+    },
+    {
+      "id": "lead_white",
+      "name": "Lead White",
+      "produced_in": [ "dyer_house" ],
+      "resources": { "lead": 10, "vinegar": 10 },
+      "result": { "lead_white": 10 },
+      "time": 6.0,
+      "unlock_tech": "dyeing",
+      "description": "Corrodes lead plates over vinegar vapour into opaque white pigment."
+    },
+    {
+      "id": "minium",
+      "name": "Minium",
+      "produced_in": [ "lime_kilns", "dyer_house" ],
+      "resources": { "lead": 10, "charcoal": 10 },
+      "result": { "minium": 10 },
+      "time": 6.0,
+      "unlock_tech": "limestone_burning",
+      "description": "Roasts lead slowly in air into bright orange-red minium pigment."
+    },
+    {
+      "id": "verdigris",
+      "name": "Verdigris",
+      "produced_in": [ "dyer_house" ],
+      "resources": { "copper": 10, "vinegar": 10 },
+      "result": { "verdigris": 10 },
+      "time": 6.0,
+      "unlock_tech": "dyeing",
+      "description": "Steeps copper over vinegar vapour and scrapes off vivid blue-green verdigris."
+    },
+    {
+      "id": "orpiment",
+      "name": "Orpiment",
+      "produced_in": [ "dyer_house" ],
+      "resources": { "arsenic_ore": 20 },
+      "result": { "orpiment": 10 },
+      "time": 5.0,
+      "unlock_tech": "dyeing",
+      "description": "Grinds golden arsenic sulfide ore into luminous yellow orpiment pigment."
+    },
+    {
+      // Smalt is specifically a potassium-cobalt silicate glass, tying the pigment to potash.
+      "id": "smalt",
+      "name": "Smalt",
+      "produced_in": [ "glassmaker_house", "dyer_house" ],
+      "resources": { "cobalt_ore": 10, "quartz_sand": 10, "potash": 10 },
+      "result": { "smalt": 10 },
+      "time": 7.0,
+      "unlock_tech": "potash_making",
+      "description": "Fuses roasted cobalt ore with quartz sand and potash and grinds the blue glass into smalt."
     }
   ]
 }

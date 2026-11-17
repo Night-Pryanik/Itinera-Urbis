@@ -107,7 +107,8 @@
         "potter",
         "vinedresser",
         "blacksmith",
-        "furniture_maker"
+        "furniture_maker",
+        "mason"
       ],
       "amount": 10,
       "interval": 10,
@@ -226,6 +227,160 @@
       "amount": 10,
       "interval": 10,
       "production_bonus": 0.1
+    },
+    {
+      // Saltpeter clarifies molten glass as an oxidizing fining agent and cures
+      // smoked meat and landed fish.
+      "resource": "saltpeter",
+      "profession": [ "glassmaker", "smoker", "fisherman" ],
+      "amount": 10,
+      "interval": 10,
+      "production_bonus": 0.1
+    },
+    {
+      // Nitric acid parts silver from gold in assaying and etches and cleans worked metal.
+      "resource": "nitric_acid",
+      "profession": [ "smelter", "jeweler", "blacksmith" ],
+      "amount": 10,
+      "interval": 10,
+      "production_bonus": 0.15
+    },
+    {
+      // Aqua regia dissolves and refines gold to high purity for jewelers and alchemists.
+      "resource": "aqua_regia",
+      "profession": [ "jeweler", "alchemist" ],
+      "amount": 10,
+      "interval": 15,
+      "production_bonus": 0.2
+    },
+    {
+      // Black powder splits hard rock seams in underground mines and stone quarries.
+      "resource": "gunpowder",
+      "profession": [ "miner", "quarryman" ],
+      "amount": 10,
+      "interval": 15,
+      "production_bonus": 0.25
+    },
+    {
+      // Graduated brass balances, dividers and astrolabes speed measurement and calculation.
+      "resource": "precision_instruments",
+      "profession": [ "scientist" ],
+      "amount": 10,
+      "interval": 20,
+      "production_bonus": 0.2
+    },
+    {
+      // Molten lead draws base impurities out of silver and gold in cupellation and assaying.
+      "resource": "lead",
+      "profession": [ "smelter", "jeweler" ],
+      "amount": 10,
+      "interval": 15,
+      "production_bonus": 0.1
+    },
+    {
+      // Vitreous glaze seals fired earthenware and stoneware into smooth, waterproof vessels.
+      "resource": "ceramic_glaze",
+      "profession": [ "potter" ],
+      "amount": 10,
+      "interval": 10,
+      "production_bonus": 0.15
+    },
+    {
+      // Cast movable type multiplies the output of the bookbinder's press.
+      "resource": "type_metal",
+      "profession": [ "bookbinder" ],
+      "amount": 10,
+      "interval": 15,
+      "production_bonus": 0.25
+    },
+    {
+      // Alkaline potash lye scours and bleaches woven cloth and sets dye vats.
+      "resource": "potash",
+      "profession": [ "weaver", "dyer" ],
+      "amount": 10,
+      "interval": 10,
+      "production_bonus": 0.1
+    },
+    {
+      // Borax dissolves metal oxides in soldering and assaying and eases the melting
+      // of ceramic glazes and heat-resistant glass.
+      "resource": "borax",
+      "profession": [ "jeweler", "blacksmith", "smelter", "potter", "glassmaker" ],
+      "amount": 10,
+      "interval": 15,
+      "production_bonus": 0.15
+    },
+    {
+      // Sal ammoniac strips oxide film in tinning and brazing and sharpens mordant dyes.
+      "resource": "sal_ammoniac",
+      "profession": [ "blacksmith", "jeweler", "dyer" ],
+      "amount": 10,
+      "interval": 15,
+      "production_bonus": 0.15
+    },
+    {
+      // Fine white kaolin fills paper fibres into an opaque, smooth writing surface.
+      "resource": "kaolin",
+      "profession": [ "paper_maker" ],
+      "amount": 10,
+      "interval": 10,
+      "production_bonus": 0.1
+    },
+    {
+      // Smalt imparts a fire-fast cobalt blue to ceramic glazes and blown glass.
+      "resource": "smalt",
+      "profession": [ "potter", "glassmaker" ],
+      "amount": 10,
+      "interval": 15,
+      "production_bonus": 0.15
+    },
+    {
+      // Calcined plaster casts repeatable pottery and foundry moulds and dresses stonework.
+      "resource": "plaster",
+      "profession": [ "potter", "smelter", "mason" ],
+      "amount": 10,
+      "interval": 10,
+      "production_bonus": 0.1
+    },
+    {
+      // Hydraulic lime mortar beds and binds cut masonry in the stonecutter's yard.
+      "resource": "mortar",
+      "profession": [ "mason" ],
+      "amount": 10,
+      "interval": 10,
+      "production_bonus": 0.15
+    },
+    {
+      // Rendered tallow curries and waterproofs tanned hides and tallows cask joints.
+      "resource": "tallow",
+      "profession": [ "tanner", "cooper" ],
+      "amount": 10,
+      "interval": 10,
+      "production_bonus": 0.1
+    },
+    {
+      // Tallow candles light mine workings and everyday reading tables.
+      "resource": "tallow_candles",
+      "profession": [ "miner", "scientist" ],
+      "amount": 10,
+      "interval": 10,
+      "production_bonus": 0.1
+    },
+    {
+      // Clean beeswax candles illuminate libraries, scriptoriums and binderies without soot.
+      "resource": "wax_candles",
+      "profession": [ "scientist", "bookbinder" ],
+      "amount": 10,
+      "interval": 15,
+      "production_bonus": 0.15
+    },
+    {
+      // Tarred ropes haul ore and stone from wet shafts and quarries and rig fishing boats.
+      "resource": "tarred_ropes",
+      "profession": [ "miner", "quarryman", "fisherman" ],
+      "amount": 10,
+      "interval": 15,
+      "production_bonus": 0.15
     }
   ]
 }

@@ -422,6 +422,119 @@
       "produces": { "sulfur": 10 },
       "icon": "sulfur.png",
       "color": [ 230, 220, 50 ]
+    },
+    {
+      // Natural nitre efflorescence of dry plains, foothills and desert flats;
+      // wetter belts produce saltpeter by leaching nitrary earth with potash instead.
+      "id": "saltpeter_deposit",
+      "price": 10,
+      "name": "Saltpeter",
+      "type": "raw",
+      "category": "minerals",
+      "group": "minerals",
+      "subgroup": "",
+      "strategic": true,
+      "tech_required": "alchemy",
+      "allowed_terrain": [ "plain", "hill", "rocky_desert" ],
+      "allowed_cover": [ "none" ],
+      "allowed_climate_zones": [ "steppe", "savanna_dry", "tropical_dry" ],
+      "improved_by": "mine",
+      "produces": { "saltpeter": 10 },
+      "icon": "saltpeter.png",
+      "color": [ 245, 240, 225 ]
+    },
+    {
+      // Tincal crust of arid high plateaus and dry rocky basins; kept off soda_lake
+      // so the unique soda deposit never loses its hex.
+      "id": "borax_deposit",
+      "price": 14,
+      "name": "Borax",
+      "type": "raw",
+      "category": "minerals",
+      "group": "minerals",
+      "subgroup": "",
+      "strategic": true,
+      "tech_required": "alchemy",
+      "allowed_terrain": [ "mountain", "rocky_desert" ],
+      "allowed_cover": [ "none" ],
+      "allowed_climate_zones": [ "boreal_dry", "steppe", "savanna_dry", "tropical_dry" ],
+      "improved_by": "quarry",
+      "produces": { "borax": 10 },
+      "icon": "borax.png",
+      "color": [ 235, 245, 250 ]
+    },
+    {
+      // Sublimated ammonium chloride encrusting volcanic vents and burning coal seams.
+      "id": "sal_ammoniac_deposit",
+      "price": 14,
+      "name": "Sal Ammoniac",
+      "type": "raw",
+      "category": "minerals",
+      "group": "minerals",
+      "subgroup": "",
+      "strategic": true,
+      "tech_required": "alchemy",
+      "allowed_terrain": [ "mountain", "rocky_desert" ],
+      "allowed_cover": [ "none" ],
+      "improved_by": "mine",
+      "produces": { "sal_ammoniac": 10 },
+      "icon": "sal_ammoniac.png",
+      "color": [ 230, 230, 240 ]
+    },
+    {
+      // Pure white primary clay weathered from feldspar-rich hills and mountains.
+      "id": "kaolin_deposit",
+      "price": 8,
+      "name": "Kaolin",
+      "type": "raw",
+      "category": "minerals",
+      "group": "minerals",
+      "subgroup": "",
+      "strategic": true,
+      "tech_required": "pottery",
+      "allowed_terrain": [ "hill", "mountain" ],
+      "allowed_cover": [
+        "none", "temperate_rainforest_sparse", "temperate_dry_forest_sparse",
+        "temperate_rainforest", "temperate_dry_forest",
+        "tropical_rainforest_sparse", "tropical_dry_forest_sparse"
+      ],
+      "improved_by": "clay_pit",
+      "produces": { "kaolin": 10 },
+      "icon": "kaolin.png",
+      "color": [ 250, 248, 242 ]
+    },
+    {
+      "id": "cobalt_deposit",
+      "price": 15,
+      "name": "Cobalt",
+      "type": "raw",
+      "category": "minerals",
+      "group": "minerals",
+      "subgroup": "dye_minerals",
+      "strategic": true,
+      "tech_required": "dyeing",
+      "allowed_terrain": [ "hill", "mountain", "rocky_desert" ],
+      "allowed_cover": [ "none", "temperate_rainforest_sparse", "temperate_dry_forest_sparse", "temperate_rainforest", "temperate_dry_forest" ],
+      "improved_by": "mine",
+      "produces": { "cobalt_ore": 10 },
+      "icon": "cobalt.png",
+      "color": [ 35, 75, 190 ]
+    },
+    {
+      "id": "gypsum_deposit",
+      "price": 5,
+      "name": "Gypsum",
+      "type": "raw",
+      "category": "minerals",
+      "group": "minerals",
+      "subgroup": "construction_materials",
+      "tech_required": "mining",
+      "allowed_terrain": [ "plain", "hill", "rocky_desert" ],
+      "allowed_cover": [ "none", "temperate_rainforest_sparse", "temperate_dry_forest_sparse", "temperate_rainforest", "temperate_dry_forest" ],
+      "improved_by": "quarry",
+      "produces": { "gypsum": 10 },
+      "icon": "gypsum.png",
+      "color": [ 238, 235, 228 ]
     }
   ]
 }

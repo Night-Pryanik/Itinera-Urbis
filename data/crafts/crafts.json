@@ -36,15 +36,27 @@
     },
     {
       // The prestige good of the pottery line (see the header comment of
-      // data/products/food.json).
+      // data/products/food.json). Kaolin stands first where available, with common
+      // clay keeping the prestige recipe open to any city that earns the brand.
       "id": "porcelain",
       "name": "Porcelain",
       "produced_in": [ "pottery_workshop" ],
-      "resources": { "clay": 20 },
+      "resources": [ [ { "kaolin": 20 }, { "clay": 20 } ] ],
       "result": { "porcelain": 10 },
       "time": 12,
       "unlock_tech": "pottery",
       "description": "Fires the clay of the city into the thin, ringing ware the towns pay a name for."
+    },
+    {
+      "id": "fine_ceramics",
+      "name": "Fine Ceramics",
+      "produced_in": [ "pottery_workshop" ],
+      "resources": { "kaolin": 20 },
+      "result": { "fine_ceramics": 10 },
+      "extra_kinds": ["dye"],
+      "time": 6.0,
+      "unlock_tech": "pottery",
+      "description": "Throws and fires white kaolin clay into thin, hard ceramic tableware."
     },
     {
       "id": "amphora",
@@ -182,6 +194,40 @@
       "description": "Blows bottles from molten glass."
     },
     {
+      // Forest glass spends potash with lime stabilizer and extra fuel over a longer melt,
+      // so natural soda remains the faster and cheaper flux whenever it can be mined or bought.
+      "id": "glassware_from_potash",
+      "name": "Glassware (forest glass)",
+      "produced_in": [ "glassmaker_house" ],
+      "resources": { "quartz_sand": 20, "potash": 10, "lime": 10, "charcoal": 10 },
+      "result": { "glassware": 10 },
+      "time": 9.0,
+      "unlock_tech": "potash_making",
+      "description": "Melts quartz sand with potash, lime and charcoal into forest glassware."
+    },
+    {
+      "id": "glass_bottle_from_potash",
+      "name": "Glass Bottle (forest glass)",
+      "produced_in": [ "glassmaker_house" ],
+      "resources": { "quartz_sand": 20, "potash": 10, "lime": 10, "charcoal": 10 },
+      "result": { "glass_bottle": 10 },
+      "time": 9.0,
+      "unlock_tech": "glassblowing",
+      "description": "Blows sturdy bottles from potash-lime forest glass."
+    },
+    {
+      // Potash-lead crystal glass unlocked by Chemistry: demands purified potash and lead
+      // flux calculation beyond antiquity glassblowing.
+      "id": "crystal_glassware",
+      "name": "Crystal Glassware",
+      "produced_in": [ "glassmaker_house" ],
+      "resources": { "quartz_sand": 20, "lead": 10, "potash": 10 },
+      "result": { "crystal_glassware": 10 },
+      "time": 8.0,
+      "unlock_tech": "chemistry",
+      "description": "Fuses quartz sand with lead and potash into clear, brilliant crystal tableware."
+    },
+    {
       "id": "ropes",
       "name": "Ropes and Cables",
       "produced_in": [ "ropemaker_house" ],
@@ -235,11 +281,23 @@
       "id": "soap",
       "name": "Soap",
       "produced_in": [ "soap_maker_house" ],
-      "resources": { "vegetable_oil": 10, "soda": 10 },
+      "resources": [ [ { "vegetable_oil": 10 }, { "tallow": 10 } ], { "soda": 10 } ],
       "result": { "soap": 10 },
       "time": 5.0,
       "unlock_tech": "soap_making",
-      "description": "Turns oil and soda into soap."
+      "description": "Turns oil or tallow and soda into soap."
+    },
+    {
+      // Potash lye alone yields soft soap; causticizing with quicklime and salting out with
+      // common salt turns it into firm bars, keeping natural soda far faster and thriftier.
+      "id": "soap_from_potash",
+      "name": "Soap (from potash lye)",
+      "produced_in": [ "soap_maker_house" ],
+      "resources": [ [ { "tallow": 10 }, { "vegetable_oil": 10 } ], { "potash": 10 }, { "lime": 10 }, { "salt": 10 } ],
+      "result": { "soap": 10 },
+      "time": 9.0,
+      "unlock_tech": "potash_making",
+      "description": "Boils tallow or oil with lime-causticized potash lye and salts the batch out into hard soap."
     },
     {
       "id": "silk",
@@ -280,6 +338,38 @@
       "time": 8.0,
       "unlock_tech": "limestone_burning",
       "description": "Roasts pyrite to obtain sulfur."
+    },
+    {
+      // Restricted to ash-rich broadleaf timbers (@potash_woods) plus charcoal over a long cycle
+      // so common forest wood cannot flood the alkali market or displace natural soda lakes.
+      "id": "potash",
+      "name": "Potash",
+      "produced_in": [ "lime_kilns" ],
+      "resources": { "@potash_woods": 30, "charcoal": 10 },
+      "result": { "potash": 10 },
+      "time": 10.0,
+      "unlock_tech": "potash_making",
+      "description": "Burns broadleaf hardwood timber, leaches the ash and calcines the lye into potash."
+    },
+    {
+      "id": "mortar",
+      "name": "Lime Mortar",
+      "produced_in": [ "lime_kilns", "mason_workshop" ],
+      "resources": [ { "lime": 10 }, [ { "tuff": 10 }, { "quartz_sand": 10 } ] ],
+      "result": { "mortar": 10 },
+      "time": 5.0,
+      "unlock_tech": "limestone_burning",
+      "description": "Slakes lime with volcanic tuff or quartz sand into durable hydraulic mortar."
+    },
+    {
+      "id": "plaster",
+      "name": "Gypsum Plaster",
+      "produced_in": [ "lime_kilns" ],
+      "resources": [ [ { "gypsum": 20 }, { "alabaster": 20 } ] ],
+      "result": { "plaster": 10 },
+      "time": 5.0,
+      "unlock_tech": "limestone_burning",
+      "description": "Calcines gypsum or alabaster into fine setting plaster for moulds and stucco."
     },
     {
       "id": "papyrus",
@@ -430,6 +520,26 @@
       "time": 14.0,
       "unlock_tech": "wood_processing",
       "description": "Makes fine furniture from precious hardwoods."
+    },
+    {
+      "id": "tallow_candles",
+      "name": "Tallow Candles",
+      "produced_in": [ "chandler_house", "soap_maker_house" ],
+      "resources": { "tallow": 20 },
+      "result": { "tallow_candles": 10 },
+      "time": 5.0,
+      "unlock_tech": "candle_making",
+      "description": "Dips wicks in rendered animal tallow to make cheap everyday and miner's candles."
+    },
+    {
+      "id": "wax_candles",
+      "name": "Wax Candles",
+      "produced_in": [ "chandler_house" ],
+      "resources": { "wax": 20 },
+      "result": { "wax_candles": 10 },
+      "time": 5.0,
+      "unlock_tech": "candle_making",
+      "description": "Moulds clean beeswax around braided wicks into bright, smokeless candles."
     }
   ]
 }
