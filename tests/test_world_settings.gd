@@ -10,7 +10,8 @@
 #   4. The number of towns is a plain number field: digits only, clamped to the allowed
 #      range, zero allowed. The buttons beside it step the number and stop at the bounds.
 #   5. The proportional checkbox computes the count from the map size and takes the input
-#      away from the field and the buttons while it is on.
+#      away from the field and the buttons while it is on. Both proportional switches start
+#      on: a new world scales its towns and its rivers with the map by default.
 #   6. The map preview of both tabs follows the settings, and the water on it is the sea the
 #      generator builds for those settings (the modes, the edges, the islands, the shallows,
 #      the beaches). A town dot stands only on land the city can reach: one that would fall
@@ -23,6 +24,9 @@
 #   9. The "Rivers" section: the four settings (also out of data/map_config.json), their
 #      fields, and the schematic main rivers on the picture — the chosen count, no tributaries,
 #      not a single point in the water, and no two rivers meeting each other or themselves.
+#      The proportional switch scales only the counts from the map side and locks their fields.
+#      The counts are averages: each world rolls a little more or fewer rivers around them.
+#      The minimum lengths stay a manual choice at every map size.
 #  10. The resource density scales the number of specimens a resource spawns: a density below
 #      standard never reduces a lone specimen, a density above it multiplies even a lone one,
 #      and a resource with spawn_count 0 stays unspawned at any density.
@@ -74,6 +78,17 @@ func _run() -> void:
     if dialog == null:
         _finish(state)
         return
+
+    # Both proportional switches start on: a new world scales its towns and rivers with the
+    # map. The checks below drive the fields by hand, so switch both off for them.
+    check(menu.proportional_check.button_pressed, "the towns are proportional by default", state)
+    check(menu.proportional_river_check != null
+            and menu.proportional_river_check.button_pressed,
+            "the rivers are proportional by default", state)
+    menu.proportional_check.button_pressed = false
+    menu._refresh_town_row()
+    menu.proportional_river_check.button_pressed = false
+    menu._refresh_river_fields()
 
     # --- 1. One window, three tabs, one size ---
     var tabs: TabContainer = menu.tab_container
@@ -299,10 +314,10 @@ func _run() -> void:
 
     # --- 5. The step buttons and the proportional count ---
     check(menu.proportional_check != null, "the row owns a proportional checkbox", state)
-    check(not menu.proportional_check.button_pressed, "the count is manual by default", state)
-    check(menu.town_count_edit.editable, "the field takes input by default", state)
+    check(not menu.proportional_check.button_pressed, "the count is manual here", state)
+    check(menu.town_count_edit.editable, "the field takes input while manual", state)
     check(not menu.town_count_minus.disabled and not menu.town_count_plus.disabled,
-            "the step buttons are enabled by default", state)
+            "the step buttons are enabled while manual", state)
 
     menu._on_town_count_step(1)
     check(menu._selected_town_count() == 11,
@@ -723,9 +738,9 @@ func _run() -> void:
     river_edit.text = "3"
     river_stepper.get_child(2).pressed.emit()
     check(river_edit.text == "4", "the river count steps by one (got %s)" % river_edit.text, state)
-    river_edit.text = "20"
+    river_edit.text = "40"
     river_stepper.get_child(2).pressed.emit()
-    check(river_edit.text == "20", "the river step stops at the upper bound", state)
+    check(river_edit.text == "40", "the river step stops at the upper bound", state)
     river_edit.text = "0"
     river_stepper.get_child(0).pressed.emit()
     check(river_edit.text == "0", "the river step stops at zero", state)
@@ -740,7 +755,7 @@ func _run() -> void:
     sides_spec["to"].text = "2"
     size_spec["from"].text = "1"
     size_spec["to"].text = "5"
-    river_edit.text = "3"
+    river_edit.text = "6"
     menu._normalize_sea_fields()
     menu._normalize_river_fields()
 
@@ -771,9 +786,15 @@ func _run() -> void:
 
     check(menu.river_controls.size() == 4,
             "the world tab owns four river settings (got %d)" % menu.river_controls.size(), state)
+    var count_row: HBoxContainer = menu.proportional_river_check.get_parent()
+    var count_label: Label = count_row.get_child(0) as Label
+    check(count_label.text == tr("Number of rivers")
+            and menu.proportional_river_check.text == tr("Proportional"),
+            "the count row reads 'Number of rivers' with a 'Proportional' checkbox (got %s / %s)"
+                    % [count_label.text, menu.proportional_river_check.text], state)
     var river_defaults: Dictionary = menu._selected_river_config()
-    check(int(river_defaults["num_main_rivers"]) == 3
-            and int(river_defaults["num_tributaries"]) == 5
+    check(int(river_defaults["num_main_rivers"]) == 6
+            and int(river_defaults["num_tributaries"]) == 10
             and int(river_defaults["min_river_length"]) == 8
             and int(river_defaults["min_tributary_length"]) == 4,
             "the river settings start from their defaults (got %s)" % str(river_defaults), state)
@@ -785,6 +806,82 @@ func _run() -> void:
         check(carrier != null and not carrier.tooltip_text.is_empty(),
                 "the river setting %s has a tooltip" % key, state)
 
+    # The proportional switch moves only the counts from the map side and locks their fields
+    # and buttons. They are AVERAGES, marked with a "≈": a world rolls its own number around
+    # them. The minimum lengths stay a manual choice and keep taking input.
+    menu.proportional_river_check.button_pressed = true
+    menu._refresh_river_fields()
+    check(not menu.river_controls["num_main_rivers"]["control"].editable,
+            "the count fields are read only while they follow the map", state)
+    check(menu.river_controls["num_main_rivers"]["minus"].disabled
+            and menu.river_controls["num_tributaries"]["plus"].disabled,
+            "the count step buttons are off while they follow the map", state)
+    check(menu.river_controls["min_river_length"]["control"].editable
+            and menu.river_controls["min_tributary_length"]["control"].editable,
+            "the minimum length fields stay editable", state)
+    menu.map_size_option.select(1)
+    menu._on_map_size_selected(1)
+    check(menu.river_controls["num_main_rivers"]["control"].text == "≈6"
+            and menu.river_controls["num_tributaries"]["control"].text == "≈10",
+            "the fields show the averages, not fixed counts (got %s / %s)"
+                    % [menu.river_controls["num_main_rivers"]["control"].text,
+                    menu.river_controls["num_tributaries"]["control"].text], state)
+    check(menu.river_controls["min_river_length"]["control"].text == "8"
+            and menu.river_controls["min_tributary_length"]["control"].text == "4",
+            "the minimum lengths stay exact", state)
+
+    # The same settings give different worlds: each seed rolls a count near the average
+    # (6 ± 2 main rivers, 10 ± 3 tributaries), never the average on every map.
+    var saved_seed: int = menu._preview_seed
+    var seen: Dictionary = {}
+    for sample_seed in range(1, 13):
+        menu._preview_seed = sample_seed
+        var rolled: Dictionary = menu._selected_river_config()
+        var main_count := int(rolled["num_main_rivers"])
+        var trib_count := int(rolled["num_tributaries"])
+        check(main_count >= 4 and main_count <= 8 and trib_count >= 7 and trib_count <= 13,
+                "seed %d rolls the counts near the average (got %d / %d)"
+                        % [sample_seed, main_count, trib_count], state)
+        check(int(rolled["min_river_length"]) == 8
+                and int(rolled["min_tributary_length"]) == 4,
+                "seed %d leaves the minimum lengths alone" % sample_seed, state)
+        seen[main_count] = true
+    check(seen.size() > 1, "different worlds get different river counts (got %s)"
+            % str(seen.keys()), state)
+    menu._preview_seed = saved_seed
+    menu._refresh_preview()
+
+    menu.map_size_option.select(0)
+    menu._on_map_size_selected(0)
+    check(menu.river_controls["num_main_rivers"]["control"].text == "≈3"
+            and menu.river_controls["num_tributaries"]["control"].text == "≈5",
+            "a small map scales the counts down", state)
+    check(menu.river_controls["min_river_length"]["control"].text == "8"
+            and menu.river_controls["min_tributary_length"]["control"].text == "4",
+            "the minimum lengths do not follow the map", state)
+
+    menu.map_size_option.select(4)
+    menu._on_map_size_selected(4)
+    check(menu.river_controls["num_main_rivers"]["control"].text == "≈20"
+            and menu.river_controls["num_tributaries"]["control"].text == "≈33"
+            and menu.river_controls["min_river_length"]["control"].text == "8"
+            and menu.river_controls["min_tributary_length"]["control"].text == "4",
+            "a giant map scales the counts up but leaves the lengths alone", state)
+    var giant: Dictionary = menu._selected_river_config()
+    check(int(giant["num_main_rivers"]) >= 14 and int(giant["num_main_rivers"]) <= 26
+            and int(giant["num_tributaries"]) >= 23 and int(giant["num_tributaries"]) <= 43,
+            "a giant map rolls its counts with a wider spread (got %s)" % str(giant), state)
+
+    menu.proportional_river_check.button_pressed = false
+    menu._refresh_river_fields()
+    check(menu.river_controls["num_main_rivers"]["control"].editable,
+            "the count fields take input again", state)
+    check(not menu.river_controls["num_main_rivers"]["minus"].disabled,
+            "the river step buttons are enabled again", state)
+    check(menu.river_controls["num_main_rivers"]["control"].text == "20",
+            "the average becomes a plain manual number (got %s)"
+                    % menu.river_controls["num_main_rivers"]["control"].text, state)
+
     var main_rivers_edit: LineEdit = menu.river_controls["num_main_rivers"]["control"]
     main_rivers_edit.text = ""
     menu._keep_number(main_rivers_edit, "4a", false)
@@ -792,8 +889,8 @@ func _run() -> void:
             % main_rivers_edit.text, state)
     main_rivers_edit.text = "999"
     menu._normalize_river_fields()
-    check(main_rivers_edit.text == "20"
-            and int(menu._selected_river_config()["num_main_rivers"]) == 20,
+    check(main_rivers_edit.text == "40"
+            and int(menu._selected_river_config()["num_main_rivers"]) == 40,
             "a count above the maximum is pulled to it (got %s)" % main_rivers_edit.text, state)
 
     # The default sea of the dialog has water, so every main river the setting asks for has a

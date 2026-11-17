@@ -87,6 +87,12 @@ const SEA_FLOAT := "float"
 const SEA_PAIR := "pair"
 const SEA_CHECK := "check"
 
+# The counts that follow the map size are averages, not promises: a world rolls its own number
+# of rivers around them. A spread of 30% keeps the worlds recognisably similar without making
+# them identical. The minimum lengths are constraints, so they are never rolled.
+const RIVER_COUNT_KEYS: Array[String] = ["num_main_rivers", "num_tributaries"]
+const RIVER_COUNT_SPREAD := 0.3
+
 @onready var continue_button = $VBoxContainer/ContinueButton
 @onready var new_game_button = $VBoxContainer/NewGameButton
 @onready var load_game_button = $VBoxContainer/LoadGameButton
@@ -123,6 +129,9 @@ var sea_controls: Dictionary = {}
 var sea_rows: Array = []
 # The "Rivers" section of the world settings, keyed by its field in CityData.world_rivers.
 var river_controls: Dictionary = {}
+# The rivers can follow the map size like the towns do. While they do, all four fields are
+# read only and their step buttons are off.
+var proportional_river_check: CheckBox = null
 # The map previews, one on the City tab and one on the World tab. Both show the same world,
 # so they are refreshed together.
 var world_previews: Array = []
@@ -235,6 +244,7 @@ func _on_new_game():
     tab_container.current_tab = TAB_CITY
     _popup_new_game_dialog()
     _refresh_town_row()
+    _refresh_river_fields()
     _refresh_sea_rows()
     _preview_seed = _roll_preview_seed()
     _refresh_preview()
@@ -648,6 +658,9 @@ func _build_world_settings(column: VBoxContainer):
     proportional_check.text = tr("Proportional")
     proportional_check.tooltip_text = tr("Proportional to the map size")
     proportional_check.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+    # Set before the signal is wired so building the layout does not rebuild the preview;
+    # the fields are refreshed once the dialog opens.
+    proportional_check.button_pressed = true
     proportional_check.toggled.connect(_on_proportional_toggled)
 
     var towns_control := HBoxContainer.new()
@@ -769,21 +782,30 @@ func _build_sea_settings(column: VBoxContainer):
             tr("The radius around the city that is always land, in hexes."), 0, 50, noise)
 
 # The "Rivers" section: how many rivers the world gets and how long they have to be. The
-# preview draws the main rivers in the chosen count; the tributaries are not on it.
+# preview draws the main rivers in this world's rolled count; the tributaries are not on it.
+# Only the counts can follow the map size; the minimum lengths stay a manual choice.
 func _build_river_settings(column: VBoxContainer):
     _add_section_header(column, tr("Rivers"))
+    proportional_river_check = CheckBox.new()
+    proportional_river_check.text = tr("Proportional")
+    proportional_river_check.tooltip_text = tr("Proportional to the map size")
+    proportional_river_check.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+    proportional_river_check.button_pressed = true
+    proportional_river_check.toggled.connect(_on_proportional_rivers_toggled)
+    _add_setting_row(column, tr("Number of rivers"), proportional_river_check)
     _add_river_int_row(column, "num_main_rivers", tr("Main rivers"),
-            tr("The number of main rivers. A main river starts in the mountains and mouths in a lake or the sea."),
-            0, 20)
+            tr("The average number of main rivers. A main river starts in the mountains and mouths in a lake or the sea; a world gets a little more or fewer than the average."),
+            0, 40)
     _add_river_int_row(column, "num_tributaries", tr("Tributaries"),
-            tr("The number of tributaries. A tributary starts in the mountains or on the hills and flows into a river."),
-            0, 50)
+            tr("The average number of tributaries. A tributary starts in the mountains or on the hills and flows into a river; a world gets a little more or fewer than the average."),
+            0, 80)
     _add_river_int_row(column, "min_river_length", tr("Shortest main river"),
             tr("The least length of a main river, in hexes."), 1, 100)
     _add_river_int_row(column, "min_tributary_length", tr("Shortest tributary"),
             tr("The least length of a tributary, in hexes."), 1, 100)
 
-# A whole-number row of the "Rivers" section.
+# A whole-number row of the "Rivers" section. The step buttons are kept with the spec so the
+# proportional switch can take them away together with the field.
 func _add_river_int_row(column: VBoxContainer, key: String, label: String, tooltip: String,
         lo: int, hi: int):
     var default := int(_river_default(key))
@@ -791,7 +813,7 @@ func _add_river_int_row(column: VBoxContainer, key: String, label: String, toolt
     var control := _stepped_field(edit, 1, false, lo, hi, default, _normalize_river_fields)
     _add_setting_row(column, label, control, tooltip)
     river_controls[key] = {"kind": SEA_INT, "control": edit, "lo": lo, "hi": hi,
-            "default": default}
+            "default": default, "minus": control.get_child(0), "plus": control.get_child(2)}
 
 # A heading of the settings list, with a line above it: the sections of a long list read
 # apart, and the line tells where the next one starts.
@@ -958,18 +980,77 @@ func _selected_sea_config() -> Dictionary:
                 cfg[key] = _read_pair(spec)
     return cfg
 
-# The river configuration the world will be generated with.
+# The river configuration the world will be generated with. While the counts follow the map,
+# they are rolled around their average from the preview seed, which is also the world seed: the
+# picture and the generated world therefore get the same number of rivers. The minimum lengths
+# are always read from the fields.
 func _selected_river_config() -> Dictionary:
     var cfg: Dictionary = CityData.DEFAULT_RIVERS.duplicate(true)
+    var side := _selected_map_size()
+    var proportional := proportional_river_check != null \
+            and proportional_river_check.button_pressed
     for key in river_controls.keys():
         var spec: Dictionary = river_controls[key]
-        cfg[key] = _read_whole(spec["control"], spec["lo"], spec["hi"], spec["default"])
+        if proportional and key in RIVER_COUNT_KEYS:
+            cfg[key] = _rolled_river_count(_proportional_river_value(side, spec), key, spec)
+        else:
+            # The minimum lengths are constraints chosen by the player, not a map-size average.
+            cfg[key] = _read_whole(spec["control"], spec["lo"], spec["hi"], spec["default"])
     return cfg
+
+# The average count that follows the map size uses the same side-based factor as the towns: the
+# medium map keeps the base count, and a bigger map gets proportionally more rivers.
+func _proportional_river_value(side: int, spec: Dictionary) -> int:
+    var base := int(spec["default"])
+    var scaled := roundi(float(base) * float(side) / float(DEFAULT_MAP_SIZE))
+    return clampi(scaled, int(spec["lo"]), int(spec["hi"]))
+
+# A world gets a number near the average rather than the average itself. The spread grows with
+# the average so a giant map varies more than a small one, and the salt keeps the two kinds of
+# rivers on separate rolls while staying the same from one rebuild to the next.
+func _rolled_river_count(average: int, key: String, spec: Dictionary) -> int:
+    var spread := maxi(1, roundi(float(average) * RIVER_COUNT_SPREAD))
+    var rng := RandomNumberGenerator.new()
+    var salt := 7919 if key == "num_tributaries" else 0
+    rng.seed = _preview_seed + salt
+    return clampi(average + rng.randi_range(-spread, spread),
+            int(spec["lo"]), int(spec["hi"]))
+
+# Brings the two count fields in line with the map. While the switch is on they show the average
+# and take no input — a number the player cannot change must not look editable. When it goes off,
+# the number the field was showing becomes the manual one. The minimum lengths are not affected.
+func _refresh_river_fields():
+    if proportional_river_check == null or river_controls.is_empty():
+        return
+    var proportional := proportional_river_check.button_pressed
+    var side := _selected_map_size()
+    for key in RIVER_COUNT_KEYS:
+        var spec: Dictionary = river_controls.get(key)
+        if spec == null:
+            continue
+        var edit: LineEdit = spec["control"]
+        edit.editable = not proportional
+        spec["minus"].disabled = proportional
+        spec["plus"].disabled = proportional
+        if proportional:
+            if edit.has_focus():
+                edit.release_focus()
+            # The count is a target, not what every world gets; the sign is the only honest way
+            # to show an average in a number field.
+            edit.text = "≈%d" % _proportional_river_value(side, spec)
+        else:
+            edit.text = str(_read_whole(edit, spec["lo"], spec["hi"], spec["default"]))
+
+func _on_proportional_rivers_toggled(_pressed: bool):
+    _refresh_river_fields()
+    _refresh_preview()
 
 # A whole number of a sea setting. An empty or a malformed field is read as the default of
 # the setting: the game must never be started with a number that cannot be parsed.
 func _read_whole(edit: LineEdit, lo: int, hi: int, fallback: int) -> int:
-    var raw := edit.text.strip_edges()
+    # A count that follows the map shows its average as "≈N"; turning the switch off keeps that
+    # number as the manual starting value.
+    var raw := edit.text.strip_edges().trim_prefix("≈").strip_edges()
     if not raw.is_valid_int():
         return clampi(fallback, lo, hi)
     return clampi(int(raw), lo, hi)
@@ -1006,7 +1087,13 @@ func _normalize_sea_fields():
 
 # Every field of the "Rivers" section shows the value the game will use, like the sea fields.
 func _normalize_river_fields():
-    for spec in river_controls.values():
+    var proportional := proportional_river_check != null \
+            and proportional_river_check.button_pressed
+    for key in river_controls.keys():
+        # A count that follows the map shows "≈N"; normalising it here would drop the sign.
+        if proportional and key in RIVER_COUNT_KEYS:
+            continue
+        var spec: Dictionary = river_controls[key]
         spec["control"].text = str(_read_whole(spec["control"], spec["lo"],
                 spec["hi"], spec["default"]))
 
@@ -1017,6 +1104,9 @@ func _format_number(value: float) -> String:
 # The fields of the "Seas" section take digits only; a fraction also takes a decimal point
 # and a minus sign at the front.
 func _keep_number(edit: LineEdit, text: String, fractional: bool):
+    # A read-only field shows a computed average that may carry a "≈" sign.
+    if not edit.editable:
+        return
     var filtered := ""
     var has_point := false
     for ch in text:
@@ -1077,6 +1167,7 @@ func _on_map_size_selected(index: int):
     if custom and custom_size_edit.text.strip_edges().is_empty():
         custom_size_edit.text = str(DEFAULT_MAP_SIZE)
     _refresh_town_row()
+    _refresh_river_fields()
     _refresh_preview()
     if not custom:
         return
@@ -1091,6 +1182,7 @@ func _on_custom_size_text_changed(text: String):
     var raw := custom_size_edit.text.strip_edges()
     if not raw.is_empty() and int(raw) >= MIN_MAP_SIZE and int(raw) <= MAX_MAP_SIZE:
         _refresh_town_row()
+        _refresh_river_fields()
         _queue_preview_refresh()
 
 # A number outside the allowed range is pulled to the nearest bound when the field loses
@@ -1098,11 +1190,13 @@ func _on_custom_size_text_changed(text: String):
 func _normalize_custom_size():
     custom_size_edit.text = str(_selected_map_size())
     _refresh_town_row()
+    _refresh_river_fields()
     _refresh_preview()
 
 func _on_custom_size_step(step: int):
     custom_size_edit.text = str(clampi(_selected_map_size() + step, MIN_MAP_SIZE, MAX_MAP_SIZE))
     _refresh_town_row()
+    _refresh_river_fields()
     _refresh_preview()
 
 # The town count is a whole number of the same kind.

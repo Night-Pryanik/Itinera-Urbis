@@ -50,6 +50,9 @@ const TOWN_COLOR := Color.WHITE
 const TOWN_OUTLINE_COLOR := Color.BLACK
 const CITY_COLOR := Color(0.95, 0.78, 0.35)
 const RIVER_COLOR := Color(0.36, 0.62, 0.90)
+# A dark bank around the river line separates it from the belt underneath. The blue alone
+# disappears on the green of the temperate zone and on the blue of the boreal one.
+const RIVER_OUTLINE_COLOR := Color(0.04, 0.10, 0.16, 0.85)
 const TITLE_COLOR := Color(0.90, 0.90, 0.90)
 const CAPTION_COLOR := Color(0.62, 0.62, 0.62)
 
@@ -113,6 +116,9 @@ const CITY_RADIUS := 4.5
 # The river line keeps a visible width on a small map and a proportional one on a large map.
 const RIVER_WIDTH_RATIO := 0.009
 const RIVER_MIN_WIDTH := 1.5
+# The bank is drawn wider than the water; both widths grow together so the outline keeps its
+# share of the line on every map size.
+const RIVER_OUTLINE_RATIO := 1.75
 # Town dots keep a gap, so a town moved off the sea does not land on one already drawn.
 const MIN_TOWN_GAP := 7.0
 # The city keeps a ring of its own: the nearest town stands clear of it instead of touching
@@ -1015,12 +1021,16 @@ func _draw_rivers(square: Rect2) -> void:
     if grid <= 0 or rivers.is_empty() or square.size.x <= 0.0:
         return
     var width := maxf(RIVER_MIN_WIDTH, square.size.x * RIVER_WIDTH_RATIO)
+    var outline_width := width * RIVER_OUTLINE_RATIO
     for path in rivers:
         if path.size() < 2:
             continue
         var points := PackedVector2Array()
         for point in path:
             points.append(square.position + point * (square.size / float(grid)))
+        # The bank goes down first, the water on top of it: the outline shows on both sides of
+        # the line, which is what keeps the river readable over a belt of a similar colour.
+        draw_polyline(points, RIVER_OUTLINE_COLOR, outline_width, true)
         draw_polyline(points, RIVER_COLOR, width, true)
 
 # The player's city stands in the middle of the map. A dark ring behind it keeps the gold

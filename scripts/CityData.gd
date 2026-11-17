@@ -142,9 +142,13 @@ var world_sea: Dictionary = DEFAULT_SEA.duplicate(true)
 # settings of a new game (the "Rivers" section), and RiverManager reads the result from
 # world_rivers. Main rivers run from a source in the mountains to a lake or the sea;
 # tributaries flow into the rivers. The lengths are measured in path points.
+#
+# The counts are AVERAGES on a standard map, not fixed numbers: when the rivers follow the map
+# size, each world rolls its own count around the average (see main_menu.gd). The minimum
+# lengths are hard constraints and stay exact.
 const DEFAULT_RIVERS := {
-    "num_main_rivers": 3,
-    "num_tributaries": 5,
+    "num_main_rivers": 6,
+    "num_tributaries": 10,
     "min_river_length": 8,
     "min_tributary_length": 4,
 }

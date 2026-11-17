@@ -14,9 +14,10 @@
 # graph), so the search expands close to the path corridor. All hex edges have the same length,
 # therefore the number of edges is proportional to the path length.
 #
-# The number of rivers and the minimum lengths are chosen by the player in the world
-# settings of a new game (CityData.world_rivers): num_main_rivers, num_tributaries,
-# min_river_length, min_tributary_length.
+# The number of rivers and the minimum lengths come from the world settings of a new game
+# (CityData.world_rivers): num_main_rivers, num_tributaries, min_river_length,
+# min_tributary_length. When the rivers follow the map size, the counts are rolled around an
+# average in the menu, so this manager always receives the exact number for this world.
 #
 # The rivers and the lakes give production bonuses to the resources by the improvements
 # that have access to fresh water.

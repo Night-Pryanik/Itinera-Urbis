@@ -2163,6 +2163,9 @@ msgstr "Перейти в главное меню"
 msgid "Rivers"
 msgstr "Реки"
 
+msgid "Number of rivers"
+msgstr "Количество рек"
+
 msgid "Road"
 msgstr "Дорога"
 
@@ -2637,11 +2640,11 @@ msgstr "Самая узкая полоса берега, в гексах. Нол
 msgid "The number of islands follows the area of the sea: the area times this share, plus a random spread. A small sea often gets none, a large one may get many."
 msgstr "Число островов следует за площадью моря: площадь, умноженная на эту долю, плюс случайный разброс. В маленьком море островов часто нет, в большом их может быть много."
 
-msgid "The number of main rivers. A main river starts in the mountains and mouths in a lake or the sea."
-msgstr "Число главных рек. Главная река начинается в горах и впадает в озеро или море."
+msgid "The average number of main rivers. A main river starts in the mountains and mouths in a lake or the sea; a world gets a little more or fewer than the average."
+msgstr "Среднее число главных рек. Главная река начинается в горах и впадает в озеро или море; в каждом мире их немного больше или меньше среднего."
 
-msgid "The number of tributaries. A tributary starts in the mountains or on the hills and flows into a river."
-msgstr "Число притоков. Приток начинается в горах или на холмах и впадает в реку."
+msgid "The average number of tributaries. A tributary starts in the mountains or on the hills and flows into a river; a world gets a little more or fewer than the average."
+msgstr "Среднее число притоков. Приток начинается в горах или на холмах и впадает в реку; в каждом мире их немного больше или меньше среднего."
 
 msgid "The pictures of the game. A set from the tilesets folder replaces only the types of icons it declares; every other type keeps the original pictures. The choice is remembered, and the interface is redrawn at once."
 msgstr "Рисунки игры. Набор из папки tilesets заменяет только те типы иконок, которые он объявляет; остальные типы сохраняют исходные рисунки. Выбор запоминается, и интерфейс перерисовывается сразу."
