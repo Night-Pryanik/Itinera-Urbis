@@ -896,7 +896,7 @@
       "improved_by": "lumberjack_hut",
       "tech_required": "wood_processing",
       "produces": { "sandalwood": 10 },
-      "icon": "sandalwood.png",
+      "icon": "sandalwood_tree.png",
       "color": [ 180, 160, 120 ]
     },
     {
