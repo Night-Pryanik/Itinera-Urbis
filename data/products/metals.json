@@ -38,6 +38,54 @@
       "category": "metals",
       "unlock_tech": "distillation",
       "icon": "mercury.png"
+    },
+    {
+      "id": "brass",
+      "price": 36,
+      "name": "Brass",
+      "type": "product",
+      "category": "metals",
+      "unlock_tech": "brass_working",
+      "icon": "brass.png"
+    },
+    {
+      // Volatile metal reduced from calamine and caught by condensation in closed retorts.
+      "id": "zinc",
+      "price": 32,
+      "name": "Zinc",
+      "type": "product",
+      "category": "metals",
+      "unlock_tech": "distillation",
+      "icon": "zinc.png"
+    },
+    {
+      "id": "lead",
+      "price": 16,
+      "name": "Lead",
+      "type": "product",
+      "category": "metals",
+      "unlock_tech": "metallurgy",
+      "icon": "lead.png"
+    },
+    {
+      // Malleable table alloy of tin hardened with antimony or lead.
+      "id": "pewter",
+      "price": 42,
+      "name": "Pewter",
+      "type": "product",
+      "category": "metals",
+      "unlock_tech": "metallurgy",
+      "icon": "pewter.png"
+    },
+    {
+      // Printing alloy of lead stiffened with antimony and tin so cast letters expand into the mould.
+      "id": "type_metal",
+      "price": 80,
+      "name": "Type Metal",
+      "type": "product",
+      "category": "metals",
+      "unlock_tech": "printing",
+      "icon": "type_metal.png"
     }
   ]
 }

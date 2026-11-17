@@ -3272,6 +3272,10 @@ msgctxt "buildings.description"
 msgid "Distils fermented drinks and sweet mashes into strong spirits, rectified spirit and fragrant cordials."
 msgstr ""
 
+msgctxt "buildings.description"
+msgid "Dips rendered tallow and moulds beeswax into candles for households, mines and workshops."
+msgstr ""
+
 msgctxt "buildings.name"
 msgid "Alchemist's House"
 msgstr ""
@@ -3438,6 +3442,10 @@ msgstr ""
 
 msgctxt "buildings.name"
 msgid "Distillery"
+msgstr ""
+
+msgctxt "buildings.name"
+msgid "Chandler's House"
 msgstr ""
 
 msgctxt "categories.name"
@@ -3749,10 +3757,6 @@ msgid "Dissolves the fragrant material in oil and keeps the scent in a jar."
 msgstr ""
 
 msgctxt "crafts.description"
-msgid "Distils sulfuric acid from green vitriol (iron sulfate)."
-msgstr ""
-
-msgctxt "crafts.description"
 msgid "Distils tar out of resin."
 msgstr ""
 
@@ -4001,10 +4005,6 @@ msgid "Produces parchment from animal hides by liming them."
 msgstr ""
 
 msgctxt "crafts.description"
-msgid "Produces sulfuric acid (oil of vitriol) from sulfur."
-msgstr ""
-
-msgctxt "crafts.description"
 msgid "Roasts pyrite to obtain sulfur."
 msgstr ""
 
@@ -4073,7 +4073,7 @@ msgid "Turns hides into tough leather."
 msgstr ""
 
 msgctxt "crafts.description"
-msgid "Turns oil and soda into soap."
+msgid "Turns oil or tallow and soda into soap."
 msgstr ""
 
 msgctxt "crafts.description"
@@ -4185,7 +4185,167 @@ msgid "Distils hydrochloric acid (spirit of salt) from salt and green vitriol."
 msgstr ""
 
 msgctxt "crafts.description"
-msgid "Distils hydrochloric acid (spirit of salt) from salt with alum or sulfuric acid."
+msgid "Leaches nitrified lime earth with potash and crystallizes saltpeter."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Digests clay with sulfuric acid and potash and crystallizes potash alum."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Sublimes salt and hearth soot in sealed vessels into white sal ammoniac."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Fuses quartz sand, a metal oxide and an alkaline or borax flux into ceramic glaze."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Distils nitric acid (aqua fortis) from saltpeter and green vitriol."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Mills saltpeter, sulfur and charcoal into black powder for blasting rock."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Heats copper with calamine ore and charcoal in sealed crucibles to produce brass."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Reduces calamine ore in sealed retorts and condenses the vapour into metallic zinc."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Melts copper directly with metallic zinc into a cleaner, richer batch of brass."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Forges and casts corrosion-resistant brass tools for craftsmen."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Casts and engraves graduated brass balances, dividers and astrolabes for scholars."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Smelts and cupels galena ore into soft lead and a smaller yield of silver."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Alloys tin with antimony or lead into bright pewter for tableware."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Melts lead with antimony and tin into sharp-casting printing alloy."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Shapes copper, bronze, brass or pewter into durable plates, pitchers and bowls."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Makes jewelry out of golden brass."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Hammers and chases silver into fine goblets, dishes and ewers."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Throws and fires white kaolin clay into thin, hard ceramic tableware."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Melts quartz sand with potash, lime and charcoal into forest glassware."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Blows sturdy bottles from potash-lime forest glass."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Fuses quartz sand with lead and potash into clear, brilliant crystal tableware."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Boils tallow or oil with lime-causticized potash lye and salts the batch out into hard soap."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Burns broadleaf hardwood timber, leaches the ash and calcines the lye into potash."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Slakes lime with volcanic tuff or quartz sand into durable hydraulic mortar."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Calcines gypsum or alabaster into fine setting plaster for moulds and stucco."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Dips wicks in rendered animal tallow to make cheap everyday and miner's candles."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Moulds clean beeswax around braided wicks into bright, smokeless candles."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Corrodes lead plates over vinegar vapour into opaque white pigment."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Roasts lead slowly in air into bright orange-red minium pigment."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Steeps copper over vinegar vapour and scrapes off vivid blue-green verdigris."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Grinds golden arsenic sulfide ore into luminous yellow orpiment pigment."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Fuses roasted cobalt ore with quartz sand and potash and grinds the blue glass into smalt."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Curdles boiled soybean milk with gypsum or salt and presses it into firm tofu."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Burns sulfur under moist condensing vessels into sulfuric acid."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Distils sulfuric acid (oil of vitriol) from roasted green vitriol."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Distils hydrochloric acid (spirit of salt) from salt and alum."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Displaces hydrochloric acid from common salt with sulfuric acid."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Distils nitric acid (aqua fortis) from saltpeter and alum."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Displaces nitric acid from saltpeter with sulfuric acid."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Dissolves sal ammoniac in nitric acid into gold-dissolving aqua regia."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Compounds concentrated nitric and hydrochloric acids into gold-dissolving aqua regia."
 msgstr ""
 
 msgctxt "crafts.name"
@@ -4661,10 +4821,6 @@ msgid "Sulfur"
 msgstr ""
 
 msgctxt "crafts.name"
-msgid "Sulfuric Acid"
-msgstr ""
-
-msgctxt "crafts.name"
 msgid "Sumac Yellow"
 msgstr ""
 
@@ -4818,6 +4974,166 @@ msgstr ""
 
 msgctxt "crafts.name"
 msgid "Hydrochloric Acid (from alum)"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Saltpeter (nitrary)"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Alum (potash alum)"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Sal Ammoniac (sublimed)"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Ceramic Glaze"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Nitric Acid (from green vitriol)"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Nitric Acid (from alum)"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Gunpowder"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Brass (cementation)"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Zinc"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Brass (from zinc)"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Brass Tools"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Precision Instruments"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Lead"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Pewter"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Type Metal"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Metal Tableware"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Brass Jewelry"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Silver Tableware"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Fine Ceramics"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Glassware (forest glass)"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Glass Bottle (forest glass)"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Crystal Glassware"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Soap (from potash lye)"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Potash"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Lime Mortar"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Gypsum Plaster"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Tallow Candles"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Wax Candles"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Lead White"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Minium"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Verdigris"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Orpiment"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Smalt"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Tofu"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Sulfuric Acid (from sulfur)"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Sulfuric Acid (from green vitriol)"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Hydrochloric Acid (from sulfuric acid)"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Nitric Acid (from sulfuric acid)"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Aqua Regia (from sal ammoniac)"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Aqua Regia (from acids)"
 msgstr ""
 
 msgctxt "eras.name"
@@ -5192,6 +5508,18 @@ msgctxt "product_groups.name"
 msgid "Strong Spirits"
 msgstr ""
 
+msgctxt "product_groups.name"
+msgid "Furniture"
+msgstr ""
+
+msgctxt "product_groups.name"
+msgid "Potash Hardwoods"
+msgstr ""
+
+msgctxt "product_groups.name"
+msgid "Candles"
+msgstr ""
+
 msgctxt "professions.description"
 msgid "A pseudo-profession that covers the whole population of the city, including employed citizens."
 msgstr ""
@@ -5338,6 +5666,22 @@ msgstr ""
 
 msgctxt "professions.description"
 msgid "Boils oils, alkali and resin into soap."
+msgstr ""
+
+msgctxt "professions.description"
+msgid "Crafts furniture and luxury furniture from timber."
+msgstr ""
+
+msgctxt "professions.description"
+msgid "Dips and moulds tallow and beeswax into candles."
+msgstr ""
+
+msgctxt "professions.description"
+msgid "Dresses rough stone into ashlar blocks, tableware and mortar."
+msgstr ""
+
+msgctxt "professions.description"
+msgid "Cures and smokes fish over slow wood fires."
 msgstr ""
 
 msgctxt "professions.name"
@@ -5490,6 +5834,18 @@ msgstr ""
 
 msgctxt "professions.name"
 msgid "Soapmaker"
+msgstr ""
+
+msgctxt "professions.name"
+msgid "Chandler"
+msgstr ""
+
+msgctxt "professions.name"
+msgid "Mason"
+msgstr ""
+
+msgctxt "professions.name"
+msgid "Smoker"
 msgstr ""
 
 msgctxt "quality_levels.name"
@@ -6960,6 +7316,162 @@ msgctxt "resources.name"
 msgid "Mercury"
 msgstr ""
 
+msgctxt "resources.name"
+msgid "Calamine"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Calamine Ore"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Galena"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Galena Ore"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Saltpeter"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Borax"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Sal Ammoniac"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Kaolin"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Cobalt"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Cobalt Ore"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Gypsum"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Tallow"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Brass"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Zinc"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Lead"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Pewter"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Type Metal"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Potash"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Ceramic Glaze"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Nitric Acid"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Aqua Regia"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Gunpowder"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Lime Mortar"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Gypsum Plaster"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Lead White"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Minium"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Verdigris"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Orpiment"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Smalt"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Brass Tools"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Brass Jewelry"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Precision Instruments"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Fine Ceramics"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Crystal Glassware"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Metal Tableware"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Silver Tableware"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Tallow Candles"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Wax Candles"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Tofu"
+msgstr ""
+
 msgctxt "roads.description"
 msgid "A leveled road for carts. Three times the load of a trail."
 msgstr ""
@@ -7137,7 +7649,7 @@ msgid "Adds one production slot to the animal mill and the water mill.\n+10% to 
 msgstr ""
 
 msgctxt "technologies.description"
-msgid "Adds one production slot to the bookbinder's workshop."
+msgid "Adds one production slot to the bookbinder's workshop and unlocks type metal in the smelter."
 msgstr ""
 
 msgctxt "technologies.description"
@@ -7190,10 +7702,6 @@ msgstr ""
 
 msgctxt "technologies.description"
 msgid "Allows you to build the Market city building."
-msgstr ""
-
-msgctxt "technologies.description"
-msgid "Allows you to build the alchemist's house."
 msgstr ""
 
 msgctxt "technologies.description"
@@ -7337,10 +7845,6 @@ msgid "Unlocks the ability to grow water-loving crops: rice and taro.\nAllows fa
 msgstr ""
 
 msgctxt "technologies.description"
-msgid "Allows you to build the distillery and unlocks distillation across the workshops: strong spirits, rectified spirit, floral water, fragrant oils, turpentine, rosin, varnish, white naphtha, mercury and hydrochloric acid."
-msgstr ""
-
-msgctxt "technologies.description"
 msgid "Unlocks the recipe for hopped beer."
 msgstr ""
 
@@ -7354,6 +7858,34 @@ msgstr ""
 
 msgctxt "technologies.description"
 msgid "Unlocks the water mill: the running water sets the millstones in motion.\n+25% to the production of mines, quarries, the bloomery, the smelter and the forge only where fresh water is available: without water the wheel gives no bonus, for the water washes the ore and drives the bellows."
+msgstr ""
+
+msgctxt "technologies.description"
+msgid "Allows you to build the chandler's house: tallow → tallow candles, wax → wax candles."
+msgstr ""
+
+msgctxt "technologies.description"
+msgid "Unlocks calamine mining and the cementation of copper with calamine into brass, along with brass tools, brass jewelry and precision instruments."
+msgstr ""
+
+msgctxt "technologies.description"
+msgid "Unlocks potash leached from broadleaf hardwood ashes in the kiln, potash-based forest glass and salted-out soap, and cobalt smalt."
+msgstr ""
+
+msgctxt "technologies.description"
+msgid "Unlocks direct synthesis of sulfuric acid from sulfur, higher-yield hydrochloric and nitric acids displaced by sulfuric acid, compounded aqua regia, synthetic potash alum from clay, and lead crystal glassware."
+msgstr ""
+
+msgctxt "technologies.description"
+msgid "Allows you to build the alchemist's house, opens saltpeter, borax and sal ammoniac deposits, and unlocks green vitriol, iron-gall ink and ceramic glaze."
+msgstr ""
+
+msgctxt "technologies.description"
+msgid "Allows you to build the distillery and unlocks distillation across the workshops: strong spirits, rectified spirit, floral water, fragrant oils, turpentine, rosin, varnish, white naphtha, mercury, zinc, sublimed sal ammoniac, sulfuric, hydrochloric and nitric acids, and aqua regia."
+msgstr ""
+
+msgctxt "technologies.description"
+msgid "Unlocks gunpowder in the alchemist's house, boosting ore and stone extraction in mines and quarries, and nitrary saltpeter leached from lime and potash."
 msgstr ""
 
 msgctxt "technologies.flavor"
@@ -7590,6 +8122,26 @@ msgstr ""
 
 msgctxt "technologies.flavor"
 msgid "Working precious stones and metals turned the craft into art."
+msgstr ""
+
+msgctxt "technologies.flavor"
+msgid "An oil lamp spills when carried into a gallery or held beside a ledger. A wick drawn repeatedly through melted tallow or rolled in warm beeswax carries its own fuel in solid form: tallow burns cheaply down in the mine shafts, while clear beeswax lights scriptoriums, temples and benches without stinging smoke."
+msgstr ""
+
+msgctxt "technologies.flavor"
+msgid "Long before anyone caught metallic zinc in a vessel, smelters sealed copper with crushed calamine and charcoal in a closed crucible and drew out a golden metal that neither rusted like iron nor needed scarce tin. From Persian birinj and Mediterranean orichalcum to the cast plaques of West Africa and the astrolabes of astronomers, brass became the alloy of fine scales, vessels and enduring ornament."
+msgstr ""
+
+msgctxt "technologies.flavor"
+msgid "Not every forest yields a strong lye: resinous pines leave a thin ash, so ash-burners sought out beech, maple, oak, chestnut and walnut, burned great stacks of seasoned timber, leached the ashes through water and calcined the liquor in hot pots into white potash. Costlier and slower to win than the crust of a soda lake, it freed inland workshops from distant natron and gave glassmakers, dyers and nitre-boilers an alkali of their own."
+msgstr ""
+
+msgctxt "technologies.flavor"
+msgid "Alchemists searching for elixirs in Tang and Song China ground saltpeter with sulfur and charcoal and named the sudden roar fire-medicine. Carried west along the trade roads through Persian, Arab and European workshops, the black grain did more than reshape battlefields: tamped into a drilled hole, it split in a breath the granite and vein-rock that picks and wedges had worried for weeks."
+msgstr ""
+
+msgctxt "technologies.flavor"
+msgid "Where the alchemist sought a secret in the smoke of one vessel, the chemist weighed what went in and weighed what came out. Sulfur burned under moist bells into oil of vitriol, sulfuric acid drove fuming spirits of salt and nitre cleanly from common salts, clay yielded alum without alunite stone, and measured charges of potash and lead cleared glass into crystal. Matter ceased to be a riddle of sympathies and became a craft of proportions."
 msgstr ""
 
 msgctxt "technologies.name"
@@ -7830,6 +8382,26 @@ msgstr ""
 
 msgctxt "technologies.name"
 msgid "Writing"
+msgstr ""
+
+msgctxt "technologies.name"
+msgid "Candle Making"
+msgstr ""
+
+msgctxt "technologies.name"
+msgid "Brass Working"
+msgstr ""
+
+msgctxt "technologies.name"
+msgid "Potash Burning"
+msgstr ""
+
+msgctxt "technologies.name"
+msgid "Gunpowder"
+msgstr ""
+
+msgctxt "technologies.name"
+msgid "Chemistry"
 msgstr ""
 
 msgctxt "technologies.unlock_effects.name"

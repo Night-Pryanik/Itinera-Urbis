@@ -397,6 +397,18 @@
       "prerequisites": [ [ "plantations" ] ],
       "description": "Allows you to build the sugar boiler: sweet juice → sugar.",
       "flavor": "India first boiled cane juice down to crystals that kept well, and the craft travelled with Arab growers to the warm edges of the Mediterranean."
+    },
+    {
+      // Either feedstock opens the craft: a pastoral city dips tallow candles from its herds,
+      // while a city with apiaries moulds clean beeswax tapers without needing livestock.
+      "id": "candle_making",
+      "name": "Candle Making",
+      "era": "ancient",
+      "science_cost": 3.0,
+      "icon": "candle_making.png",
+      "prerequisites": [ [ "animal_husbandry" ], [ "beekeeping" ] ],
+      "description": "Allows you to build the chandler's house: tallow → tallow candles, wax → wax candles.",
+      "flavor": "An oil lamp spills when carried into a gallery or held beside a ledger. A wick drawn repeatedly through melted tallow or rolled in warm beeswax carries its own fuel in solid form: tallow burns cheaply down in the mine shafts, while clear beeswax lights scriptoriums, temples and benches without stinging smoke."
     }
   ]
 }

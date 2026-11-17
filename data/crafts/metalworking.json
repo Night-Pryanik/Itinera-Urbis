@@ -205,6 +205,100 @@
       "time": 5.0,
       "unlock_tech": "native_metals",
       "description": "Smelts antimony ore into pure antimony."
+    },
+    {
+      // Crucible cementation infuses copper directly with zinc vapour from crushed calamine.
+      "id": "brass",
+      "name": "Brass (cementation)",
+      "produced_in": [ "smelter" ],
+      "resources": { "copper": 20, "calamine_ore": 10, "charcoal": 10 },
+      "result": { "brass": 10 },
+      "time": 6.0,
+      "unlock_tech": "brass_working",
+      "description": "Heats copper with calamine ore and charcoal in sealed crucibles to produce brass."
+    },
+    {
+      // Zinc boils below its reduction temperature and must be condensed in closed retorts.
+      "id": "zinc",
+      "name": "Zinc",
+      "produced_in": [ "smelter", "alchemist_house" ],
+      "resources": { "calamine_ore": 20, "charcoal": 20 },
+      "result": { "zinc": 10 },
+      "time": 10.0,
+      "unlock_tech": "distillation",
+      "description": "Reduces calamine ore in sealed retorts and condenses the vapour into metallic zinc."
+    },
+    {
+      // Alloying copper with distilled metallic zinc doubles the batch yield over cementation.
+      "id": "brass_from_zinc",
+      "name": "Brass (from zinc)",
+      "produced_in": [ "smelter" ],
+      "resources": { "copper": 20, "zinc": 10, "charcoal": 10 },
+      "result": { "brass": 20 },
+      "time": 6.0,
+      "unlock_tech": "distillation",
+      "description": "Melts copper directly with metallic zinc into a cleaner, richer batch of brass."
+    },
+    {
+      "id": "brass_tools",
+      "name": "Brass Tools",
+      "produced_in": [ "forge" ],
+      "resources": { "brass": 20, "charcoal": 10 },
+      "result": { "brass_tools": 10 },
+      "time": 5.0,
+      "unlock_tech": "brass_working",
+      "description": "Forges and casts corrosion-resistant brass tools for craftsmen."
+    },
+    {
+      "id": "precision_instruments",
+      "name": "Precision Instruments",
+      "produced_in": [ "jeweler_house", "forge" ],
+      "resources": { "brass": 20, "charcoal": 10 },
+      "result": { "precision_instruments": 10 },
+      "time": 12.0,
+      "unlock_tech": "brass_working",
+      "description": "Casts and engraves graduated brass balances, dividers and astrolabes for scholars."
+    },
+    {
+      // Argentiferous galena yields a minor silver fraction alongside lead on cupellation.
+      "id": "lead",
+      "name": "Lead",
+      "produced_in": [ "smelter" ],
+      "resources": { "galena_ore": 30, "charcoal": 10 },
+      "result": { "lead": 15, "silver": 5 },
+      "time": 8.0,
+      "unlock_tech": "metallurgy",
+      "description": "Smelts and cupels galena ore into soft lead and a smaller yield of silver."
+    },
+    {
+      "id": "pewter",
+      "name": "Pewter",
+      "produced_in": [ "smelter" ],
+      "resources": [ { "tin": 10 }, [ { "antimony": 10 }, { "lead": 10 } ], { "charcoal": 10 } ],
+      "result": { "pewter": 10 },
+      "time": 5.0,
+      "unlock_tech": "metallurgy",
+      "description": "Alloys tin with antimony or lead into bright pewter for tableware."
+    },
+    {
+      "id": "type_metal",
+      "name": "Type Metal",
+      "produced_in": [ "smelter" ],
+      "resources": { "lead": 20, "antimony": 10, "tin": 10, "charcoal": 10 },
+      "result": { "type_metal": 10 },
+      "time": 8.0,
+      "unlock_tech": "printing",
+      "description": "Melts lead with antimony and tin into sharp-casting printing alloy."
+    },
+    {
+      "id": "metal_tableware",
+      "name": "Metal Tableware",
+      "produced_in": [ "forge" ],
+      "resources": [ [ { "copper": 10 }, { "bronze": 10 }, { "brass": 10 }, { "pewter": 10 } ], { "charcoal": 10 } ],
+      "result": { "metal_tableware": 10 },
+      "time": 6.0,
+      "unlock_tech": "metallurgy",
+      "description": "Shapes copper, bronze, brass or pewter into durable plates, pitchers and bowls."
     }
   ]
 }

@@ -1,6 +1,7 @@
 {
   "resources": [
     { "id": "hide", "price": 5, "name": "Hide", "type": "product", "category": "material", "icon": "hide.png" },
+    { "id": "tallow", "price": 5, "name": "Tallow", "type": "product", "category": "material", "icon": "tallow.png" },
     {
       "id": "wool",
       "price": 8,
@@ -45,6 +46,7 @@
     { "id": "feathers", "price": 4, "name": "Feathers", "type": "product", "category": "material", "icon": "feathers.png" },
     { "id": "flour", "price": 4, "name": "Flour", "type": "product", "category": "material", "icon": "flour.png" },
     { "id": "clay", "price": 3, "name": "Clay", "type": "product", "category": "material", "icon": "clay.png" },
+    { "id": "kaolin", "price": 8, "name": "Kaolin", "type": "product", "category": "material", "icon": "kaolin.png" },
     {
       "id": "leather", "price": 14,
       "name": "Leather",
@@ -320,12 +322,36 @@
       "icon": "iron_ore.png"
     },
     {
+      "id": "calamine_ore", "price": 9,
+      "name": "Calamine Ore",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "native_metals",
+      "icon": "calamine_ore.png"
+    },
+    {
+      "id": "galena_ore", "price": 8,
+      "name": "Galena Ore",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "native_metals",
+      "icon": "galena_ore.png"
+    },
+    {
       "id": "cinnabar_ore", "price": 12,
       "name": "Cinnabar (Ore)",
       "type": "product",
       "category": "material",
       "unlock_tech": "dyeing",
       "icon": "cinnabar_ore.png"
+    },
+    {
+      "id": "cobalt_ore", "price": 15,
+      "name": "Cobalt Ore",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "dyeing",
+      "icon": "cobalt_ore.png"
     },
     {
       "id": "lazurite_ore", "price": 18,

@@ -149,6 +149,14 @@
       "id": "precious_woods",
       "name": "Precious Woods",
       "products": [ "oak_wood", "maple_wood", "mahogany", "rosewood", "ebony" ]
+    },
+    {
+      // Broadleaf species whose ash yields rich potassium carbonate when leached: beech, oak,
+      // maple, chestnut and walnut. Generic forest wood and resinous conifers are excluded so
+      // potash competes with cooperage and fine carpentry and never displaces natural soda lakes.
+      "id": "potash_woods",
+      "name": "Potash Hardwoods",
+      "products": [ "chestnut_wood", "maple_wood", "beech_wood", "walnut_wood", "oak_wood" ]
     }
   ]
 }

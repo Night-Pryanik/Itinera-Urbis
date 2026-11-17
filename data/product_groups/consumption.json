@@ -76,13 +76,19 @@
       "products": [ "tea", "coffee", "cocoa", "mate", "karkadeh" ]
     },
     {
+      // Ordered from everyday vessels to luxury service so common pottery and glassware
+      // are written off before porcelain, crystal and silver plate.
       "id": "tableware",
       "name": "Tableware",
       "products": [
-        "stone_tableware",
         "pottery",
-        "glassware"
-        // "metal_tableware"
+        "stone_tableware",
+        "glassware",
+        "fine_ceramics",
+        "porcelain",
+        "metal_tableware",
+        "crystal_glassware",
+        "silver_tableware"
       ]
     },
     {
@@ -91,6 +97,8 @@
       "products": [
         "gold_jewelry",
         "silver_jewelry",
+        "steel_jewelry",
+        "brass_jewelry",
         "bronze_jewelry",
         "iron_jewelry",
         "lazurite_jewelry",
@@ -165,12 +173,12 @@
     },
     {
       // Work tools: the pick of the miner and quarryman, the axe of the lumberjack,
-      // the hoe of the farmer and planter, the shovel of the clay digger and the vinedresser.
-      // The order is the order of the write-off: the basic copper tools go first, the
-      // fine steel ones last — the workers take whatever is available in storage.
+      // the hoe of the farmer and planter, the shovel of the clay digger and the vinedresser,
+      // the chisel of the mason. The order is the write-off order: basic copper tools go first,
+      // fine steel ones last — workers take whatever is available in storage.
       "id": "instruments",
       "name": "Instruments",
-      "products": [ "copper_tools", "bronze_tools", "iron_tools", "steel_tools" ]
+      "products": [ "copper_tools", "bronze_tools", "brass_tools", "iron_tools", "steel_tools" ]
     },
     {
       // Furniture the citizens write off: the everyday piece goes first,
@@ -178,6 +186,13 @@
       "id": "furniture",
       "name": "Furniture",
       "products": [ "furniture", "luxury_furniture" ]
+    },
+    {
+      // Domestic candles: everyday tallow candles go first so cleaner beeswax candles
+      // last longer in storage.
+      "id": "candles",
+      "name": "Candles",
+      "products": [ "tallow_candles", "wax_candles" ]
     }
   ]
 }

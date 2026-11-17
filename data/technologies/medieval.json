@@ -7,7 +7,7 @@
       "science_cost": 5.0,
       "icon": "distillation.png",
       "prerequisites": [ [ "fermentation", "alchemy" ] ],
-      "description": "Allows you to build the distillery and unlocks distillation across the workshops: strong spirits, rectified spirit, floral water, fragrant oils, turpentine, rosin, varnish, white naphtha, mercury and hydrochloric acid.",
+      "description": "Allows you to build the distillery and unlocks distillation across the workshops: strong spirits, rectified spirit, floral water, fragrant oils, turpentine, rosin, varnish, white naphtha, mercury, zinc, sublimed sal ammoniac, sulfuric, hydrochloric and nitric acids, and aqua regia.",
       "flavor": "To boil a liquid and to catch its breath in a cold vessel is to take the spirit of a thing and leave the thing behind. The still stood in the workshops of Alexandria and in the courts of the caliphate, and the physicians of Song China distilled the liquor of the millet. What came out of the alembic was worth more than what was poured into it."
     },
     {
@@ -19,8 +19,18 @@
       "science_cost": 5.0,
       "prerequisites": [ [ "paper", "bookbinding", "screw_press" ] ],
       "icon": "printing.png",
-      "description": "Adds one production slot to the bookbinder's workshop.",
+      "description": "Adds one production slot to the bookbinder's workshop and unlocks type metal in the smelter.",
       "flavor": "A page cut in wood or cast in metal gives as many copies as the press can pull, and no copy argues with another. The woodblock came first in China, movable type followed there and in Korea, where the letters were cast in bronze; Gutenberg set the same idea in lead and gave it the screw press and paper. A scribe copies a book in a year, a workshop prints it in a season."
+    },
+    {
+      "id": "gunpowder",
+      "name": "Gunpowder",
+      "era": "medieval",
+      "science_cost": 6.0,
+      "icon": "gunpowder.png",
+      "prerequisites": [ [ "distillation" ] ],
+      "description": "Unlocks gunpowder in the alchemist's house, boosting ore and stone extraction in mines and quarries, and nitrary saltpeter leached from lime and potash.",
+      "flavor": "Alchemists searching for elixirs in Tang and Song China ground saltpeter with sulfur and charcoal and named the sudden roar fire-medicine. Carried west along the trade roads through Persian, Arab and European workshops, the black grain did more than reshape battlefields: tamped into a drilled hole, it split in a breath the granite and vein-rock that picks and wedges had worried for weeks."
     }
   ]
 }

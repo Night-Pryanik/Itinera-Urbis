@@ -22,10 +22,12 @@
     "crafts": [
       "papyrus",
       "glass_bottle",
+      "glass_bottle_from_potash",
       "green_vitriol",
       "ink_from_green_vitriol_galls",
       "sulfuric_acid_from_green_vitriol",
-      "hydrochloric_acid_from_green_vitriol"
+      "hydrochloric_acid_from_green_vitriol",
+      "nitric_acid_from_green_vitriol"
     ],
     "resources": [ "papyrus", "glass_bottle", "green_vitriol" ]
   }

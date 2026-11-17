@@ -46,6 +46,15 @@
       "icon": "bronze_jewelry.png"
     },
     {
+      "id": "brass_jewelry",
+      "price": 48,
+      "name": "Brass Jewelry",
+      "type": "product",
+      "category": "luxury",
+      "unlock_tech": "brass_working",
+      "icon": "brass_jewelry.png"
+    },
+    {
       "id": "iron_jewelry",
       "price": 55,
       "name": "Iron Jewelry",

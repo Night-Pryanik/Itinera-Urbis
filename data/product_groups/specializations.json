@@ -24,7 +24,7 @@
     {
       "id": "ceramics_goods",
       "name": "Ceramics",
-      "products": [ "pottery", "amphora", "porcelain" ]
+      "products": [ "pottery", "amphora", "fine_ceramics", "porcelain" ]
     },
     {
       "id": "wool_goods",

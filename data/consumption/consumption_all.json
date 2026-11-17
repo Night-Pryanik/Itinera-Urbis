@@ -194,6 +194,23 @@
       "amount": 10,
       "interval": 20,
       "production_bonus": 0.0
+    },
+    {
+      // Household lighting: moderate rate so citizen demand leaves candles in storage
+      // for miners, scholars and bookbinders.
+      "resource": "@candles",
+      "profession": [ "all" ],
+      "amount": 5,
+      "interval": 5,
+      "production_bonus": 0.0
+    },
+    {
+      // Ornamental cut flowers bought directly by citizens on the domestic market.
+      "resource": "tulips",
+      "profession": [ "all" ],
+      "amount": 5,
+      "interval": 10,
+      "production_bonus": 0.0
     }
   ]
 }

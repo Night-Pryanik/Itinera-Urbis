@@ -131,6 +131,15 @@
       "category": "food",
       "icon": "foraged_food.png"
     },
-    { "id": "fish", "price": 8, "name": "Fish", "type": "product", "category": "food", "icon": "fish.png" }
+    { "id": "fish", "price": 8, "name": "Fish", "type": "product", "category": "food", "icon": "fish.png" },
+    {
+      "id": "tofu",
+      "price": 12,
+      "name": "Tofu",
+      "type": "product",
+      "category": "food",
+      "unlock_tech": "cheese_making",
+      "icon": "tofu.png"
+    }
   ]
 }
