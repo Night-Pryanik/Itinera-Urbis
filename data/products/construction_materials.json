@@ -76,6 +76,25 @@
       "category": "construction_material",
       "unlock_tech": "wood_processing",
       "icon": "planks.png"
+    },
+    {
+      // Lime mixed with volcanic tuff or quartz sand; serves both as a processed masonry material
+      // and as a binding supply for the mason's workshop.
+      "id": "mortar", "price": 18,
+      "name": "Lime Mortar",
+      "type": "product",
+      "category": "construction_material",
+      "unlock_tech": "limestone_burning",
+      "icon": "mortar.png"
+    },
+    {
+      // Calcined gypsum or alabaster powder used for casting moulds, stucco and coagulating tofu.
+      "id": "plaster", "price": 14,
+      "name": "Gypsum Plaster",
+      "type": "product",
+      "category": "construction_material",
+      "unlock_tech": "limestone_burning",
+      "icon": "plaster.png"
     }
   ]
 }

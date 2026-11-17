@@ -9,12 +9,14 @@
       "icon": "green_vitriol.png"
     },
     {
+      // Oil of vitriol: first distilled from roasted green vitriol in medieval retorts,
+      // later synthesized directly by burning sulfur under Chemistry.
       "id": "sulfuric_acid",
       "price": 14,
       "name": "Sulfuric Acid",
       "type": "product",
       "category": "chemicals",
-      "unlock_tech": "alchemy",
+      "unlock_tech": "distillation",
       "icon": "sulfuric_acid.png"
     },
     {
@@ -71,8 +73,8 @@
       "icon": "white_naphtha.png"
     },
     {
-      // Mineral acid (spirit of salt) distilled in retorts from common salt with
-      // vitriol, alum or sulfuric acid; used in metallurgy, jewelry and dyeing.
+      // Mineral acid (spirit of salt): distilled from salt with vitriol or alum under
+      // Distillation, and displaced with higher yield by sulfuric acid under Chemistry.
       "id": "hydrochloric_acid",
       "price": 30,
       "name": "Hydrochloric Acid",
@@ -80,6 +82,60 @@
       "category": "chemicals",
       "unlock_tech": "distillation",
       "icon": "hydrochloric_acid.png"
+    },
+    {
+      // Potassium alkali leached from broadleaf hardwood ashes and calcined in the kiln;
+      // costlier than natural soda, it drives cobalt smalt, medieval nitrary saltpeter,
+      // and chemistry-era lead crystal and synthetic alum.
+      "id": "potash",
+      "price": 16,
+      "name": "Potash",
+      "type": "product",
+      "category": "chemicals",
+      "unlock_tech": "potash_making",
+      "icon": "potash.png"
+    },
+    {
+      // Vitreous coating fused from silica, metal oxide (lead, tin or zinc) and alkali or borax.
+      "id": "ceramic_glaze",
+      "price": 36,
+      "name": "Ceramic Glaze",
+      "type": "product",
+      "category": "chemicals",
+      "unlock_tech": "alchemy",
+      "icon": "ceramic_glaze.png"
+    },
+    {
+      // Aqua fortis: distilled in retorts from saltpeter with vitriol or alum under
+      // Distillation, and displaced with higher yield by sulfuric acid under Chemistry.
+      "id": "nitric_acid",
+      "price": 38,
+      "name": "Nitric Acid",
+      "type": "product",
+      "category": "chemicals",
+      "unlock_tech": "distillation",
+      "icon": "nitric_acid.png"
+    },
+    {
+      // Gold-dissolving acid bath: made from nitric acid and sal ammoniac under Distillation,
+      // or compounded directly from nitric and hydrochloric acids under Chemistry.
+      "id": "aqua_regia",
+      "price": 80,
+      "name": "Aqua Regia",
+      "type": "product",
+      "category": "chemicals",
+      "unlock_tech": "distillation",
+      "icon": "aqua_regia.png"
+    },
+    {
+      // Explosive mixture of saltpeter, sulfur and charcoal used for rock blasting in mines and quarries.
+      "id": "gunpowder",
+      "price": 42,
+      "name": "Gunpowder",
+      "type": "product",
+      "category": "chemicals",
+      "unlock_tech": "gunpowder",
+      "icon": "gunpowder.png"
     }
   ]
 }

@@ -27,7 +27,7 @@
       "name": "Beef",
       "produced_in": [ "slaughterhouse" ],
       "resources": { "@bovines": 20 },
-      "result": { "beef": 120, "hide": 20 },
+      "result": { "beef": 120, "hide": 20, "tallow": 10 },
       "time": 5
     },
     {
@@ -35,7 +35,7 @@
       "name": "Mutton",
       "produced_in": [ "slaughterhouse" ],
       "resources": { "live_sheep": 20 },
-      "result": { "mutton": 120 },
+      "result": { "mutton": 120, "tallow": 10 },
       "time": 5
     },
     {
@@ -43,7 +43,7 @@
       "name": "Goat Meat",
       "produced_in": [ "slaughterhouse" ],
       "resources": { "live_goats": 20 },
-      "result": { "goat_meat": 120, "hide": 20 },
+      "result": { "goat_meat": 120, "hide": 20, "tallow": 10 },
       "time": 5
     },
     {
@@ -51,7 +51,7 @@
       "name": "Horsemeat",
       "produced_in": [ "slaughterhouse" ],
       "resources": { "live_horses": 20 },
-      "result": { "horse_meat": 120, "hide": 20 },
+      "result": { "horse_meat": 120, "hide": 20, "tallow": 10 },
       "time": 5
     },
     {
@@ -59,7 +59,7 @@
       "name": "Pork",
       "produced_in": [ "slaughterhouse" ],
       "resources": { "live_pigs": 20 },
-      "result": { "pork": 120, "hide": 20 },
+      "result": { "pork": 120, "hide": 20, "tallow": 10 },
       "time": 5
     },
     {
@@ -67,7 +67,7 @@
       "name": "Venison",
       "produced_in": [ "slaughterhouse" ],
       "resources": { "live_deer": 20 },
-      "result": { "venison": 120, "hide": 20 },
+      "result": { "venison": 120, "hide": 20, "tallow": 10 },
       "time": 5
     },
     {
@@ -75,7 +75,7 @@
       "name": "Camel Meat",
       "produced_in": [ "slaughterhouse" ],
       "resources": { "live_camel": 20 },
-      "result": { "camel_meat": 120, "hide": 20 },
+      "result": { "camel_meat": 120, "hide": 20, "tallow": 10 },
       "time": 5
     },
     {
@@ -83,7 +83,7 @@
       "name": "Llama Meat",
       "produced_in": [ "slaughterhouse" ],
       "resources": { "live_llama": 20 },
-      "result": { "llama_meat": 120 },
+      "result": { "llama_meat": 120, "tallow": 10 },
       "time": 5
     },
     {
@@ -91,7 +91,7 @@
       "name": "Alpaca Meat",
       "produced_in": [ "slaughterhouse" ],
       "resources": { "live_alpaca": 20 },
-      "result": { "alpaca_meat": 120 },
+      "result": { "alpaca_meat": 120, "tallow": 10 },
       "time": 5
     },
     {
@@ -179,6 +179,18 @@
       "time": 15,
       "unlock_tech": "cheese_making",
       "description": "Awards the milk of the city to the cheese the world asks for by the name of the city."
+    },
+    {
+      // Bean curd set from soaked soybeans with gypsum or sea salt; gives soybean growers
+      // a curdled staple alongside animal cheese.
+      "id": "tofu",
+      "name": "Tofu",
+      "produced_in": [ "dairy" ],
+      "resources": [ { "soybean": 20 }, [ { "gypsum": 10 }, { "plaster": 10 }, { "salt": 10 } ] ],
+      "result": { "tofu": 20 },
+      "time": 5.0,
+      "unlock_tech": "cheese_making",
+      "description": "Curdles boiled soybean milk with gypsum or salt and presses it into firm tofu."
     },
     {
       "id": "beer",

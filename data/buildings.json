@@ -133,6 +133,7 @@
       "work_cost": 35,
       "additional_cost": [ { "planks": 120 } ],
       "icon": "mason_workshop.png",
+      "profession": "mason",
       "production_slots": 1.0,
       "unlock_tech": "masonry",
       "default_recipes": [ "processed_building_stone" ]
@@ -283,6 +284,7 @@
       "work_cost": 30,
       "additional_cost": [ { "planks": 100 }, { "@processed_construction_materials": 50 } ],
       "icon": "smokehouse.png",
+      "profession": "smoker",
       "production_slots": 1.0,
       "unlock_tech": "fishing",
       "default_recipes": [ "fish" ]
@@ -487,6 +489,18 @@
       "profession": "distiller",
       "production_slots": 1.0,
       "unlock_tech": "distillation",
+      "default_recipes": [  ]
+    },
+    {
+      "id": "chandler_house",
+      "name": "Chandler's House",
+      "description": "Dips rendered tallow and moulds beeswax into candles for households, mines and workshops.",
+      "work_cost": 25,
+      "additional_cost": [ { "planks": 80 } ],
+      "icon": "chandler_house.png",
+      "profession": "chandler",
+      "production_slots": 1.0,
+      "unlock_tech": "candle_making",
       "default_recipes": [  ]
     }
   ]

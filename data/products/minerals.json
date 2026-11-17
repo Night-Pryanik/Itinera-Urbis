@@ -43,6 +43,38 @@
     },
     { "id": "pyrite", "price": 10, "name": "Pyrite", "type": "product", "category": "minerals", "icon": "pyrite.png" },
     { "id": "sulfur", "price": 6, "name": "Sulfur", "type": "product", "category": "minerals", "icon": "sulfur.png" },
+    {
+      "id": "saltpeter",
+      "price": 10,
+      "name": "Saltpeter",
+      "type": "product",
+      "category": "minerals",
+      "icon": "saltpeter.png"
+    },
+    {
+      "id": "borax",
+      "price": 14,
+      "name": "Borax",
+      "type": "product",
+      "category": "minerals",
+      "icon": "borax.png"
+    },
+    {
+      "id": "sal_ammoniac",
+      "price": 14,
+      "name": "Sal Ammoniac",
+      "type": "product",
+      "category": "minerals",
+      "icon": "sal_ammoniac.png"
+    },
+    {
+      "id": "gypsum",
+      "price": 5,
+      "name": "Gypsum",
+      "type": "product",
+      "category": "minerals",
+      "icon": "gypsum.png"
+    },
 
     // Pearl and coral are mineraloids, not minerals, but they are included here for convenience
     {

@@ -3264,6 +3264,10 @@ msgctxt "buildings.description"
 msgid "Distils fermented drinks and sweet mashes into strong spirits, rectified spirit and fragrant cordials."
 msgstr "Перегоняет сброженные напитки и сладкое сусло в крепкие напитки, спирт-ректификат и ароматные настойки."
 
+msgctxt "buildings.description"
+msgid "Dips rendered tallow and moulds beeswax into candles for households, mines and workshops."
+msgstr "Отливает и макает свечи из животного жира и пчелиного воска для домов, шахт и мастерских."
+
 msgctxt "buildings.name"
 msgid "Alchemist's House"
 msgstr "Дом алхимика"
@@ -3431,6 +3435,10 @@ msgstr "Дом винодела"
 msgctxt "buildings.name"
 msgid "Distillery"
 msgstr "Винокурня"
+
+msgctxt "buildings.name"
+msgid "Chandler's House"
+msgstr "Дом свечника"
 
 msgctxt "categories.name"
 msgid "Additional Food"
@@ -3741,10 +3749,6 @@ msgid "Dissolves the fragrant material in oil and keeps the scent in a jar."
 msgstr "Растворяет ароматическое сырьё в масле и хранит запах в склянке."
 
 msgctxt "crafts.description"
-msgid "Distils sulfuric acid from green vitriol (iron sulfate)."
-msgstr "Создаёт письменный набор из писчих инструментов и чернил"
-
-msgctxt "crafts.description"
 msgid "Distils tar out of resin."
 msgstr "Выгоняет смолу из живицы."
 
@@ -3993,10 +3997,6 @@ msgid "Produces parchment from animal hides by liming them."
 msgstr "Производит пергамент из шкур животных с помощью золения их в извести"
 
 msgctxt "crafts.description"
-msgid "Produces sulfuric acid (oil of vitriol) from sulfur."
-msgstr "Получает серную кислоту (купоросное масло) из серы"
-
-msgctxt "crafts.description"
 msgid "Roasts pyrite to obtain sulfur."
 msgstr "Получает серу обжигом пирита"
 
@@ -4065,8 +4065,8 @@ msgid "Turns hides into tough leather."
 msgstr "Превращает шкуры в прочную кожу"
 
 msgctxt "crafts.description"
-msgid "Turns oil and soda into soap."
-msgstr "Превращает масло и соду в мыло"
+msgid "Turns oil or tallow and soda into soap."
+msgstr "Превращает масло или животный жир и соду в мыло."
 
 msgctxt "crafts.description"
 msgid "Turns papyrus stems into papyrus."
@@ -4177,8 +4177,168 @@ msgid "Distils hydrochloric acid (spirit of salt) from salt and green vitriol."
 msgstr "Перегоняет соляную кислоту (соляной спирт) из соли и железного купороса."
 
 msgctxt "crafts.description"
-msgid "Distils hydrochloric acid (spirit of salt) from salt with alum or sulfuric acid."
-msgstr "Перегоняет соляную кислоту (соляной спирт) из соли с квасцами или серной кислотой."
+msgid "Leaches nitrified lime earth with potash and crystallizes saltpeter."
+msgstr "Выщелачивает селитряную известковую землю поташом и выпаривает селитру."
+
+msgctxt "crafts.description"
+msgid "Digests clay with sulfuric acid and potash and crystallizes potash alum."
+msgstr "Обрабатывает глину серной кислотой и поташом и кристаллизует алюминиево-калиевые квасцы."
+
+msgctxt "crafts.description"
+msgid "Sublimes salt and hearth soot in sealed vessels into white sal ammoniac."
+msgstr "Возгоняет соль и печную сажу в закрытых сосудах в белый нашатырь."
+
+msgctxt "crafts.description"
+msgid "Fuses quartz sand, a metal oxide and an alkaline or borax flux into ceramic glaze."
+msgstr "Сплавляет кварцевый песок, окисел металла и щелочной или буровый флюс в керамическую глазурь."
+
+msgctxt "crafts.description"
+msgid "Distils nitric acid (aqua fortis) from saltpeter and green vitriol."
+msgstr "Перегоняет азотную кислоту (крепкую водку) из селитры и железного купороса."
+
+msgctxt "crafts.description"
+msgid "Mills saltpeter, sulfur and charcoal into black powder for blasting rock."
+msgstr "Растирает селитру, серу и древесный уголь в чёрный порох для подрыва породы."
+
+msgctxt "crafts.description"
+msgid "Heats copper with calamine ore and charcoal in sealed crucibles to produce brass."
+msgstr "Прокаливает медь с каламиновой рудой и углём в закрытых тиглях, получая латунь."
+
+msgctxt "crafts.description"
+msgid "Reduces calamine ore in sealed retorts and condenses the vapour into metallic zinc."
+msgstr "Восстанавливает каламиновую руду в закрытых ретортах и осаждает пары в металлический цинк."
+
+msgctxt "crafts.description"
+msgid "Melts copper directly with metallic zinc into a cleaner, richer batch of brass."
+msgstr "Сплавляет медь напрямую с металлическим цинком, давая больший выход чистой латуни."
+
+msgctxt "crafts.description"
+msgid "Forges and casts corrosion-resistant brass tools for craftsmen."
+msgstr "Куёт и отливает стойкие к коррозии латунные инструменты для ремесленников."
+
+msgctxt "crafts.description"
+msgid "Casts and engraves graduated brass balances, dividers and astrolabes for scholars."
+msgstr "Отливает и гравирует из латуни точные весы, циркули и астролябии для учёных."
+
+msgctxt "crafts.description"
+msgid "Smelts and cupels galena ore into soft lead and a smaller yield of silver."
+msgstr "Выплавляет и купелирует галенитовую руду в мягкий свинец с попутным выходом серебра."
+
+msgctxt "crafts.description"
+msgid "Alloys tin with antimony or lead into bright pewter for tableware."
+msgstr "Сплавляет олово с сурьмой или свинцом в светлый пьютер для посуды."
+
+msgctxt "crafts.description"
+msgid "Melts lead with antimony and tin into sharp-casting printing alloy."
+msgstr "Сплавляет свинец с сурьмой и оловом в чётко отливающийся типографский сплав (гарт)."
+
+msgctxt "crafts.description"
+msgid "Shapes copper, bronze, brass or pewter into durable plates, pitchers and bowls."
+msgstr "Выколачивает и отливает из меди, бронзы, латуни или пьютера прочные блюда, кувшины и чаши."
+
+msgctxt "crafts.description"
+msgid "Makes jewelry out of golden brass."
+msgstr "Изготавливает украшения из золотистой латуни."
+
+msgctxt "crafts.description"
+msgid "Hammers and chases silver into fine goblets, dishes and ewers."
+msgstr "Выколачивает и чеканит из серебра изящные кубки, блюда и кувшины."
+
+msgctxt "crafts.description"
+msgid "Throws and fires white kaolin clay into thin, hard ceramic tableware."
+msgstr "Формует и обжигает белую каолиновую глину в тонкую прочную керамическую посуду."
+
+msgctxt "crafts.description"
+msgid "Melts quartz sand with potash, lime and charcoal into forest glassware."
+msgstr "Варит кварцевый песок с поташом, известью и углём в посуду из лесного стекла."
+
+msgctxt "crafts.description"
+msgid "Blows sturdy bottles from potash-lime forest glass."
+msgstr "Выдувает прочные бутылки из поташно-известкового лесного стекла."
+
+msgctxt "crafts.description"
+msgid "Fuses quartz sand with lead and potash into clear, brilliant crystal tableware."
+msgstr "Сплавляет кварцевый песок со свинцом и поташом в прозрачную сверкающую хрустальную посуду."
+
+msgctxt "crafts.description"
+msgid "Boils tallow or oil with lime-causticized potash lye and salts the batch out into hard soap."
+msgstr "Варит жир или масло с едким поташным щёлоком на извести и высаливает твёрдое мыло солью."
+
+msgctxt "crafts.description"
+msgid "Burns broadleaf hardwood timber, leaches the ash and calcines the lye into potash."
+msgstr "Пережигает лиственную древесину на золу, выщелачивает её и прокаливает щёлок в поташ."
+
+msgctxt "crafts.description"
+msgid "Slakes lime with volcanic tuff or quartz sand into durable hydraulic mortar."
+msgstr "Смешивает гашёную известь с вулканическим туфом или кварцевым песком в прочный известковый раствор."
+
+msgctxt "crafts.description"
+msgid "Calcines gypsum or alabaster into fine setting plaster for moulds and stucco."
+msgstr "Обжигает гипс или алебастр в схватывающийся строительный гипс для форм и отделки."
+
+msgctxt "crafts.description"
+msgid "Dips wicks in rendered animal tallow to make cheap everyday and miner's candles."
+msgstr "Макает фитили в топлёный животный жир, делая недорогие бытовые и рудничные свечи."
+
+msgctxt "crafts.description"
+msgid "Moulds clean beeswax around braided wicks into bright, smokeless candles."
+msgstr "Отливает чистый пчелиный воск вокруг плетёных фитилей в яркие бездымные свечи."
+
+msgctxt "crafts.description"
+msgid "Corrodes lead plates over vinegar vapour into opaque white pigment."
+msgstr "Выдерживает свинцовые пластины над парами уксуса, получая укрывистые свинцовые белила."
+
+msgctxt "crafts.description"
+msgid "Roasts lead slowly in air into bright orange-red minium pigment."
+msgstr "Медленно прокаливает свинец на воздухе в ярко-красный свинцовый сурик."
+
+msgctxt "crafts.description"
+msgid "Steeps copper over vinegar vapour and scrapes off vivid blue-green verdigris."
+msgstr "Выдерживает медь над парами уксуса и соскабливает яркую сине-зелёную ярь-медянку."
+
+msgctxt "crafts.description"
+msgid "Grinds golden arsenic sulfide ore into luminous yellow orpiment pigment."
+msgstr "Растирает золотистую мышьяковую руду в сияющий жёлтый аурипигмент."
+
+msgctxt "crafts.description"
+msgid "Fuses roasted cobalt ore with quartz sand and potash and grinds the blue glass into smalt."
+msgstr "Сплавляет кобальтовую руду с кварцевым песком и поташом и размалывает синее стекло в смальту."
+
+msgctxt "crafts.description"
+msgid "Curdles boiled soybean milk with gypsum or salt and presses it into firm tofu."
+msgstr "Сворачивает горячее соевое молоко гипсом или солью и прессует плотный тофу."
+
+msgctxt "crafts.description"
+msgid "Burns sulfur under moist condensing vessels into sulfuric acid."
+msgstr "Сжигает серу под влажными приёмниками, получая серную кислоту."
+
+msgctxt "crafts.description"
+msgid "Distils sulfuric acid (oil of vitriol) from roasted green vitriol."
+msgstr "Перегоняет серную кислоту (купоросное масло) из прокалённого железного купороса."
+
+msgctxt "crafts.description"
+msgid "Distils hydrochloric acid (spirit of salt) from salt and alum."
+msgstr "Перегоняет соляную кислоту (соляной спирт) из соли и квасцов."
+
+msgctxt "crafts.description"
+msgid "Displaces hydrochloric acid from common salt with sulfuric acid."
+msgstr "Вытесняет соляную кислоту из поваренной соли серной кислотой."
+
+msgctxt "crafts.description"
+msgid "Distils nitric acid (aqua fortis) from saltpeter and alum."
+msgstr "Перегоняет азотную кислоту (крепкую водку) из селитры и квасцов."
+
+msgctxt "crafts.description"
+msgid "Displaces nitric acid from saltpeter with sulfuric acid."
+msgstr "Вытесняет азотную кислоту из селитры серной кислотой."
+
+msgctxt "crafts.description"
+msgid "Dissolves sal ammoniac in nitric acid into gold-dissolving aqua regia."
+msgstr "Растворяет нашатырь в азотной кислоте, получая растворяющую золото царскую водку."
+
+msgctxt "crafts.description"
+msgid "Compounds concentrated nitric and hydrochloric acids into gold-dissolving aqua regia."
+msgstr "Соединяет концентрированные азотную и соляную кислоты в растворяющую золото царскую водку."
 
 msgctxt "crafts.name"
 msgid "Aged Cheese"
@@ -4653,10 +4813,6 @@ msgid "Sulfur"
 msgstr "Сера"
 
 msgctxt "crafts.name"
-msgid "Sulfuric Acid"
-msgstr "Серная кислота"
-
-msgctxt "crafts.name"
 msgid "Sumac Yellow"
 msgstr "Сумаховый жёлтый"
 
@@ -4811,6 +4967,166 @@ msgstr "Соляная кислота (из купороса)"
 msgctxt "crafts.name"
 msgid "Hydrochloric Acid (from alum)"
 msgstr "Соляная кислота (из квасцов)"
+
+msgctxt "crafts.name"
+msgid "Saltpeter (nitrary)"
+msgstr "Селитра (селитряница)"
+
+msgctxt "crafts.name"
+msgid "Alum (potash alum)"
+msgstr "Квасцы (из поташа)"
+
+msgctxt "crafts.name"
+msgid "Sal Ammoniac (sublimed)"
+msgstr "Нашатырь (возгонка)"
+
+msgctxt "crafts.name"
+msgid "Ceramic Glaze"
+msgstr "Керамическая глазурь"
+
+msgctxt "crafts.name"
+msgid "Nitric Acid (from green vitriol)"
+msgstr "Азотная кислота (из купороса)"
+
+msgctxt "crafts.name"
+msgid "Nitric Acid (from alum)"
+msgstr "Азотная кислота (из квасцов)"
+
+msgctxt "crafts.name"
+msgid "Gunpowder"
+msgstr "Чёрный порох"
+
+msgctxt "crafts.name"
+msgid "Brass (cementation)"
+msgstr "Латунь (цементация)"
+
+msgctxt "crafts.name"
+msgid "Zinc"
+msgstr "Цинк"
+
+msgctxt "crafts.name"
+msgid "Brass (from zinc)"
+msgstr "Латунь (из цинка)"
+
+msgctxt "crafts.name"
+msgid "Brass Tools"
+msgstr "Латунные инструменты"
+
+msgctxt "crafts.name"
+msgid "Precision Instruments"
+msgstr "Точные приборы"
+
+msgctxt "crafts.name"
+msgid "Lead"
+msgstr "Свинец"
+
+msgctxt "crafts.name"
+msgid "Pewter"
+msgstr "Пьютер"
+
+msgctxt "crafts.name"
+msgid "Type Metal"
+msgstr "Гарт"
+
+msgctxt "crafts.name"
+msgid "Metal Tableware"
+msgstr "Металлическая посуда"
+
+msgctxt "crafts.name"
+msgid "Brass Jewelry"
+msgstr "Латунные украшения"
+
+msgctxt "crafts.name"
+msgid "Silver Tableware"
+msgstr "Серебряная посуда"
+
+msgctxt "crafts.name"
+msgid "Fine Ceramics"
+msgstr "Тонкая керамика"
+
+msgctxt "crafts.name"
+msgid "Glassware (forest glass)"
+msgstr "Стеклянная посуда (лесное стекло)"
+
+msgctxt "crafts.name"
+msgid "Glass Bottle (forest glass)"
+msgstr "Стеклянная бутылка (лесное стекло)"
+
+msgctxt "crafts.name"
+msgid "Crystal Glassware"
+msgstr "Хрустальная посуда"
+
+msgctxt "crafts.name"
+msgid "Soap (from potash lye)"
+msgstr "Мыло (из поташного щёлока)"
+
+msgctxt "crafts.name"
+msgid "Potash"
+msgstr "Поташ"
+
+msgctxt "crafts.name"
+msgid "Lime Mortar"
+msgstr "Известковый раствор"
+
+msgctxt "crafts.name"
+msgid "Gypsum Plaster"
+msgstr "Строительный гипс"
+
+msgctxt "crafts.name"
+msgid "Tallow Candles"
+msgstr "Сальные свечи"
+
+msgctxt "crafts.name"
+msgid "Wax Candles"
+msgstr "Восковые свечи"
+
+msgctxt "crafts.name"
+msgid "Lead White"
+msgstr "Свинцовые белила"
+
+msgctxt "crafts.name"
+msgid "Minium"
+msgstr "Свинцовый сурик"
+
+msgctxt "crafts.name"
+msgid "Verdigris"
+msgstr "Ярь-медянка"
+
+msgctxt "crafts.name"
+msgid "Orpiment"
+msgstr "Аурипигмент"
+
+msgctxt "crafts.name"
+msgid "Smalt"
+msgstr "Смальта"
+
+msgctxt "crafts.name"
+msgid "Tofu"
+msgstr "Тофу"
+
+msgctxt "crafts.name"
+msgid "Sulfuric Acid (from sulfur)"
+msgstr "Серная кислота (из серы)"
+
+msgctxt "crafts.name"
+msgid "Sulfuric Acid (from green vitriol)"
+msgstr "Серная кислота (из купороса)"
+
+msgctxt "crafts.name"
+msgid "Hydrochloric Acid (from sulfuric acid)"
+msgstr "Соляная кислота (из серной кислоты)"
+
+msgctxt "crafts.name"
+msgid "Nitric Acid (from sulfuric acid)"
+msgstr "Азотная кислота (из серной кислоты)"
+
+msgctxt "crafts.name"
+msgid "Aqua Regia (from sal ammoniac)"
+msgstr "Царская водка (из нашатыря)"
+
+msgctxt "crafts.name"
+msgid "Aqua Regia (from acids)"
+msgstr "Царская водка (из кислот)"
 
 msgctxt "eras.name"
 msgid "Ancient"
@@ -5184,6 +5500,18 @@ msgctxt "product_groups.name"
 msgid "Strong Spirits"
 msgstr "Крепкий алкоголь"
 
+msgctxt "product_groups.name"
+msgid "Furniture"
+msgstr "Мебель"
+
+msgctxt "product_groups.name"
+msgid "Potash Hardwoods"
+msgstr "Поташные породы дерева"
+
+msgctxt "product_groups.name"
+msgid "Candles"
+msgstr "Свечи"
+
 msgctxt "professions.description"
 msgid "A pseudo-profession that covers the whole population of the city, including employed citizens."
 msgstr "Псевдо-профессия: охватывает всё население города, включая занятых жителей."
@@ -5331,6 +5659,22 @@ msgstr "Ограняет камни и выделывает украшения �
 msgctxt "professions.description"
 msgid "Boils oils, alkali and resin into soap."
 msgstr "Варит мыло из масел, щёлочи и смолы."
+
+msgctxt "professions.description"
+msgid "Crafts furniture and luxury furniture from timber."
+msgstr "Изготавливает из древесины обычную и роскошную мебель."
+
+msgctxt "professions.description"
+msgid "Dips and moulds tallow and beeswax into candles."
+msgstr "Макает и отливает свечи из животного жира и пчелиного воска."
+
+msgctxt "professions.description"
+msgid "Dresses rough stone into ashlar blocks, tableware and mortar."
+msgstr "Обтёсывает камень в строительные блоки и посуду и готовит раствор."
+
+msgctxt "professions.description"
+msgid "Cures and smokes fish over slow wood fires."
+msgstr "Засаливает и коптит рыбу на медленном древесном дыму."
 
 msgctxt "professions.name"
 msgid "All Citizens"
@@ -5483,6 +5827,18 @@ msgstr "Ювелир"
 msgctxt "professions.name"
 msgid "Soapmaker"
 msgstr "Мыловар"
+
+msgctxt "professions.name"
+msgid "Chandler"
+msgstr "Свечник"
+
+msgctxt "professions.name"
+msgid "Mason"
+msgstr "Каменотёс"
+
+msgctxt "professions.name"
+msgid "Smoker"
+msgstr "Коптильщик"
 
 msgctxt "quality_levels.name"
 msgid "Common"
@@ -6952,6 +7308,162 @@ msgctxt "resources.name"
 msgid "Mercury"
 msgstr "Ртуть"
 
+msgctxt "resources.name"
+msgid "Calamine"
+msgstr "Каламин"
+
+msgctxt "resources.name"
+msgid "Calamine Ore"
+msgstr "Каламиновая руда"
+
+msgctxt "resources.name"
+msgid "Galena"
+msgstr "Галенит"
+
+msgctxt "resources.name"
+msgid "Galena Ore"
+msgstr "Галенитовая руда"
+
+msgctxt "resources.name"
+msgid "Saltpeter"
+msgstr "Селитра"
+
+msgctxt "resources.name"
+msgid "Borax"
+msgstr "Бура"
+
+msgctxt "resources.name"
+msgid "Sal Ammoniac"
+msgstr "Нашатырь"
+
+msgctxt "resources.name"
+msgid "Kaolin"
+msgstr "Каолин"
+
+msgctxt "resources.name"
+msgid "Cobalt"
+msgstr "Кобальт"
+
+msgctxt "resources.name"
+msgid "Cobalt Ore"
+msgstr "Кобальтовая руда"
+
+msgctxt "resources.name"
+msgid "Gypsum"
+msgstr "Гипс"
+
+msgctxt "resources.name"
+msgid "Tallow"
+msgstr "Животный жир"
+
+msgctxt "resources.name"
+msgid "Brass"
+msgstr "Латунь"
+
+msgctxt "resources.name"
+msgid "Zinc"
+msgstr "Цинк"
+
+msgctxt "resources.name"
+msgid "Lead"
+msgstr "Свинец"
+
+msgctxt "resources.name"
+msgid "Pewter"
+msgstr "Пьютер"
+
+msgctxt "resources.name"
+msgid "Type Metal"
+msgstr "Гарт"
+
+msgctxt "resources.name"
+msgid "Potash"
+msgstr "Поташ"
+
+msgctxt "resources.name"
+msgid "Ceramic Glaze"
+msgstr "Керамическая глазурь"
+
+msgctxt "resources.name"
+msgid "Nitric Acid"
+msgstr "Азотная кислота"
+
+msgctxt "resources.name"
+msgid "Aqua Regia"
+msgstr "Царская водка"
+
+msgctxt "resources.name"
+msgid "Gunpowder"
+msgstr "Чёрный порох"
+
+msgctxt "resources.name"
+msgid "Lime Mortar"
+msgstr "Известковый раствор"
+
+msgctxt "resources.name"
+msgid "Gypsum Plaster"
+msgstr "Строительный гипс"
+
+msgctxt "resources.name"
+msgid "Lead White"
+msgstr "Свинцовые белила"
+
+msgctxt "resources.name"
+msgid "Minium"
+msgstr "Свинцовый сурик"
+
+msgctxt "resources.name"
+msgid "Verdigris"
+msgstr "Ярь-медянка"
+
+msgctxt "resources.name"
+msgid "Orpiment"
+msgstr "Аурипигмент"
+
+msgctxt "resources.name"
+msgid "Smalt"
+msgstr "Смальта"
+
+msgctxt "resources.name"
+msgid "Brass Tools"
+msgstr "Латунные инструменты"
+
+msgctxt "resources.name"
+msgid "Brass Jewelry"
+msgstr "Латунные украшения"
+
+msgctxt "resources.name"
+msgid "Precision Instruments"
+msgstr "Точные приборы"
+
+msgctxt "resources.name"
+msgid "Fine Ceramics"
+msgstr "Тонкая керамика"
+
+msgctxt "resources.name"
+msgid "Crystal Glassware"
+msgstr "Хрустальная посуда"
+
+msgctxt "resources.name"
+msgid "Metal Tableware"
+msgstr "Металлическая посуда"
+
+msgctxt "resources.name"
+msgid "Silver Tableware"
+msgstr "Серебряная посуда"
+
+msgctxt "resources.name"
+msgid "Tallow Candles"
+msgstr "Сальные свечи"
+
+msgctxt "resources.name"
+msgid "Wax Candles"
+msgstr "Восковые свечи"
+
+msgctxt "resources.name"
+msgid "Tofu"
+msgstr "Тофу"
+
 msgctxt "roads.description"
 msgid "A leveled road for carts. Three times the load of a trail."
 msgstr "Ровная дорога для телег. Позволяет перевозить втрое больше, чем тропка."
@@ -7129,8 +7641,8 @@ msgid "Adds one production slot to the animal mill and the water mill.\n+10% to 
 msgstr "Добавляет один слот производства мельнице с животной тягой и водяной мельнице.\n+10% к производству лесной делянки."
 
 msgctxt "technologies.description"
-msgid "Adds one production slot to the bookbinder's workshop."
-msgstr "Добавляет один слот производства переплётной мастерской."
+msgid "Adds one production slot to the bookbinder's workshop and unlocks type metal in the smelter."
+msgstr "Добавляет один слот производства переплётной мастерской и открывает выплавку гарта в плавильне."
 
 msgctxt "technologies.description"
 msgid "Adds one production slot to the winemaker's house, the oilmaker's house, the dairy, the paper workshop and the jeweler's house."
@@ -7183,10 +7695,6 @@ msgstr "Даёт возможность строить скриптории."
 msgctxt "technologies.description"
 msgid "Allows you to build the Market city building."
 msgstr "Даёт возможность строить городское здание Рынок."
-
-msgctxt "technologies.description"
-msgid "Allows you to build the alchemist's house."
-msgstr "Даёт возможность строить дом алхимика."
 
 msgctxt "technologies.description"
 msgid "Allows you to build the apiary."
@@ -7329,10 +7837,6 @@ msgid "Unlocks the ability to grow water-loving crops: rice and taro.\nAllows fa
 msgstr "Открывает возможность возделывать влаголюбивые культуры: рис и таро.\nПозволяет фермам и плантациям передавать пресную воду по цепочке (до 3 гексов).\nПозволяет осушать болота."
 
 msgctxt "technologies.description"
-msgid "Allows you to build the distillery and unlocks distillation across the workshops: strong spirits, rectified spirit, floral water, fragrant oils, turpentine, rosin, varnish, white naphtha, mercury and hydrochloric acid."
-msgstr "Позволяет строить винокурню и открывает перегонку в мастерских: крепкие напитки, спирт-ректификат, цветочную воду, эфирные масла, скипидар, канифоль, лак, белую нефть, ртуть и соляную кислоту."
-
-msgctxt "technologies.description"
 msgid "Unlocks the recipe for hopped beer."
 msgstr "Открывает рецепт хмелевого пива."
 
@@ -7347,6 +7851,34 @@ msgstr "Открывает использование тягловых живо�
 msgctxt "technologies.description"
 msgid "Unlocks the water mill: the running water sets the millstones in motion.\n+25% to the production of mines, quarries, the bloomery, the smelter and the forge only where fresh water is available: without water the wheel gives no bonus, for the water washes the ore and drives the bellows."
 msgstr "Открывает водяную мельницу: течение воды приводит в движение мельничные жернова.\n+25% к производству шахт и каменоломен, сыродутной печи, плавильни и кузницы только при наличии пресной воды: без воды колесо бонуса не даёт, поскольку именно вода промывает руду и приводит в движение меха."
+
+msgctxt "technologies.description"
+msgid "Allows you to build the chandler's house: tallow → tallow candles, wax → wax candles."
+msgstr "Позволяет строить дом свечника: животный жир → сальные свечи, воск → восковые свечи."
+
+msgctxt "technologies.description"
+msgid "Unlocks calamine mining and the cementation of copper with calamine into brass, along with brass tools, brass jewelry and precision instruments."
+msgstr "Открывает добычу каламина и выплавку латуни из меди с каламином, а также латунные инструменты, латунные украшения и точные приборы."
+
+msgctxt "technologies.description"
+msgid "Unlocks potash leached from broadleaf hardwood ashes in the kiln, potash-based forest glass and salted-out soap, and cobalt smalt."
+msgstr "Открывает выварку поташа из золы лиственных пород в печи для обжига, лесное стекло и высаливаемое мыло на поташе, а также кобальтовую смальту."
+
+msgctxt "technologies.description"
+msgid "Unlocks direct synthesis of sulfuric acid from sulfur, higher-yield hydrochloric and nitric acids displaced by sulfuric acid, compounded aqua regia, synthetic potash alum from clay, and lead crystal glassware."
+msgstr "Открывает прямой синтез серной кислоты из серы, высоковыходное получение соляной и азотной кислот вытеснением серной кислотой, составление царской водки из чистых кислот, синтез поташных квасцов из глины и выдувание хрустальной посуды."
+
+msgctxt "technologies.description"
+msgid "Allows you to build the alchemist's house, opens saltpeter, borax and sal ammoniac deposits, and unlocks green vitriol, iron-gall ink and ceramic glaze."
+msgstr "Даёт возможность строить дом алхимика, открывает залежи селитры, буры и нашатыря, а также производство железного купороса, железо-галловых чернил и керамической глазури."
+
+msgctxt "technologies.description"
+msgid "Allows you to build the distillery and unlocks distillation across the workshops: strong spirits, rectified spirit, floral water, fragrant oils, turpentine, rosin, varnish, white naphtha, mercury, zinc, sublimed sal ammoniac, sulfuric, hydrochloric and nitric acids, and aqua regia."
+msgstr "Позволяет строить винокурню и открывает перегонку в мастерских: крепкие напитки, спирт-ректификат, цветочную воду, эфирные масла, скипидар, канифоль, лак, белую нефть, ртуть, цинк, возогнанный нашатырь, серную, соляную и азотную кислоты и царскую водку."
+
+msgctxt "technologies.description"
+msgid "Unlocks gunpowder in the alchemist's house, boosting ore and stone extraction in mines and quarries, and nitrary saltpeter leached from lime and potash."
+msgstr "Открывает производство чёрного пороха в доме алхимика, ускоряя добычу руды и камня в шахтах и каменоломнях, а также селитряничную выварку селитры из извести и поташа."
 
 msgctxt "technologies.flavor"
 msgid "A page cut in wood or cast in metal gives as many copies as the press can pull, and no copy argues with another. The woodblock came first in China, movable type followed there and in Korea, where the letters were cast in bronze; Gutenberg set the same idea in lead and gave it the screw press and paper. A scribe copies a book in a year, a workshop prints it in a season."
@@ -7583,6 +8115,26 @@ msgstr "Дерево — древнейший строительный мате�
 msgctxt "technologies.flavor"
 msgid "Working precious stones and metals turned the craft into art."
 msgstr "Обработка драгоценных камней и металлов превратила ремесло в искусство."
+
+msgctxt "technologies.flavor"
+msgid "An oil lamp spills when carried into a gallery or held beside a ledger. A wick drawn repeatedly through melted tallow or rolled in warm beeswax carries its own fuel in solid form: tallow burns cheaply down in the mine shafts, while clear beeswax lights scriptoriums, temples and benches without stinging smoke."
+msgstr "Масляный светильник расплёскивается в штольне и над учётной книгой. Фитиль, многократно протянутый сквозь растопленный жир или укатанный в тёплый пчелиный воск, несёт своё топливо в твёрдом виде: сальная свеча дёшево светит в глубине рудников, а чистый воск без едкой копоти озаряет скриптории, храмы и верстаки."
+
+msgctxt "technologies.flavor"
+msgid "Long before anyone caught metallic zinc in a vessel, smelters sealed copper with crushed calamine and charcoal in a closed crucible and drew out a golden metal that neither rusted like iron nor needed scarce tin. From Persian birinj and Mediterranean orichalcum to the cast plaques of West Africa and the astrolabes of astronomers, brass became the alloy of fine scales, vessels and enduring ornament."
+msgstr "Задолго до того, как металлический цинк сумели уловить в приёмнике, плавильщики запечатывали медь с толчёным каламином и углём в закрытом тигле и вынимали золотистый сплав, который не ржавел, как железо, и не требовал редкого олова. От персидского биринджа и средиземноморского орихалка до литых рельефов Западной Африки и астролябий звездочётов латунь стала металлом точных шкал, сосудов и долговечных украшений."
+
+msgctxt "technologies.flavor"
+msgid "Not every forest yields a strong lye: resinous pines leave a thin ash, so ash-burners sought out beech, maple, oak, chestnut and walnut, burned great stacks of seasoned timber, leached the ashes through water and calcined the liquor in hot pots into white potash. Costlier and slower to win than the crust of a soda lake, it freed inland workshops from distant natron and gave glassmakers, dyers and nitre-boilers an alkali of their own."
+msgstr "Не всякий лес даёт крепкий щёлок: смолистая хвоя оставляет бедную золу, поэтому зольщики выбирали бук, клён, дуб, каштан и орех, пережигали поленницы выдержанной древесины, выщелачивали золу водой и прокаливали настой в котлах до белого поташа. Он давался дольше и дороже корки содового озера, но избавил лесные мастерские от зависимости от привозного натрона и дал собственную щёлочь стеклоделам, красильщикам и селитроварам."
+
+msgctxt "technologies.flavor"
+msgid "Alchemists searching for elixirs in Tang and Song China ground saltpeter with sulfur and charcoal and named the sudden roar fire-medicine. Carried west along the trade roads through Persian, Arab and European workshops, the black grain did more than reshape battlefields: tamped into a drilled hole, it split in a breath the granite and vein-rock that picks and wedges had worried for weeks."
+msgstr "Алхимики эпох Тан и Сун, искавшие составы бессмертия, растёрли селитру с серой и углём и прозвали вспыхнувшую смесь «огненным снадобьем». Разойдясь по торговым путям через персидские, арабские и европейские мастерские, чёрное зерно переменило не только войну: забитое в пробуренный шпур, оно в одно мгновение раскалывало гранит и жильный камень, которые кайло и клинья брали неделями."
+
+msgctxt "technologies.flavor"
+msgid "Where the alchemist sought a secret in the smoke of one vessel, the chemist weighed what went in and weighed what came out. Sulfur burned under moist bells into oil of vitriol, sulfuric acid drove fuming spirits of salt and nitre cleanly from common salts, clay yielded alum without alunite stone, and measured charges of potash and lead cleared glass into crystal. Matter ceased to be a riddle of sympathies and became a craft of proportions."
+msgstr "Там, где алхимик искал тайну в дыму одной реторты, химик взвешивал то, что клал в сосуд, и то, что из него выходило. Сера, сожжённая под влажным колоколом, давала купоросное масло, серная кислота начисто вытесняла дымящие спирты соли и селитры из простых солей, глина отдавала квасцы без алунитового камня, а выверенные доли поташа и свинца обращали стекло в прозрачный хрусталь. Вещество перестало быть загадкой сродства и стало ремеслом точных пропорций."
 
 msgctxt "technologies.name"
 msgid "Alchemy"
@@ -7823,6 +8375,26 @@ msgstr "Обработка дерева"
 msgctxt "technologies.name"
 msgid "Writing"
 msgstr "Письменность"
+
+msgctxt "technologies.name"
+msgid "Candle Making"
+msgstr "Свечное дело"
+
+msgctxt "technologies.name"
+msgid "Brass Working"
+msgstr "Латунное дело"
+
+msgctxt "technologies.name"
+msgid "Potash Burning"
+msgstr "Поташное дело"
+
+msgctxt "technologies.name"
+msgid "Gunpowder"
+msgstr "Порох"
+
+msgctxt "technologies.name"
+msgid "Chemistry"
+msgstr "Химия"
 
 msgctxt "technologies.unlock_effects.name"
 msgid "Allows scouts to explore areas in the fog of war."

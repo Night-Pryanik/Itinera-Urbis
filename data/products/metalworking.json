@@ -15,6 +15,14 @@
       "icon": "bronze_tools.png"
     },
     {
+      "id": "brass_tools", "price": 65,
+      "name": "Brass Tools",
+      "type": "product",
+      "category": "tools",
+      "unlock_tech": "brass_working",
+      "icon": "brass_tools.png"
+    },
+    {
       "id": "iron_tools", "price": 90,
       "name": "Iron Tools",
       "type": "product",

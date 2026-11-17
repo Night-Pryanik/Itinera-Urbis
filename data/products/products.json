@@ -299,6 +299,62 @@
       "category": "household_items",
       "unlock_tech": "wood_processing",
       "icon": "luxury_furniture.png"
+    },
+    {
+      "id": "fine_ceramics",
+      "price": 26,
+      "name": "Fine Ceramics",
+      "type": "product",
+      "category": "household_items",
+      "unlock_tech": "pottery",
+      "icon": "fine_ceramics.png"
+    },
+    {
+      // Clear potash-lead crystal glass requiring purified potash and controlled lead-oxide
+      // batch chemistry rather than ancient soda-lime glassblowing.
+      "id": "crystal_glassware",
+      "price": 52,
+      "name": "Crystal Glassware",
+      "type": "product",
+      "category": "household_items",
+      "unlock_tech": "chemistry",
+      "icon": "crystal_glassware.png"
+    },
+    {
+      "id": "metal_tableware",
+      "price": 50,
+      "name": "Metal Tableware",
+      "type": "product",
+      "category": "household_items",
+      "unlock_tech": "metallurgy",
+      "icon": "metal_tableware.png"
+    },
+    {
+      "id": "silver_tableware",
+      "price": 95,
+      "name": "Silver Tableware",
+      "type": "product",
+      "category": "household_items",
+      "unlock_tech": "jewelry",
+      "icon": "silver_tableware.png"
+    },
+    {
+      "id": "tallow_candles",
+      "price": 14,
+      "name": "Tallow Candles",
+      "type": "product",
+      "category": "household_items",
+      "unlock_tech": "candle_making",
+      "icon": "tallow_candles.png"
+    },
+    {
+      "id": "wax_candles",
+      "price": 24,
+      "name": "Wax Candles",
+      "type": "product",
+      "category": "household_items",
+      "unlock_tech": "candle_making",
+      "icon": "wax_candles.png"
     }
   ]
 }

@@ -1,0 +1,18 @@
+{
+  "technologies": [
+    {
+      // Marks the transition from empirical retort alchemy to systematic mineral-acid,
+      // salt and glass chemistry: direct sulfur combustion into sulfuric acid, wet
+      // displacement of hydrochloric and nitric acids with sulfuric acid, compounded
+      // aqua regia, synthetic potash alum from clay, and potash-lead crystal glass.
+      "id": "chemistry",
+      "name": "Chemistry",
+      "era": "renaissance",
+      "science_cost": 7.0,
+      "icon": "chemistry.png",
+      "prerequisites": [ [ "distillation" ] ],
+      "description": "Unlocks direct synthesis of sulfuric acid from sulfur, higher-yield hydrochloric and nitric acids displaced by sulfuric acid, compounded aqua regia, synthetic potash alum from clay, and lead crystal glassware.",
+      "flavor": "Where the alchemist sought a secret in the smoke of one vessel, the chemist weighed what went in and weighed what came out. Sulfur burned under moist bells into oil of vitriol, sulfuric acid drove fuming spirits of salt and nitre cleanly from common salts, clay yielded alum without alunite stone, and measured charges of potash and lead cleared glass into crystal. Matter ceased to be a riddle of sympathies and became a craft of proportions."
+    }
+  ]
+}
