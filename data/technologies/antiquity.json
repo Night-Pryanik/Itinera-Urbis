@@ -117,7 +117,7 @@
       "name": "Bookbinding",
       "era": "antiquity",
       "science_cost": 3.0,
-      "icon": "bookbinding_tech.png",
+      "icon": "bookbinding.png",
       "prerequisites": [ [ "parchment" ], [ "paper" ] ],
       "description": "Allows you to build the bookbinder's workshop.\nAllows you to bind sheets of parchment or paper into books with leather and glue.",
       "flavor": "The codex did not need to be unrolled: it opened at any page the reader chose and held the whole work between two covers. Sewing the sheets through the fold and gluing a tanned hide into a cover turned a sheaf of writing into a thing that could be shelved, carried and sold."

@@ -18,7 +18,7 @@
       "era": "medieval",
       "science_cost": 5.0,
       "prerequisites": [ [ "paper", "bookbinding", "screw_press" ] ],
-      "icon": "printing_tech.png",
+      "icon": "printing.png",
       "description": "Adds one production slot to the bookbinder's workshop.",
       "flavor": "A page cut in wood or cast in metal gives as many copies as the press can pull, and no copy argues with another. The woodblock came first in China, movable type followed there and in Korea, where the letters were cast in bronze; Gutenberg set the same idea in lead and gave it the screw press and paper. A scribe copies a book in a year, a workshop prints it in a season."
     }
