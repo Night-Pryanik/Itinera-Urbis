@@ -188,7 +188,7 @@
       "type": "product",
       "category": "material",
       "unlock_tech": "paper",
-      "icon": "paper_tech.png",
+      "icon": "paper.png",
       "special_yield": { "science": 5 }
     },
     {
