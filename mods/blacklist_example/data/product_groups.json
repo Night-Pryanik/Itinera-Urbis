@@ -11,6 +11,10 @@
     {
       "id": "alcohol",
       "products": [ "beer", "mead", "sake", "pulque", "toddy", "hopped_beer", "cider" ]
+    },
+    {
+      "id": "spirits",
+      "products": [ "arkhi", "mezcal", "arrack", "grain_spirit", "honey_spirit", "fruit_brandy", "cordial" ]
     }
   ]
 }

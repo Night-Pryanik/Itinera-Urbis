@@ -47,11 +47,28 @@
       "products": [ "walnuts", "pistachio", "beech_nuts" ]
     },
     {
-      // The drinks the city empties. The recipe of vinegar takes the same list, but the group is
-      // drawn by what is drunk, not by what is soured.
+      // The fermented drinks the city empties. The recipes of vinegar and rectified spirit take
+      // the same list, keeping distilled spirits apart.
       "id": "alcohol",
       "name": "Alcohol",
       "products": [ "beer", "mead", "sake", "pulque", "toddy", "wine", "fruit_wine", "hopped_beer", "carob_wine", "cider" ]
+    },
+    {
+      // Distilled spirits stand apart from fermented "@alcohol" so they are never spent on
+      // vinegar or rectification and can be toggled independently on the domestic market.
+      // The order is the write-off order: everyday spirits go first, cordial last.
+      "id": "spirits",
+      "name": "Strong Spirits",
+      "products": [
+        "arkhi",
+        "mezcal",
+        "arrack",
+        "grain_spirit",
+        "honey_spirit",
+        "fruit_brandy",
+        "brandy",
+        "cordial"
+      ]
     },
     {
       "id": "non_alcoholic_beverages",
@@ -122,28 +139,29 @@
       "products": [ "eggs", "oyster" ]
     },
     {
+      // Everyday household supplies; glue and white naphtha stand last so common goods
+      // cover domestic demand first before drawing down workshop consumables.
       "id": "consumer_goods",
       "name": "Consumer Goods",
-      "products": [ "salt", "soap", "vegetable_oil", "sponge", "glue" ]
+      "products": [ "salt", "soap", "vegetable_oil", "sponge", "glue", "white_naphtha" ]
     },
     {
-      // The empty vessel a good is stored and shipped in. Tare is generic: the winemaker, the brewer
-      // and the oilmaker ask for any container, not for the ware that once held their own good.
+      // The empty vessel a good is stored and shipped in. Tare is generic: the winemaker, brewer,
+      // oilmaker, distiller and perfumer ask for any container, not one tied to a single drink or oil.
       "id": "tare",
       "name": "Tare",
       "products": [ "amphora", "glass_bottle", "wooden_barrel" ]
     },
     {
-      // The goods of the perfumer's art as the citizens use them: the perfume they
-      // put on, the incense they burn and the attar they keep. The raw resins and the
-      // roses are NOT in the group: they are the material of the perfumer's house, and
-      // the citizens do not eat the raw material of a good that is made out of it.
-      // The order of the members is the order of the write-off (the citizens take the
-      // first member that is in storage): the everyday perfume goes first, the costly
-      // attar last.
+      // The goods of the perfumer's art as the citizens use them: floral water, oil
+      // perfume, incense, attar and alcohol-based fragrant spirit. Raw resins, blossoms
+      // and intermediate essential oils (sandalwood oil, chamomile oil) are NOT in the
+      // group: citizens buy finished goods, not workshop feedstocks.
+      // The order of the members is the write-off order: accessible floral water and
+      // everyday perfume go first, costly attar and fragrant spirit last.
       "id": "perfumery",
       "name": "Perfumery",
-      "products": [ "perfume", "incense", "attar" ]
+      "products": [ "floral_water", "perfume", "incense", "attar", "spirit_perfume" ]
     },
     {
       // Work tools: the pick of the miner and quarryman, the axe of the lumberjack,

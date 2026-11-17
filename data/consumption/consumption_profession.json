@@ -54,7 +54,7 @@
     },
     {
       "resource": "@tare",
-      "profession": [ "winemaker", "brewer", "oilmaker" ],
+      "profession": [ "winemaker", "brewer", "oilmaker", "distiller", "perfumer" ],
       "amount": 10,
       "interval": 10,
       "production_bonus": 0.25
@@ -134,6 +134,67 @@
       "amount": 10,
       "interval": 10,
       "production_bonus": 0.1
+    },
+    {
+      // Alchemists use rectified spirit as a clean lamp fuel and general extraction solvent.
+      "resource": "rectified_spirit",
+      "profession": [ "alchemist" ],
+      "amount": 10,
+      "interval": 15,
+      "production_bonus": 0.15
+    },
+    {
+      // Turpentine protects and dresses worked timber for carpenters and furniture makers
+      // and dissolves oils and stains in the dyer's workshop.
+      "resource": "turpentine",
+      "profession": [ "carpenter", "furniture_maker", "dyer" ],
+      "amount": 10,
+      "interval": 10,
+      "production_bonus": 0.1
+    },
+    {
+      // Rosin pitches barrels inside, enriches soap lather, sizes paper sheets against
+      // ink bleed and serves as soldering flux at the forge.
+      "resource": "rosin",
+      "profession": [ "cooper", "soap_maker", "paper_maker", "blacksmith" ],
+      "amount": 10,
+      "interval": 10,
+      "production_bonus": 0.1
+    },
+    {
+      // Clear varnish seals finished furniture, woodwork and bound book covers.
+      "resource": "spirit_varnish",
+      "profession": [ "furniture_maker", "carpenter", "bookbinder" ],
+      "amount": 10,
+      "interval": 15,
+      "production_bonus": 0.15
+    },
+    {
+      // White naphtha feeds hot, soot-free lamps for glassmakers and alchemists and
+      // degreases hides in the tannery.
+      "resource": "white_naphtha",
+      "profession": [ "glassmaker", "alchemist", "tanner" ],
+      "amount": 10,
+      "interval": 15,
+      "production_bonus": 0.15
+    },
+    {
+      // Mercury extracts gold and silver from ore by amalgamation and coats ornaments
+      // in fire-gilding.
+      "resource": "mercury",
+      "profession": [ "smelter", "jeweler" ],
+      "amount": 10,
+      "interval": 15,
+      "production_bonus": 0.2
+    },
+    {
+      // Hydrochloric acid pickles scale from forged metal, leaches ores, cleans and
+      // parts precious metals for the jeweler, and brightens mordant dyes.
+      "resource": "hydrochloric_acid",
+      "profession": [ "smelter", "blacksmith", "jeweler", "dyer" ],
+      "amount": 10,
+      "interval": 10,
+      "production_bonus": 0.15
     }
   ]
 }

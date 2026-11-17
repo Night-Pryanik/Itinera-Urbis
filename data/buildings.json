@@ -238,6 +238,7 @@
       "work_cost": 35,
       "additional_cost": [ { "planks": 120 }, { "@processed_construction_materials": 60 } ],
       "icon": "soap_maker_house.png",
+      "profession": "soap_maker",
       "production_slots": 1.0,
       "unlock_tech": "soap_making",
       "default_recipes": [ "soap" ]
@@ -412,6 +413,7 @@
       "work_cost": 35,
       "additional_cost": [ { "planks": 100 }, { "@processed_construction_materials": 50 } ],
       "icon": "jeweler_house.png",
+      "profession": "jeweler",
       "production_slots": 1.0,
       "unlock_tech": "jewelry",
       "default_recipes": [  ]
@@ -423,6 +425,7 @@
       "work_cost": 35,
       "additional_cost": [ { "planks": 100 }, { "@processed_construction_materials": 50 } ],
       "icon": "alchemist_house.png",
+      "profession": "alchemist",
       "production_slots": 1.0,
       "unlock_tech": "alchemy",
       "default_recipes": [  ]
@@ -473,6 +476,18 @@
       "production_slots": 1.0,
       "unlock_tech": "wood_processing",
       "default_recipes": [ "furniture" ]
+    },
+    {
+      "id": "distillery",
+      "name": "Distillery",
+      "description": "Distils fermented drinks and sweet mashes into strong spirits, rectified spirit and fragrant cordials.",
+      "work_cost": 45,
+      "additional_cost": [ { "planks": 120 }, { "@processed_construction_materials": 80 } ],
+      "icon": "distillery.png",
+      "profession": "distiller",
+      "production_slots": 1.0,
+      "unlock_tech": "distillation",
+      "default_recipes": [  ]
     }
   ]
 }

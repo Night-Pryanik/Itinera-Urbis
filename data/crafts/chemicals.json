@@ -29,6 +29,86 @@
       "time": 10.0,
       "unlock_tech": "alchemy",
       "description": "Distils sulfuric acid from green vitriol (iron sulfate)."
+    },
+    {
+      // Takes @alcohol (fermented drinks only) so strong spirits are never wasted
+      // as raw feedstock for rectification.
+      "id": "rectified_spirit",
+      "name": "Rectified Spirit",
+      "produced_in": [ "distillery", "alchemist_house" ],
+      "resources": { "@alcohol": 20 },
+      "result": { "rectified_spirit": 10 },
+      "time": 10.0,
+      "unlock_tech": "distillation",
+      "description": "Redistils a fermented drink into concentrated rectified spirit."
+    },
+    {
+      // Closed-still distillation splits oleoresin cleanly into volatile turpentine
+      // overhead and solid rosin in the pot.
+      "id": "resin_distillation",
+      "name": "Turpentine and Rosin",
+      "produced_in": [ "tar_distillery" ],
+      "resources": { "resin": 20 },
+      "result": { "turpentine": 10, "rosin": 10 },
+      "time": 8.0,
+      "unlock_tech": "distillation",
+      "description": "Distils pine resin into volatile turpentine and solid rosin."
+    },
+    {
+      // Turpentine stands first so a pine-producing city can make varnish from its
+      // own still; rectified spirit steps in where alcohol is plentiful.
+      "id": "spirit_varnish",
+      "name": "Varnish",
+      "produced_in": [ "tar_distillery", "alchemist_house" ],
+      "resources": [ { "rosin": 10 }, [ { "turpentine": 10 }, { "rectified_spirit": 10 } ] ],
+      "result": { "spirit_varnish": 10 },
+      "time": 8.0,
+      "unlock_tech": "distillation",
+      "description": "Dissolves rosin in turpentine or rectified spirit into a clear protective varnish."
+    },
+    {
+      // Distilling crude bitumen drives off clear white naphtha overhead while leaving
+      // workable pitch tar in the retort.
+      "id": "white_naphtha",
+      "name": "White Naphtha",
+      "produced_in": [ "tar_distillery", "alchemist_house" ],
+      "resources": { "bitumen": 20 },
+      "result": { "white_naphtha": 10, "tar": 10 },
+      "time": 8.0,
+      "unlock_tech": "distillation",
+      "description": "Distils bitumen into clear white naphtha and residual tar."
+    },
+    {
+      "id": "mercury",
+      "name": "Mercury",
+      "produced_in": [ "alchemist_house" ],
+      "resources": { "cinnabar_ore": 20, "charcoal": 10 },
+      "result": { "mercury": 10 },
+      "time": 10.0,
+      "unlock_tech": "distillation",
+      "description": "Roasts cinnabar ore in a retort and condenses the vapor into liquid mercury."
+    },
+    {
+      // Split into two recipes like sulfuric acid so a mod that removes green vitriol
+      // can drop this route while hydrochloric acid keeps its alum/sulfuric route.
+      "id": "hydrochloric_acid_from_green_vitriol",
+      "name": "Hydrochloric Acid (from green vitriol)",
+      "produced_in": [ "alchemist_house" ],
+      "resources": { "salt": 20, "green_vitriol": 10 },
+      "result": { "hydrochloric_acid": 10 },
+      "time": 10.0,
+      "unlock_tech": "distillation",
+      "description": "Distils hydrochloric acid (spirit of salt) from salt and green vitriol."
+    },
+    {
+      "id": "hydrochloric_acid_from_alum",
+      "name": "Hydrochloric Acid (from alum)",
+      "produced_in": [ "alchemist_house" ],
+      "resources": [ { "salt": 20 }, [ { "alum": 10 }, { "sulfuric_acid": 10 } ] ],
+      "result": { "hydrochloric_acid": 10 },
+      "time": 10.0,
+      "unlock_tech": "distillation",
+      "description": "Distils hydrochloric acid (spirit of salt) from salt with alum or sulfuric acid."
     }
   ]
 }

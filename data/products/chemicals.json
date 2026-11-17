@@ -16,6 +16,70 @@
       "category": "chemicals",
       "unlock_tech": "alchemy",
       "icon": "sulfuric_acid.png"
+    },
+    {
+      // High-proof alcohol redistilled from fermented drinks; serves as a solvent
+      // for perfumery, cordials, varnish and alchemical work rather than a table drink.
+      "id": "rectified_spirit",
+      "price": 32,
+      "name": "Rectified Spirit",
+      "type": "product",
+      "category": "chemicals",
+      "unlock_tech": "distillation",
+      "icon": "rectified_spirit.png"
+    },
+    {
+      // Volatile solvent overhead from distilling pine resin, leaving rosin behind.
+      "id": "turpentine",
+      "price": 12,
+      "name": "Turpentine",
+      "type": "product",
+      "category": "chemicals",
+      "unlock_tech": "distillation",
+      "icon": "turpentine.png"
+    },
+    {
+      // Solid amber resin left in the still after drawing off turpentine; used for
+      // varnish, barrel pitching, soap, paper sizing and soldering flux.
+      "id": "rosin",
+      "price": 10,
+      "name": "Rosin",
+      "type": "product",
+      "category": "chemicals",
+      "unlock_tech": "distillation",
+      "icon": "rosin.png"
+    },
+    {
+      // Protective finish made by dissolving rosin in turpentine or rectified spirit.
+      "id": "spirit_varnish",
+      "price": 44,
+      "name": "Varnish",
+      "type": "product",
+      "category": "chemicals",
+      "unlock_tech": "distillation",
+      "icon": "spirit_varnish.png"
+    },
+    {
+      // Clear light petroleum fraction distilled from bitumen; burns cleanly in
+      // household and workshop lamps and degreases hides.
+      "id": "white_naphtha",
+      "price": 22,
+      "name": "White Naphtha",
+      "type": "product",
+      "category": "chemicals",
+      "unlock_tech": "distillation",
+      "icon": "white_naphtha.png"
+    },
+    {
+      // Mineral acid (spirit of salt) distilled in retorts from common salt with
+      // vitriol, alum or sulfuric acid; used in metallurgy, jewelry and dyeing.
+      "id": "hydrochloric_acid",
+      "price": 30,
+      "name": "Hydrochloric Acid",
+      "type": "product",
+      "category": "chemicals",
+      "unlock_tech": "distillation",
+      "icon": "hydrochloric_acid.png"
     }
   ]
 }

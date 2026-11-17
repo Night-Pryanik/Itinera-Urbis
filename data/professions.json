@@ -257,6 +257,30 @@
       "name": "Furniture Maker",
       "icon": "furniture_maker.png",
       "description": "Crafts furniture and luxury furniture from timber."
+    },
+    {
+      "id": "distiller",
+      "name": "Distiller",
+      "icon": "profession_distiller.png",
+      "description": "Tends the still and draws strong spirits and rectified spirit from fermented drinks and sweet mashes."
+    },
+    {
+      "id": "alchemist",
+      "name": "Alchemist",
+      "icon": "profession_alchemist.png",
+      "description": "Distils acids, solvents and reagents in retorts and alembics."
+    },
+    {
+      "id": "jeweler",
+      "name": "Jeweler",
+      "icon": "profession_jeweler.png",
+      "description": "Cuts stones and works precious metals into jewelry."
+    },
+    {
+      "id": "soap_maker",
+      "name": "Soapmaker",
+      "icon": "profession_soap_maker.png",
+      "description": "Boils oils, alkali and resin into soap."
     }
   ]
 }

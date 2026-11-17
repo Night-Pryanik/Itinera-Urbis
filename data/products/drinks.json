@@ -142,6 +142,85 @@
       "category": "drinks",
       "unlock_tech": "fermentation",
       "icon": "cider.png"
+    },
+    {
+      // Strong spirits drawn from unhopped grain beer and rice sake.
+      "id": "grain_spirit",
+      "price": 32,
+      "name": "Grain Spirit",
+      "type": "product",
+      "category": "drinks",
+      "unlock_tech": "distillation",
+      "icon": "grain_spirit.png"
+    },
+    {
+      "id": "brandy",
+      "price": 44,
+      "name": "Brandy",
+      "type": "product",
+      "category": "drinks",
+      "unlock_tech": "distillation",
+      "icon": "brandy.png"
+    },
+    {
+      // Consolidates spirits drawn from fruit wines, carob wine and apple cider.
+      "id": "fruit_brandy",
+      "price": 42,
+      "name": "Fruit Brandy",
+      "type": "product",
+      "category": "drinks",
+      "unlock_tech": "distillation",
+      "icon": "fruit_brandy.png"
+    },
+    {
+      // Consolidates spirits distilled from palm toddy, sugar cane and maple sap
+      // across warm and cold climates, mirroring how sugar unites their juices.
+      "id": "arrack",
+      "price": 24,
+      "name": "Arrack",
+      "type": "product",
+      "category": "drinks",
+      "unlock_tech": "distillation",
+      "icon": "arrack.png"
+    },
+    {
+      "id": "mezcal",
+      "price": 22,
+      "name": "Mezcal",
+      "type": "product",
+      "category": "drinks",
+      "unlock_tech": "distillation",
+      "icon": "mezcal.png"
+    },
+    {
+      "id": "honey_spirit",
+      "price": 32,
+      "name": "Honey Spirit",
+      "type": "product",
+      "category": "drinks",
+      "unlock_tech": "distillation",
+      "icon": "honey_spirit.png"
+    },
+    {
+      // Milk spirit of pastoral herds: fermented and distilled from raw milk.
+      "id": "arkhi",
+      "price": 18,
+      "name": "Arkhi",
+      "type": "product",
+      "category": "drinks",
+      "unlock_tech": "distillation",
+      "icon": "arkhi.png"
+    },
+    {
+      // Sweetened herbal and spiced spirit compounded from rectified spirit,
+      // fragrant botanicals and sweeteners.
+      "id": "cordial",
+      "price": 76,
+      "name": "Cordial",
+      "type": "product",
+      "category": "drinks",
+      "unlock_tech": "distillation",
+      "icon": "cordial.png"
     }
   ]
 }
