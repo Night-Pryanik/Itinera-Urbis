@@ -780,12 +780,13 @@ func _run() -> void:
                     % str(city_data.world_sea.get("mode", "")), state)
 
     # --- 9. The rivers ---
-    for key in ["num_main_rivers", "num_tributaries", "min_river_length", "min_tributary_length"]:
+    for key in ["num_main_rivers", "num_tributaries", "min_river_length",
+            "min_tributary_length", "delta_chance"]:
         check(not game_data.map_config.has(key),
                 "the river setting %s is not part of data/map_config.json" % key, state)
 
-    check(menu.river_controls.size() == 4,
-            "the world tab owns four river settings (got %d)" % menu.river_controls.size(), state)
+    check(menu.river_controls.size() == 5,
+            "the world tab owns five river settings (got %d)" % menu.river_controls.size(), state)
     var count_row: HBoxContainer = menu.proportional_river_check.get_parent()
     var count_label: Label = count_row.get_child(0) as Label
     check(count_label.text == tr("Number of rivers")
@@ -796,7 +797,8 @@ func _run() -> void:
     check(int(river_defaults["num_main_rivers"]) == 6
             and int(river_defaults["num_tributaries"]) == 10
             and int(river_defaults["min_river_length"]) == 8
-            and int(river_defaults["min_tributary_length"]) == 4,
+            and int(river_defaults["min_tributary_length"]) == 4
+            and is_equal_approx(float(river_defaults["delta_chance"]), 0.35),
             "the river settings start from their defaults (got %s)" % str(river_defaults), state)
     for key in menu.river_controls.keys():
         var spec: Dictionary = menu.river_controls[key]
@@ -817,8 +819,9 @@ func _run() -> void:
             and menu.river_controls["num_tributaries"]["plus"].disabled,
             "the count step buttons are off while they follow the map", state)
     check(menu.river_controls["min_river_length"]["control"].editable
-            and menu.river_controls["min_tributary_length"]["control"].editable,
-            "the minimum length fields stay editable", state)
+            and menu.river_controls["min_tributary_length"]["control"].editable
+            and menu.river_controls["delta_chance"]["control"].editable,
+            "the non-count fields stay editable", state)
     menu.map_size_option.select(1)
     menu._on_map_size_selected(1)
     check(menu.river_controls["num_main_rivers"]["control"].text == "≈6"

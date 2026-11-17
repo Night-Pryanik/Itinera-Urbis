@@ -15,6 +15,14 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+msgctxt ""
+msgid "Delta chance"
+msgstr ""
+
+msgctxt ""
+msgid "The chance that a main river reaching a lake or the sea splits into distributaries at its mouth."
+msgstr ""
+
 msgid "\n\nFound here: %s"
 msgstr ""
 

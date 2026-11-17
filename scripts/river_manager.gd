@@ -5,6 +5,9 @@
 #   - Main rivers: the source in the mountains, the mouth in a lake or the sea. They do not intersect each other.
 #   - Tributaries: the source in the mountains (or hills, if there are few mountains), flowing into the main
 #     rivers or into other tributaries (a confluence point). The tributaries do not flow into the lakes and the seas.
+#   - Deltas: a main river that mouths into a lake or the sea may split into distributaries a few
+#     steps before the shore. Each distributary takes the nearest free mouth it can reach without
+#     a long detour, so the channels fan out and never cross each other or the parent river.
 #   - The rivers do not run along the edges of the lake/sea hexes and their neighbours (except
 #     for the last step into the mouth/confluence point), so that the river does not flow along the shore.
 #
@@ -29,6 +32,19 @@ const MAX_TURN_ANGLE_DEG := 60.0 # The maximum turn angle per step
 const MAX_TURN_ANGLE_SOFT_DEG := 90.0 # The fallback angle when getting stuck.
 const NUM_RIVER_ATTEMPTS := 8 # The attempts to build one river
 const SOFT_ANGLE_BONUS_DEG := 30.0 # A node relaxes the angle limit by this much when no candidate fits
+# A delta is built from a few vertices upstream of the mouth. The reach limits how far its
+# distributaries may look for another mouth, so a delta stays a local fan instead of a second river.
+const DELTA_DIVERGENCE_BACK := 4
+const DELTA_MOUTH_REACH_EDGES := 12
+const DELTA_BRANCH_MIN := 2
+const DELTA_BRANCH_MAX := 3
+const DELTA_SEED_SALT := 104729
+# A distributary is a short fan at the mouth, not a second course around an obstacle. A branch
+# shorter than two edges is not visible, and one much longer than the straight way to the shore
+# is a hook: such a candidate is rejected instead of being drawn.
+const DELTA_MIN_BRANCH_EDGES := 2
+const DELTA_MAX_DETOUR := 1.35
+const DELTA_MAX_EXTRA_EDGES := 1
 
 # The vertices of the odd-r hex grid form a triangular lattice. In units of a sixth of
 # the lattice step a vertex of hex (row, col) at index vidx is
@@ -66,9 +82,19 @@ const TRIBUTARY_SHORE_WIDTH := 6.0 # The thickness of the shore underlay of the 
 const TRIBUTARY_HIGHLIGHT_COLOR := Color(130.0 / 255.0, 190.0 / 255.0, 245.0 / 255.0, 0.9) # The light blue highlight of the tributary
 const TRIBUTARY_HIGHLIGHT_WIDTH := 4.0 # The thickness of the highlight of the tributary
 
+# The distributaries of a delta keep the colour of the main river but are drawn thinner, so the
+# fan reads as branches of the stream that feeds it rather than as separate rivers.
+const DELTA_COLOR := Color(26.0 / 255.0, 95.0 / 255.0, 180.0 / 255.0, 0.85)
+const DELTA_WIDTH := 7.0
+const DELTA_SHORE_COLOR := Color(98.0 / 255.0, 160.0 / 255.0, 234.0 / 255.0, 0.22)
+const DELTA_SHORE_WIDTH := 7.0
+const DELTA_HIGHLIGHT_COLOR := Color(98.0 / 255.0, 160.0 / 255.0, 234.0 / 255.0, 0.9)
+const DELTA_HIGHLIGHT_WIDTH := 4.0
+
 var rivers: Array = [] # Array of Array of Vector2 (the world coordinates of the points of each river)
-var main_rivers: Array = [] # Only the main rivers (the source in the mountains, the mouth in a lake)
+var main_rivers: Array = [] # Only the main rivers (the source in the mountains, the mouth in a lake or the sea)
 var tributaries: Array = [] # Only the tributaries (flowing into the main rivers or other tributaries)
+var deltas: Array = [] # The distributaries of the main rivers that fan out into a lake or the sea
 
 # The last built graph of the vertices. It is reused in mark_river_edges(),
 # so as not to build the graph (thousands of vertices) twice per map generation.
@@ -182,7 +208,9 @@ func generate_rivers(rows: int, cols: int, radius: float, tile_data: Array) -> v
     var mountain_ids := _vertices_with_bit(vertex_terrain, TERRAIN_MOUNTAIN)
     var hill_ids := _vertices_with_bit(vertex_terrain, TERRAIN_HILL)
     var lake_ids := _vertices_with_bit(vertex_terrain, TERRAIN_LAKE)
-    var mouth_ids := _vertices_with_bit(vertex_terrain, TERRAIN_SEA | TERRAIN_SHALLOW_SEA)
+    # Both lakes and seas are mouths: a distributary may reach either of them.
+    var sea_mouth_ids := _vertices_with_bit(vertex_terrain, TERRAIN_SEA | TERRAIN_SHALLOW_SEA)
+    var mouth_ids := lake_ids + sea_mouth_ids
 
     var n := _graph_positions.size()
     _water.resize(n)
@@ -193,7 +221,6 @@ func generate_rivers(rows: int, cols: int, radius: float, tile_data: Array) -> v
         _water[id] = 1 if is_water else 0
         _used[id] = 0
 
-    mouth_ids = lake_ids + mouth_ids
     # The mouths of the main rivers: the lakes + the seas. If there are neither lakes nor seas — we do not build the rivers.
     if mountain_ids.is_empty() or mouth_ids.is_empty():
         print("RIVER DEBUG: there are no mountains or mouths (lakes/seas), exiting")
@@ -211,12 +238,19 @@ func generate_rivers(rows: int, cols: int, radius: float, tile_data: Array) -> v
 
     # --- The generation of the main rivers (mountain -> lake/sea, they do not intersect) ---
     main_rivers = []
+    var main_paths: Array = []
     for _i in range(num_main):
         var river = _try_generate_main_river(mountain_ids, mouth_ids, min_main_len)
         if not river.is_empty():
             _mark_used(river)
+            main_paths.append(river)
             main_rivers.append(_ids_to_positions(river))
     print("RIVER DEBUG: main rivers generated=", main_rivers.size())
+
+    # The deltas are generated after all the main rivers: a distributary must keep clear of every
+    # main river, including the ones built after its parent.
+    deltas = _generate_deltas(graph, mouth_ids, main_paths)
+    print("RIVER DEBUG: delta distributaries generated=", deltas.size())
 
     # --- The generation of the tributaries (mountain/hill -> an occupied vertex, a confluence) ---
     tributaries = []
@@ -226,7 +260,7 @@ func generate_rivers(rows: int, cols: int, radius: float, tile_data: Array) -> v
             _mark_used(river)
             tributaries.append(_ids_to_positions(river))
 
-    rivers = main_rivers + tributaries
+    rivers = main_rivers + tributaries + deltas
     print("RIVER DEBUG: total rivers=", rivers.size())
 
 
@@ -266,6 +300,120 @@ func _try_generate_main_river(mountain_ids: Array,
 
     # A compromise: the best path found may be shorter than min_len, but the river is still built.
     return best_path
+
+
+# Whether a distributary goes to the shore directly. The path is measured in edges of the vertex
+# lattice; the straight distance in the same units is the shortest course it could take. A
+# river that has to wind around an obstacle to reach a chosen mouth is dropped rather than
+# drawn as a long hook.
+func _delta_is_direct(path: PackedInt32Array) -> bool:
+    var steps: int = path.size() - 1
+    if steps < DELTA_MIN_BRANCH_EDGES:
+        return false
+    var straight: float = _graph_positions[path[0]].distance_to(
+            _graph_positions[path[path.size() - 1]])
+    var minimum: float = maxf(1.0, straight / _graph_edge_len)
+    return float(steps) <= minimum * DELTA_MAX_DETOUR + DELTA_MAX_EXTRA_EDGES
+
+
+# -------------------------------------------------------
+# Builds the distributaries of the rivers that reach a lake or the sea. A selected river forks
+# a few steps upstream of its mouth; each branch searches for the nearest free mouth rather than
+# for a preselected one, so it goes straight to the water instead of looping around the rivers
+# already on the map. Every accepted branch is marked used, so the channels keep clear of the
+# parent, of each other and of every other river. The roll is seeded by the world seed and the
+# river index rather than drawn from the global generator, so adding deltas does not shift the
+# map's random stream.
+# -------------------------------------------------------
+func _generate_deltas(graph: Dictionary, mouth_ids: Array, main_paths: Array) -> Array:
+    var result: Array = []
+    if mouth_ids.is_empty() or main_paths.is_empty():
+        return result
+    var chance := clampf(float(CityData.world_rivers.get("delta_chance", 0.0)), 0.0, 1.0)
+    if chance <= 0.0:
+        return result
+
+    var saved_dist := _dist_field
+    var water_rivers := 0
+    for i in range(main_paths.size()):
+        var path: PackedInt32Array = main_paths[i]
+        if path.size() < DELTA_DIVERGENCE_BACK + 2:
+            continue
+        var parent_mouth: int = path[path.size() - 1]
+        if _water[parent_mouth] == 0:
+            continue
+        water_rivers += 1
+
+        var rng := RandomNumberGenerator.new()
+        rng.seed = CityData.world_seed + (i + 1) * DELTA_SEED_SALT
+        if rng.randf() >= chance:
+            continue
+
+        var mouth_pos := _graph_positions[parent_mouth]
+        var reach := float(DELTA_MOUTH_REACH_EDGES) * _graph_edge_len
+        var candidates: Array = []
+        for sid in mouth_ids:
+            if _used[sid] != 0 or sid == parent_mouth:
+                continue
+            if _graph_positions[sid].distance_to(mouth_pos) > reach:
+                continue
+            # Most water vertices lie inside the basin and cannot be reached from land at all:
+            # only a vertex touching dry ground can serve as another mouth of the delta.
+            var touches_land := false
+            var slot: int = sid * 3
+            for k in range(_graph_degree[sid]):
+                if _water[_graph_nbr[slot + k]] == 0:
+                    touches_land = true
+                    break
+            if touches_land:
+                candidates.append(sid)
+        if candidates.is_empty():
+            continue
+
+        var wanted: int = rng.randi_range(DELTA_BRANCH_MIN, DELTA_BRANCH_MAX)
+        # Every branch leaves from a different point of the parent: channels starting at the
+        # same vertex would compete for the same few free edges out of the coast.
+        var forks: Array = []
+        for delta_back in [DELTA_DIVERGENCE_BACK - 1, DELTA_DIVERGENCE_BACK + 1,
+                DELTA_DIVERGENCE_BACK + 3]:
+            if delta_back < 2 or delta_back >= path.size() - 1:
+                continue
+            var fork: int = path[path.size() - 1 - delta_back]
+            if _water[fork] == 0 and _vertex_restricted[fork] == 0 and fork not in forks:
+                forks.append(fork)
+        if forks.is_empty():
+            continue
+
+        var added := 0
+        for fork in forks:
+            if added >= wanted:
+                break
+            # All free coastal mouths of the lake or the sea are goals at once. The exact
+            # distance field then makes A* choose the nearest reachable water instead of a
+            # far mouth behind another river.
+            var goals: Array = []
+            for sid in candidates:
+                if _used[sid] != 0:
+                    continue
+                if _graph_positions[sid].distance_to(_graph_positions[fork]) \
+                        < float(DELTA_MIN_BRANCH_EDGES) * _graph_edge_len * 0.75:
+                    continue
+                goals.append(sid)
+            if goals.is_empty():
+                continue
+            _prepare_search(goals)
+            _dist_field = _build_distance_field(graph, goals)
+            var branch := _find_path_astar(fork, MAX_TURN_ANGLE_DEG, true)
+            if branch.size() < 2:
+                branch = _find_path_astar(fork, MAX_TURN_ANGLE_SOFT_DEG, true)
+            if not _delta_is_direct(branch):
+                continue
+            _mark_used(branch)
+            result.append(_ids_to_positions(branch))
+            added += 1
+    _dist_field = saved_dist
+    print("RIVER DEBUG: water-mouthed main rivers=", water_rivers, " deltas=", result.size())
+    return result
 
 
 # -------------------------------------------------------
@@ -604,9 +752,11 @@ func _build_distance_field(graph: Dictionary, source_ids: Array) -> PackedInt32A
 # _dist_field holds the exact distance to the nearest goal.
 # The vertices occupied by other rivers are forbidden, except the goals themselves.
 # An edge inside a restricted hex is forbidden, except the last step into a goal
-# and one step from outside into an approach vertex.
+# and one step from outside into an approach vertex. Distributaries pass allow_coast:
+# they may follow the shore, but never enter water outside their own goal.
 # -------------------------------------------------------
-func _find_path_astar(start_id: int, max_turn_angle_deg: float) -> PackedInt32Array:
+func _find_path_astar(start_id: int, max_turn_angle_deg: float,
+        allow_coast: bool = false) -> PackedInt32Array:
     _path_epoch += 1
     var epoch := _path_epoch
     var goal_epoch := _goal_epoch
@@ -657,7 +807,11 @@ func _find_path_astar(start_id: int, max_turn_angle_deg: float) -> PackedInt32Ar
                 var n := nbr[base + k]
                 if _used[n] and _goal_stamp[n] != goal_epoch:
                     continue
-                if forb[base + k]:
+                # A distributary may follow the shore; an ordinary river may only touch it at
+                # its mouth. Either way the water itself stays closed except for the goal.
+                if allow_coast and _water[n] == 1 and _goal_stamp[n] != goal_epoch:
+                    continue
+                if forb[base + k] and not allow_coast:
                     if _goal_stamp[n] != goal_epoch \
                             and not (_approach_stamp[n] == goal_epoch and not current_is_approach):
                         continue
@@ -756,6 +910,13 @@ func get_tributaries() -> Array:
 
 
 # -------------------------------------------------------
+# Returns only the distributaries of the lake/sea mouths (drawn thinner than the main rivers)
+# -------------------------------------------------------
+func get_deltas() -> Array:
+    return deltas
+
+
+# -------------------------------------------------------
 # Returns the last built graph of the vertices (for a repeated
 # use in mark_river_edges without rebuilding it).
 # -------------------------------------------------------
@@ -765,13 +926,14 @@ func get_cached_graph() -> Dictionary:
 
 # -------------------------------------------------------
 # Serializes the rivers for the save (Vector2 -> [x, y]).
-# The format is a dictionary { "main": [...], "tributaries": [...] },
-# so that on loading the difference between the main rivers and the tributaries is preserved.
+# The format is a dictionary { "main": [...], "tributaries": [...], "deltas": [...] },
+# so that on loading the difference between the kinds of the watercourses is preserved.
 # -------------------------------------------------------
 func serialize_rivers():
     return {
         "main": _serialize_list(main_rivers),
-        "tributaries": _serialize_list(tributaries)
+        "tributaries": _serialize_list(tributaries),
+        "deltas": _serialize_list(deltas)
     }
 
 
@@ -791,7 +953,7 @@ func _serialize_list(river_list: Array) -> Array:
 # -------------------------------------------------------
 # Loads the rivers from the saved data.
 # Both formats are supported:
-#   - the new one: a dictionary { "main": [...], "tributaries": [...] };
+#   - the current one: a dictionary { "main": [...], "tributaries": [...], "deltas": [...] };
 #   - the old one: a simple array of arrays (all the rivers are considered main).
 # -------------------------------------------------------
 func load_rivers(river_data) -> void:
@@ -802,14 +964,16 @@ func load_rivers(river_data) -> void:
 
     main_rivers = []
     tributaries = []
+    deltas = []
 
     if river_data is Dictionary:
         main_rivers = _deserialize_list(river_data.get("main", []))
         tributaries = _deserialize_list(river_data.get("tributaries", []))
+        deltas = _deserialize_list(river_data.get("deltas", []))
     else:
         main_rivers = _deserialize_list(river_data)
 
-    rivers = main_rivers + tributaries
+    rivers = main_rivers + tributaries + deltas
 
 
 # -------------------------------------------------------

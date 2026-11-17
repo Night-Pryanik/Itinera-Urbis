@@ -248,6 +248,7 @@ Its geography is fictional, its chronology is an approximate technological frame
 - Along the **edges/vertices** of hexes (not filling the centre of a hex).
 - Main rivers: source in the mountains (otherwise hills) → mouth into a **lake or sea**.
 - Tributaries flow into main rivers/other tributaries.
+- A main river reaching a **lake or the sea** may split into a **delta**: two or three distributaries leave the parent upstream of the shore and take the nearest reachable free mouth of that water body. A branch that would wind far around other rivers to reach a preselected mouth is dropped instead of being drawn as a hook. The chance is a world setting, the same for lakes and seas. The distributaries keep clear of every other river and are drawn thinner than the parent.
 - Do not flow through swamps/marshes.
 - Rendering: meanders, point cache; performance is critical on large maps.
 

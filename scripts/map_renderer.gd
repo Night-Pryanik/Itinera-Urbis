@@ -2292,6 +2292,13 @@ func _draw_rivers():
     var radius = main_map.HEX_RADIUS
     _build_river_frame_cache(radius)
 
+    # The distributaries go down first, under the main channel: the fork then reads as water
+    # spilling from the river that feeds it, not as a set of independent streams.
+    _draw_river_list(river_manager.get_deltas(),
+            river_manager.DELTA_SHORE_COLOR, river_manager.DELTA_SHORE_WIDTH,
+            river_manager.DELTA_COLOR, river_manager.DELTA_WIDTH,
+            river_manager.DELTA_HIGHLIGHT_COLOR, river_manager.DELTA_HIGHLIGHT_WIDTH)
+
     # The main rivers are thicker and darker.
     _draw_river_list(river_manager.get_main_rivers(),
             river_manager.RIVER_SHORE_COLOR, river_manager.RIVER_SHORE_WIDTH,
@@ -2347,7 +2354,8 @@ func _points_hash(river: Array) -> int:
 # view, so the cache survives panning; the drawing culls the finished segments to the screen.
 func _build_river_frame_cache(radius: float) -> void:
     var river_manager = main_map.get_node("RiverManager")
-    var all_rivers: Array = river_manager.get_main_rivers() + river_manager.get_tributaries()
+    var all_rivers: Array = river_manager.get_main_rivers() \
+            + river_manager.get_tributaries() + river_manager.get_deltas()
     var draw_rect: Rect2 = _get_reachable_draw_rect()
 
     if not _river_frame_cache.is_empty() and _river_cache_rect.encloses(draw_rect):

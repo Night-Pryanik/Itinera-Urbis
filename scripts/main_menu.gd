@@ -129,8 +129,8 @@ var sea_controls: Dictionary = {}
 var sea_rows: Array = []
 # The "Rivers" section of the world settings, keyed by its field in CityData.world_rivers.
 var river_controls: Dictionary = {}
-# The rivers can follow the map size like the towns do. While they do, all four fields are
-# read only and their step buttons are off.
+# The rivers can follow the map size like the towns do. While they do, the two count fields
+# are read only and their step buttons are off.
 var proportional_river_check: CheckBox = null
 # The map previews, one on the City tab and one on the World tab. Both show the same world,
 # so they are refreshed together.
@@ -513,15 +513,21 @@ func _remember(cache: Dictionary, order: Array, key: String, value, limit: int):
 # everything else drawn over the picture move no river.
 func _show_preview(key: String, side: int, picture: Dictionary) -> void:
     var river_key := "%s|%s" % [key, JSON.stringify(_selected_river_config())]
-    if _river_cache.has(river_key):
-        picture["rivers"] = _river_cache[river_key]
-    else:
-        picture["rivers"] = _remember(_river_cache, _river_order, river_key,
-                WorldPreview.build_rivers(picture, side, _selected_river_config(), _preview_seed),
-                RIVER_CACHE_LIMIT)
+    var courses = _river_cache.get(river_key)
+    if courses == null:
+        courses = _remember(_river_cache, _river_order, river_key,
+                _build_rivers_for_preview(picture, side), RIVER_CACHE_LIMIT)
+    picture["rivers"] = courses["rivers"]
+    picture["deltas"] = courses.get("deltas", [])
     var towns := _selected_town_count()
     for preview in world_previews:
         preview.set_world(side, towns, picture)
+
+# The courses of one river setting, kept together: the distributaries belong to the same search
+# as the main rivers and must not be rebuilt from a different relief than their parent courses.
+func _build_rivers_for_preview(picture: Dictionary, side: int) -> Dictionary:
+    var rivers := WorldPreview.build_rivers(picture, side, _selected_river_config(), _preview_seed)
+    return {"rivers": rivers, "deltas": picture.get("deltas", [])}
 
 # The picture of a huge map, built in stages with a frame between them: building it in one go
 # freezes the window for as long as it takes, and the player is watching the picture to compare
@@ -803,6 +809,9 @@ func _build_river_settings(column: VBoxContainer):
             tr("The least length of a main river, in hexes."), 1, 100)
     _add_river_int_row(column, "min_tributary_length", tr("Shortest tributary"),
             tr("The least length of a tributary, in hexes."), 1, 100)
+    _add_river_float_row(column, "delta_chance", tr("Delta chance"),
+            tr("The chance that a main river reaching a lake or the sea splits into distributaries at its mouth."),
+            0.0, 1.0, 0.05)
 
 # A whole-number row of the "Rivers" section. The step buttons are kept with the spec so the
 # proportional switch can take them away together with the field.
@@ -813,6 +822,17 @@ func _add_river_int_row(column: VBoxContainer, key: String, label: String, toolt
     var control := _stepped_field(edit, 1, false, lo, hi, default, _normalize_river_fields)
     _add_setting_row(column, label, control, tooltip)
     river_controls[key] = {"kind": SEA_INT, "control": edit, "lo": lo, "hi": hi,
+            "default": default, "minus": control.get_child(0), "plus": control.get_child(2)}
+
+# A fractional row of the "Rivers" section, for the chance of a sea delta.
+func _add_river_float_row(column: VBoxContainer, key: String, label: String, tooltip: String,
+        lo: float, hi: float, step: float):
+    var default := float(_river_default(key))
+    var edit := _make_number_field(_format_number(default), true, tooltip,
+            _normalize_river_fields)
+    var control := _stepped_field(edit, step, true, lo, hi, default, _normalize_river_fields)
+    _add_setting_row(column, label, control, tooltip)
+    river_controls[key] = {"kind": SEA_FLOAT, "control": edit, "lo": lo, "hi": hi,
             "default": default, "minus": control.get_child(0), "plus": control.get_child(2)}
 
 # A heading of the settings list, with a line above it: the sections of a long list read
@@ -993,6 +1013,8 @@ func _selected_river_config() -> Dictionary:
         var spec: Dictionary = river_controls[key]
         if proportional and key in RIVER_COUNT_KEYS:
             cfg[key] = _rolled_river_count(_proportional_river_value(side, spec), key, spec)
+        elif spec["kind"] == SEA_FLOAT:
+            cfg[key] = _read_fraction(spec["control"], spec["lo"], spec["hi"], spec["default"])
         else:
             # The minimum lengths are constraints chosen by the player, not a map-size average.
             cfg[key] = _read_whole(spec["control"], spec["lo"], spec["hi"], spec["default"])
@@ -1094,8 +1116,12 @@ func _normalize_river_fields():
         if proportional and key in RIVER_COUNT_KEYS:
             continue
         var spec: Dictionary = river_controls[key]
-        spec["control"].text = str(_read_whole(spec["control"], spec["lo"],
-                spec["hi"], spec["default"]))
+        if spec["kind"] == SEA_FLOAT:
+            spec["control"].text = _format_number(_read_fraction(spec["control"],
+                    spec["lo"], spec["hi"], spec["default"]))
+        else:
+            spec["control"].text = str(_read_whole(spec["control"], spec["lo"],
+                    spec["hi"], spec["default"]))
 
 # A fraction of a sea setting, without the trailing zeros of a longer number.
 func _format_number(value: float) -> String:

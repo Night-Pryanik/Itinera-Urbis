@@ -145,12 +145,16 @@ var world_sea: Dictionary = DEFAULT_SEA.duplicate(true)
 #
 # The counts are AVERAGES on a standard map, not fixed numbers: when the rivers follow the map
 # size, each world rolls its own count around the average (see main_menu.gd). The minimum
-# lengths are hard constraints and stay exact.
+# lengths are hard constraints and stay exact. Some of the rivers that reach a lake or the sea
+# split into distributaries; the chance of that is rolled per river.
 const DEFAULT_RIVERS := {
     "num_main_rivers": 6,
     "num_tributaries": 10,
     "min_river_length": 8,
     "min_tributary_length": 4,
+    # A main river that mouths into a lake or the sea may split into distributaries. The roll
+    # is per river, whatever the water it reaches.
+    "delta_chance": 0.35,
 }
 
 # The river generation settings of the world being generated, chosen by the player in the

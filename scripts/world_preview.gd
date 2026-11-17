@@ -119,6 +119,13 @@ const RIVER_MIN_WIDTH := 1.5
 # The bank is drawn wider than the water; both widths grow together so the outline keeps its
 # share of the line on every map size.
 const RIVER_OUTLINE_RATIO := 1.75
+# A distributary is a branch of the course it leaves, so it is drawn a little thinner.
+const DELTA_WIDTH_RATIO := 0.6
+# The preview uses the same rule as the world: a branch goes to the nearest sea cell and is
+# dropped if reaching it would take much more than a straight walk over the picture's cells.
+const DELTA_MIN_CELLS := 2
+const DELTA_DETOUR_LIMIT := 1.35
+const DELTA_EXTRA_CELLS := 1
 # Town dots keep a gap, so a town moved off the sea does not land on one already drawn.
 const MIN_TOWN_GAP := 7.0
 # The city keeps a ring of its own: the nearest town stands clear of it instead of touching
@@ -350,8 +357,14 @@ static func _drop_relief(state: Dictionary) -> void:
 # The schematic main rivers over the water of the picture (see _build_rivers).
 static func build_rivers(picture: Dictionary, size: int, cfg: Dictionary,
         seed_value: int) -> Array:
-    return _build_rivers(int(picture.get("grid", 0)), picture.get("water", PackedByteArray()),
-            size, cfg, seed_value)
+    var deltas: Array = []
+    var rivers := _build_rivers(int(picture.get("grid", 0)),
+            picture.get("water", PackedByteArray()), picture.get("cells", PackedByteArray()),
+            size, cfg, seed_value, deltas)
+    # The distributaries are kept apart from the main courses: the count of the main rivers is
+    # the number the player chose, and a fork is not another river.
+    picture["deltas"] = deltas
+    return rivers
 
 # The kind of a hex of the world on the picture. The unique lakes are water like any lake: they
 # are impassable, and a town does not stand on them.
@@ -474,11 +487,12 @@ static func _touches(water: PackedByteArray, grid: int, index: int, kind: int) -
 # of it: no two rivers cross and no two mouths meet. A source whose course cannot stay clear is
 # skipped, so a crowded map can end up with fewer rivers than asked.
 #
-# Only the main rivers are drawn: the tributaries depend on the main rivers and on the terrain
-# the picture does not have, and the count of the setting that matters on the picture is the
-# count of the rivers the player will look for.
-static func _build_rivers(grid: int, water: PackedByteArray, size: int,
-        cfg: Dictionary, seed_value: int) -> Array:
+# Only the main rivers are drawn as courses: the tributaries depend on the main rivers and on
+# the terrain the picture does not have, and the count of the setting that matters on the picture
+# is the count of the rivers the player will look for. A main river that mouths into a lake or
+# the sea may also fork into distributaries; those are returned separately, as short branches.
+static func _build_rivers(grid: int, water: PackedByteArray, cells: PackedByteArray, size: int,
+        cfg: Dictionary, seed_value: int, delta_result: Array) -> Array:
     var count := maxi(0, int(cfg.get("num_main_rivers", 3)))
     if count == 0 or grid <= 0 or water.size() != grid * grid:
         return []
@@ -533,6 +547,8 @@ static func _build_rivers(grid: int, water: PackedByteArray, size: int,
         result.append(river["points"])
         drawn.append({"points": river["points"],
                 "buckets": _segment_buckets(grid, river["points"])})
+        _build_delta(grid, water, cells, weights, distances, path,
+                blocked, mouths, drawn, rng, cfg, seed_value, delta_result)
     return result
 
 # One main river: a free source and the cheapest course to a free coast cell that stays clear
@@ -572,6 +588,147 @@ static func _ink_river(grid: int, blocked: PackedByteArray, mouths: PackedByteAr
         if water[neighbour] == 1:
             mouths[neighbour] = 1
             break
+
+# Whether a preview branch goes to the sea directly. The square grid has four neighbours, so
+# the shortest course between two cells is their Manhattan distance.
+static func _delta_is_direct_cells(path: PackedInt32Array, grid: int) -> bool:
+    var steps: int = path.size() - 1
+    if steps < DELTA_MIN_CELLS:
+        return false
+    var first: int = path[0]
+    var last: int = path[path.size() - 1]
+    var straight: int = absi(last % grid - first % grid) + absi(last / grid - first / grid)
+    return float(steps) <= float(straight) * DELTA_DETOUR_LIMIT + DELTA_EXTRA_CELLS
+
+
+# The distributaries of one course. A selected river forks a few cells before the shore: each
+# branch takes the nearest free water, a lake as well as the sea, and the shortest land route to
+# the cell beside it. The fork is a shared point with the parent, so the crossing test skips the
+# first segment of the branch; further downstream a branch still has to stay clear of every
+# drawn course.
+static func _build_delta(grid: int, water: PackedByteArray, cells: PackedByteArray,
+        weights: PackedFloat32Array, distances: PackedInt32Array, path: PackedInt32Array,
+        blocked: PackedByteArray, mouths: PackedByteArray,
+        drawn: Array, rng: RandomNumberGenerator, cfg: Dictionary, seed_value: int,
+        delta_result: Array) -> void:
+    var chance := clampf(float(cfg.get("delta_chance", 0.0)), 0.0, 1.0)
+    if chance <= 0.0 or path.size() < 5 or rng.randf() >= chance:
+        return
+    var mouth_cell: int = path[path.size() - 1]
+    var forks: Array = []
+    for back in [3, 5, 7]:
+        var index: int = path.size() - 1 - back
+        if index < 0:
+            continue
+        var cell: int = path[index]
+        if water[cell] == 0 and cell not in forks:
+            forks.append(cell)
+    if forks.is_empty():
+        return
+    var mouth_x := mouth_cell % grid
+    var mouth_y := mouth_cell / grid
+    var candidates: Array = []
+    for dy in range(-3, 4):
+        for dx in range(-3, 4):
+            var x := mouth_x + dx
+            var y := mouth_y + dy
+            if x < 0 or x >= grid or y < 0 or y >= grid:
+                continue
+            var water_cell := y * grid + x
+            if water[water_cell] == 0 or mouths[water_cell] == 1:
+                continue
+            var kind: int = cells[water_cell]
+            if kind != CELL_DEEP_SEA and kind != CELL_SHALLOW_SEA and kind != CELL_LAKE:
+                continue
+            for coast in _neighbours(grid, water_cell):
+                if water[coast] == 0 and blocked[coast] == 0:
+                    candidates.append({"water": water_cell, "coast": coast})
+                    break
+    if candidates.size() < 2:
+        return
+
+    var wanted: int = rng.randi_range(1, 2)
+    var added := 0
+    for fork_cell in forks:
+        if added >= wanted:
+            break
+        # Try the water cells nearest to this fork first: a branch takes the closest shore it
+        # can reach, and a candidate that needs a long detour is skipped.
+        var ordered: Array = []
+        for candidate in candidates:
+            var target: int = candidate["water"]
+            if mouths[target] == 1:
+                continue
+            var coast: int = candidate["coast"]
+            var distance: int = absi(coast % grid - fork_cell % grid) \
+                    + absi(coast / grid - fork_cell / grid)
+            ordered.append({"candidate": candidate, "distance": distance})
+        ordered.sort_custom(func(a, b): return a["distance"] < b["distance"])
+        for entry in ordered:
+            var candidate: Dictionary = entry["candidate"]
+            var target: int = candidate["water"]
+            var coast: int = candidate["coast"]
+            var branch_path := _delta_path(grid, water, weights, blocked, fork_cell, coast)
+            if not _delta_is_direct_cells(branch_path, grid):
+                continue
+            # The fork cell is on the parent course, so it is blocked like any drawn river. The
+            # branch is allowed to leave from it, but must not cross the parent further on.
+            var branch_blocked := blocked.duplicate()
+            branch_blocked[fork_cell] = 0
+            var points := _river_points(grid, water, distances, branch_path, seed_value,
+                    branch_blocked, mouths, drawn, target)
+            if points.is_empty():
+                continue
+            mouths[target] = 1
+            _ink_river(grid, blocked, mouths, water, points, branch_path)
+            delta_result.append(points)
+            drawn.append({"points": points, "buckets": _segment_buckets(grid, points)})
+            added += 1
+            break
+
+# The cheapest land route from the fork of a delta to the cell beside one of its mouths. The
+# source sits on the parent course and is therefore blocked; only its neighbours are searched.
+static func _delta_path(grid: int, water: PackedByteArray, weights: PackedFloat32Array,
+        blocked: PackedByteArray, source: int, goal: int) -> PackedInt32Array:
+    var cell_count := grid * grid
+    var best := PackedFloat32Array()
+    best.resize(cell_count)
+    best.fill(INF)
+    var came_from := PackedInt32Array()
+    came_from.resize(cell_count)
+    came_from.fill(-1)
+    best[source] = 0.0
+    came_from[source] = source
+    var settled := PackedByteArray()
+    settled.resize(cell_count)
+    var heap_cells: Array = [source]
+    var heap_costs: Array = [0.0]
+    while not heap_cells.is_empty():
+        var index: int = _heap_pop(heap_cells, heap_costs)
+        if settled[index] == 1:
+            continue
+        settled[index] = 1
+        if index == goal:
+            break
+        for neighbour in _neighbours(grid, index):
+            if water[neighbour] == 1 or blocked[neighbour] == 1:
+                continue
+            var cost := best[index] + weights[neighbour] + 0.1
+            if cost >= best[neighbour]:
+                continue
+            best[neighbour] = cost
+            came_from[neighbour] = index
+            _heap_push(heap_cells, heap_costs, neighbour, cost)
+    if came_from[goal] < 0:
+        return PackedInt32Array()
+    var path := PackedInt32Array()
+    var current := goal
+    while current != source:
+        path.append(current)
+        current = came_from[current]
+    path.append(source)
+    path.reverse()
+    return path
 
 # The distance in cells from every cell of the picture to the nearest water cell, -1 beyond
 # the last one. The water is the goal, so the land next to it is 1 and every step inland adds 1.
@@ -744,13 +901,19 @@ static func _heap_swap(cells: Array, costs: Array, first: int, second: int) -> v
 # leaves the land and never crosses another river. An empty result means no course was clear.
 static func _river_points(grid: int, water: PackedByteArray, distances: PackedInt32Array,
         path: PackedInt32Array, seed_value: int, blocked: PackedByteArray,
-        mouths: PackedByteArray, drawn: Array) -> PackedVector2Array:
+        mouths: PackedByteArray, drawn: Array, mouth_target: int = -1) -> PackedVector2Array:
     var mouth := _cell_center(grid, path[path.size() - 1])
-    for neighbour in _neighbours(grid, path[path.size() - 1]):
-        if water[neighbour] == 1 and mouths[neighbour] == 0:
-            mouth = mouth.lerp(_cell_center(grid, neighbour), 0.45)
-            break
+    if mouth_target >= 0:
+        # A distributary mouths into the sea cell it claimed; the parent course picks any free
+        # water beside its last land cell.
+        mouth = mouth.lerp(_cell_center(grid, mouth_target), 0.45)
+    else:
+        for neighbour in _neighbours(grid, path[path.size() - 1]):
+            if water[neighbour] == 1 and mouths[neighbour] == 0:
+                mouth = mouth.lerp(_cell_center(grid, neighbour), 0.45)
+                break
 
+    var fork_skip := 1 if mouth_target >= 0 else 0
     for factor in [1.0, 0.55, 0.25]:
         var bent := PackedVector2Array()
         for index in range(path.size()):
@@ -758,7 +921,8 @@ static func _river_points(grid: int, water: PackedByteArray, distances: PackedIn
         bent.append(mouth)
         var curve := _smooth_curve(bent)
         if _clear_of(grid, water, curve) and _clear_of(grid, blocked, curve) \
-                and _self_clear(grid, curve) and _clear_of_drawn(grid, drawn, curve):
+                and _self_clear(grid, curve) \
+                and _clear_of_drawn(grid, drawn, curve, fork_skip * 4):
             return curve
 
     var plain := PackedVector2Array()
@@ -766,7 +930,7 @@ static func _river_points(grid: int, water: PackedByteArray, distances: PackedIn
         plain.append(_cell_center(grid, path[index]))
     plain.append(mouth)
     if _clear_of(grid, water, plain) and _clear_of(grid, blocked, plain) \
-            and _clear_of_drawn(grid, drawn, plain):
+            and _clear_of_drawn(grid, drawn, plain, fork_skip):
         return plain
     return PackedVector2Array()
 
@@ -857,9 +1021,10 @@ static func _self_clear(grid: int, points: PackedVector2Array) -> bool:
 
 # Whether the curve runs into a river already drawn. The blocked cells keep the courses apart
 # as well, but they are a sampled mask, and the lines themselves are what the player sees.
-static func _clear_of_drawn(grid: int, drawn: Array, points: PackedVector2Array) -> bool:
+static func _clear_of_drawn(grid: int, drawn: Array, points: PackedVector2Array,
+        skip: int = 0) -> bool:
     for river in drawn:
-        if _meets(grid, river["buckets"], river["points"], points, 0):
+        if _meets(grid, river["buckets"], river["points"], points, skip):
             return false
     return true
 
@@ -1022,6 +1187,17 @@ func _draw_rivers(square: Rect2) -> void:
         return
     var width := maxf(RIVER_MIN_WIDTH, square.size.x * RIVER_WIDTH_RATIO)
     var outline_width := width * RIVER_OUTLINE_RATIO
+    var delta_width := width * DELTA_WIDTH_RATIO
+    var delta_outline := delta_width * RIVER_OUTLINE_RATIO
+    var deltas: Array = _picture.get("deltas", [])
+    for branch in deltas:
+        if branch.size() < 2:
+            continue
+        var branch_points := PackedVector2Array()
+        for point in branch:
+            branch_points.append(square.position + point * (square.size / float(grid)))
+        draw_polyline(branch_points, RIVER_OUTLINE_COLOR, delta_outline, true)
+        draw_polyline(branch_points, RIVER_COLOR, delta_width, true)
     for path in rivers:
         if path.size() < 2:
             continue
