@@ -183,29 +183,6 @@
       "prerequisites": [ [ "fermentation" ], [ "plantations" ] ],
       "description": "Unlocks the recipe for hopped beer.",
       "flavor": "Hops made beer keep. Grain alone gave a drink that soured within days; a bittering charge of hops held it back, and beer became a good that could be stored and shipped."
-    },
-    {
-      "id": "brass_working",
-      "name": "Brass Working",
-      "era": "antiquity",
-      "science_cost": 3.0,
-      "icon": "brass_working.png",
-      "prerequisites": [ [ "bronze" ] ],
-      "description": "Unlocks calamine mining and the cementation of copper with calamine into brass, along with brass tools, brass jewelry and precision instruments.",
-      "flavor": "Long before anyone caught metallic zinc in a vessel, smelters sealed copper with crushed calamine and charcoal in a closed crucible and drew out a golden metal that neither rusted like iron nor needed scarce tin. From Persian birinj and Mediterranean orichalcum to the cast plaques of West Africa and the astrolabes of astronomers, brass became the alloy of fine scales, vessels and enduring ornament."
-    },
-    {
-      // Potash opens a slower, costlier alkali route bound to specific broadleaf hardwoods,
-      // keeping natural soda lakes superior for everyday glass and soap while enabling
-      // potassium-based crafts (nitrary saltpeter, lead crystal and cobalt smalt).
-      "id": "potash_making",
-      "name": "Potash Burning",
-      "era": "antiquity",
-      "science_cost": 4.0,
-      "icon": "potash_making.png",
-      "prerequisites": [ [ "limestone_burning", "wood_processing" ] ],
-      "description": "Unlocks potash leached from broadleaf hardwood ashes in the kiln, potash-based forest glass and salted-out soap, and cobalt smalt.",
-      "flavor": "Not every forest yields a strong lye: resinous pines leave a thin ash, so ash-burners sought out beech, maple, oak, chestnut and walnut, burned great stacks of seasoned timber, leached the ashes through water and calcined the liquor in hot pots into white potash. Costlier and slower to win than the crust of a soda lake, it freed inland workshops from distant natron and gave glassmakers, dyers and nitre-boilers an alkali of their own."
     }
   ]
 }

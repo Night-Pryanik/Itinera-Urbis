@@ -7725,7 +7725,7 @@ msgid "Allows you to build the dairy: raw milk → cheese."
 msgstr ""
 
 msgctxt "technologies.description"
-msgid "Allows you to build the glassmaker's house: sand and soda → glass."
+msgid "Allows you to build the glassmaker's house: sand with soda or potash → glass."
 msgstr ""
 
 msgctxt "technologies.description"
@@ -7761,7 +7761,7 @@ msgid "Allows you to build the smelter and smelt metal out of ore."
 msgstr ""
 
 msgctxt "technologies.description"
-msgid "Allows you to build the soapmaker's house: vegetable oil and soda → soap."
+msgid "Allows you to build the soapmaker's house: vegetable oil or tallow with soda or potash → soap."
 msgstr ""
 
 msgctxt "technologies.description"
@@ -8389,11 +8389,11 @@ msgid "Candle Making"
 msgstr ""
 
 msgctxt "technologies.name"
-msgid "Brass Working"
+msgid "Brass"
 msgstr ""
 
 msgctxt "technologies.name"
-msgid "Potash Burning"
+msgid "Potash"
 msgstr ""
 
 msgctxt "technologies.name"

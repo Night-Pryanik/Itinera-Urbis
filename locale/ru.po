@@ -7725,8 +7725,8 @@ msgid "Allows you to build the dairy: raw milk → cheese."
 msgstr "Даёт возможность строить сыроварню: сырое молоко → сыр."
 
 msgctxt "technologies.description"
-msgid "Allows you to build the glassmaker's house: sand and soda → glass."
-msgstr "Даёт возможность строить дом стеклодела: песок и сода → стекло."
+msgid "Allows you to build the glassmaker's house: sand with soda or potash → glass."
+msgstr "Даёт возможность строить дом стеклодела: песок с содой или поташом → стекло."
 
 msgctxt "technologies.description"
 msgid "Allows you to build the oilmaker's house: seeds, fruits and other parts of oil crops → vegetable oil."
@@ -7761,8 +7761,8 @@ msgid "Allows you to build the smelter and smelt metal out of ore."
 msgstr "Даёт возможность строить плавильную печь и плавить металл из руды."
 
 msgctxt "technologies.description"
-msgid "Allows you to build the soapmaker's house: vegetable oil and soda → soap."
-msgstr "Даёт возможность строить дом мыловара: растительное масло и сода → мыло."
+msgid "Allows you to build the soapmaker's house: vegetable oil or tallow with soda or potash → soap."
+msgstr "Даёт возможность строить дом мыловара: растительное масло или жир с содой или поташом → мыло."
 
 msgctxt "technologies.description"
 msgid "Allows you to build the sugar boiler: sweet juice → sugar."
@@ -8389,12 +8389,12 @@ msgid "Candle Making"
 msgstr "Свечное дело"
 
 msgctxt "technologies.name"
-msgid "Brass Working"
-msgstr "Латунное дело"
+msgid "Brass"
+msgstr "Латунь"
 
 msgctxt "technologies.name"
-msgid "Potash Burning"
-msgstr "Поташное дело"
+msgid "Potash"
+msgstr "Поташ"
 
 msgctxt "technologies.name"
 msgid "Gunpowder"

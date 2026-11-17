@@ -196,13 +196,16 @@
       "flavor": "Vegetable oil became an important food and a source of light."
     },
     {
+      // Either alkali opens the craft; oil making is required on both routes.
+      // The prerequisites format cannot factor out the shared AND term, so oil making
+      // appears twice and the tree draws two identical parent arrows.
       "id": "soap_making",
       "name": "Soap Making",
       "era": "ancient",
       "science_cost": 3.0,
       "icon": "soap_making.png",
-      "prerequisites": [ [ "oil_making", "soda_extraction" ] ],
-      "description": "Allows you to build the soapmaker's house: vegetable oil and soda → soap.",
+      "prerequisites": [ [ "oil_making", "soda_extraction" ], [ "oil_making", "potash_making" ] ],
+      "description": "Allows you to build the soapmaker's house: vegetable oil or tallow with soda or potash → soap.",
       "flavor": "By mixing fat with lye, people got soap, the first step toward hygiene and medicine."
     },
     {
@@ -286,13 +289,16 @@
       "flavor": "People noticed that the white crust on the shores of salt lakes cleanses and bleaches wonderfully. So began the extraction of soda, a valuable mineral without which neither glassmaking nor soapmaking is possible."
     },
     {
+      // Either alkali opens the craft: a city without soda lakes reaches glass through
+      // ash-burned potash. Pottery is named only in the soda branch — potash already
+      // implies it through limestone burning, and a repeated term would draw a duplicate edge.
       "id": "glassmaking",
       "name": "Glassmaking",
       "era": "ancient",
       "science_cost": 3.0,
       "icon": "glass_making.png",
-      "prerequisites": [ [ "soda_extraction", "pottery" ] ],
-      "description": "Allows you to build the glassmaker's house: sand and soda → glass.",
+      "prerequisites": [ [ "soda_extraction", "pottery" ], [ "potash_making" ] ],
+      "description": "Allows you to build the glassmaker's house: sand with soda or potash → glass.",
       "flavor": "For centuries potters watched sand and alkali turn in their kilns into a shining crust of glass. Then one day someone had the idea of doing it on purpose. Glassmaking became more than an accident: it became a deliberate craft. The new material changed the world: beads, amulets, and later tableware and windows. Transparency became a symbol of enlightenment."
     },
     {
@@ -409,6 +415,29 @@
       "prerequisites": [ [ "animal_husbandry" ], [ "beekeeping" ] ],
       "description": "Allows you to build the chandler's house: tallow → tallow candles, wax → wax candles.",
       "flavor": "An oil lamp spills when carried into a gallery or held beside a ledger. A wick drawn repeatedly through melted tallow or rolled in warm beeswax carries its own fuel in solid form: tallow burns cheaply down in the mine shafts, while clear beeswax lights scriptoriums, temples and benches without stinging smoke."
+    },
+    {
+      "id": "brass_working",
+      "name": "Brass",
+      "era": "ancient",
+      "science_cost": 3.0,
+      "icon": "brass_working.png",
+      "prerequisites": [ [ "metallurgy" ] ],
+      "description": "Unlocks calamine mining and the cementation of copper with calamine into brass, along with brass tools, brass jewelry and precision instruments.",
+      "flavor": "Long before anyone caught metallic zinc in a vessel, smelters sealed copper with crushed calamine and charcoal in a closed crucible and drew out a golden metal that neither rusted like iron nor needed scarce tin. From Persian birinj and Mediterranean orichalcum to the cast plaques of West Africa and the astrolabes of astronomers, brass became the alloy of fine scales, vessels and enduring ornament."
+    },
+    {
+      // Potash opens a slower, costlier alkali route bound to specific broadleaf hardwoods,
+      // keeping natural soda lakes superior for everyday glass and soap while enabling
+      // potassium-based crafts (nitrary saltpeter, lead crystal and cobalt smalt).
+      "id": "potash_making",
+      "name": "Potash",
+      "era": "ancient",
+      "science_cost": 4.0,
+      "icon": "potash_making.png",
+      "prerequisites": [ [ "limestone_burning", "wood_processing" ] ],
+      "description": "Unlocks potash leached from broadleaf hardwood ashes in the kiln, potash-based forest glass and salted-out soap, and cobalt smalt.",
+      "flavor": "Not every forest yields a strong lye: resinous pines leave a thin ash, so ash-burners sought out beech, maple, oak, chestnut and walnut, burned great stacks of seasoned timber, leached the ashes through water and calcined the liquor in hot pots into white potash. Costlier and slower to win than the crust of a soda lake, it freed inland workshops from distant natron and gave glassmakers, dyers and nitre-boilers an alkali of their own."
     }
   ]
 }
