@@ -243,6 +243,18 @@
       "icon": "writing_set.png"
     },
     {
+      // The top of the writing line: the library gets more science from a bound book
+      // than from any single sheet it is made of.
+      "id": "book",
+      "price": 50,
+      "name": "Book",
+      "type": "product",
+      "category": "writing_materials",
+      "unlock_tech": "bookbinding",
+      "icon": "book.png",
+      "special_yield": { "science": 8 }
+    },
+    {
       "id": "sponge",
       "price": 10,
       "name": "Sponge",

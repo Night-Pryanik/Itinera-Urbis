@@ -11,7 +11,7 @@
     },
     {
       "id": "writing_materials",
-      "products": [ "clay_tablets", "wax_tablets", "parchment", "silk", "paper" ]
+      "products": [ "clay_tablets", "wax_tablets", "parchment", "silk", "paper", "book" ]
     },
     {
       "id": "tare",

@@ -3230,6 +3230,10 @@ msgid "Saws timber into planks for construction and crafts."
 msgstr ""
 
 msgctxt "buildings.description"
+msgid "Sews sheets of parchment or paper into books under a leather cover."
+msgstr ""
+
+msgctxt "buildings.description"
 msgid "Smelts iron ore into metal for the forge."
 msgstr ""
 
@@ -3267,6 +3271,10 @@ msgstr ""
 
 msgctxt "buildings.name"
 msgid "Bloomery"
+msgstr ""
+
+msgctxt "buildings.name"
+msgid "Bookbinder's Workshop"
 msgstr ""
 
 msgctxt "buildings.name"
@@ -3635,6 +3643,10 @@ msgstr ""
 
 msgctxt "crafts.description"
 msgid "Awards the milk of the city to the cheese the world asks for by the name of the city."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Binds sheets of parchment or paper with leather and glue into a book."
 msgstr ""
 
 msgctxt "crafts.description"
@@ -4115,6 +4127,10 @@ msgstr ""
 
 msgctxt "crafts.name"
 msgid "Beer"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Book"
 msgstr ""
 
 msgctxt "crafts.name"
@@ -5058,6 +5074,10 @@ msgid "Fishes from boats on any water body with a dock."
 msgstr ""
 
 msgctxt "professions.description"
+msgid "Fits staves into barrels and seals them with tar."
+msgstr ""
+
+msgctxt "professions.description"
 msgid "Forges tools, weapons and ornaments from metal."
 msgstr ""
 
@@ -5074,11 +5094,35 @@ msgid "Grows technical and spice crops."
 msgstr ""
 
 msgctxt "professions.description"
+msgid "Limes, scrapes and dries hides into parchment."
+msgstr ""
+
+msgctxt "professions.description"
 msgid "Makes dyes from natural materials."
 msgstr ""
 
 msgctxt "professions.description"
+msgid "Saws timber into planks and shapes wood for construction and crafts."
+msgstr ""
+
+msgctxt "professions.description"
+msgid "Sews the sheets into books and glues the spine under a leather cover."
+msgstr ""
+
+msgctxt "professions.description"
+msgid "Shapes and fires clay into pots, bricks and tablets."
+msgstr ""
+
+msgctxt "professions.description"
 msgid "Smelts ore into pure metals."
+msgstr ""
+
+msgctxt "professions.description"
+msgid "Strains plant fibers into sheets of paper."
+msgstr ""
+
+msgctxt "professions.description"
+msgid "Tans hides and sews leather goods."
 msgstr ""
 
 msgctxt "professions.description"
@@ -5118,11 +5162,27 @@ msgid "Blacksmith"
 msgstr ""
 
 msgctxt "professions.name"
+msgid "Bookbinder"
+msgstr ""
+
+msgctxt "professions.name"
 msgid "Brewer"
 msgstr ""
 
 msgctxt "professions.name"
+msgid "Carpenter"
+msgstr ""
+
+msgctxt "professions.name"
 msgid "Charcoal Burner"
+msgstr ""
+
+msgctxt "professions.name"
+msgid "Clay Digger"
+msgstr ""
+
+msgctxt "professions.name"
+msgid "Cooper"
 msgstr ""
 
 msgctxt "professions.name"
@@ -5155,6 +5215,14 @@ msgstr ""
 
 msgctxt "professions.name"
 msgid "Oilmaker"
+msgstr ""
+
+msgctxt "professions.name"
+msgid "Paper Maker"
+msgstr ""
+
+msgctxt "professions.name"
+msgid "Parchment Maker"
 msgstr ""
 
 msgctxt "professions.name"
@@ -5191,6 +5259,10 @@ msgstr ""
 
 msgctxt "professions.name"
 msgid "Swineherd"
+msgstr ""
+
+msgctxt "professions.name"
+msgid "Tanner"
 msgstr ""
 
 msgctxt "professions.name"
@@ -5371,6 +5443,10 @@ msgstr ""
 
 msgctxt "resources.name"
 msgid "Bitumen"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Book"
 msgstr ""
 
 msgctxt "resources.name"
@@ -6782,6 +6858,10 @@ msgid "Adds one production slot to the animal mill and the water mill.\n+10% to 
 msgstr ""
 
 msgctxt "technologies.description"
+msgid "Adds one production slot to the bookbinder's workshop."
+msgstr ""
+
+msgctxt "technologies.description"
 msgid "Adds one production slot to the winemaker's house, the oilmaker's house, the dairy, the paper workshop and the jeweler's house."
 msgstr ""
 
@@ -6839,6 +6919,10 @@ msgstr ""
 
 msgctxt "technologies.description"
 msgid "Allows you to build the apiary."
+msgstr ""
+
+msgctxt "technologies.description"
+msgid "Allows you to build the bookbinder's workshop.\nAllows you to bind sheets of parchment or paper into books with leather and glue."
 msgstr ""
 
 msgctxt "technologies.description"
@@ -6991,6 +7075,10 @@ msgstr ""
 
 msgctxt "technologies.description"
 msgid "Unlocks the water mill: the running water sets the millstones in motion.\n+25% to the production of mines, quarries, the bloomery, the smelter and the forge only where fresh water is available: without water the wheel gives no bonus, for the water washes the ore and drives the bellows."
+msgstr ""
+
+msgctxt "technologies.flavor"
+msgid "A page cut in wood or cast in metal gives as many copies as the press can pull, and no copy argues with another. The woodblock came first in China, movable type followed there and in Korea, where the letters were cast in bronze; Gutenberg set the same idea in lead and gave it the screw press and paper. A scribe copies a book in a year, a workshop prints it in a season."
 msgstr ""
 
 msgctxt "technologies.flavor"
@@ -7158,6 +7246,10 @@ msgid "The art of exploring the land and drawing maps of it."
 msgstr ""
 
 msgctxt "technologies.flavor"
+msgid "The codex did not need to be unrolled: it opened at any page the reader chose and held the whole work between two covers. Sewing the sheets through the fold and gluing a tanned hide into a cover turned a sheaf of writing into a thing that could be shelved, carried and sold."
+msgstr ""
+
+msgctxt "technologies.flavor"
 msgid "The first farmers noticed that seeds thrown into the ground grew again. Thus began the age of settled life."
 msgstr ""
 
@@ -7231,6 +7323,10 @@ msgstr ""
 
 msgctxt "technologies.name"
 msgid "Beekeeping"
+msgstr ""
+
+msgctxt "technologies.name"
+msgid "Bookbinding"
 msgstr ""
 
 msgctxt "technologies.name"
@@ -7379,6 +7475,10 @@ msgstr ""
 
 msgctxt "technologies.name"
 msgid "Plow"
+msgstr ""
+
+msgctxt "technologies.name"
+msgid "Printing"
 msgstr ""
 
 msgctxt "technologies.name"

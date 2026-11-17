@@ -116,6 +116,12 @@
           "winemaker_house": 1, "oilmaker_house": 1, "dairy": 1,
           "paper_workshop": 1, "jeweler_house": 1
         }
+      },
+      {
+        // The press repeats a page: the workshop binds a second setting of sheets
+        // while the ink of the first one dries.
+        "tech_id": "printing",
+        "building_production_slots": { "bookbinder_workshop": 1 }
       }
     ],
     "terrain_modifiers": [

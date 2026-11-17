@@ -97,6 +97,7 @@
         "lumberjack",
         "farmer",
         "planter",
+        "clay_digger",
         "potter",
         "vinedresser",
         "blacksmith",
@@ -105,6 +106,34 @@
       "amount": 10,
       "interval": 10,
       "production_bonus": 0.25
+    },
+    {
+      // Glue holds the crafts of the shaped material and of the written word together: the
+      // tanner glues the tanned hide, the carpenter and the furniture maker glue the timber,
+      // the potter joins and finishes the fired clay, the paper and parchment makers size
+      // their sheets with it, and the bookbinder glues the spine of the book.
+      "resource": "glue",
+      "profession": [
+        "tanner",
+        "potter",
+        "carpenter",
+        "furniture_maker",
+        "paper_maker",
+        "parchment_maker",
+        "bookbinder"
+      ],
+      "amount": 10,
+      "interval": 10,
+      "production_bonus": 0.1
+    },
+    {
+      // The cooper seals the barrel with tar: the staves hold the vessel together, but only
+      // the coating makes it watertight.
+      "resource": "tar",
+      "profession": [ "cooper" ],
+      "amount": 10,
+      "interval": 10,
+      "production_bonus": 0.1
     }
   ]
 }

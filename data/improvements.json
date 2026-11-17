@@ -118,7 +118,7 @@
       "color": [ 210, 180, 140 ],
       "work_cost": 22,
       "unlock_tech": "pottery",
-      "profession": "potter"
+      "profession": "clay_digger"
     },
     {
       "id": "plantation",

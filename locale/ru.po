@@ -3230,6 +3230,10 @@ msgid "Saws timber into planks for construction and crafts."
 msgstr "Распиливает древесину на доски для строительства и ремёсел."
 
 msgctxt "buildings.description"
+msgid "Sews sheets of parchment or paper into books under a leather cover."
+msgstr "Сшивает листы пергамента или бумаги в книги под кожаным переплётом."
+
+msgctxt "buildings.description"
 msgid "Smelts iron ore into metal for the forge."
 msgstr "Плавит железную руду в металл, который затем используется кузнецами."
 
@@ -3268,6 +3272,10 @@ msgstr "Пекарня"
 msgctxt "buildings.name"
 msgid "Bloomery"
 msgstr "Сыродутная печь"
+
+msgctxt "buildings.name"
+msgid "Bookbinder's Workshop"
+msgstr "Переплётная мастерская"
 
 msgctxt "buildings.name"
 msgid "Brewer's House"
@@ -3636,6 +3644,10 @@ msgstr "Малахит"
 msgctxt "crafts.description"
 msgid "Awards the milk of the city to the cheese the world asks for by the name of the city."
 msgstr "Молоко города идёт в тот сыр, о котором спрашивают по имени города."
+
+msgctxt "crafts.description"
+msgid "Binds sheets of parchment or paper with leather and glue into a book."
+msgstr "Связывает листы пергамента или бумаги кожей и клеем в книгу."
 
 msgctxt "crafts.description"
 msgid "Blows bottles from molten glass."
@@ -4116,6 +4128,10 @@ msgstr "Говядина"
 msgctxt "crafts.name"
 msgid "Beer"
 msgstr "Пиво"
+
+msgctxt "crafts.name"
+msgid "Book"
+msgstr "Книга"
 
 msgctxt "crafts.name"
 msgid "Bread"
@@ -5058,6 +5074,10 @@ msgid "Fishes from boats on any water body with a dock."
 msgstr "Ловит рыбу с лодок на водоёмах с пристанью."
 
 msgctxt "professions.description"
+msgid "Fits staves into barrels and seals them with tar."
+msgstr "Собирает клёпки в бочки и запечатывает их смолой."
+
+msgctxt "professions.description"
 msgid "Forges tools, weapons and ornaments from metal."
 msgstr "Кует инструменты, оружие и украшения из металла."
 
@@ -5074,12 +5094,36 @@ msgid "Grows technical and spice crops."
 msgstr "Возделывает технические и пряные культуры."
 
 msgctxt "professions.description"
+msgid "Limes, scrapes and dries hides into parchment."
+msgstr "Обрабатывает известью, скоблит и сушит шкуры в пергамент."
+
+msgctxt "professions.description"
 msgid "Makes dyes from natural materials."
 msgstr "Изготавливает красители из природных материалов."
 
 msgctxt "professions.description"
+msgid "Saws timber into planks and shapes wood for construction and crafts."
+msgstr "Пилит брёвна на доски и обрабатывает дерево для строительства и ремёсел."
+
+msgctxt "professions.description"
+msgid "Sews the sheets into books and glues the spine under a leather cover."
+msgstr "Сшивает листы в книги и проклеивает корешок под кожаным переплётом."
+
+msgctxt "professions.description"
+msgid "Shapes and fires clay into pots, bricks and tablets."
+msgstr "Формует и обжигает глину в горшки, кирпичи и таблички."
+
+msgctxt "professions.description"
 msgid "Smelts ore into pure metals."
 msgstr "Плавит руду в чистые металлы."
+
+msgctxt "professions.description"
+msgid "Strains plant fibers into sheets of paper."
+msgstr "Отливает растительные волокна в листы бумаги."
+
+msgctxt "professions.description"
+msgid "Tans hides and sews leather goods."
+msgstr "Дубит шкуры и шьёт кожаные изделия."
 
 msgctxt "professions.description"
 msgid "Tends the herd and keeps count of the livestock."
@@ -5118,12 +5162,28 @@ msgid "Blacksmith"
 msgstr "Кузнец"
 
 msgctxt "professions.name"
+msgid "Bookbinder"
+msgstr "Переплётчик"
+
+msgctxt "professions.name"
 msgid "Brewer"
 msgstr "Варщик"
 
 msgctxt "professions.name"
+msgid "Carpenter"
+msgstr "Плотник"
+
+msgctxt "professions.name"
 msgid "Charcoal Burner"
 msgstr "Углежог"
+
+msgctxt "professions.name"
+msgid "Clay Digger"
+msgstr "Глинокоп"
+
+msgctxt "professions.name"
+msgid "Cooper"
+msgstr "Бондарь"
 
 msgctxt "professions.name"
 msgid "Dyer"
@@ -5156,6 +5216,14 @@ msgstr "Шахтёр"
 msgctxt "professions.name"
 msgid "Oilmaker"
 msgstr "Маслодел"
+
+msgctxt "professions.name"
+msgid "Paper Maker"
+msgstr "Бумагодел"
+
+msgctxt "professions.name"
+msgid "Parchment Maker"
+msgstr "Пергаментщик"
 
 msgctxt "professions.name"
 msgid "Perfumer"
@@ -5192,6 +5260,10 @@ msgstr "Животновод"
 msgctxt "professions.name"
 msgid "Swineherd"
 msgstr "Свиновод"
+
+msgctxt "professions.name"
+msgid "Tanner"
+msgstr "Кожевник"
 
 msgctxt "professions.name"
 msgid "Tar Burner"
@@ -5372,6 +5444,10 @@ msgstr "Бизоны"
 msgctxt "resources.name"
 msgid "Bitumen"
 msgstr "Битум"
+
+msgctxt "resources.name"
+msgid "Book"
+msgstr "Книга"
 
 msgctxt "resources.name"
 msgid "Boswellia"
@@ -6782,6 +6858,10 @@ msgid "Adds one production slot to the animal mill and the water mill.\n+10% to 
 msgstr "Добавляет один слот производства мельнице с животной тягой и водяной мельнице.\n+10% к производству лесной делянки."
 
 msgctxt "technologies.description"
+msgid "Adds one production slot to the bookbinder's workshop."
+msgstr "Добавляет один слот производства переплётной мастерской."
+
+msgctxt "technologies.description"
 msgid "Adds one production slot to the winemaker's house, the oilmaker's house, the dairy, the paper workshop and the jeweler's house."
 msgstr "Добавляет один слот производства дому винодела, дому маслодела, сыроварне, бумажной мастерской и дому ювелира."
 
@@ -6840,6 +6920,10 @@ msgstr "Даёт возможность строить дом алхимика."
 msgctxt "technologies.description"
 msgid "Allows you to build the apiary."
 msgstr "Даёт возможность строить пасеку."
+
+msgctxt "technologies.description"
+msgid "Allows you to build the bookbinder's workshop.\nAllows you to bind sheets of parchment or paper into books with leather and glue."
+msgstr "Позволяет строить переплётную мастерскую.\nПозволяет сшивать листы пергамента или бумаги в книги, скрепляя их кожей и клеем."
 
 msgctxt "technologies.description"
 msgid "Allows you to build the brewer's house. Unlocks recipes for brewing beer, pulque, sake and toddy."
@@ -6992,6 +7076,10 @@ msgstr "Открывает использование тягловых живо�
 msgctxt "technologies.description"
 msgid "Unlocks the water mill: the running water sets the millstones in motion.\n+25% to the production of mines, quarries, the bloomery, the smelter and the forge only where fresh water is available: without water the wheel gives no bonus, for the water washes the ore and drives the bellows."
 msgstr "Открывает водяную мельницу: течение воды приводит в движение мельничные жернова.\n+25% к производству шахт и каменоломен, сыродутной печи, плавильни и кузницы только при наличии пресной воды: без воды колесо бонуса не даёт, поскольку именно вода промывает руду и приводит в движение меха."
+
+msgctxt "technologies.flavor"
+msgid "A page cut in wood or cast in metal gives as many copies as the press can pull, and no copy argues with another. The woodblock came first in China, movable type followed there and in Korea, where the letters were cast in bronze; Gutenberg set the same idea in lead and gave it the screw press and paper. A scribe copies a book in a year, a workshop prints it in a season."
+msgstr "Страница, вырезанная на дереве или отлитая в металле, даёт столько оттисков, сколько вытянет пресс, и ни один оттиск не спорит с другим. Ксилография появилась первой в Китае, наборный шрифт — там же и в Корее, где литеры отливали из бронзы; Гутенберг отлил ту же мысль в свинце и соединил её с винтовым прессом и бумагой. Переписчик делает книгу за год, мастерская печатает её за сезон."
 
 msgctxt "technologies.flavor"
 msgid "A plow yoked to oxen made it possible to work heavy soils and raised yields."
@@ -7158,6 +7246,10 @@ msgid "The art of exploring the land and drawing maps of it."
 msgstr "Наука об исследовании местности и рисовании карт."
 
 msgctxt "technologies.flavor"
+msgid "The codex did not need to be unrolled: it opened at any page the reader chose and held the whole work between two covers. Sewing the sheets through the fold and gluing a tanned hide into a cover turned a sheaf of writing into a thing that could be shelved, carried and sold."
+msgstr "Кодекс не нужно было разворачивать: он открывался на любой странице и держал всё сочинение между двумя крышками. Сшитые через сгиб листы и кожаный переплёт превращали кипу письма в вещь, которую можно поставить на полку, увезти и продать."
+
+msgctxt "technologies.flavor"
 msgid "The first farmers noticed that seeds thrown into the ground grew again. Thus began the age of settled life."
 msgstr "Первые земледельцы заметили, что брошенные в землю семена дают новые всходы. Так началась эпоха оседлой жизни."
 
@@ -7232,6 +7324,10 @@ msgstr "Животноводство"
 msgctxt "technologies.name"
 msgid "Beekeeping"
 msgstr "Пчеловодство"
+
+msgctxt "technologies.name"
+msgid "Bookbinding"
+msgstr "Переплётное дело"
 
 msgctxt "technologies.name"
 msgid "Bronze"
@@ -7380,6 +7476,10 @@ msgstr "Плантации"
 msgctxt "technologies.name"
 msgid "Plow"
 msgstr "Плуг"
+
+msgctxt "technologies.name"
+msgid "Printing"
+msgstr "Книгопечатание"
 
 msgctxt "technologies.name"
 msgid "Rope Making"
