@@ -52,10 +52,11 @@
     // improvements with other professions and city workers in buildings). No
     // improvement may refer to it (the "profession" field in improvements.json
     // and buildings.json). Consumption is recorded
-    // for it in data/consumption.json and is written off PER CAPITA: the amount in
-    // a rule is PER ONE citizen, the total write-off per tick =
-    // amount * total_population. "pseudo" is the marker that this is not a worker
-    // label but a population counter.
+    // for it in data/consumption/ and is written off PER CAPITA: the amount in a
+    // rule is PER ONE citizen. The citizens of a profession with its own rule for
+    // the same resource are excluded from that headcount, so the total write-off
+    // per tick = amount * the remaining residents. "pseudo" is the marker that
+    // this is not a worker label but a population counter.
     {
       "id": "all",
       "name": "All Citizens",

@@ -37,6 +37,12 @@
   // the entry from this file takes priority; the duplicate entry is ignored.
   // "Resource-side" consumption is left for the single cases where a product
   // has no analogue or assembling a group is not reasonable.
+  //
+  // A resource listed both here and for the pseudo-profession "all"
+  // (consumption_all.json) is written off ONCE: the professions of this file have
+  // priority, and their citizens are subtracted from the headcount of the "all"
+  // rule for the same resource. The professionals keep the production bonus of
+  // their rule; the "all" rule gives no bonus.
   "consumption": [
     {
       "resource": "@boats",
@@ -196,6 +202,31 @@
       "amount": 10,
       "interval": 10,
       "production_bonus": 0.15
+    },
+    {
+      // Coca is the stimulant of hard manual labour: the leaf sharpens the
+      // worker and lifts his output by a tenth. The rule covers extraction,
+      // felling, furnace work and field work. Citizens of these professions are
+      // excluded from the "all" coca rule, so the leaf is not spent twice; the
+      // rate per worker matches the one per resident there.
+      "resource": "coca_leaf",
+      "profession": [
+        "miner",
+        "quarryman",
+        "clay_digger",
+        "soda_extractor",
+        "lumberjack",
+        "charcoal_burner",
+        "tar_collector",
+        "smelter",
+        "blacksmith",
+        "farmer",
+        "planter",
+        "vinedresser"
+      ],
+      "amount": 10,
+      "interval": 10,
+      "production_bonus": 0.1
     },
     {
       // Saltpeter clarifies molten glass as an oxidizing fining agent and cures
