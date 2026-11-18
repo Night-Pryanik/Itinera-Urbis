@@ -137,88 +137,88 @@ msgstr ""
 msgid " = %s / sec"
 msgstr ""
 
-msgid " Base: %d work"
+msgid "Base: %d work"
 msgstr ""
 
-msgid " Base: %d work per section"
+msgid "Base: %d work per section"
 msgstr ""
 
-msgid " Construction technologies: ×%.2f"
+msgid "Construction technologies: ×%.2f"
 msgstr ""
 
-msgid " Construction technologies: ×1.00"
+msgid "Construction technologies: ×1.00"
 msgstr ""
 
-msgid " Cost: %d work"
+msgid "Cost: %d work"
 msgstr ""
 
-msgid " Debug: instant and free"
+msgid "Debug: instant and free"
 msgstr ""
 
-msgid " Destination: from the city to this hex along the existing road"
+msgid "Destination: from the city to this hex along the existing road"
 msgstr ""
 
-msgid " Destination: from the city's nearest road to this hex"
+msgid "Destination: from the city's nearest road to this hex"
 msgstr ""
 
-msgid " Destination: to the town \"%s\" itself, at the chosen level"
+msgid "Destination: to the town \"%s\" itself, at the chosen level"
 msgstr ""
 
-msgid " Distance to city: %d hex(es)"
+msgid "Distance to city: %d hex(es)"
 msgstr ""
 
-msgid " Distance to city: %d hex(es) → base ×%.2f"
+msgid "Distance to city: %d hex(es) → base ×%.2f"
 msgstr ""
 
-msgid " Distance to city: %d to %d hex(es)"
+msgid "Distance to city: %d to %d hex(es)"
 msgstr ""
 
-msgid " New route sections: %d"
+msgid "New route sections: %d"
 msgstr ""
 
-msgid " Outpost fee: %d coins from the treasury"
+msgid "Outpost fee: %d coins from the treasury"
 msgstr ""
 
-msgid " Outpost fee: free (debug)"
+msgid "Outpost fee: free (debug)"
 msgstr ""
 
-msgid " Per section: %d to %d work"
+msgid "Per section: %d to %d work"
 msgstr ""
 
-msgid " Per section: %d work"
+msgid "Per section: %d work"
 msgstr ""
 
-msgid " Road to the city (%s): %d work, %d new sections"
+msgid "Road to the city (%s): %d work, %d new sections"
 msgstr ""
 
-msgid " Road to the city: already under construction"
+msgid "Road to the city: already under construction"
 msgstr ""
 
-msgid " Road to the city: not needed"
+msgid "Road to the city: not needed"
 msgstr ""
 
-msgid " Road: %s"
+msgid "Road: %s"
 msgstr ""
 
-msgid " Route to the city: %d sections, average %.1f units/sec"
+msgid "Route to the city: %d sections, average %.1f units/sec"
 msgstr ""
 
-msgid " Sections to upgrade: %d"
+msgid "Sections to upgrade: %d"
 msgstr ""
 
-msgid " Terrain on the route: %s"
+msgid "Terrain on the route: %s"
 msgstr ""
 
-msgid " Terrain: %s (move cost: %s) ×%.2f"
+msgid "Terrain: %s (move cost: %s) ×%.2f"
 msgstr ""
 
-msgid " The road is built in sections, in parallel with the improvement"
+msgid "The road is built in sections, in parallel with the improvement"
 msgstr ""
 
-msgid " Total: %d work"
+msgid "Total: %d work"
 msgstr ""
 
-msgid " Will be built in sections: one hex at a time"
+msgid "Will be built in sections: one hex at a time"
 msgstr ""
 
 msgid " and "
@@ -8878,10 +8878,10 @@ msgstr ""
 msgid "Build an aqueduct from the spring to the city"
 msgstr ""
 
-msgid " Destination: from the mountain spring to the city"
+msgid "Destination: from the mountain spring to the city"
 msgstr ""
 
-msgid " Aqueduct sections: %d"
+msgid "Aqueduct sections: %d"
 msgstr ""
 
 msgid "Cannot build the aqueduct"
@@ -8903,5 +8903,9 @@ msgstr ""
 
 
 msgid "Fresh water spring: aqueduct is partly built"
+msgstr ""
+
+
+msgid " Distance to city: %d hex(es)"
 msgstr ""
 

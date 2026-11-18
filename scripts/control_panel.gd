@@ -189,7 +189,7 @@ func initialize(main_node: Node):
     _info_label.bbcode_enabled = true
     _products_container = $InfoVBox/InfoScroll/InfoContent/ProductsContainer
     _actions_container = $ActionsVBox/ActionsScroll/ActionsContent/ActionsContainer
-    _preview_container = $PreviewContainer/PreviewScroll/PreviewContent
+    _preview_container = $PreviewContainer/PreviewScroll/PreviewMargin/PreviewContent
     _preview_header_container = $PreviewContainer/PreviewHeader
 
     # The panel is visible always, but the contents are empty until a hex is selected.
@@ -358,7 +358,7 @@ func _append_route_info(row: int, col: int) -> void:
     var road_line: String = map_tooltip.road_level_line(row, col)
     if not road_line.is_empty():
         var road_label := Label.new()
-        road_label.text = tr(" Road: %s") % road_line
+        road_label.text = tr("Road: %s") % road_line
         road_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
         road_label.add_theme_color_override("font_color", UI_THEME.color("income").lightened(0.35))
         _products_container.add_child(road_label)
@@ -366,7 +366,7 @@ func _append_route_info(row: int, col: int) -> void:
     if not route.get("ok", false):
         return
     var route_label := Label.new()
-    route_label.text = tr(" Route to the city: %d sections, average %.1f units/sec") % [int(route.get("length", 0)), float(route.get("avg_speed", 0.0))]
+    route_label.text = tr("Route to the city: %d sections, average %.1f units/sec") % [int(route.get("length", 0)), float(route.get("avg_speed", 0.0))]
     route_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
     route_label.add_theme_color_override("font_color", UI_THEME.color("income").lightened(0.35))
     _products_container.add_child(route_label)
@@ -1748,15 +1748,15 @@ func _build_preview(row: int, col: int, tile: Dictionary):
     if road_applicable:
         var road_hint := Label.new()
         if road_segments > 0:
-            road_hint.text = tr(" Road to the city (%s): %d work, %d new sections") % [
+            road_hint.text = tr("Road to the city (%s): %d work, %d new sections") % [
                     GameData.get_road_name(road_level), road_cost, road_segments]
         elif bool(cost_data.get("road_pending", false)):
             # The road to the hex is already going as a second project (the improvement was refused due to
             # the limit) - we must not show its price a second time, that queue
             # already pays for it.
-            road_hint.text = tr(" Road to the city: already under construction")
+            road_hint.text = tr("Road to the city: already under construction")
         else:
-            road_hint.text = tr(" Road to the city: not needed")
+            road_hint.text = tr("Road to the city: not needed")
         road_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
         road_hint.add_theme_color_override("font_color", UI_THEME.color("income").lightened(0.35))
         _preview_container.add_child(road_hint)
@@ -1766,7 +1766,7 @@ func _build_preview(row: int, col: int, tile: Dictionary):
         # understand why it appears in pieces.
         if road_segments > 0:
             var road_steps_hint := Label.new()
-            road_steps_hint.text = tr(" The road is built in sections, in parallel with the improvement")
+            road_steps_hint.text = tr("The road is built in sections, in parallel with the improvement")
             road_steps_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
             road_steps_hint.add_theme_color_override("font_color", UI_THEME.color("info").lightened(0.35))
             _preview_container.add_child(road_steps_hint)
@@ -1776,23 +1776,23 @@ func _build_preview(row: int, col: int, tile: Dictionary):
     # written off at the start of the construction and returned by its cancellation.
     if type == "build_improvement" and main_map.is_outpost_build_target(row, col):
         var fee_label := Label.new()
-        fee_label.text = tr(" Outpost fee: %d coins from the treasury") % int(main_map.get_outpost_fee(row, col)) \
+        fee_label.text = tr("Outpost fee: %d coins from the treasury") % int(main_map.get_outpost_fee(row, col)) \
                 if not CityData.ignore_build_requirements \
-                else tr(" Outpost fee: free (debug)")
+                else tr("Outpost fee: free (debug)")
         fee_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
         fee_label.add_theme_color_override("font_color", UI_THEME.color("warning").lightened(0.2))
         _preview_container.add_child(fee_label)
 
     # The details of the cost (it moved here from the extended tooltip).
     var base_label = Label.new()
-    base_label.text = tr(" Base: %d work") % cost_data["base_cost"]
+    base_label.text = tr("Base: %d work") % cost_data["base_cost"]
     base_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
     base_label.add_theme_color_override("font_color", UI_THEME.color("text_secondary"))
     _preview_container.add_child(base_label)
 
     var move_cost_text = tr("impassable") if cost_data["move_cost"] >= 999.0 else str(int(cost_data["move_cost"]))
     var terrain_label = Label.new()
-    terrain_label.text = tr(" Terrain: %s (move cost: %s) ×%.2f") % [cost_data["terrain_name"], move_cost_text, cost_data["terrain_mult"]]
+    terrain_label.text = tr("Terrain: %s (move cost: %s) ×%.2f") % [cost_data["terrain_name"], move_cost_text, cost_data["terrain_mult"]]
     terrain_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
     terrain_label.add_theme_color_override("font_color", UI_THEME.color("income").lightened(0.35))
     _preview_container.add_child(terrain_label)
@@ -1801,7 +1801,7 @@ func _build_preview(row: int, col: int, tile: Dictionary):
     # The calculation of the multiplier of the distance: the initial (1 + hexes × the UNIVERSAL
     # modifier of the distance from data/game_balance.json) plus the influence of the learned
     # technologies (for example, "The Wheel" -30%).
-    var dist_text: String = tr(" Distance to city: %d hex(es) → base ×%.2f") % [cost_data["distance"], cost_data["distance_mult_base"]]
+    var dist_text: String = tr("Distance to city: %d hex(es) → base ×%.2f") % [cost_data["distance"], cost_data["distance_mult_base"]]
     if cost_data.has("distance_tech_mult") and cost_data["distance_tech_mult"] != 1.0:
         dist_text += tr(", technology ×%.2f") % cost_data["distance_tech_mult"]
     dist_text += " = ×%.2f" % cost_data["distance_mult"]
@@ -1812,9 +1812,9 @@ func _build_preview(row: int, col: int, tile: Dictionary):
 
     var const_label = Label.new()
     if cost_data.has("construction_tech_mult") and cost_data["construction_tech_mult"] != 1.0:
-        const_label.text = tr(" Construction technologies: ×%.2f") % cost_data["construction_tech_mult"]
+        const_label.text = tr("Construction technologies: ×%.2f") % cost_data["construction_tech_mult"]
     else:
-        const_label.text = tr(" Construction technologies: ×1.00")
+        const_label.text = tr("Construction technologies: ×1.00")
     const_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
     const_label.add_theme_color_override("font_color", UI_THEME.color("income").lightened(0.35))
     _preview_container.add_child(const_label)
@@ -1824,7 +1824,7 @@ func _build_preview(row: int, col: int, tile: Dictionary):
     # a copy of the price of the row above (for the special actions it came out exactly so).
     if road_applicable:
         var total_label = Label.new()
-        total_label.text = tr(" Total: %d work") % cost_data["total_cost"]
+        total_label.text = tr("Total: %d work") % cost_data["total_cost"]
         total_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
         total_label.add_theme_color_override("font_color", UI_THEME.color("text_secondary"))
         _preview_container.add_child(total_label)
@@ -1839,7 +1839,7 @@ func _build_preview(row: int, col: int, tile: Dictionary):
 # A yellow row "it is performed instantly" for the blocks of the preview.
 func _add_instant_hint() -> void:
     var hint := Label.new()
-    hint.text = tr(" Debug: instant and free")
+    hint.text = tr("Debug: instant and free")
     hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
     hint.add_theme_color_override("font_color", UI_THEME.color("warning").lightened(0.2))
     _preview_container.add_child(hint)
@@ -2057,25 +2057,25 @@ func _build_road_upgrade_preview(row: int, col: int) -> bool:
         return false
 
     var target_label := Label.new()
-    target_label.text = tr(" Destination: from the city to this hex along the existing road")
+    target_label.text = tr("Destination: from the city to this hex along the existing road")
     target_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
     target_label.add_theme_color_override("font_color", UI_THEME.color("income").lightened(0.35))
     _preview_container.add_child(target_label)
 
     var cost_label := Label.new()
-    cost_label.text = tr(" Cost: %d work") % int(breakdown.get("cost", 0))
+    cost_label.text = tr("Cost: %d work") % int(breakdown.get("cost", 0))
     cost_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
     cost_label.add_theme_color_override("font_color", UI_THEME.color("text_secondary"))
     _preview_container.add_child(cost_label)
 
     var base_label := Label.new()
-    base_label.text = tr(" Base: %d work per section") % GameData.get_road_work_cost(road_level)
+    base_label.text = tr("Base: %d work per section") % GameData.get_road_work_cost(road_level)
     base_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
     base_label.add_theme_color_override("font_color", UI_THEME.color("text_secondary"))
     _preview_container.add_child(base_label)
 
     var sections_label := Label.new()
-    sections_label.text = tr(" Sections to upgrade: %d") % int(breakdown.get("segments", 0))
+    sections_label.text = tr("Sections to upgrade: %d") % int(breakdown.get("segments", 0))
     sections_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
     sections_label.add_theme_color_override("font_color", UI_THEME.color("text_secondary"))
     _preview_container.add_child(sections_label)
@@ -2106,14 +2106,14 @@ func _build_road_preview(row: int, col: int, _action_id: String) -> bool:
         if main_map.town_manager != null:
             town = main_map.town_manager.find_town_at(row, col)
         var town_name := str(town.get("name", tr("the town"))) if town != null else tr("the town")
-        target_label.text = tr(" Destination: to the town \"%s\" itself, at the chosen level") % town_name
+        target_label.text = tr("Destination: to the town \"%s\" itself, at the chosen level") % town_name
         # The route may turn out to be longer than a "direct" road: it goes only
         # over the scouted territory - exactly by the way the player got to
         # the town. Without this row a price 2-3 times higher than the expected one looks like
         # an error.
         target_label.text += tr(" (only across scouted territory)")
     else:
-        target_label.text = tr(" Destination: from the city's nearest road to this hex")
+        target_label.text = tr("Destination: from the city's nearest road to this hex")
     target_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
     target_label.add_theme_color_override("font_color", UI_THEME.color("income").lightened(0.35))
     _preview_container.add_child(target_label)
@@ -2133,7 +2133,7 @@ func _build_road_preview(row: int, col: int, _action_id: String) -> bool:
         return false
 
     var cost_label := Label.new()
-    cost_label.text = tr(" Cost: %d work") % int(breakdown.get("cost", 0))
+    cost_label.text = tr("Cost: %d work") % int(breakdown.get("cost", 0))
     cost_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
     cost_label.add_theme_color_override("font_color", UI_THEME.color("text_secondary"))
     _preview_container.add_child(cost_label)
@@ -2143,9 +2143,9 @@ func _build_road_preview(row: int, col: int, _action_id: String) -> bool:
     # on the map segments with very different progress bars and does not understand why.
     var min_step := int(breakdown.get("min_step_cost", 0))
     var max_step := int(breakdown.get("max_step_cost", 0))
-    var step_text := tr(" Per section: %d work") % min_step
+    var step_text := tr("Per section: %d work") % min_step
     if max_step != min_step:
-        step_text = tr(" Per section: %d to %d work") % [min_step, max_step]
+        step_text = tr("Per section: %d to %d work") % [min_step, max_step]
     step_text += tr(" (base %d)") % GameData.get_road_work_cost(road_level)
     var step_label := Label.new()
     step_label.text = step_text
@@ -2154,7 +2154,7 @@ func _build_road_preview(row: int, col: int, _action_id: String) -> bool:
     _preview_container.add_child(step_label)
 
     var segments_label := Label.new()
-    segments_label.text = tr(" New route sections: %d") % int(breakdown.get("segments", 0))
+    segments_label.text = tr("New route sections: %d") % int(breakdown.get("segments", 0))
     segments_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
     segments_label.add_theme_color_override("font_color", UI_THEME.color("text_secondary"))
     _preview_container.add_child(segments_label)
@@ -2164,9 +2164,9 @@ func _build_road_preview(row: int, col: int, _action_id: String) -> bool:
     var min_dist := int(breakdown.get("min_distance", 0))
     var max_dist := int(breakdown.get("max_distance", 0))
     var dist_label := Label.new()
-    var dist_text := tr(" Distance to city: %d hex(es)") % min_dist
+    var dist_text := tr("Distance to city: %d hex(es)") % min_dist
     if max_dist != min_dist:
-        dist_text = tr(" Distance to city: %d to %d hex(es)") % [min_dist, max_dist]
+        dist_text = tr("Distance to city: %d to %d hex(es)") % [min_dist, max_dist]
     dist_text += tr(" → base ×%.2f…×%.2f") % [
         MapHelpers.get_road_distance_mult(min_dist),
         MapHelpers.get_road_distance_mult(max_dist)]
@@ -2191,7 +2191,7 @@ func _build_road_preview(row: int, col: int, _action_id: String) -> bool:
             seen_names[tname] = true
             parts.append("%s ×%.2f" % [tname, MapHelpers.get_terrain_work_mult(tid)])
         var terr_label := Label.new()
-        terr_label.text = tr(" Terrain on the route: %s") % ", ".join(parts)
+        terr_label.text = tr("Terrain on the route: %s") % ", ".join(parts)
         terr_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
         terr_label.add_theme_color_override("font_color", UI_THEME.color("income").lightened(0.35))
         _preview_container.add_child(terr_label)
@@ -2200,7 +2200,7 @@ func _build_road_preview(row: int, col: int, _action_id: String) -> bool:
     # with a progress bar on the current segment. Without this row the player waits for the finished
     # road as a whole and does not understand, why it appears in pieces.
     var steps_hint := Label.new()
-    steps_hint.text = tr(" Will be built in sections: one hex at a time")
+    steps_hint.text = tr("Will be built in sections: one hex at a time")
     steps_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
     steps_hint.add_theme_color_override("font_color", UI_THEME.color("info").lightened(0.35))
     _preview_container.add_child(steps_hint)
@@ -2224,20 +2224,20 @@ func _build_aqueduct_preview(row: int, col: int) -> bool:
         _preview_container.add_child(warn)
         return false
     var target := Label.new()
-    target.text = tr(" Destination: from the mountain spring to the city")
+    target.text = tr("Destination: from the mountain spring to the city")
     target.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
     target.add_theme_color_override("font_color", UI_THEME.color("income").lightened(0.35))
     _preview_container.add_child(target)
     var cost := Label.new()
-    cost.text = tr(" Cost: %d work") % int(breakdown.get("cost", 0))
+    cost.text = tr("Cost: %d work") % int(breakdown.get("cost", 0))
     cost.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
     cost.add_theme_color_override("font_color", UI_THEME.color("text_secondary"))
     _preview_container.add_child(cost)
     var min_step := int(breakdown.get("min_step_cost", 0))
     var max_step := int(breakdown.get("max_step_cost", 0))
-    var step_text := tr(" Per section: %d work") % min_step
+    var step_text := tr("Per section: %d work") % min_step
     if max_step != min_step:
-        step_text = tr(" Per section: %d to %d work") % [min_step, max_step]
+        step_text = tr("Per section: %d to %d work") % [min_step, max_step]
     step_text += tr(" (base %d)") % int(GameData.special_actions.get(
             AQUEDUCT_ACTION_ID, {}).get("work_cost", 0))
     var per_section := Label.new()
@@ -2246,12 +2246,12 @@ func _build_aqueduct_preview(row: int, col: int) -> bool:
     per_section.add_theme_color_override("font_color", UI_THEME.color("text_secondary"))
     _preview_container.add_child(per_section)
     var sections := Label.new()
-    sections.text = tr(" Aqueduct sections: %d") % int(breakdown.get("segments", 0))
+    sections.text = tr("Aqueduct sections: %d") % int(breakdown.get("segments", 0))
     sections.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
     sections.add_theme_color_override("font_color", UI_THEME.color("text_secondary"))
     _preview_container.add_child(sections)
     var steps_hint := Label.new()
-    steps_hint.text = tr(" Will be built in sections: one hex at a time")
+    steps_hint.text = tr("Will be built in sections: one hex at a time")
     steps_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
     steps_hint.add_theme_color_override("font_color", UI_THEME.color("info").lightened(0.35))
     _preview_container.add_child(steps_hint)

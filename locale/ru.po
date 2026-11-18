@@ -137,89 +137,89 @@ msgstr " (работает)"
 msgid " = %s / sec"
 msgstr " = %s / сек"
 
-msgid " Base: %d work"
-msgstr " База: %d труда"
+msgid "Base: %d work"
+msgstr "База: %d труда"
 
-msgid " Base: %d work per section"
-msgstr " База: %d труда за участок"
+msgid "Base: %d work per section"
+msgstr "База: %d труда за участок"
 
-msgid " Construction technologies: ×%.2f"
-msgstr " Технологии строительства: ×%.2f"
+msgid "Construction technologies: ×%.2f"
+msgstr "Технологии строительства: ×%.2f"
 
-msgid " Construction technologies: ×1.00"
-msgstr " Технологии строительства: ×1.00"
+msgid "Construction technologies: ×1.00"
+msgstr "Технологии строительства: ×1.00"
 
-msgid " Cost: %d work"
-msgstr " Стоимость: %d труда"
+msgid "Cost: %d work"
+msgstr "Стоимость: %d труда"
 
-msgid " Debug: instant and free"
-msgstr " Дебаг: выполняется мгновенно и бесплатно"
+msgid "Debug: instant and free"
+msgstr "Дебаг: выполняется мгновенно и бесплатно"
 
-msgid " Destination: from the city to this hex along the existing road"
-msgstr " Куда: от города до этого гекса по существующей дороге"
+msgid "Destination: from the city to this hex along the existing road"
+msgstr "Куда: от города до этого гекса по существующей дороге"
 
-msgid " Destination: from the city's nearest road to this hex"
-msgstr " Куда: от ближайшей дороги города до этого гекса"
+msgid "Destination: from the city's nearest road to this hex"
+msgstr "Куда: от ближайшей дороги города до этого гекса"
 
-msgid " Destination: to the town \"%s\" itself, at the chosen level"
-msgstr " Куда: до самого городка «%s», на выбранном уровне"
+msgid "Destination: to the town \"%s\" itself, at the chosen level"
+msgstr "Куда: до самого городка «%s», на выбранном уровне"
 
-msgid " Distance to city: %d hex(es)"
-msgstr " Расстояние до города: %d гекс(а)"
+msgid "Distance to city: %d hex(es)"
+msgstr "Расстояние до города: %d гекс(а)"
 
-msgid " Distance to city: %d hex(es) → base ×%.2f"
-msgstr " Расстояние до города: %d гекс(а) → база ×%.2f"
+msgid "Distance to city: %d hex(es) → base ×%.2f"
+msgstr "Расстояние до города: %d гекс(а) → база ×%.2f"
 
-msgid " Distance to city: %d to %d hex(es)"
-msgstr " Расстояние до города: от %d до %d гекс(а)"
+msgid "Distance to city: %d to %d hex(es)"
+msgstr "Расстояние до города: от %d до %d гекс(а)"
 
-msgid " New route sections: %d"
-msgstr " Новых участков трассы: %d"
+msgid "New route sections: %d"
+msgstr "Новых участков трассы: %d"
 
-msgid " Outpost fee: %d coins from the treasury"
-msgstr " Плата за факторию: %d монет из казны"
+msgid "Outpost fee: %d coins from the treasury"
+msgstr "Плата за факторию: %d монет из казны"
 
-msgid " Outpost fee: free (debug)"
-msgstr " Плата за факторию: бесплатно (дебаг)"
+msgid "Outpost fee: free (debug)"
+msgstr "Плата за факторию: бесплатно (дебаг)"
 
-msgid " Per section: %d to %d work"
-msgstr " За участок: от %d до %d труда"
+msgid "Per section: %d to %d work"
+msgstr "За участок: от %d до %d труда"
 
-msgid " Per section: %d work"
-msgstr " За участок: %d труда"
+msgid "Per section: %d work"
+msgstr "За участок: %d труда"
 
-msgid " Road to the city (%s): %d work, %d new sections"
-msgstr " Дорога до города (%s): %d труда, новых участков: %d"
+msgid "Road to the city (%s): %d work, %d new sections"
+msgstr "Дорога до города (%s): %d труда, новых участков: %d"
 
-msgid " Road to the city: already under construction"
-msgstr " Дорога до города: уже строится"
+msgid "Road to the city: already under construction"
+msgstr "Дорога до города: уже строится"
 
-msgid " Road to the city: not needed"
-msgstr " Дорога до города: не нужна"
+msgid "Road to the city: not needed"
+msgstr "Дорога до города: не нужна"
 
-msgid " Road: %s"
-msgstr " Дорога: %s"
+msgid "Road: %s"
+msgstr "Дорога: %s"
 
-msgid " Route to the city: %d sections, average %.1f units/sec"
-msgstr " Маршрут до города: %d участков, средняя %.1f ед./сек"
+msgid "Route to the city: %d sections, average %.1f units/sec"
+msgstr "Маршрут до города: %d участков, средняя %.1f ед./сек"
 
-msgid " Sections to upgrade: %d"
-msgstr " Участков к улучшению: %d"
+msgid "Sections to upgrade: %d"
+msgstr "Участков к улучшению: %d"
 
-msgid " Terrain on the route: %s"
-msgstr " Местность на трассе: %s"
+msgid "Terrain on the route: %s"
+msgstr "Местность на трассе: %s"
 
-msgid " Terrain: %s (move cost: %s) ×%.2f"
-msgstr " Местность: %s (стоимость передвижения: %s) ×%.2f"
+msgid "Terrain: %s (move cost: %s) ×%.2f"
+msgstr "Местность: %s (стоимость передвижения: %s) ×%.2f"
 
-msgid " The road is built in sections, in parallel with the improvement"
-msgstr " Дорога строится по участкам, одновременно с улучшением"
+msgid "The road is built in sections, in parallel with the improvement"
+msgstr "Дорога строится по участкам, одновременно с улучшением"
 
-msgid " Total: %d work"
-msgstr " Итого: %d труда"
+msgid "Total: %d work"
+msgstr "Итого: %d труда"
 
-msgid " Will be built in sections: one hex at a time"
-msgstr " Будет строиться участками: по одному гексу за раз"
+msgid "Will be built in sections: one hex at a time"
+msgstr "Будет строиться участками: по одному гексу за раз"
 
 msgid " and "
 msgstr " и "
@@ -8878,11 +8878,11 @@ msgstr "Не удалось построить акведук"
 msgid "Build an aqueduct from the spring to the city"
 msgstr "Построить акведук от источника к городу"
 
-msgid " Destination: from the mountain spring to the city"
-msgstr " Направление: от горного источника к городу"
+msgid "Destination: from the mountain spring to the city"
+msgstr "Направление: от горного источника к городу"
 
-msgid " Aqueduct sections: %d"
-msgstr " Секций акведука: %d"
+msgid "Aqueduct sections: %d"
+msgstr "Секций акведука: %d"
 
 msgid "Cannot build the aqueduct"
 msgstr "Нельзя построить акведук"
@@ -8902,4 +8902,8 @@ msgstr "Горный источник"
 
 msgid "Fresh water spring: aqueduct is partly built"
 msgstr "Пресноводный источник: акведук частично построен"
+
+
+msgid " Distance to city: %d hex(es)"
+msgstr " Расстояние до города: %d гекс."
 
