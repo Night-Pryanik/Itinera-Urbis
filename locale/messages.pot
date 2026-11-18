@@ -3741,7 +3741,7 @@ msgid "Cures, ages and cuts tobacco leaf."
 msgstr ""
 
 msgctxt "crafts.description"
-msgid "Cuts stone into plates, bowls, and cups."
+msgid "Cuts stone into plates, bowls, and cups and grinds them smooth with pumice."
 msgstr ""
 
 msgctxt "crafts.description"
