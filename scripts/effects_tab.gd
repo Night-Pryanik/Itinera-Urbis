@@ -3,7 +3,7 @@
 # The tab "Effects" of the city: what acts on the city right now. Two sections, switched by a
 # row of small icon buttons — the same idiom as the sections of the "Resources" tab:
 #   · "effects"   — the active effects: the numbers and the availability the city really has;
-#   · "diversity" — the domesticated subgroups and the bonuses for the variety.
+#   · "diversity" — the bonuses for the variety of goods available to the city.
 #
 # The list is a view of CityData.get_city_effects(): the tab does not decide what acts on the
 # city, it only draws it. The effects change on structural events (a research completed, a
@@ -238,34 +238,62 @@ func _build_empty_label(text: String) -> Label:
 
 # --- The section "Diversity" ---
 
-# The number of the subgroups of the domesticated resources and the bonuses of the
-# diversity (a stub).
+# One row per declared diversity bonus: which group it watches, how many kinds
+# are available now, what the city gets and what is still missing for the next tier.
 func _fill_diversity_section() -> void:
     if diversity_list == null or not is_instance_valid(diversity_list):
         return
-    var subgroup_map := {}
-    for resource_id in CityData.domesticated_resources:
-        var data = GameData.raw_resources.get(resource_id, {})
-        for subgroup in _get_subgroups(data):
-            subgroup_map[subgroup] = true
+    var bonuses: Array = CityData.get_diversity_bonuses()
+    if bonuses.is_empty():
+        diversity_list.add_child(_build_empty_label(tr("No diversity bonuses yet")))
+        return
+    for bonus in bonuses:
+        diversity_list.add_child(_build_diversity_row(bonus))
 
-    var total_subgroups: int = subgroup_map.size()
-    if total_subgroups > 0:
-        var div_label := Label.new()
-        div_label.text = tr("Diversity: %d subgroups") % total_subgroups
-        div_label.add_theme_color_override("font_color", UI_THEME.color("warning"))
-        diversity_list.add_child(div_label)
+func _build_diversity_row(bonus: Dictionary) -> Control:
+    var row := HBoxContainer.new()
+    row.add_theme_constant_override("separation", 6)
 
-        var bonus_label = Label.new()
-        bonus_label.text = tr("Active bonuses: (coming later)")
-        bonus_label.add_theme_color_override("font_color", UI_THEME.color("warning").darkened(0.3))
-        diversity_list.add_child(bonus_label)
+    var tex := IconRegistry.get_texture(ICON_SECTION_DIVERSITY)
+    if tex != null:
+        var icon_rect := TextureRect.new()
+        icon_rect.texture = tex
+        icon_rect.custom_minimum_size = Vector2(32, 32)
+        icon_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+        icon_rect.stretch_mode = TextureRect.STRETCH_SCALE
+        icon_rect.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+        row.add_child(icon_rect)
+
+    var text := RichTextLabel.new()
+    text.bbcode_enabled = false
+    text.fit_content = true
+    text.scroll_active = false
+    text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+    text.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+    text.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+    text.mouse_filter = Control.MOUSE_FILTER_PASS
+    text.add_text(tr(str(bonus.get("name", ""))))
+    text.push_color(UI_THEME.color("text_muted"))
+    var parts: Array = [tr("Varieties: %d") % int(bonus.get("varieties", 0))]
+    var value := float(bonus.get("value", 0.0))
+    if value > 0.0:
+        parts.append(_bonus_text(value, str(bonus.get("bonus_type", ""))))
     else:
-        diversity_list.add_child(_build_empty_label(tr("No domesticated resources yet")))
+        parts.append(tr("no bonus"))
+    if int(bonus.get("next_min", 0)) > 0:
+        parts.append(tr("next: %d") % int(bonus.get("next_min", 0)))
+    text.add_text(" (%s)" % ", ".join(parts))
+    text.pop()
+    row.add_child(text)
+    return row
 
-# Returns the array of the subgroups of the resource. It supports both a string and an array.
-func _get_subgroups(data: Dictionary) -> Array:
-    var subgroup = data.get("subgroup", "other")
-    if subgroup is Array:
-        return subgroup
-    return [subgroup]
+# The effect a reached tier grants. A type without its own implementation is
+# still shown (a display-only bonus), so the player can see what is being tracked.
+func _bonus_text(value: float, bonus_type: String) -> String:
+    var pct := int(round(value * 100.0))
+    match bonus_type:
+        "construction_speed":
+            return tr("+%d%% construction speed") % pct
+        "food_variety":
+            return tr("+%d%% food variety") % pct
+    return tr("Bonus: +%d%% (%s)") % [pct, bonus_type]

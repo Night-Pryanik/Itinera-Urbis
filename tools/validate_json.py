@@ -1,5 +1,6 @@
-# Temporary script to validate data/*.json: strips comments the same way
-# data_loader.gd (_strip_json_comments — taking strings into account), then parses JSON.
+# Validate every data/*.json: strip comments the same way data_loader.gd
+# (_strip_json_comments — taking strings into account), then parse the JSON.
+# Usage: python tools/validate_json.py [root]   (root defaults to "data")
 import json
 import os
 import sys
@@ -73,66 +74,3 @@ def main(root: str) -> int:
 
 if __name__ == "__main__":
     sys.exit(main(sys.argv[1] if len(sys.argv) > 1 else "data"))
-
-import json, io
-
-def strip_comments(s):
-    res = []
-    i = 0
-    n = len(s)
-    in_str = in_sl = in_ml = False
-    while i < n:
-        c = s[i]
-        nx = s[i + 1] if i + 1 < n else ""
-        pr = s[i - 1] if i > 0 else ""
-        if not in_str and not in_sl and not in_ml:
-            if c == '"':
-                in_str = True
-                res.append(c)
-                i += 1
-                continue
-            if c == "/" and nx == "/":
-                in_sl = True
-                i += 2
-                continue
-            if c == "/" and nx == "*":
-                in_ml = True
-                i += 2
-                continue
-        if in_str:
-            if c == '"' and pr != "\\":
-                in_str = False
-            res.append(c)
-            i += 1
-            continue
-        if in_sl:
-            if c == "\n":
-                in_sl = False
-                res.append(c)
-            i += 1
-            continue
-        if in_ml:
-            if c == "*" and nx == "/":
-                in_ml = False
-                i += 2
-                continue
-            i += 1
-            continue
-        res.append(c)
-        i += 1
-    return "".join(res)
-
-files = [
-    "data/consumption.json",
-    "data/professions.json",
-    "data/products/products.json",
-    "data/product_groups.json",
-    "data/crafts/crafts.json",
-    "data/improvements.json",
-    "data/game_balance.json",
-]
-for f in files:
-    txt = strip_comments(io.open(f, encoding="utf-8").read())
-    json.loads(txt)
-    print("OK", f)
-print("ALL JSON OK")

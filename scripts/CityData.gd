@@ -14,11 +14,24 @@ var city_quality_detail: Dictionary = {}
 # the sums over the food_pool) and for the TopBar (city_ui._update_food_label — the label
 # "Food: N [+Y / -Z]" with the fact per tick, a fallback to the planned at a zero
 # fact). The breakdown by the sources (production_sources / consumption_sources)
-# has been removed from the tooltip of the tab "Resources" (see the commit 5790016), and the
-# sources themselves are no longer maintained.
+# has been removed from the tooltip of the tab "Resources", and the sources themselves
+# are no longer maintained.
 var production_rates: Dictionary = {}
 var consumption_rates: Dictionary = {}
 var city_food_pool: Dictionary = {}
+# The goods available in a meaningful amount during the current tick:
+# product_id -> true. Seeded from the stock at the start of the tick (at least
+# food_per_citizen units — enough to feed one resident) and extended by arrivals
+# that reach that level. A diversity bonus counts the members of its
+# group in this set: a good produced and consumed within one tick still counts,
+# while a leftover below one resident's ration does not.
+var present_this_tick: Dictionary = {}
+# Ticks since the last arrival or write-off of a good: product_id -> int. A good
+# that only lies in the storage has a growing age and stops counting for a
+# diversity bonus — a static hoard is not an opportunity to use a variety.
+# Reset to 0 by add_to_storage()/remove_from_storage(), advanced once per tick.
+var diversity_flow_age: Dictionary = {}
+const DIVERSITY_FLOW_WINDOW_TICKS: int = 10
 # --- THE INTERNAL MARKET (the tab "Trade") ---
 # The key of the state in all three dictionaries below is the DISPLAY_KEY of the resource: the id
 # of a single product ("feathers") or an "@group" ("@boats"). This is exactly the
@@ -453,6 +466,12 @@ func reset_counters():
     # (city_ui._update_food_label). They live exactly one tick of the simulation.
     production_rates.clear()
     consumption_rates.clear()
+    present_this_tick.clear()
+    for pid in city_storage:
+        if _enough_for_variety(str(pid)):
+            present_this_tick[str(pid)] = true
+    for pid in diversity_flow_age:
+        diversity_flow_age[pid] = int(diversity_flow_age[pid]) + 1
     # The planned release/consumption of the improvements is the cache of the current tick (it is filled
     # from main_map.gd), it lives exactly one tick of the simulation, as well as the actual
     # counters.
@@ -1242,6 +1261,12 @@ func get_quality_breakdown(pid: String) -> Dictionary:
 func get_storage_amount(pid: String) -> int:
     return city_storage.get(pid, 0)
 
+# A single unit is not a variety: there must be enough to feed one resident.
+# The same bar is used for every good, including the ones the citizens do not
+# eat — construction stone and fibres are bought and spent in comparable lots.
+func _enough_for_variety(pid: String) -> bool:
+    return int(city_storage.get(pid, 0)) >= food_per_citizen
+
 # Adds amount units of the product pid of the specified quality.
 # It synchronously updates city_storage and city_quality_detail.
 func add_to_storage(pid: String, amount: int, quality: String = "common"):
@@ -1253,6 +1278,9 @@ func add_to_storage(pid: String, amount: int, quality: String = "common"):
     if not GameData.products.has(pid) and pid.find(GameData.GENERATED_SEPARATOR) >= 0:
         GameData.materialise_generated(pid)
     city_storage[pid] = city_storage.get(pid, 0) + amount
+    if _enough_for_variety(pid):
+        present_this_tick[pid] = true
+    diversity_flow_age[pid] = 0
     if not city_quality_detail.has(pid):
         city_quality_detail[pid] = {}
     var detail: Dictionary = city_quality_detail[pid]
@@ -1281,6 +1309,8 @@ func remove_from_storage(pid: String, amount: int, priority: String = "best") ->
     var to_remove = min(amount, available)
     var consumed = _consume_quality_detail(pid, to_remove, priority)
     city_storage[pid] = available - to_remove
+    if to_remove > 0:
+        diversity_flow_age[pid] = 0
     return consumed
 
 # Writes off amount units from the breakdown by quality according to the priority.
@@ -1800,16 +1830,27 @@ func do_tick():
     # counted as usual — only the write-off of the food from the storage is disabled.
     if food_consumption_enabled:
         var food_needed = max(0, total_population - 1) * food_per_citizen
-        var food_eaten = 0
+        # The ration is taken as a basket: an equal share from every kind of
+        # food in stock, with the remainder passed on to the following kinds.
+        # Otherwise the first kind in the pool would be the only one ever eaten,
+        # and a bonus for the variety of the diet could never fire.
+        var available_food: Array = []
         for pid in city_food_pool:
-            if city_food_pool[pid] and city_storage.get(pid, 0) > 0:
-                var available = city_storage[pid]
-                var to_take = min(available, food_needed - food_eaten)
-                remove_from_storage(pid, to_take, "best")
-                record_consumption_source(pid, GameData.SRC_POP_FOOD, to_take)
-                food_eaten += to_take
-                if food_eaten >= food_needed:
-                    break
+            if city_food_pool[pid] and int(city_storage.get(pid, 0)) > 0:
+                available_food.append(pid)
+        var remaining: int = int(food_needed)
+        for i in range(available_food.size()):
+            if remaining <= 0:
+                break
+            var pid := str(available_food[i])
+            var active := available_food.size() - i
+            var share := int(ceil(float(remaining) / float(active)))
+            var to_take := mini(int(city_storage[pid]), share)
+            if to_take <= 0:
+                continue
+            remove_from_storage(pid, to_take, "best")
+            record_consumption_source(pid, GameData.SRC_POP_FOOD, to_take)
+            remaining -= to_take
 
     # --- THE TAXES: every citizen pays the base tax into the treasury on every tick ---
     # The order matters: the collection goes AFTER the consumption of the food and BEFORE
@@ -2323,6 +2364,64 @@ func check_building_additional_req(building_id: String) -> Dictionary:
         return {"ok": false, "reason": tr("The city needs access to fresh water")}
 
     return {"ok": false, "reason": tr("Unknown construction requirement: %s") % requirement}
+
+# --- DIVERSITY BONUSES (data/bonuses.json) ---
+const BONUS_CONSTRUCTION_SPEED := "construction_speed"
+
+# The diversity bonuses and the tiers the city has reached at the moment. Each row:
+# { "group_id": String, "name": String, "bonus_type": String, "varieties": int,
+#   "value": float, "next_min": int, "next_value": float }.
+# Only the highest reached tier applies; "next_*" is the nearest unmet one, for the UI.
+func get_diversity_bonuses() -> Array:
+    var result: Array = []
+    for bonus in GameData.diversity_bonuses:
+        if not (bonus is Dictionary):
+            continue
+        var group_id := str(bonus.get("group_id", ""))
+        var members: Array = GameData.product_groups.get(group_id, [])
+        if members.is_empty():
+            continue
+        var varieties := 0
+        for pid in members:
+            var key := str(pid)
+            if not present_this_tick.has(key):
+                continue
+            # A good must be in circulation: produced, bought, spent or sold
+            # recently. A banned hoard that nothing touches does not count.
+            if int(diversity_flow_age.get(key, DIVERSITY_FLOW_WINDOW_TICKS + 1)) > DIVERSITY_FLOW_WINDOW_TICKS:
+                continue
+            varieties += 1
+        var value := 0.0
+        var next_min := 0
+        var next_value := 0.0
+        for tier in bonus.get("tiers", []):
+            if not (tier is Dictionary):
+                continue
+            var need := int(tier.get("min_varieties", 0))
+            var gain := float(tier.get("value", 0.0))
+            if varieties >= need:
+                value = maxf(value, gain)
+            elif next_min == 0 or need < next_min:
+                next_min = need
+                next_value = gain
+        result.append({
+            "group_id": group_id,
+            "name": GameData.get_product_group_name("@" + group_id),
+            "bonus_type": str(bonus.get("bonus_type", "")),
+            "varieties": varieties,
+            "value": value,
+            "next_min": next_min,
+            "next_value": next_value,
+        })
+    return result
+
+# The multiplier of the speed of every build, from the diversity bonuses of stone.
+func get_construction_speed_multiplier() -> float:
+    var sum := 0.0
+    for row in get_diversity_bonuses():
+        if str(row.get("bonus_type", "")) == BONUS_CONSTRUCTION_SPEED:
+            sum += float(row.get("value", 0.0))
+    return 1.0 + sum
 
 # The badge of a production slot a technology grants (the tree and the Effects tab).
 const ICON_PRODUCTION_SLOT := "production_slot.png"

@@ -84,8 +84,9 @@ func _process(delta):
     if active_builds_list.is_empty() and project_steps <= 0:
         return
 
-    # We distribute the total labour equally among the active builds
-    var total_labor = CityData.get_total_labor()
+    # We distribute the total labour equally among the active builds. The diversity
+    # bonus raises the speed of every worker without adding ones to the pool.
+    var total_labor = CityData.get_total_labor() * CityData.get_construction_speed_multiplier()
     var labor_per_build = total_labor / (active_builds_list.size() + project_steps)
 
     var to_complete = []

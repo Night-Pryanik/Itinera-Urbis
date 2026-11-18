@@ -1,8 +1,10 @@
-// The resource subgroups that are counted when the diversity bonus mechanic
-// runs, and when listing domesticated plant and animal species.
-// Do not confuse this with the goods groups of data/product_groups/: this file holds groups for
-// bonuses, that one is a registry of groups used in recipes, in the cost of a building, in
-// accounting for consumption by professions and in the bonus of a specialization
+// The subgroups of raw resources: species of animals, families of plants, kinds of minerals.
+// They classify the domesticated resources on the "Tamed" tab and serve as filters when
+// the world generator guarantees that at least one resource of a kind is present (a
+// construction material, for example).
+// Do not confuse this with the goods groups of data/product_groups/: those hold
+// interchangeable goods used in recipes, building costs, consumption and specialization
+// bonuses. The diversity bonuses are declared for those goods groups in data/bonuses.json.
 {
   "groups": [
     {"id": "meat_animals", "name": "Meat Animals"},

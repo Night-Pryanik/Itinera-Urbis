@@ -1181,6 +1181,27 @@ msgstr "Расстояние между островами"
 msgid "Diversity"
 msgstr "Разнообразие"
 
+msgid "No diversity bonuses yet"
+msgstr "Бонусов за разнообразие пока нет"
+
+msgid "Varieties: %d"
+msgstr "Разновидностей: %d"
+
+msgid "+%d%% construction speed"
+msgstr "+%d%% к скорости строительства"
+
+msgid "+%d%% food variety"
+msgstr "+%d%% к разнообразию пищи"
+
+msgid "Bonus: +%d%% (%s)"
+msgstr "Бонус: +%d%% (%s)"
+
+msgid "no bonus"
+msgstr "бонус не активен"
+
+msgid "next: %d"
+msgstr "далее: %d"
+
 msgid "Diversity: %d subgroups"
 msgstr "Разнообразие: %d подгрупп"
 

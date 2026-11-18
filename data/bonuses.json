@@ -1,61 +1,37 @@
-// Bonuses for keeping a diverse range of resources in the city storage, grouped
-// by groups and subgroups.
-// The scheme is as follows: a bonus of type bonus_type is granted for owning at
-// least min_subgroups within the group, and also for min_species species within
-// the subgroup.
-// The two kinds of bonus are independent of each other.
-// Example: cows, bees and poultry all belong to the group livestock (livestock).
-// If the player owns at least two (min_subgroups: 2) kinds of livestock from this
-// list (for example, cows and poultry), they receive the bonus.
-// In addition, if the player owns at least two (min_species: 2) kinds of animals
-// that belong to a subgroup,
-// for example meat_animals (cows, zebras and bantengs), they receive another bonus.
-//
-// When creating new groups, it is worth focusing on those resources that can be
-// eaten directly, or that improve the quality of life, or that can be used in
-// construction, or that are luxury goods.
-// Example: a good idea is to grant a bonus for a diversity of meat on the
-// citizens' table — for example, beef and chicken (both are in the group
-// livestock). A good idea is also to grant a bonus for a diversity within a
-// subgroup — for example, chicken, duck and goose meat (all three are in the
-// subgroup poultry). A good idea is to grant a bonus for a diversity of
-// construction stone — for example, marble and limestone (both are in the
-// subgroup construction_materials). But it is not a very good idea to grant a
-// bonus for a diversity of minerals — for example, building stone and gemstone
-// (subgroups construction_materials and jewelry_minerals).
 {
-  "group_bonuses": [
+  // Diversity bonuses: a reward for keeping several kinds of a good in
+  // circulation. A tier fires when at least "min_varieties" members of the
+  // product group held at least one resident's ration in the storage at the
+  // start of the tick and had some flow (production, purchase, craft, market,
+  // construction) within the last ten ticks. Only the highest reached tier
+  // applies; the value is a fraction (0.05 = +5%).
+  //
+  // "group_id" names an id from data/product_groups/. "bonus_type" says what
+  // the bonus acts on; currently "construction_speed" is the only implemented
+  // gameplay effect. The tiers are ordered from the smallest threshold to the largest.
+  "product_group_bonuses": [
     {
-      "group_id": "livestock",
-      "bonus_type": "happiness",
-      "tiers": [ { "min_subgroups": 2, "value": 5 }, { "min_subgroups": 3, "value": 10 }, { "min_subgroups": 5, "value": 15 } ]
+      // Rough stone of several kinds in the storeyard speeds up every build,
+      // even when the mason cuts only one of them.
+      "group_id": "building_stone",
+      "bonus_type": "construction_speed",
+      "tiers": [
+        { "min_varieties": 2, "value": 0.05 },
+        { "min_varieties": 3, "value": 0.10 },
+        { "min_varieties": 5, "value": 0.20 }
+      ]
     },
     {
-      "group_id": "food_plants",
-      "bonus_type": "happiness",
-      "tiers": [ { "min_subgroups": 2, "value": 3 }, { "min_subgroups": 3, "value": 7 }, { "min_subgroups": 5, "value": 12 } ]
-    }
-  ],
-  "subgroup_bonuses": [
-    {
-      "subgroup_id": "meat_animals",
-      "bonus_type": "happiness",
-      "tiers": [ { "min_species": 2, "value": 2 }, { "min_species": 3, "value": 5 }, { "min_species": 5, "value": 10 } ]
-    },
-    {
-      "subgroup_id": "poultry",
-      "bonus_type": "happiness",
-      "tiers": [ { "min_species": 2, "value": 1 }, { "min_species": 3, "value": 3 }, { "min_species": 5, "value": 6 } ]
-    },
-    {
-      "subgroup_id": "fruits",
-      "bonus_type": "happiness",
-      "tiers": [ { "min_species": 2, "value": 1 }, { "min_species": 3, "value": 3 }, { "min_species": 5, "value": 5 } ]
-    },
-    {
-      "subgroup_id": "construction_materials",
-      "bonus_type": "happiness",
-      "tiers": [ { "min_species": 2, "value": 1 }, { "min_species": 3, "value": 3 }, { "min_species": 5, "value": 5 } ]
+      // A varied diet: the bonus counts the kinds of meat the citizens can eat —
+      // those in stock or arriving during the tick, not only the ones actually
+      // eaten. The effect is displayed only for now.
+      "group_id": "meat",
+      "bonus_type": "food_variety",
+      "tiers": [
+        { "min_varieties": 2, "value": 0.05 },
+        { "min_varieties": 3, "value": 0.10 },
+        { "min_varieties": 5, "value": 0.20 }
+      ]
     }
   ]
 }

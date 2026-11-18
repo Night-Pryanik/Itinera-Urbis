@@ -11,10 +11,9 @@
     {
       // The slaughterhouse butchers the live herd into the meat of the
       // species and, where the animal bears a usable hide, into hides.
-      // The meats are distinct products on purpose: a diversity of meats on
-      // the table is the basis of the diversity bonus system (see
-      // data/bonuses.json). All the bovines share the "Beef" recipe through
-      // the @bovines group (data/product_groups/crafts.json).
+      // The meats are distinct products on purpose, so that the kinds stay
+      // distinguishable as goods. All the bovines share the "Beef" recipe
+      // through the @bovines group (data/product_groups/crafts.json).
       //
       // Every slaughter recipe has the same throughput: 20 heads into 120 units
       // of meat (24 per second) in 5 seconds, whatever the species, plus the

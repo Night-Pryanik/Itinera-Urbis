@@ -256,6 +256,9 @@ func _collect_data(main_map: Node) -> Dictionary:
         "production_rates": CityData.production_rates,
         "consumption_rates": CityData.consumption_rates,
         "city_food_pool": CityData.city_food_pool,
+        # The age of the last flow of each good, for the diversity bonuses. A good
+        # without recent arrivals or write-offs stops counting as available.
+        "diversity_flow_age": CityData.diversity_flow_age,
         # The internal market (the "Trade" tab): the consumption permission
         # toggles and the per-quality write-off priority. The keys are display_key
         # (the product id or "@group").
@@ -344,6 +347,7 @@ func apply_loaded_data():
     CityData.production_rates = saved_data.get("production_rates", {})
     CityData.consumption_rates = saved_data.get("consumption_rates", {})
     CityData.city_food_pool = saved_data.get("city_food_pool", {})
+    CityData.diversity_flow_age = saved_data.get("diversity_flow_age", {})
     # The internal market settings (the "Trade" tab). The missing keys mean that
     # everything is permitted and the default priority is taken, which is exactly
     # what an empty dictionary does: CityData treats a missing key precisely that way.

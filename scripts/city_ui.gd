@@ -753,7 +753,7 @@ func _process(delta):
                     var work_cost = bdata.get("work_cost", 0)
                     if work_cost > 0:
                         work_cost = int(ceil(float(work_cost) * MapHelpers.get_construction_cost_mult()))
-                    var labor = CityData.get_total_labor()
+                    var labor = CityData.get_total_labor() * CityData.get_construction_speed_multiplier()
                     if work_cost > 0:
                         var build_time = work_cost / max(1.0, labor)
                         hint = tr("Construction: %d work, %.0f sec.\n") % [work_cost, build_time]

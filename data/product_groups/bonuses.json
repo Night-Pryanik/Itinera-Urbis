@@ -1,0 +1,34 @@
+{
+  // A part of the registry of product groups: the sets of goods watched by the
+  // diversity bonuses of data/bonuses.json. A group here is only the list of
+  // kinds to count; it is not addressed by a recipe or a consumption rule.
+  // The identifier of a group is global, so a group lives in exactly one file.
+  "product_groups": [
+    {
+      // The ready meat of every species, as the citizens eat it. The live
+      // animals are a different group (@bovines in crafts.json): a bonus for
+      // the variety on the table counts the meat, not the herd.
+      "id": "meat",
+      "name": "Meat",
+      "products": [
+        "beef",
+        "mutton",
+        "goat_meat",
+        "horse_meat",
+        "pork",
+        "venison",
+        "camel_meat",
+        "llama_meat",
+        "alpaca_meat",
+        "chicken_meat",
+        "turkey_meat",
+        "duck_meat",
+        "goose_meat",
+        "guineafowl_meat",
+        "ostrich_meat",
+        "rabbit_meat",
+        "pigeon_meat"
+      ]
+    }
+  ]
+}

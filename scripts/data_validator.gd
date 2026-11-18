@@ -193,8 +193,8 @@ const QUALITY_LEVELS_FIELD := "quality_levels"
 #
 # SCHEMA is the single list of what data/*.json may contain, and every key outside it is reported
 # as unknown_field. The list describes the DATA MODEL, not the current reads of the code: a field
-# the design keeps while no system reads it yet (covers.move_cost_bonus, professions.pseudo, the
-# diversity-bonus registry of data/bonuses.json) is listed as well — otherwise a legitimate file
+# the design keeps while no system reads it yet (covers.move_cost_bonus, professions.pseudo) is
+# listed as well — otherwise a legitimate file
 # would be reported as broken. The check exists for the opposite case: a field nobody planned, which
 # the game will never read.
 #
@@ -408,7 +408,7 @@ const CATEGORY_FIELDS := {
     "name": LEAF,
 }
 
-# data/groups.json — the groups for the diversity bonuses, and not the goods groups of
+# data/subgroups.json — the subgroups of raw resources, and not the goods groups of
 # data/product_groups/.
 const GROUP_FIELDS := {
     "id": LEAF,
@@ -535,16 +535,10 @@ const CONSUMPTION_FIELDS := {
     "consume_all": LEAF,
 }
 
-const GROUP_BONUS_FIELDS := {
+const PRODUCT_GROUP_BONUS_FIELDS := {
     "group_id": LEAF,
     "bonus_type": LEAF,
-    "tiers": {"array": {"min_subgroups": LEAF, "value": LEAF}},
-}
-
-const SUBGROUP_BONUS_FIELDS := {
-    "subgroup_id": LEAF,
-    "bonus_type": LEAF,
-    "tiers": {"array": {"min_species": LEAF, "value": LEAF}},
+    "tiers": {"array": {"min_varieties": LEAF, "value": LEAF}},
 }
 
 # A bonus block of a source that is NOT a technology (fresh_water). Both id maps
@@ -851,8 +845,7 @@ const SCHEMA := {
     "climate_zones": {"array": ZONE_FIELDS},
     "special_actions": {"array": SPECIAL_ACTION_FIELDS},
     "consumption": {"array": CONSUMPTION_FIELDS},
-    "group_bonuses": {"array": GROUP_BONUS_FIELDS},
-    "subgroup_bonuses": {"array": SUBGROUP_BONUS_FIELDS},
+    "product_group_bonuses": {"array": PRODUCT_GROUP_BONUS_FIELDS},
     "modifiers": MODIFIER_FIELDS,
     "map_config": MAP_CONFIG_FIELDS,
     "game_balance": {"blocks": GAME_BALANCE_BLOCKS},
@@ -1571,7 +1564,7 @@ func _add_unknown_field(problems: Array, context: Dictionary, field: String, pat
 
 
 # The key of the origin index for a record: its own declaration ("crafts:bread") when the index knows
-# it, otherwise the file where the collection itself is declared ("@key:group_bonuses"). A collection
+# it, otherwise the file where the collection itself is declared ("@key:product_group_bonuses"). A collection
 # without an indexed id — the diversity bonuses of data/bonuses.json have no "id" field — still gets a
 # file, only a coarser one: the first line of the collection instead of the line of the record.
 func _origin_key(context: Dictionary) -> String:

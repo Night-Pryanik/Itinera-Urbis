@@ -826,7 +826,7 @@ func _show_building_details(bdata: Dictionary):
     if work_cost > 0:
         # The cost taking the technology modifiers into account (target = "construction_cost").
         var actual_work_cost = int(ceil(float(work_cost) * MapHelpers.get_construction_cost_mult()))
-        var labor = CityData.get_total_labor()
+        var labor = CityData.get_total_labor() * CityData.get_construction_speed_multiplier()
         var build_time = actual_work_cost / max(1.0, labor)
         content.add_child(_make_bullet_row("•", tr("Work: %d (%.0f sec)") % [actual_work_cost, build_time]))
         has_costs = true

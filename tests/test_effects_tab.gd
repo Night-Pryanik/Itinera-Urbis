@@ -250,6 +250,9 @@ func _run() -> void:
                 "the diversity section is not shown", state)
             check(not city_ui.get_node("ContentPanel/EffectsPanel/EffectsSection").visible,
                 "the effects section is not hidden", state)
+            effects_tab.refresh()
+            check(effects_tab.diversity_list != null and effects_tab.diversity_list.get_child_count() > 0,
+                "the diversity section must show the declared bonuses", state)
             effects_tab._switch_section("effects")
 
         main_map.queue_free()

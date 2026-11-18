@@ -1,9 +1,8 @@
 {
   // The meat of the slaughtered animals: each species (or family) gets its own
-  // product, so that a diversity of meats on the citizens' table stays
-  // distinguishable on the level of goods — the basis of the diversity bonus
-  // system (see data/bonuses.json). All the bovines share "Beef": cattle,
-  // zebu, banteng, buffalo, bison and yak are butchered into the same cut.
+  // product, so that the kinds stay distinguishable on the level of goods.
+  // All the bovines share "Beef": cattle, zebu, banteng, buffalo, bison and yak
+  // are butchered into the same cut.
   // The meat is directly edible; the slaughterhouse (data/crafts/food_drinks.json)
   // is the only processing step between the live animal and the table.
   "resources": [

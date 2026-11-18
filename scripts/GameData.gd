@@ -56,6 +56,8 @@ var specialization_config: Dictionary = {}
 # The challenges of the era (data/challenges.json): the one-off tasks whose condition is checked in
 # the code (see ChallengeManager).
 var challenges: Array = []
+# The diversity bonuses of data/bonuses.json (see data_loader.gd).
+var diversity_bonuses: Array = []
 # The road levels (data/roads.json). roads_by_level — level -> level data:
 # a road network segment stores a level number, therefore exactly such an index is needed.
 var roads: Array = []
@@ -162,6 +164,7 @@ func _assign_from(loader) -> void:
     specializations = loader.specializations
     specialization_config = loader.specialization_config
     challenges = loader.challenges
+    diversity_bonuses = loader.diversity_bonuses
     roads = loader.roads
     roads_by_level = loader.roads_by_level
     entity_sources = loader.entity_sources

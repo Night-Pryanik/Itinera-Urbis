@@ -1240,7 +1240,7 @@ static func ensure_food_plant(
 ## `filter` — a dictionary with the fields for the matching by the data of the
 ## resource (all the matches are checked for equality). The required field is
 ## `category`. The fields `group` and `subgroup` — the optional additional filters
-## for the detailed categories (the bonuses for the variety). The fields
+## for the detailed categories of raw resources (see data/subgroups.json). The fields
 ## `group`/`subgroup` of a resource can be both a string and an array of strings
 ## (several subgroups at once); the filter is considered matched if the required
 ## value is in the list. The examples:

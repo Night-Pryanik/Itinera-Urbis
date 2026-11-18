@@ -40,6 +40,8 @@ var specialization_config: Dictionary = {}
 # The challenges of the era (data/challenges.json): the one-off tasks whose condition is checked in
 # the code, in the order of the file.
 var challenges: Array = []
+# The diversity bonuses (data/bonuses.json): product group id -> tiers of varieties.
+var diversity_bonuses: Array = []
 
 # The id of a vanilla entity -> the icon file names the VANILLA data draws it with, for the
 # entities drawn by several pictures. Taken before the mods are laid over: a tileset draws
@@ -230,6 +232,7 @@ func load_all_data(mod_dirs: Array = []):
         if kind_entry is Dictionary and not str(kind_entry.get("id", "")).is_empty():
             craft_extra_kinds.append(kind_entry)
 
+    diversity_bonuses = merged_data.get("product_group_bonuses", [])
     buildings = merged_data.get("buildings", [])
     categories = merged_data.get("categories", [])
     technologies = merged_data.get("technologies", [])
