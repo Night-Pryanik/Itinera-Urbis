@@ -6789,6 +6789,10 @@ msgid "Pulque"
 msgstr "Пульке"
 
 msgctxt "resources.name"
+msgid "Pumice"
+msgstr "Пемза"
+
+msgctxt "resources.name"
 msgid "Purple"
 msgstr "Пурпур"
 

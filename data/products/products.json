@@ -264,6 +264,19 @@
       "icon": "sponge.png"
     },
     {
+      // A by-product of the volcanic stone: the quarry that cuts tuff and basalt knocks
+      // the porous pumice out as well. It is worthless as a building stone and good for
+      // scouring, polishing and washing, therefore it is a household good of the stone
+      // trade and shares the technology of the quarry that yields it.
+      "id": "pumice",
+      "price": 8,
+      "name": "Pumice",
+      "type": "product",
+      "category": "household_items",
+      "unlock_tech": "masonry",
+      "icon": "pumice.png"
+    },
+    {
       "id": "wooden_barrel",
       "price": 20,
       "name": "Wooden Barrel",

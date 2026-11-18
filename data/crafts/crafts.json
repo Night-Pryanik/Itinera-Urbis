@@ -445,7 +445,7 @@
       "id": "stone_tableware",
       "name": "Stone Tableware",
       "produced_in": [ "mason_workshop" ],
-      "resources": { "@tableware_stones": 20 },
+      "resources": { "@tableware_stones": 20, "pumice": 5 },
       "result": { "stone_tableware": 10 },
       "time": 5.0,
       "unlock_tech": "masonry",
