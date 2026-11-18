@@ -11,8 +11,8 @@
 #   2. The by-product: the tuff and the basalt quarries yield the pumice besides their stone.
 #   3. The gate: the pumice opens with the very technology that opens the quarry, so the
 #      by-product can never be locked while its source works.
-#   4. The consumption: the citizens have a norm of their own, the two stone trades have
-#      theirs, and those workers are not counted twice by the city norm.
+#   4. The consumption: the citizens write the stone off through the household group, the
+#      two stone trades have a norm of their own, and the stone is not declared twice.
 #   5. The recipes: the abrasive is an ingredient of the stone tableware and of the
 #      hard-stone jewelry.
 extends SceneTree
@@ -23,6 +23,7 @@ const PRODUCT := "pumice"
 const QUARRY_TECH := "masonry"
 const DEPOSITS := ["tuff_deposit", "basalt_deposit"]
 const DEPOSIT_STONE := { "tuff_deposit": "tuff", "basalt_deposit": "basalt" }
+const HOUSEHOLD_GROUP := "consumer_goods"
 const STONE_TRADES := ["mason", "jeweler"]
 const ABRASIVE_RECIPES := [
     "stone_tableware",
@@ -105,13 +106,26 @@ func _test_gate(gd: Node, city: Node) -> void:
     _check(city.is_product_available(PRODUCT),
         "the quarry technology opens the pumice")
 
+# The citizens write the pumice off as a member of the household group: one norm covers
+# the whole shelf of the soap, the sponge and the friends, and the stone travels with it.
+# A row of its own would split the stone off that shelf — one more parallel need of the
+# same citizens instead of a good they pick up at the same counter.
 func _test_consumption(gd: Node) -> void:
-    var city_rule: Dictionary = _find_rule(gd.get_profession_consumption("all"), PRODUCT)
-    _check(not city_rule.is_empty(), "the citizens have a pumice norm")
-    _check(int(city_rule.get("amount", 0)) > 0, "the citizen norm has a positive amount")
-    _check(float(city_rule.get("interval", 0.0)) > 0.0, "the citizen norm has a positive interval")
-    _check(not bool(city_rule.get("is_group", true)),
-        "the citizen norm names the stone itself, not a group")
+    var members: Array = gd.product_groups.get(HOUSEHOLD_GROUP, [])
+    _check(members.has(PRODUCT), "the pumice rides in the household group")
+
+    var city_rule: Dictionary = _find_rule(
+            gd.get_profession_consumption("all"), "@" + HOUSEHOLD_GROUP)
+    _check(not city_rule.is_empty(), "the citizens have the household norm")
+    _check(bool(city_rule.get("is_group", false)),
+        "the household norm is a write-off of a group")
+    _check((city_rule.get("group_members", []) as Array).has(PRODUCT),
+        "the household norm covers the pumice")
+
+    # The stone must not be declared twice: the shelf is spent through the group, and a
+    # rule naming the pumice itself would write the same citizens off a second time.
+    _check(_find_rule(gd.get_profession_consumption("all"), PRODUCT).is_empty(),
+        "the pumice has no norm of its own besides the group")
 
     for profession_id in STONE_TRADES:
         var rule: Dictionary = _find_rule(
@@ -120,12 +134,12 @@ func _test_consumption(gd: Node) -> void:
         _check(float(rule.get("production_bonus", 0.0)) > 0.0,
             "%s gets a production bonus for the pumice" % profession_id)
 
-    # The citizens of a trade with a rule of its own are subtracted from the city norm:
-    # the stone is spent once, not twice.
+    # A profession with a rule of its own is listed as a buyer of the stone in the summary
+    # tooltips and is billed for it apart from the household shelf.
     var consumers: Array = gd.get_resource_consumer_professions(PRODUCT)
     for profession_id in STONE_TRADES:
         _check(consumers.has(profession_id),
-            "%s leaves the citizens' headcount of the pumice" % profession_id)
+            "%s is listed as a consumer of the pumice" % profession_id)
 
 func _test_recipes(city: Node) -> void:
     for recipe_id in ABRASIVE_RECIPES:

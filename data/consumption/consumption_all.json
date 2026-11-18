@@ -152,18 +152,6 @@
       "production_bonus": 0.0
     },
     {
-      // The scouring stone of the household. It keeps a norm of its own instead of joining
-      // @consumer_goods: a group is ONE write-off satisfied by any of its members, so
-      // the pumice there would compete with the soap rather than be a need of its own.
-      // A separate row also gives the stone the "Trade" toggle of its own — the player
-      // may stop the write-off and sell the pumice to the towns.
-      "resource": "pumice",
-      "profession": [ "all" ],
-      "amount": 1,
-      "interval": 10,
-      "production_bonus": 0.0
-    },
-    {
       "resource": "tobacco",
       "profession": [ "all" ],
       "amount": 10,

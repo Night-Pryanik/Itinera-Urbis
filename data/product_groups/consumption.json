@@ -148,10 +148,12 @@
     },
     {
       // Everyday household supplies; glue and white naphtha stand last so common goods
-      // cover domestic demand first before drawing down workshop consumables.
+      // cover domestic demand first before drawing down workshop consumables. The pumice
+      // of the volcanic quarry stands next to the sponge: both are the scouring gear of
+      // the household shelf, and the quarry hands the stone out besides its cut blocks.
       "id": "consumer_goods",
       "name": "Consumer Goods",
-      "products": [ "salt", "soap", "vegetable_oil", "sponge", "glue", "white_naphtha" ]
+      "products": [ "salt", "soap", "vegetable_oil", "sponge", "pumice", "glue", "white_naphtha" ]
     },
     {
       // The empty vessel a good is stored and shipped in. Tare is generic: the winemaker, brewer,
