@@ -421,6 +421,130 @@ func _finish_free_road_project(row: int, col: int, steps: Array,
     control_panel.refresh()
     return true
 
+# === THE PHASED CONSTRUCTION OF THE AQUEDUCT (the special action build_aqueduct) ===
+#
+# The aqueduct is the second layer of the map improvements: its sections lie
+# over whatever else stands on the hex. Like a road, it is not one build over
+# the whole route but a queue of sections (project_manager), one section per
+# step. The spring gives no water until the LAST section has been laid.
+
+# The plan is computed by the aqueduct network and is shared by the panel and
+# by the launch of the project, so that the shown route and the built one are
+# the same route.
+func get_aqueduct_plan(row: int, col: int) -> Dictionary:
+    if aqueduct_manager == null:
+        return {"ok": false, "reason": tr("The aqueduct network is not ready")}
+    if not is_spring_hex(row, col):
+        return {"ok": false, "reason": tr("There is no spring on this hex")}
+    if not is_concrete_researched():
+        return {"ok": false, "reason": tr("Requires the \"Concrete\" technology")}
+    return aqueduct_manager.plan(tile_data, map_rows, map_cols,
+            row, col, city_row, city_col)
+
+# The single source of the price and of the steps. The preview shows exactly
+# these numbers, and the project is started from the same function.
+func get_aqueduct_cost_breakdown(row: int, col: int) -> Dictionary:
+    var plan := get_aqueduct_plan(row, col)
+    if not plan.get("ok", false):
+        return {"ok": false, "reason": plan.get("reason", ""), "steps": [], "cost": 0}
+    var steps: Array = []
+    var sections: Array = plan.get("sections", [])
+    var total := 0
+    var min_step := 0
+    var max_step := 0
+    for i in range(sections.size()):
+        var section: Dictionary = sections[i]
+        var to_hex: Dictionary = section.get("to", {})
+        var t_row := int(to_hex.get("row", -1))
+        var t_col := int(to_hex.get("col", -1))
+        var price := MapHelpers.get_improvement_work_cost(
+                "build_aqueduct", t_row, t_col, tile_data, city_row, city_col)
+        var cost := int(price.get("cost", 0))
+        var from_hex: Dictionary = section.get("from", {})
+        # A cancelled project leaves the already laid sections in place (as a
+        # road does). They cost nothing when the line is continued.
+        if aqueduct_manager.has_segment(int(from_hex.get("row", -1)),
+                int(from_hex.get("col", -1)), t_row, t_col):
+            cost = 0
+        if i == 0 or cost < min_step:
+            min_step = cost
+        if cost > max_step:
+            max_step = cost
+        total += cost
+        steps.append({
+            "label": tr("Section %d/%d") % [i + 1, sections.size()],
+            "work_cost": cost,
+            "price": price,
+            "hex": {"row": t_row, "col": t_col},
+            "ghost": {str(section.get("key", "")): true},
+            "data": {
+                "step_type": "aqueduct",
+                "from": section.get("from", {}),
+                "to": section.get("to", {}),
+                "key": str(section.get("key", "")),
+            }
+        })
+    return {
+        "ok": true, "steps": steps, "cost": total, "segments": sections.size(),
+        "min_step_cost": min_step, "max_step_cost": max_step,
+    }
+
+func start_aqueduct_project(row: int, col: int) -> bool:
+    if project_manager == null or aqueduct_manager == null:
+        return false
+    if not is_spring_hex(row, col):
+        hud.show_message(tr("There is no spring on this hex"), GameData.HUD_MESSAGE_IMPORTANT)
+        return false
+    if not is_concrete_researched():
+        hud.show_message(tr("Requires the \"Concrete\" technology"), GameData.HUD_MESSAGE_IMPORTANT)
+        return false
+    if aqueduct_manager.is_hex_built(city_row, city_col):
+        hud.show_message(tr("This spring is already connected to the city"), GameData.HUD_MESSAGE_IMPORTANT)
+        return false
+    var going = project_manager.get_project_at(row, col)
+    if not going.is_empty() and str(going.get("kind", "")) == "aqueduct":
+        hud.show_message(tr("Construction is already underway here"), GameData.HUD_MESSAGE_IMPORTANT)
+        return false
+    var breakdown := get_aqueduct_cost_breakdown(row, col)
+    if not breakdown.get("ok", false):
+        hud.show_message(tr("Failed to build the aqueduct: %s")
+                % str(breakdown.get("reason", tr("no path"))), GameData.HUD_MESSAGE_IMPORTANT)
+        return false
+    var steps: Array = breakdown.get("steps", [])
+    if steps.is_empty():
+        return false
+    if not CityData.ignore_build_requirements \
+            and build_manager.get_total_active_builds() >= CityData.total_population:
+        hud.show_message(tr("You can build or upgrade no more than %d buildings at once (limit = number of citizens)")
+                % CityData.total_population, GameData.HUD_MESSAGE_IMPORTANT)
+        return false
+
+    var title := tr("Aqueduct to the city")
+    if active_pause != null and active_pause.intercept({
+            "key": str(row) + "," + str(col),
+            "label": title,
+            "row": row,
+            "col": col,
+            "bar_color": UI_THEME.color("info"),
+            "bar_offset": 16,
+            "execute": func(): start_aqueduct_project(row, col),
+    }):
+        return true
+
+    var project_id: String = project_manager.start_project("aqueduct", title,
+            row, col, steps, {
+                "spring_row": row, "spring_col": col,
+                "mode": "build",
+            })
+    if project_id == "":
+        return false
+    hud.show_message(tr("%s: %d sections, built one at a time")
+            % [title, steps.size()], GameData.HUD_MESSAGE_NORMAL)
+    _refresh_project_ghost()
+    map_renderer.queue_redraw()
+    _redraw_progress_layer()
+    return true
+
 # The improvement of the already built road from the city to the hex (row, col).
 #
 # The difference from the building of a new road: the segments ALREADY EXIST, therefore the step of the project does not
@@ -508,6 +632,22 @@ func _on_project_step_completed(_project_id: String, kind: String, step: Diction
         control_panel.refresh()
         return
 
+    if kind == "aqueduct":
+        var from_hex: Dictionary = data.get("from", {})
+        var to_hex: Dictionary = data.get("to", {})
+        var f_row := int(from_hex.get("row", -1))
+        var f_col := int(from_hex.get("col", -1))
+        var t_row := int(to_hex.get("row", -1))
+        var t_col := int(to_hex.get("col", -1))
+        if f_row < 0 or t_row < 0:
+            return
+        aqueduct_manager.build_step(f_row, f_col, t_row, t_col, tile_data)
+        _refresh_project_ghost()
+        map_renderer.queue_redraw()
+        _redraw_progress_layer()
+        control_panel.refresh()
+        return
+
     if kind != "road" and kind != "road_upgrade":
         return
     var from_hex: Dictionary = data.get("from", {})
@@ -542,6 +682,16 @@ func _on_project_step_completed(_project_id: String, kind: String, step: Diction
 # open the trade, if the road was going to a town.
 func _on_project_completed(_project_id: String, kind: String, meta: Dictionary) -> void:
     _refresh_project_ghost()
+    if kind == "aqueduct":
+        # Only the completed line gives water. The spring stays a hidden marker
+        # on its mountain; the city hex becomes a direct water source and every
+        # consumer (bonuses, effects, tooltips) reads it from MapHelpers.
+        if city_row >= 0 and city_row < tile_data.size() \
+                and city_col >= 0 and city_col < tile_data[city_row].size():
+            tile_data[city_row][city_col]["aqueduct_water"] = true
+        hud.show_message(tr("Aqueduct built! The city now has fresh water."),
+                GameData.HUD_MESSAGE_NORMAL)
+        CityData.emit_signal("city_updated")
     if kind == "road":
         # The project has already been thrown out of the manager by this moment, therefore we take the target
         # from meta, filled in at the start (see start_road_project).

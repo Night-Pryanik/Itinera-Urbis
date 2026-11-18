@@ -637,6 +637,27 @@ func _collect_hex_properties(row: int, col: int, tile_data: Array) -> Array:
                     lines.append(tr("Herd: full (100%)"))
             else:
                 lines.append(tr("Fill time: %.0f sec") % time_to_mature)
+    if bool(tile.get("fresh_water_spring", false)) \
+            and CityData.is_tech_unlocked("concrete"):
+        # A section on the spring hex does NOT mean the city is reached: the
+        # line is only connected when the last section has finished. The flag
+        # on the city hex is set exactly at that moment (see the project
+        # completion handler), so it is the single source of truth here.
+        var city_reached := false
+        var main_map = _map_renderer.main_map if _map_renderer != null else null
+        if main_map != null:
+            var city_r := int(main_map.get("city_row"))
+            var city_c := int(main_map.get("city_col"))
+            if city_r >= 0 and city_r < tile_data.size() \
+                    and city_c >= 0 and city_c < tile_data[city_r].size() \
+                    and tile_data[city_r][city_c] != null:
+                city_reached = bool(tile_data[city_r][city_c].get("aqueduct_water", false))
+        if city_reached:
+            lines.append(tr("Fresh water spring: connected to the city by an aqueduct"))
+        elif bool(tile.get("aqueduct", false)):
+            lines.append(tr("Fresh water spring: aqueduct is partly built"))
+        else:
+            lines.append(tr("Fresh water spring: can be connected by an aqueduct"))
     var water_access = MapHelpers.get_hex_water_access(
             row, col, tile_data, tile_data.size(), tile_data[0].size())
     if water_access == "direct":

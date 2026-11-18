@@ -180,6 +180,18 @@
       // climate.cover_smoothing). A cover without this flag is smoothed only when it yields timber.
       "clusters": true,
       "icons": [ "coral_reef_1.png", "coral_reef_2.png", "coral_reef_3.png" ]
+    },
+
+    // The revealed mountain spring. It is NOT part of any climate's cover_chance
+    // pool, so it never spawns naturally: the game puts it on the designated
+    // resource-less mountain only when "Concrete" is researched. It carries no
+    // fresh_water_source flag — the water still comes only through an aqueduct.
+    {
+      "id": "mountain_spring",
+      "name": "Mountain Spring",
+      "color": [ 60, 130, 180 ],
+      "move_cost_bonus": 0,
+      "icons": [ "mountain_spring.png" ]
     }
   ]
 }

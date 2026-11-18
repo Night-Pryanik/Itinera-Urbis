@@ -28,6 +28,9 @@ const UI_THEME = preload("res://scripts/ui_theme.gd")
 # is taken from the road level, see roads.json), therefore it lives as a separate
 # kind of the action of the panel, and not as one more record in the common list.
 const ROAD_ACTION_ID := "build_road"
+# The aqueduct is a special action, but its construction goes through a staged
+# project like the road, and its ghost has its own drawing style on the map.
+const AQUEDUCT_ACTION_ID := "build_aqueduct"
 
 # The technology that opens the construction of improvements outside the Region (an
 # outpost). The same id as main_map.EMPORIA_TECH_ID; the panel needs it to offer its study.
@@ -453,6 +456,16 @@ func _collect_actions(row: int, col: int, tile: Dictionary) -> Array:
 
     # On the hex of the city the improvements cannot be built — there are no actions at all.
     if row == main_map.city_row and col == main_map.city_col:
+        return actions
+
+    # A revealed mountain spring offers the aqueduct and nothing else. Before
+    # "Concrete" the flag is hidden: the player sees an ordinary mountain and
+    # gets no hint that there is water in it. The aqueduct is a second layer,
+    # so the mountain itself is never turned into an improvement.
+    if main_map.is_spring_hex(row, col) and main_map.is_concrete_researched():
+        if not main_map.aqueduct_manager.is_hex_built(main_map.city_row, main_map.city_col):
+            _append_aqueduct_action(actions, row, col)
+        _append_cancel_actions(actions, row, col)
         return actions
 
     # On the hex of a town (a small settlement) the improvements cannot be built and the
@@ -1153,6 +1166,24 @@ func _append_improvement_actions(actions: Array, row: int, col: int, tile: Dicti
     # started project must be interruptable right here.
     _append_cancel_actions(actions, row, col)
 
+# The button that starts the staged construction of the aqueduct from this
+# spring. It appears on the spring only after Concrete is known, and only while
+# no line has reached the spring yet (the project, if any, is interrupted by
+# the common cancel button added by the caller).
+func _append_aqueduct_action(actions: Array, row: int, col: int) -> void:
+    var sa: Dictionary = GameData.special_actions.get(AQUEDUCT_ACTION_ID, {})
+    if sa.is_empty():
+        return
+    if main_map.project_manager != null:
+        var going: Dictionary = main_map.project_manager.get_project_at(row, col)
+        if not going.is_empty() and str(going.get("kind", "")) == "aqueduct":
+            return
+    var plan: Dictionary = main_map.get_aqueduct_plan(row, col)
+    if not plan.get("ok", false):
+        return
+    _append_special_action(actions, AQUEDUCT_ACTION_ID, sa,
+            tr("Build an aqueduct from the spring to the city"))
+
 func _add_special_actions(actions: Array, row: int, col: int, tile: Dictionary):
     for sa_id in GameData.special_actions:
         var sa = GameData.special_actions[sa_id]
@@ -1666,6 +1697,13 @@ func _build_preview(row: int, col: int, tile: Dictionary):
             build_btn.disabled = true
         return
 
+    # The aqueduct is priced and planned section by section, just like the
+    # road, but it has no level selector: the channel has one construction.
+    if type == "special" and _is_aqueduct_action(action_id):
+        if not _build_aqueduct_preview(row, col):
+            build_btn.disabled = true
+        return
+
     # The improvement of the road - its own block: the segments already stand, only
     # the difference of the levels is paid, and it is shown by the same scheme as the construction.
     if type == UPGRADE_ROAD_TYPE:
@@ -1823,6 +1861,19 @@ func _sync_road_preview_on_map() -> void:
         return
     var row := int(_selected_hex.row)
     var col := int(_selected_hex.col)
+    if _preview_action != null \
+            and _is_aqueduct_action(str(_preview_action.get("action_id", ""))):
+        # The aqueduct ghost has its own drawing style and its own set of
+        # sections. The road preview is cleared so that the two do not overlay.
+        var bd: Dictionary = main_map.get_aqueduct_cost_breakdown(row, col)
+        var sections: Dictionary = {}
+        for step in bd.get("steps", []):
+            for key in step.get("ghost", {}).keys():
+                sections[str(key)] = true
+        _set_map_aqueduct_preview(sections)
+        _set_map_road_preview({})
+        return
+    _set_map_aqueduct_preview({})
     var preview_type := ""
     var action_id := ""
     if _preview_action != null:
@@ -1918,6 +1969,16 @@ func _is_road_action(action_id: String) -> bool:
     if action_id != ROAD_ACTION_ID:
         return false
     return str(GameData.special_actions.get(action_id, {}).get("action_type", "")) == "road"
+
+func _is_aqueduct_action(action_id: String) -> bool:
+    if action_id != AQUEDUCT_ACTION_ID:
+        return false
+    return str(GameData.special_actions.get(action_id, {}).get("action_type", "")) == "aqueduct"
+
+func _set_map_aqueduct_preview(segments: Dictionary) -> void:
+    if main_map == null or main_map.map_renderer == null:
+        return
+    main_map.map_renderer.set_aqueduct_preview_segments(segments)
 
 # --- The choice of the road level ---
 # One button per RESEARCHED level, from the best to the worst. A common block
@@ -2146,6 +2207,54 @@ func _build_road_preview(row: int, col: int, _action_id: String) -> bool:
 
     # The debug "Ignore building requirements" - the same row as in the
     # ordinary preview: the route is laid entirely and without waiting.
+    if CityData.ignore_build_requirements:
+        _add_instant_hint()
+    return true
+
+# The route and the price of an aqueduct. The step list is the very one from
+# which the project starts, so the confirmation never costs more than what was
+# shown here (the same rule as for the road).
+func _build_aqueduct_preview(row: int, col: int) -> bool:
+    var breakdown: Dictionary = main_map.get_aqueduct_cost_breakdown(row, col)
+    if not breakdown.get("ok", false):
+        var warn := Label.new()
+        warn.text = " %s" % str(breakdown.get("reason", tr("Cannot build the aqueduct")))
+        warn.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+        warn.add_theme_color_override("font_color", UI_THEME.color("expense").lightened(0.35))
+        _preview_container.add_child(warn)
+        return false
+    var target := Label.new()
+    target.text = tr(" Destination: from the mountain spring to the city")
+    target.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+    target.add_theme_color_override("font_color", UI_THEME.color("income").lightened(0.35))
+    _preview_container.add_child(target)
+    var cost := Label.new()
+    cost.text = tr(" Cost: %d work") % int(breakdown.get("cost", 0))
+    cost.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+    cost.add_theme_color_override("font_color", UI_THEME.color("text_secondary"))
+    _preview_container.add_child(cost)
+    var min_step := int(breakdown.get("min_step_cost", 0))
+    var max_step := int(breakdown.get("max_step_cost", 0))
+    var step_text := tr(" Per section: %d work") % min_step
+    if max_step != min_step:
+        step_text = tr(" Per section: %d to %d work") % [min_step, max_step]
+    step_text += tr(" (base %d)") % int(GameData.special_actions.get(
+            AQUEDUCT_ACTION_ID, {}).get("work_cost", 0))
+    var per_section := Label.new()
+    per_section.text = step_text
+    per_section.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+    per_section.add_theme_color_override("font_color", UI_THEME.color("text_secondary"))
+    _preview_container.add_child(per_section)
+    var sections := Label.new()
+    sections.text = tr(" Aqueduct sections: %d") % int(breakdown.get("segments", 0))
+    sections.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+    sections.add_theme_color_override("font_color", UI_THEME.color("text_secondary"))
+    _preview_container.add_child(sections)
+    var steps_hint := Label.new()
+    steps_hint.text = tr(" Will be built in sections: one hex at a time")
+    steps_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+    steps_hint.add_theme_color_override("font_color", UI_THEME.color("info").lightened(0.35))
+    _preview_container.add_child(steps_hint)
     if CityData.ignore_build_requirements:
         _add_instant_hint()
     return true

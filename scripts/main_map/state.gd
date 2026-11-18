@@ -137,6 +137,13 @@ const CARTOGRAPHY_TECH_ID := "cartography"
 # outside the Region (outposts). The data of the technology —
 # data/technologies/antiquity.json, id "emporia".
 const EMPORIA_TECH_ID := "emporia"
+# The technology that reveals the mountain spring and allows aqueducts.
+# The data of the technology — data/technologies/antiquity.json, id "concrete".
+const CONCRETE_TECH_ID := "concrete"
+
+# The model of the second layer of improvements (the aqueduct network). Created
+# in code together with the other non-visual managers.
+const AQUEDUCT_MANAGER_SCRIPT := preload("res://scripts/aqueduct_manager.gd")
 
 var tile_data = []
 # The world is being built or restored right now (a new game or a loaded save). The work
@@ -318,6 +325,9 @@ var town_trade_manager: Node = null
 # tiers the city has been paid for, and the tasks of data/challenges.json (see challenge_manager.gd).
 var challenge_manager: Node = null
 
+# The aqueduct network: the second layer of improvements over the hexes.
+var aqueduct_manager: Node = null
+
 # The active pause: the queue of the actions, which wait for the resume of the
 # simulation (see active_pause.gd). This node owns the flag of the pause of the
 # tree — the pause menu and the active pause may be on at the same time.
@@ -405,6 +415,24 @@ func get_tile_data(row: int, col: int):
     if row >= 0 and row < tile_data.size() and col >= 0 and col < tile_data[row].size():
         return tile_data[row][col]
     return null
+
+# The single mountain spring of the map. The flag is hidden until the Concrete
+# technology is researched; the search itself is deliberately cheap — it is
+# called from the panel and from the planning of the build, not every frame.
+func find_fresh_water_spring() -> Dictionary:
+    for row in range(tile_data.size()):
+        for col in range(tile_data[row].size()):
+            var tile = tile_data[row][col]
+            if tile != null and bool(tile.get("fresh_water_spring", false)):
+                return {"row": row, "col": col}
+    return {}
+
+func is_concrete_researched() -> bool:
+    return CityData.is_tech_unlocked(CONCRETE_TECH_ID)
+
+func is_spring_hex(row: int, col: int) -> bool:
+    var tile = get_tile_data(row, col)
+    return tile != null and bool(tile.get("fresh_water_spring", false))
 
 func is_valid_hex(row: int, col: int) -> bool:
     # Is the hex valid WITHIN the Region (the Ring + the Region).

@@ -524,7 +524,13 @@ func _serialize_tile_data(main_map: Node) -> Array:
                     # would consider the hex ready and finish the rest of the route
                     # for free. The roads to the improvements, as before, are implied
                     # by the improvement.
-                    "road_staged": tile.get("road_staged", false)
+                    "road_staged": tile.get("road_staged", false),
+                    # The hidden spring flag is written so that a loaded game keeps
+                    # the same mountain; the aqueduct flags are the input data from
+                    # which the network is rebuilt on loading.
+                    "fresh_water_spring": tile.get("fresh_water_spring", false),
+                    "aqueduct": tile.get("aqueduct", false),
+                    "aqueduct_water": tile.get("aqueduct_water", false)
                 })
             else:
                 row_arr.append({})

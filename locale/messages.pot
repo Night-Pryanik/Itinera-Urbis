@@ -8830,3 +8830,78 @@ msgstr ""
 
 msgid "Selective breeding has improved the quality of %s!"
 msgstr ""
+
+msgctxt "technologies.name"
+msgid "Concrete"
+msgstr ""
+
+msgctxt "technologies.description"
+msgid "Reveals the mountain springs and allows you to build aqueducts: a channel of concrete brings fresh water from a spring to the city."
+msgstr ""
+
+msgctxt "technologies.flavor"
+msgid "Lime burned in a kiln, mixed with sand and stone, sets into a mass harder than the rock it came from. A channel lined with it keeps its slope and its walls for generations, so water can leave the mountain and reach a city that has no river of its own."
+msgstr ""
+
+msgctxt "technologies.unlock_effects.name"
+msgid "Reveals mountain springs and allows you to build aqueducts to the city."
+msgstr ""
+
+msgctxt "special_actions.name"
+msgid "Build Aqueduct"
+msgstr ""
+
+msgid "The aqueduct network is not ready"
+msgstr ""
+
+msgid "There is no spring on this hex"
+msgstr ""
+
+msgid "Requires the \"Concrete\" technology"
+msgstr ""
+
+msgid "This spring is already connected to the city"
+msgstr ""
+
+msgid "Aqueduct to the city"
+msgstr ""
+
+msgid "Failed to build the aqueduct: %s"
+msgstr ""
+
+msgid "Aqueduct built! The city now has fresh water."
+msgstr ""
+
+msgid "Failed to build the aqueduct"
+msgstr ""
+
+msgid "Build an aqueduct from the spring to the city"
+msgstr ""
+
+msgid " Destination: from the mountain spring to the city"
+msgstr ""
+
+msgid " Aqueduct sections: %d"
+msgstr ""
+
+msgid "Cannot build the aqueduct"
+msgstr ""
+
+msgid "A mountain spring is revealed — an aqueduct can bring its water to the city."
+msgstr ""
+
+msgid "Fresh water spring: connected to the city by an aqueduct"
+msgstr ""
+
+msgid "Fresh water spring: can be connected by an aqueduct"
+msgstr ""
+
+
+msgctxt "covers.name"
+msgid "Mountain Spring"
+msgstr ""
+
+
+msgid "Fresh water spring: aqueduct is partly built"
+msgstr ""
+

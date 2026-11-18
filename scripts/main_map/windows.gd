@@ -193,6 +193,15 @@ func _on_town_delivery_cancel_requested(town_id: String, product_id: String) -> 
 
 func _on_research_completed(tech_id: String):
     map_renderer.queue_redraw()
+    if tech_id == CONCRETE_TECH_ID:
+        # The hidden flag becomes a visible cover on the mountain. No water is
+        # granted by the cover itself: only a finished aqueduct does that.
+        reveal_fresh_water_spring()
+        # The research window covers the HUD, so a normal message here would
+        # never be seen. Important messages are kept in the journal.
+        hud.show_message(
+                tr("A mountain spring is revealed — an aqueduct can bring its water to the city."),
+                GameData.HUD_MESSAGE_IMPORTANT)
     # Cartography changes which hexes the highlighting may cover.
     highlight_layer.queue_redraw()
     _redraw_progress_layer()

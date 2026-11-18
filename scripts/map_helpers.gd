@@ -482,6 +482,11 @@ static func _is_direct_water_source(row: int, col: int, tile_data: Array, map_ro
         return true
     if tile.get("river_edges", []).size() > 0:
         return true
+    # The aqueduct does NOT turn the mountain spring into an ordinary source:
+    # the spring stays inert until the channel reaches the city. Only the city
+    # hex, once the aqueduct is finished, becomes a direct source of water.
+    if bool(tile.get("aqueduct_water", false)):
+        return true
     return false
 
 ## Checks whether the hex (row, col) is a neighbour of a direct fresh water source
@@ -565,6 +570,11 @@ static func get_hex_water_access(
         return ""
     var tile = tile_data[row][col]
     if tile == null:
+        return ""
+    # The mountain spring is deliberately excluded from the water scheme. A
+    # river edge or a lakeshore around it gives no bonus: only a finished
+    # aqueduct, which marks the CITY hex, brings water into the game.
+    if bool(tile.get("fresh_water_spring", false)):
         return ""
 
     # A direct access — only a hex with the water (a lake/an oasis/a river).

@@ -183,6 +183,20 @@
       "prerequisites": [ [ "fermentation" ], [ "plantations" ] ],
       "description": "Unlocks the recipe for hopped beer.",
       "flavor": "Hops made beer keep. Grain alone gave a drink that soured within days; a bittering charge of hops held it back, and beer became a good that could be stored and shipped."
+    },
+    {
+      // A mountain spring is hidden until this technology is known: only a society
+      // that can mix lime with aggregate reads a vein of water in the rock as
+      // something that can be carried to the city.
+      "id": "concrete",
+      "name": "Concrete",
+      "era": "antiquity",
+      "science_cost": 4.0,
+      "icon": "concrete.png",
+      "prerequisites": [ [ "limestone_burning" ] ],
+      "description": "Reveals the mountain springs and allows you to build aqueducts: a channel of concrete brings fresh water from a spring to the city.",
+      "flavor": "Lime burned in a kiln, mixed with sand and stone, sets into a mass harder than the rock it came from. A channel lined with it keeps its slope and its walls for generations, so water can leave the mountain and reach a city that has no river of its own.",
+      "unlock_effects": [ { "icon": "water_chain.png", "name": "Reveals mountain springs and allows you to build aqueducts to the city." } ]
     }
   ]
 }

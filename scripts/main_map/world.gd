@@ -245,6 +245,11 @@ func _initialize_map():
     # town_manager are immediately reflected on the map without a repeated mirroring.
     towns = town_manager.towns
 
+    # A resource-less mountain becomes the hidden source of fresh water. The
+    # player does not see it until "Concrete" is researched, and even then the
+    # mountain gives no water by itself: only a finished aqueduct does.
+    _designate_fresh_water_spring(era2_region_bounds)
+
     # The final guarantee: on the hex of the city there should be no resource, and the terrain
     # must be a permitted one (plain or hill). It is a safety-net for the case,
     # if some function of the spawn of the resources or of the conversion of the terrain
@@ -383,6 +388,151 @@ func get_map_state() -> Dictionary:
         "start_region_start_col": start_region_start_col,
         "start_region_end_col": start_region_end_col,
     }
+
+# Picks the mountain that carries the hidden fresh-water spring. The starting
+# area comes first; if the relief left no free mountain there, the search moves
+# to the Region of the second era (Antiquity), skipping the territory of the
+# towns. If even that part of the map has no natural mountain, a resource-less
+# one is raised there so that the technology always has something to reveal.
+func _designate_fresh_water_spring(era2_bounds: Dictionary) -> void:
+    var start_bounds := {
+        "start_row": start_region_start_row, "end_row": start_region_end_row,
+        "start_col": start_region_start_col, "end_col": start_region_end_col
+    }
+    var spring := _find_spring_hex(start_bounds)
+    if spring.is_empty():
+        spring = _find_spring_hex(era2_bounds)
+    if spring.is_empty():
+        spring = _raise_spring_mountain(era2_bounds)
+    if not spring.is_empty():
+        tile_data[spring.row][spring.col]["fresh_water_spring"] = true
+
+# Called when "Concrete" is researched. The hidden flag becomes a visible
+# cover on that same mountain, and the cover is saved like any other one.
+# Before the research the hex is an ordinary mountain with no hint of water.
+func reveal_fresh_water_spring() -> bool:
+    var spring := find_fresh_water_spring()
+    if spring.is_empty():
+        return false
+    var tile = get_tile_data(int(spring.row), int(spring.col))
+    if tile == null or not (tile is Dictionary):
+        return false
+    var spring_tile: Dictionary = tile
+    spring_tile["cover"] = "mountain_spring"
+    map_renderer.queue_redraw()
+    return true
+
+# A naturally spawned, resource-less mountain inside the rectangle, outside
+# the city and outside the territory of the towns. The choice is random under
+# the world seed pinned at the start of the generation.
+func _find_spring_hex(bounds: Dictionary) -> Dictionary:
+    var candidates: Array = []
+    var row_start := int(bounds.get("start_row", 0))
+    var row_end := int(bounds.get("end_row", -1))
+    var col_start := int(bounds.get("start_col", 0))
+    var col_end := int(bounds.get("end_col", -1))
+    for row in range(maxi(0, row_start), mini(map_rows - 1, row_end) + 1):
+        for col in range(maxi(0, col_start), mini(map_cols - 1, col_end) + 1):
+            var tile = tile_data[row][col]
+            if tile == null:
+                continue
+            if row == city_row and col == city_col:
+                continue
+            if bool(tile.get("has_town", false)) or bool(tile.get("in_town_influence", false)):
+                continue
+            if not MapHelpers.is_mountain_terrain(str(tile.get("terrain", ""))):
+                continue
+            if tile.get("resource", null) != null or tile.get("crop_bred", null) != null:
+                continue
+            # The spring is an INERT source: it must not double as an ordinary
+            # water hex (a river edge, a lakeshore, an oasis). Otherwise the
+            # mountain would grant the usual bonus before any aqueduct exists.
+            if MapHelpers.get_hex_water_access(row, col, tile_data,
+                    map_rows, map_cols) != "":
+                continue
+            # A spring that is cut off by water could never be connected, so
+            # it must have a land route to the city from the very beginning.
+            if not _spring_has_route(row, col):
+                continue
+            candidates.append({"row": row, "col": col})
+    if candidates.is_empty():
+        return {}
+    return candidates[randi() % candidates.size()]
+
+func _spring_has_route(row: int, col: int) -> bool:
+    if aqueduct_manager == null:
+        return true
+    return bool(aqueduct_manager.plan(tile_data, map_rows, map_cols,
+            row, col, city_row, city_col).get("ok", false))
+
+# The last resort: a free hex of the Region of the second era is turned into a
+# mountain of the local climate belt. A river-free, non-water hex is required,
+# so that the new mountain neither drowns nor accidentally becomes a water
+# source of its own.
+func _raise_spring_mountain(bounds: Dictionary) -> Dictionary:
+    var candidates: Array = []
+    var row_start := int(bounds.get("start_row", 0))
+    var row_end := int(bounds.get("end_row", -1))
+    var col_start := int(bounds.get("start_col", 0))
+    var col_end := int(bounds.get("end_col", -1))
+    for row in range(maxi(0, row_start), mini(map_rows - 1, row_end) + 1):
+        for col in range(maxi(0, col_start), mini(map_cols - 1, col_end) + 1):
+            var tile = tile_data[row][col]
+            if tile == null:
+                continue
+            if row == city_row and col == city_col:
+                continue
+            if bool(tile.get("has_town", false)) or bool(tile.get("in_town_influence", false)):
+                continue
+            if bool(tile.get("in_influence", false)):
+                continue
+            if not tile.get("river_edges", []).is_empty():
+                continue
+            if MapHelpers.get_hex_water_access(row, col, tile_data,
+                    map_rows, map_cols) != "":
+                continue
+            var terrain_id := str(tile.get("terrain", "plain"))
+            if MapHelpers.is_water_terrain(terrain_id) \
+                    or int(GameData.terrains.get(terrain_id, {}).get("move_cost", 1)) >= 999:
+                continue
+            candidates.append({"row": row, "col": col})
+    if candidates.is_empty():
+        return {}
+    # A converted hex must also be reachable. Try the free hexes in a random
+    # order and put the relief back if the new mountain has no land route.
+    for i in range(candidates.size()):
+        var swap := i + randi() % (candidates.size() - i)
+        var tmp: Dictionary = candidates[i]
+        candidates[i] = candidates[swap]
+        candidates[swap] = tmp
+    for candidate in candidates:
+        var row := int((candidate as Dictionary).get("row", -1))
+        var col := int((candidate as Dictionary).get("col", -1))
+        var tile = tile_data[row][col]
+        var old_terrain = tile.get("terrain", "plain")
+        var old_cover = tile.get("cover", "none")
+        var old_icon = tile.get("terrain_icon", "")
+        var old_resource = tile.get("resource", null)
+        var old_crop = tile.get("crop_bred", null)
+        var old_quality = tile.get("quality", "")
+        var mountain_id := GameData.zone_terrain(str(tile.get("climate", "")), "mountain")
+        if mountain_id == "":
+            mountain_id = "boreal_mountain"
+        tile["terrain"] = mountain_id
+        tile["cover"] = "none"
+        tile["resource"] = null
+        tile["crop_bred"] = null
+        tile["quality"] = ""
+        _assign_terrain_icon(row, col)
+        if _spring_has_route(row, col):
+            return {"row": row, "col": col}
+        tile["terrain"] = old_terrain
+        tile["cover"] = old_cover
+        tile["terrain_icon"] = old_icon
+        tile["resource"] = old_resource
+        tile["crop_bred"] = old_crop
+        tile["quality"] = old_quality
+    return {}
 
 # Computes the absolute boundaries of the VISIBLE area of the 2nd era
 # (Ring_2 + Region_2). It is used by town_manager as the "mandatory
@@ -664,7 +814,13 @@ func _on_era_dialog_declined():
 func _refresh_project_ghost() -> void:
     if map_renderer == null:
         return
-    map_renderer.set_project_ghost_segments(project_manager.get_pending_ghost_segments())
+    var road_ghost: Dictionary = project_manager.get_pending_ghost_segments("road")
+    road_ghost.merge(project_manager.get_pending_ghost_segments("road_upgrade"))
+    map_renderer.set_project_ghost_segments(road_ghost)
+    # The aqueduct has its own set and its own drawing style: a thick blue line,
+    # offset from the centre so that it never hides the roads underneath.
+    map_renderer.set_aqueduct_ghost_segments(
+            project_manager.get_pending_ghost_segments("aqueduct"))
 
 func _on_territory_expanded(_row: int, _col: int, cost: int):
     # cost is the labour spent on the claiming (see expansion_manager).

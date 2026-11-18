@@ -124,6 +124,21 @@
       "action_type": "road",
       "icon": "road.svg",
       "result_terrain": "dont_change"
+    },
+    {
+      // The aqueduct is a SECOND LAYER of improvements: it runs over the hexes
+      // of the mountain spring and of the city, and over any improvement already
+      // standing on the way. It is a phased project like the road, and its
+      // segments are stored independently of the improvements of the hex.
+      // The base is for ONE new section; the distance and the terrain of
+      // the section are added by MapHelpers.get_improvement_work_cost.
+      "id": "build_aqueduct",
+      "name": "Build Aqueduct",
+      "action_type": "aqueduct",
+      "icon": "water_chain.png",
+      "result_terrain": "dont_change",
+      "work_cost": 14,
+      "unlock_tech": "concrete"
     }
   ]
 }

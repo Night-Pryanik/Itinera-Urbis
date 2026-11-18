@@ -63,6 +63,12 @@ func _ready():
     add_child(delivery_manager)
     delivery_manager.initialize(self)
 
+    # The second layer of improvements lives in its own network, independent
+    # of the roads and of tile.improvement.
+    aqueduct_manager = AQUEDUCT_MANAGER_SCRIPT.new()
+    aqueduct_manager.name = "AqueductManager"
+    add_child(aqueduct_manager)
+
     # The trade with the towns needs the towns (the warehouse, the treasury) and the
     # logistics (the road from a town to the city), so it is initialized right after
     # both exist.
@@ -104,7 +110,7 @@ func _ready():
                 # crop_bred — the id of a domesticated animal/plant which is bred
                 # on an empty hex (see docs.md, the section "Breeding of animals/plants").
                 # For the natural resources tile.resource remains.
-                var tile = {"terrain": "plain", "cover": "none", "climate": "", "resource": null, "crop_bred": null, "improvement": null, "decorative": false, "production_fractional_remainder": 0.0, "feed_fractional_remainder": 0.0, "herd_mature": false, "terrain_icon": "", "in_influence": false, "is_explored": false, "river_edges": [], "in_town_influence": false, "has_town": false, "road_built": false, "road_level": 1, "road_staged": false}
+                var tile = {"terrain": "plain", "cover": "none", "climate": "", "resource": null, "crop_bred": null, "improvement": null, "decorative": false, "production_fractional_remainder": 0.0, "feed_fractional_remainder": 0.0, "herd_mature": false, "terrain_icon": "", "in_influence": false, "is_explored": false, "river_edges": [], "in_town_influence": false, "has_town": false, "road_built": false, "road_level": 1, "road_staged": false, "fresh_water_spring": false, "aqueduct": false, "aqueduct_water": false}
                 if row < saved_tiles.size() and col < saved_tiles[row].size():
                     var saved = saved_tiles[row][col]
                     if not saved.is_empty():
@@ -151,6 +157,10 @@ func _ready():
                         # otherwise it would finish the unpaid (or the cancelled) road
                         # for free.
                         tile["road_staged"] = bool(saved.get("road_staged", false))
+                        # The hidden mountain spring and the second layer of the map.
+                        tile["fresh_water_spring"] = bool(saved.get("fresh_water_spring", false))
+                        tile["aqueduct"] = bool(saved.get("aqueduct", false))
+                        tile["aqueduct_water"] = bool(saved.get("aqueduct_water", false))
                 col_array.append(tile)
             tile_data.append(col_array)
 
@@ -215,6 +225,9 @@ func _ready():
         await _yield_loading_frame()
         road_manager.rebuild_roads_from_existing(tile_data, map_rows, map_cols,
                 Callable(self, "_skip_improvement_road_restore"))
+        # The aqueduct sections are not written to the save; the per-hex flags
+        # are, and from them the network is restored.
+        aqueduct_manager.rebuild_from_tiles(tile_data, map_rows, map_cols)
 
         # We restore the rivers from the save and mark river_edges in the hexes
         river_manager.load_rivers(SaveManager.saved_data.get("rivers", []))
@@ -292,6 +305,9 @@ func _ready():
         highlight_layer.initialize(self)
         progress_bar_layer.initialize(tile_data, self)
         improvement_state_layer.initialize(tile_data, self, map_renderer)
+        # The restored queues (roads and aqueducts) must show their ghosts
+        # from the first frame after the load, not from the first built step.
+        _refresh_project_ghost()
         world_generating = false
     else:
         randomize()

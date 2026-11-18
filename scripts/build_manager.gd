@@ -174,6 +174,11 @@ func start_build(row: int, col: int, imp_id: String, target_res_id = null,
     var is_road_action := imp_id != "" \
             and GameData.special_actions.has(imp_id) \
             and str(GameData.special_actions[imp_id].get("action_type", "")) == "road"
+    # The aqueduct is a phased project and a second layer of improvements, not
+    # an improvement of the hex. It follows the same entry point as the road.
+    var is_aqueduct_action := imp_id != "" \
+            and GameData.special_actions.has(imp_id) \
+            and str(GameData.special_actions[imp_id].get("action_type", "")) == "aqueduct"
 
     # On a town hex (a small settlement) the construction is also forbidden —
     # it is a "someone else's" place, by design nothing can be built there and no
@@ -185,7 +190,8 @@ func start_build(row: int, col: int, imp_id: String, target_res_id = null,
         if t_tile != null and bool(t_tile.get("decorative", false)):
             emit_signal("build_message", tr("This is a decorative town improvement — it cannot be modified"), 1)
             return false
-        if t_tile != null and bool(t_tile.get("has_town", false)) and not is_road_action:
+        if t_tile != null and bool(t_tile.get("has_town", false)) and not is_road_action \
+                and not is_aqueduct_action:
             emit_signal("build_message", tr("Another town stands here — cannot build"), 1)
             return false
         # In the influence ring of another town it is impossible to build: around someone else's
@@ -194,7 +200,8 @@ func start_build(row: int, col: int, imp_id: String, target_res_id = null,
         # are drawn by the renderer (a semi-transparent blue fill) — that gives
         # the player a visual signal even before attempting to build.
         # The rings of the player's own town are not affected (checked below).
-        if t_tile != null and bool(t_tile.get("in_town_influence", false)) and not is_road_action:
+        if t_tile != null and bool(t_tile.get("in_town_influence", false)) and not is_road_action \
+                and not is_aqueduct_action:
             emit_signal("build_message", tr("This is inside another town's influence ring — cannot build"), 1)
             return false
 
@@ -319,6 +326,15 @@ func start_build(row: int, col: int, imp_id: String, target_res_id = null,
             emit_signal("build_message", tr("Failed to build the road"), 1)
             return false
         return main_map.start_road_project(row, col, effective_road_level)
+
+    # The aqueduct is a staged project of its own. It is started from the
+    # spring hex, builds section by section, and is a SECOND layer: it does not
+    # touch tile.improvement and can cross any improvement on the way.
+    if is_aqueduct_action:
+        if main_map == null or not main_map.has_method("start_aqueduct_project"):
+            emit_signal("build_message", tr("Failed to build the aqueduct"), 1)
+            return false
+        return main_map.start_aqueduct_project(row, col)
 
     # The improvement that requires a road goes into the CHAIN "road →
     # improvement": one staged project and one slot, first the road segments,

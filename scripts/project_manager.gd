@@ -241,10 +241,15 @@ func get_step_progress_at(row: int, col: int) -> Dictionary:
 ## active projects. It is exactly this set that draws the route on the map while
 ## the construction is going: the built segment disappears from the ghost by itself, because its
 ## step has left the queue.
-func get_pending_ghost_segments() -> Dictionary:
+func get_pending_ghost_segments(kind_filter: String = "") -> Dictionary:
     var ghost: Dictionary = {}
     for project_id in projects.keys():
         var project: Dictionary = projects[project_id]
+        # The road and the aqueduct ghosts are drawn in different styles; the
+        # owner asks for each kind separately. An empty filter keeps the old
+        # "all pending segments" answer for the generic tests.
+        if kind_filter != "" and str(project.get("kind", "")) != kind_filter:
+            continue
         var steps: Array = project.get("steps", [])
         for i in range(int(project.get("step_index", 0)), steps.size()):
             for key in steps[i].get("ghost", {}).keys():

@@ -197,7 +197,14 @@ func init_tile_data(rows: int, cols: int) -> Array:
     # Every hex is a copy of the empty one: the stages write into the hexes of the map, so a shared
     # record would move half the map at once.
     var t_hexes = Time.get_ticks_msec()
-    var empty_tile := {"terrain": "plain", "cover": "none", "resource": null, "improvement": null}
+    # fresh_water_spring — a hidden flag on a resource-less mountain, designated
+    # at the start of a new game and revealed by the technology "Concrete".
+    # aqueduct — the second layer of improvements: the hex carries a section of
+    # the aqueduct regardless of its ordinary improvement.
+    # aqueduct_water — the city hex has been reached by the aqueduct.
+    var empty_tile := {"terrain": "plain", "cover": "none", "resource": null,
+            "improvement": null, "fresh_water_spring": false,
+            "aqueduct": false, "aqueduct_water": false}
     var tile_data := []
     tile_data.resize(rows)
     for row in range(rows):

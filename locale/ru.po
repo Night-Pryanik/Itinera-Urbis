@@ -8830,3 +8830,76 @@ msgstr "Триггера славы"
 
 msgid "Selective breeding has improved the quality of %s!"
 msgstr "Качество %s улучшилось благодаря селекции!"
+
+msgctxt "technologies.name"
+msgid "Concrete"
+msgstr "Бетон"
+
+msgctxt "technologies.description"
+msgid "Reveals the mountain springs and allows you to build aqueducts: a channel of concrete brings fresh water from a spring to the city."
+msgstr "Выявляет горные источники и позволяет строить акведуки: канал из бетона приносит пресную воду от источника в город."
+
+msgctxt "technologies.flavor"
+msgid "Lime burned in a kiln, mixed with sand and stone, sets into a mass harder than the rock it came from. A channel lined with it keeps its slope and its walls for generations, so water can leave the mountain and reach a city that has no river of its own."
+msgstr "Известь, обожжённая в печи, смешанная с песком и камнем, схватывается в массу твёрже породы, из которой она вышла. Выложенный ею канал поколениями держит свой уклон и стенки, и вода может уйти из горы в город, у которого нет своей реки."
+
+msgctxt "technologies.unlock_effects.name"
+msgid "Reveals mountain springs and allows you to build aqueducts to the city."
+msgstr "Выявляет горные источники и позволяет строить акведуки к городу."
+
+msgctxt "special_actions.name"
+msgid "Build Aqueduct"
+msgstr "Построить акведук"
+
+msgid "The aqueduct network is not ready"
+msgstr "Сеть акведуков ещё не готова"
+
+msgid "There is no spring on this hex"
+msgstr "На этом гексе нет источника"
+
+msgid "Requires the \"Concrete\" technology"
+msgstr "Требуется технология «Бетон»"
+
+msgid "This spring is already connected to the city"
+msgstr "Этот источник уже соединён с городом"
+
+msgid "Aqueduct to the city"
+msgstr "Акведук к городу"
+
+msgid "Failed to build the aqueduct: %s"
+msgstr "Не удалось построить акведук: %s"
+
+msgid "Aqueduct built! The city now has fresh water."
+msgstr "Акведук построен! В городе теперь есть пресная вода."
+
+msgid "Failed to build the aqueduct"
+msgstr "Не удалось построить акведук"
+
+msgid "Build an aqueduct from the spring to the city"
+msgstr "Построить акведук от источника к городу"
+
+msgid " Destination: from the mountain spring to the city"
+msgstr " Направление: от горного источника к городу"
+
+msgid " Aqueduct sections: %d"
+msgstr " Секций акведука: %d"
+
+msgid "Cannot build the aqueduct"
+msgstr "Нельзя построить акведук"
+
+msgid "A mountain spring is revealed — an aqueduct can bring its water to the city."
+msgstr "Обнаружен горный источник — акведук может принести его воду в город."
+
+msgid "Fresh water spring: connected to the city by an aqueduct"
+msgstr "Пресноводный источник: соединён с городом акведуком"
+
+msgid "Fresh water spring: can be connected by an aqueduct"
+msgstr "Пресноводный источник: можно соединить акведуком"
+
+msgctxt "covers.name"
+msgid "Mountain Spring"
+msgstr "Горный источник"
+
+msgid "Fresh water spring: aqueduct is partly built"
+msgstr "Пресноводный источник: акведук частично построен"
+

@@ -62,6 +62,15 @@ const NO_ROAD_LEVEL = -1
 const MARKER_ICON_RADIUS = 6.0
 # The colour of the markers on the hex (the drop of water and the trade icon).
 const MARKER_ICON_COLOR = Color(0.45, 0.8, 1.0)
+# The aqueduct is a second layer of improvements: straight, thick blue lines
+# with a black outline, drawn a little below the hex centre so that the roads
+# (which run from centre to centre) stay readable underneath.
+const AQUEDUCT_COLOR = Color(0.10, 0.45, 0.95)
+const AQUEDUCT_OUTLINE_COLOR = Color(0.0, 0.0, 0.0)
+const AQUEDUCT_WIDTH = 9.0
+const AQUEDUCT_OFFSET = Vector2(0, 17)
+const AQUEDUCT_PREVIEW_COLOR = Color(0.45, 0.8, 1.0, 0.55)
+const AQUEDUCT_GHOST_COLOR = Color(0.30, 0.65, 1.0, 0.75)
 # The marker of an outpost — an improvement outside the Region (the technology "Emporia").
 const OUTPOST_FLAG_ICON = "outpost_flag.svg"
 
@@ -426,6 +435,11 @@ func _draw():
 
     # PHASE 2.75: We draw the rivers
     _draw_rivers()
+
+    # PHASE 2.8: The aqueducts - over the roads and the rivers, under the icons.
+    # Their sections are offset from the hex centre, so a line crossing an
+    # existing road never hides it.
+    _draw_aqueducts()
 
     # PHASE 2.5: The fill of the scouted hexes outside the Region. The chunk under the cursor
     # is a separate layer (see map_highlight_layer.gd): the hover changes far more often than
@@ -1549,6 +1563,83 @@ func set_project_ghost_segments(segments: Dictionary) -> void:
     _project_ghost_signature = signature
     _project_ghost_segments = segments
     queue_redraw()
+
+# The aqueduct ghosts have their own sets and their own style. The project
+# ghost is the remainder of a started line (updated by main_map), the preview
+# one is the route currently shown by the panel.
+var _aqueduct_ghost_segments: Dictionary = {}
+var _aqueduct_ghost_signature: String = ""
+var _aqueduct_preview_segments: Dictionary = {}
+var _aqueduct_preview_signature: String = ""
+
+func set_aqueduct_ghost_segments(segments: Dictionary) -> void:
+    var keys := segments.keys()
+    keys.sort()
+    var signature := str(keys)
+    if signature == _aqueduct_ghost_signature:
+        return
+    _aqueduct_ghost_signature = signature
+    _aqueduct_ghost_segments = segments
+    queue_redraw()
+
+func set_aqueduct_preview_segments(segments: Dictionary) -> void:
+    var keys := segments.keys()
+    keys.sort()
+    var signature := str(keys)
+    if signature == _aqueduct_preview_signature:
+        return
+    _aqueduct_preview_signature = signature
+    _aqueduct_preview_segments = segments
+    queue_redraw()
+
+# Decodes the canonical section key "a|b", where a/b = row * 100000 + col.
+static func _decode_aqueduct_key(key: String) -> Array:
+    var parts := key.split("|")
+    if parts.size() != 2:
+        return []
+    var a := int(parts[0])
+    var b := int(parts[1])
+    return [int(a / 100000), a % 100000, int(b / 100000), b % 100000]
+
+static func _aqueduct_point(row: int, col: int, radius: float) -> Vector2:
+    return HexUtils.hex_center(row, col, radius) + AQUEDUCT_OFFSET
+
+func _draw_aqueduct_line(row_a: int, col_a: int, row_b: int, col_b: int,
+        color: Color, width: float, outline: bool) -> void:
+    if main_map.is_hex_in_fog(row_a, col_a) or main_map.is_hex_in_fog(row_b, col_b):
+        return
+    var points := PackedVector2Array([
+        _aqueduct_point(row_a, col_a, main_map.HEX_RADIUS),
+        _aqueduct_point(row_b, col_b, main_map.HEX_RADIUS)
+    ])
+    if outline:
+        draw_polyline(points, AQUEDUCT_OUTLINE_COLOR, width + 6.0, true)
+    draw_polyline(points, color, width, true)
+
+func _draw_aqueducts() -> void:
+    if main_map == null:
+        return
+    var manager = main_map.get("aqueduct_manager")
+    if manager == null:
+        return
+    for key in manager.get_all_segments().keys():
+        var decoded := _decode_aqueduct_key(str(key))
+        if decoded.size() != 4:
+            continue
+        _draw_aqueduct_line(decoded[0], decoded[1], decoded[2], decoded[3],
+                AQUEDUCT_COLOR, AQUEDUCT_WIDTH, true)
+    for key in _aqueduct_ghost_segments.keys():
+        var decoded := _decode_aqueduct_key(str(key))
+        if decoded.size() != 4:
+            continue
+        _draw_aqueduct_line(decoded[0], decoded[1], decoded[2], decoded[3],
+                AQUEDUCT_GHOST_COLOR, AQUEDUCT_WIDTH * 0.6, false)
+    for key in _aqueduct_preview_segments.keys():
+        var decoded := _decode_aqueduct_key(str(key))
+        if decoded.size() != 4:
+            continue
+        _draw_aqueduct_line(decoded[0], decoded[1], decoded[2], decoded[3],
+                AQUEDUCT_PREVIEW_COLOR, AQUEDUCT_WIDTH * 0.7, false)
 
 # The highlighting of the ROUTE along which the cargo goes from the chosen hex to the city.
 # A separate set from the preview: the preview is "what will be built", and here it is
