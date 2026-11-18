@@ -10,7 +10,8 @@
 #
 # The buttons of the same width, with an icon and the wrapping of the text onto 2 lines
 # (with an automatic decrease of the font, if it does not fit).
-# LMB — start the research (through the signal research_requested).
+# LMB — start the research (through the signal research_requested), or drag the tree
+# when the cursor moves past DRAG_THRESHOLD before the button is released.
 # Hover — the built-in tooltip with the description of the technology.
 extends Control
 
@@ -51,6 +52,10 @@ const ERA_LABEL_HEIGHT: int = 64 # the height of the strip above the columns und
 const ERA_LABEL_WIDTH: int = 200 # the fixed width of the heading of the era
 const ERA_LINE_WIDTH: float = 2.0 # the thickness of the vertical separator of the eras
 
+# A press turns into a pan only after this many pixels, so a click on a technology
+# is still a click and a drag does not start the research.
+const DRAG_THRESHOLD: float = 6.0
+
 # --- The external references (filled in in setup) ---
 var current_label: Label # "Researching: ..." (the Label at the top of the panel)
 var science_pool_label: Label # "Science: X/sec" (the rate of the research of the city)
@@ -61,6 +66,12 @@ var science_tooltip_vbox: VBoxContainer = null
 
 # --- The internal nodes ---
 var _scroll: ScrollContainer
+# The LMB pan: the offsets are taken at the press and applied to the scroll as the cursor moves.
+var _drag_start_mouse: Vector2 = Vector2.ZERO
+var _drag_start_scroll: Vector2 = Vector2.ZERO
+var _drag_possible: bool = false # LMB was pressed inside the tree
+var _dragging: bool = false # the threshold was passed, so this gesture is a pan
+var _suppress_click: bool = false # the release of a pan must not start a research
 var _inner: Control # a large Control, the size = the whole area of the tree
 var _columns: Array = [] # [Control, Control, ...] by the columns
 var _tech_nodes: Dictionary = {} # tech_id -> {button, column, row}
@@ -331,6 +342,52 @@ func _build_ui(parent: Control):
     _inner.mouse_filter = Control.MOUSE_FILTER_PASS
     # custom_minimum_size is set in rebuild() under the actual size of the tree.
     _scroll.add_child(_inner)
+
+func _input(event: InputEvent) -> void:
+    if _scroll == null:
+        return
+    if not is_visible_in_tree():
+        # The tab can be switched while the button is held. Do not let that press
+        # turn into a pan when the tree is shown again.
+        _drag_possible = false
+        _dragging = false
+        return
+    if event is InputEventMouseButton:
+        var mb := event as InputEventMouseButton
+        if mb.button_index != MOUSE_BUTTON_LEFT:
+            return
+        if mb.pressed:
+            # A fresh press lifts the suppression left by the previous pan, so the
+            # next click on a technology works normally.
+            _suppress_click = false
+            # The bars have their own drag gesture. Leave the press to them instead
+            # of starting a pan that would fight with the grabber.
+            var hovered := get_viewport().gui_get_hovered_control()
+            if hovered is ScrollBar or not _scroll.get_global_rect().has_point(mb.global_position):
+                _drag_possible = false
+                return
+            _drag_possible = true
+            _dragging = false
+            _drag_start_mouse = mb.global_position
+            _drag_start_scroll = Vector2(_scroll.scroll_horizontal, _scroll.scroll_vertical)
+        else:
+            _drag_possible = false
+            _dragging = false
+        return
+    if event is InputEventMouseMotion and _drag_possible:
+        var mm := event as InputEventMouseMotion
+        var delta := mm.global_position - _drag_start_mouse
+        if not _dragging:
+            if delta.length() < DRAG_THRESHOLD:
+                return
+            _dragging = true
+            # The button under the cursor receives the release of this gesture. Its
+            # pressed signal must not research anything.
+            _suppress_click = true
+        # The pan follows the cursor one pixel per pixel. ScrollContainer clamps
+        # these offsets to the size of _inner, the same as it does for the bars.
+        _scroll.scroll_horizontal = _drag_start_scroll.x - delta.x
+        _scroll.scroll_vertical = _drag_start_scroll.y - delta.y
 
 func _compute_layout() -> Dictionary:
     # It returns:
@@ -1103,6 +1160,8 @@ func _unlock_arrow_plate(bg: Color, border: Color) -> StyleBoxFlat:
     return style
 
 func _on_unlock_arrow_pressed(strip: ScrollContainer, row: HBoxContainer, direction: int) -> void:
+    if _suppress_click:
+        return
     _unlock_scroll_by(strip, row, direction)
 
 func _get_unlock_row_offset(strip: ScrollContainer) -> float:
@@ -1568,6 +1627,8 @@ func _update_status_label():
     else:
         current_label.text = tr("No current research")
 func _on_tech_pressed(tech_id: String):
+    if _suppress_click:
+        return
     emit_signal("research_requested", tech_id)
 
 func _on_tech_button_mouse_entered(tech_id: String):

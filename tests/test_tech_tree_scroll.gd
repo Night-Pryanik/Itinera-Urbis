@@ -14,6 +14,9 @@
 #   3. Both bars have a thickness, so the grabber is not squeezed out of them.
 #   4. The range of both bars covers the content.
 #   5. Scrolling moves the tree by the same amount.
+#   6. Dragging with the LMB scrolls the tree by the distance of the cursor.
+#   7. A movement below the threshold is not a pan, and the release of a pan does not
+#      start the research of the technology under the cursor.
 extends SceneTree
 
 # The hang watchdog — see tests/watchdog.gd.
@@ -85,6 +88,56 @@ func _run() -> void:
     check(is_equal_approx(tree._inner.position.y, tree_position.y - 90.0),
         "the vertical bar scrolls the tree (%.0f of %.0f)"
             % [tree._inner.position.y, tree_position.y - 90.0], state)
+
+    # A press inside the tree followed by a long movement pans the same scroll.
+    scroll.scroll_horizontal = 0
+    scroll.scroll_vertical = 0
+    await process_frame
+    await process_frame
+    var press_pos: Vector2 = scroll.get_global_rect().get_center()
+    var press := InputEventMouseButton.new()
+    press.button_index = MOUSE_BUTTON_LEFT
+    press.pressed = true
+    press.position = press_pos
+    press.global_position = press_pos
+    tree._input(press)
+    var motion := InputEventMouseMotion.new()
+    motion.button_mask = MOUSE_BUTTON_MASK_LEFT
+    motion.position = press_pos + Vector2(-150, -80)
+    motion.global_position = motion.position
+    tree._input(motion)
+    await process_frame
+    await process_frame
+    check(is_equal_approx(scroll.scroll_horizontal, 150.0),
+        "dragging scrolls horizontally (%.0f)" % scroll.scroll_horizontal, state)
+    check(is_equal_approx(scroll.scroll_vertical, 80.0),
+        "dragging scrolls vertically (%.0f)" % scroll.scroll_vertical, state)
+
+    # The release of the pan still reaches the button under the cursor. Its press
+    # must not turn into a research request.
+    # A lambda captures primitives by value, so the flag lives in an Array.
+    var research_started: Array = [false]
+    tree.research_requested.connect(func(_id): research_started[0] = true)
+    tree._on_tech_pressed("farming")
+    check(not research_started[0], "the release of a pan does not start a research", state)
+
+    # A short movement stays a click: it neither pans nor suppresses the next press.
+    scroll.scroll_horizontal = 0
+    scroll.scroll_vertical = 0
+    await process_frame
+    await process_frame
+    tree._input(press)
+    var short_motion := InputEventMouseMotion.new()
+    short_motion.button_mask = MOUSE_BUTTON_MASK_LEFT
+    short_motion.position = press_pos + Vector2(3, 0)
+    short_motion.global_position = short_motion.position
+    tree._input(short_motion)
+    await process_frame
+    await process_frame
+    check(scroll.scroll_horizontal == 0 and not tree._suppress_click,
+        "a movement below the threshold is not a pan", state)
+    tree._on_tech_pressed("farming")
+    check(research_started[0], "a click after a pan starts the research", state)
 
     _finish(state)
 
