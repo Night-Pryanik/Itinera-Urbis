@@ -3749,8 +3749,8 @@ msgid "Cures, ages and cuts tobacco leaf."
 msgstr "Выделывает, вылёживает и нарезает табачный лист"
 
 msgctxt "crafts.description"
-msgid "Cuts stone into plates, bowls, and cups."
-msgstr "Вырезает из камня тарелки, миски и чашки."
+msgid "Cuts stone into plates, bowls, and cups and grinds them smooth with pumice."
+msgstr "Вырезает из камня тарелки, миски и чашки и шлифует их пемзой."
 
 msgctxt "crafts.description"
 msgid "Dissolves the fragrant material in oil and keeps the scent in a jar."
@@ -6795,6 +6795,10 @@ msgstr "Обработанный строительный камень"
 msgctxt "resources.name"
 msgid "Pulque"
 msgstr "Пульке"
+
+msgctxt "resources.name"
+msgid "Pumice"
+msgstr "Пемза"
 
 msgctxt "resources.name"
 msgid "Purple"

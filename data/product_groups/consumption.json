@@ -152,7 +152,7 @@
       // together with the common goods and compete with the workshops that use them.
       "id": "consumer_goods",
       "name": "Consumer Goods",
-      "products": [ "salt", "soap", "vegetable_oil", "sponge", "glue", "white_naphtha" ]
+      "products": [ "salt", "soap", "vegetable_oil", "sponge", "pumice", "glue", "white_naphtha" ]
     },
     {
       // The empty vessel a good is stored and shipped in. Tare is generic: the winemaker, brewer,
