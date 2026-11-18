@@ -10,6 +10,7 @@
       "resources": [ [ { "frankincense": 20 }, { "myrrh": 20 }, { "roses": 20 }, { "cinnamon": 20 } ], { "vegetable_oil": 10 } ],
       "result": { "perfume": 10 },
       "time": 5.0,
+      "unlock_tech": "perfume_making",
       "description": "Dissolves the fragrant material in oil and keeps the scent in a jar."
     },
     {
@@ -20,6 +21,7 @@
       "resources": [ [ { "frankincense": 20 }, { "myrrh": 20 }, { "sandalwood_oil": 20 } ], { "charcoal": 10 } ],
       "result": { "incense": 10 },
       "time": 5.0,
+      "unlock_tech": "perfume_making",
       "description": "Grinds a fragrant material with charcoal into a powder for the hearth."
     },
     {

@@ -77,7 +77,7 @@
       "resources": { "bronze": 20, "charcoal": 10 },
       "result": { "bronze_tools": 10 },
       "time": 5.0,
-      "unlock_tech": "metallurgy",
+      "unlock_tech": "bronze",
       "description": "Makes a set of tools for craftsmen."
     },
     {
@@ -99,7 +99,7 @@
       "resources": { "bronze": 30, "charcoal": 10 },
       "result": { "bronze_weapons": 10 },
       "time": 6.0,
-      "unlock_tech": "metallurgy",
+      "unlock_tech": "bronze",
       "description": "Makes a batch of weapons to defend the city."
     },
     {
