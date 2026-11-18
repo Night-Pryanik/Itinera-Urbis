@@ -1622,10 +1622,16 @@ func _build_consumption_entry(res_key: String, rule: Dictionary) -> Dictionary:
     if amount <= 0:
         print("GameData: a consumption rule without a correct amount is skipped: ", rule)
         return {}
+    # The citizens consume the goods of a group as a basket; a professional
+    # rotates over the members instead. An explicit value in the data wins.
+    var consumers: Array = rule.get("profession", [])
+    var default_all: bool = is_group_key(res_key) and (consumers.has("all") if consumers is Array else false)
     var entry := {
         "amount": amount,
         "interval": float(rule.get("interval", 0)),
-        "production_bonus": float(rule.get("production_bonus", 0.0))
+        "production_bonus": float(rule.get("production_bonus", 0.0)),
+        # Only group records use it; on a single product it has no effect.
+        "consume_all": bool(rule.get("consume_all", default_all))
     }
     if is_group_key(res_key):
         var gkey = res_key.trim_prefix("@")
@@ -1822,7 +1828,7 @@ func get_resource_consumer_professions(display_key: String) -> Array:
 # the result twice (the record from the registry takes priority). Each record:
 #   { "product_id": String, "product_name": String,
 #     "amount": int, "interval": float, "production_bonus": float,
-#     "is_group": bool, "group_members": Array[String],
+#     "is_group": bool, "group_members": Array[String], "consume_all": bool,
 #     "display_key": String, "icon": String }
 # product_id is empty for the group records; product_name — the name of the group.
 # production_bonus — an addition to the production multiplier, while the resource is
@@ -1872,7 +1878,8 @@ func get_profession_consumption(prof_id: String) -> Array:
             "is_group": false,
             "group_members": [],
             "display_key": pid,
-            "icon": prod.get("icon", "")
+            "icon": prod.get("icon", ""),
+            "consume_all": false
         })
     return result
 

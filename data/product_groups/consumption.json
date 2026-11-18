@@ -56,7 +56,7 @@
     {
       // Distilled spirits stand apart from fermented "@alcohol" so they are never spent on
       // vinegar or rectification and can be toggled independently on the domestic market.
-      // The order is the write-off order: everyday spirits go first, cordial last.
+      // The citizens take a dram of every kind that is in stock.
       "id": "spirits",
       "name": "Strong Spirits",
       "products": [
@@ -76,8 +76,8 @@
       "products": [ "tea", "coffee", "cocoa", "mate", "karkadeh" ]
     },
     {
-      // Ordered from everyday vessels to luxury service so common pottery and glassware
-      // are written off before porcelain, crystal and silver plate.
+      // The citizens set the table with every kind of vessel in stock, from
+      // common pottery to silver plate.
       "id": "tableware",
       "name": "Tableware",
       "products": [
@@ -147,8 +147,9 @@
       "products": [ "eggs", "oyster" ]
     },
     {
-      // Everyday household supplies; glue and white naphtha stand last so common goods
-      // cover domestic demand first before drawing down workshop consumables.
+      // Everyday household supplies, consumed as a basket: the order of the
+      // members does not decide the draw. Glue and white naphtha are taken
+      // together with the common goods and compete with the workshops that use them.
       "id": "consumer_goods",
       "name": "Consumer Goods",
       "products": [ "salt", "soap", "vegetable_oil", "sponge", "glue", "white_naphtha" ]
@@ -165,8 +166,8 @@
       // perfume, incense, attar and alcohol-based fragrant spirit. Raw resins, blossoms
       // and intermediate essential oils (sandalwood oil, chamomile oil) are NOT in the
       // group: citizens buy finished goods, not workshop feedstocks.
-      // The order of the members is the write-off order: accessible floral water and
-      // everyday perfume go first, costly attar and fragrant spirit last.
+      // The citizens wear the perfume and burn the incense, so all the finished
+      // goods in stock are written off together.
       "id": "perfumery",
       "name": "Perfumery",
       "products": [ "floral_water", "perfume", "incense", "attar", "spirit_perfume" ]
@@ -174,22 +175,21 @@
     {
       // Work tools: the pick of the miner and quarryman, the axe of the lumberjack,
       // the hoe of the farmer and planter, the shovel of the clay digger and the vinedresser,
-      // the chisel of the mason. The order is the write-off order: basic copper tools go first,
-      // fine steel ones last — workers take whatever is available in storage.
+      // the chisel of the mason. The profession draws one tool at a time, rotating
+      // over the kinds that are in stock; the order sets where the rotation starts.
       "id": "instruments",
       "name": "Instruments",
       "products": [ "copper_tools", "bronze_tools", "brass_tools", "iron_tools", "steel_tools" ]
     },
     {
-      // Furniture the citizens write off: the everyday piece goes first,
-      // the costly one last.
+      // Furniture the citizens write off: both the everyday piece and the
+      // costly one are used when in stock.
       "id": "furniture",
       "name": "Furniture",
       "products": [ "furniture", "luxury_furniture" ]
     },
     {
-      // Domestic candles: everyday tallow candles go first so cleaner beeswax candles
-      // last longer in storage.
+      // Domestic candles: both kinds are burned together when in stock.
       "id": "candles",
       "name": "Candles",
       "products": [ "tallow_candles", "wax_candles" ]

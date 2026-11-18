@@ -9,12 +9,12 @@
   // The target resource ("resource") can be:
   //   * an id of a single product from data/products/*.json — for example, "tools";
   //   * a reference to a product group from data/product_groups/ in the format
-  //     "@<group_id>" — for example, "@boats" (the "Boats" group). In that case
-  //     ANY suitable product from the group is written off: first the total
-  //     stock across all group members is summed, then the list is drawn
-  //     greedily from the available members (quality priority "best"). While the sum
-  //     over the group covers "amount" — the bonus applies; if not — the bonus
-  //     is removed and the improvement keeps working on the base multiplier.
+  //     "@<group_id>" — for example, "@boats" (the "Boats" group). The goods of
+  //     a group are written off either all at once (the default for "all") or
+  //     one member per tick, rotating over those in stock (the default for the
+  //     working professions). The quality priority still applies inside each
+  //     member. While the sum over the group covers "amount" — the bonus applies;
+  //     if not — the bonus is removed and the improvement keeps working on the base.
   //
   // Entry format:
   //   resource          — the product id or the group "@id" (as in craft recipes).
@@ -31,6 +31,13 @@
   //                       available members, not of all of them at once.
   //                       It does not apply to the pseudo-profession "all" (0.0):
   //                       city consumption gives no bonus at all.
+  //   consume_all       — for a group resource only. true (the default for
+  //                       "all") takes the full "amount" from EVERY member with
+  //                       stock in the same tick, so the order has no effect;
+  //                       false (the default for the professions) takes one
+  //                       member per tick, rotating over the ones with stock.
+  //                       The quality priority of the Trade tab still applies
+  //                       within each member.
   //
   // Duplicating declarations: if the same resource is described both here and in
   // a product (data/products/*.json, the "consumption" field) for one profession,
@@ -94,8 +101,8 @@
     },
     {
       // Work tools are a consumable for everyone who digs, fells, mines or shapes: the
-      // rule covers any instrument from the @instruments group, taken greedily from the
-      // cheapest member available (copper first, steel last).
+      // rule covers any instrument from the @instruments group, drawing one kind per
+      // tick and rotating over those in stock.
       "resource": "@instruments",
       "profession": [ 
         "miner",

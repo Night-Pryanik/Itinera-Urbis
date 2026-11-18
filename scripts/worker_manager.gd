@@ -153,10 +153,11 @@ func get_profession(row: int, col: int) -> String:
 #     (for example, 1.5 with a bonus of 0.5). As soon as at least one of them is gone -
 #     the multiplier rolls back to 1.0, the improvement continues to work at the base.
 #   * The write-off is continuous: amount / interval units per second (the fractional
-#     remains accumulate in the sub-unit accumulator). For the group records
-#     any suitable product of the group is written off - greedily by the members
-#     (the priority of the quality "best"). If there is no resource - the timer is not reset,
-#     on the appearance of the resource the write-off happens at once.
+#     remains accumulate in the sub-unit accumulator). A group is drawn one member
+#     per write-off, rotating over the members that have stock, unless the rule sets
+#     consume_all, in which case the full amount is taken from every member. If there
+#     is no resource - the timer is not reset, on the appearance of the resource the
+#     write-off happens at once.
 #   * The bonuses of the single records of a profession add up, for the group ones the best
 #     available is taken (see _aggregate_production_bonus).
 # An improvement NEVER "stops": it always gives at least the base
@@ -236,10 +237,10 @@ func _aggregate_production_bonus(cons_list: Array) -> float:
 #     the multiplier rolls back to 1.0, the object continues to work at the base.
 #   * The per-second rate of the consumption = amount / interval: on every tick
 #     a fractional remains accumulates, the integer part is written off from the storage.
-#     For the group records any suitable product of the group is written off:
-#     first the stock is summed over all the members, then it is spent greedily
-#     (the priority of the quality "best"). If there is no resource - the timer is NOT reset;
-#     on the appearance of the resource the write-off happens at once.
+#     A group is drawn one member at a time, rotating over the members with stock;
+#     a rule with consume_all takes the full amount from every member instead. If there
+#     is no resource - the timer is NOT reset; on the appearance of the resource the
+#     write-off happens at once.
 # The object NEVER "stops": it always gives at least the base production.
 # The bonus is an extra for the supply of the profession with the consumables.
 func _tick_profession_consumption(prof: String, key: String, timers: Dictionary, delta: float) -> float:
@@ -266,9 +267,12 @@ func _tick_profession_consumption(prof: String, key: String, timers: Dictionary,
     # turns on only when there is enough of the resource for a whole cycle. If there is only
     # a partial amount - we write off what there is, the bonus is NOT accrued.
     if not timers.has(key):
-        timers[key] = {"fractional": {}}
+        timers[key] = {"fractional": {}, "rotation": {}}
+    if not timers[key].has("rotation"):
+        timers[key]["rotation"] = {}
 
-    var fractional: Dictionary = timers[key].fractional
+    var fractional: Dictionary = timers[key].get("fractional", {})
+    var rotation: Dictionary = timers[key].get("rotation", {})
 
     for entry in cons_list:
         # The toggle of the "Trade": a resource which is forbidden on the inner market is not
@@ -284,8 +288,7 @@ func _tick_profession_consumption(prof: String, key: String, timers: Dictionary,
             continue
 
         # The priority of the write-off by the quality is a setting of the player from the tab
-        # "Trade" (CityData.consumption_priority, the default from
-        # data/qualities.json). Earlier there was a hard "best" here.
+        # "Trade" (CityData.consumption_priority, the default from data/qualities.json).
         var priority := CityData.get_consumption_priority(entry_key)
 
         # The per-second rate of the consumption = amt / interval. On every tick
@@ -302,33 +305,11 @@ func _tick_profession_consumption(prof: String, key: String, timers: Dictionary,
         fractional[frac_key] = cur_frac
 
         if entry.get("is_group", false):
-            # The write-off from a group: greedily by the members (the best quality).
-            var remaining: int = floor_take
-            for member_pid in entry.get("group_members", []):
-                if remaining <= 0:
-                    break
-                var avail: int = CityData.get_storage_amount(member_pid)
-                if avail <= 0:
-                    continue
-                var take: int = mini(avail, remaining)
-                if take <= 0:
-                    continue
-                var member_consumed: Dictionary = CityData.remove_from_storage(member_pid, take, priority)
-                CityData.record_consumption_source(member_pid, prof_source, take)
-                # The fact of the INNER MARKET exactly - a separate counter for
-                # the cards of the tab "Trade" (the general consumption_rates
-                # is mixed with the production inputs of the buildings).
-                CityData.record_market_consumption(member_pid, take)
-                # The actual consumption on the inner market gives an income to the treasury.
-                # The price is by the quality of EACH written-off unit: the breakdown of consumed
-                # comes from remove_from_storage (see docs.md, "The treasury of the city and the
-                # inner market").
-                var member_take_price: int = CityData.get_internal_market_income(member_pid, member_consumed)
-                CityData.add_treasury(member_take_price)
-                # The source of the income for the tooltip "Treasury" by the same key,
-                # as in the plan map (the name of a profession, for example "Fisherman").
-                CityData.record_treasury_income(prof_source, member_take_price, str(member_pid))
-                remaining -= take
+            if bool(entry.get("consume_all", false)):
+                _consume_group_all(entry.get("group_members", []), floor_take, prof_source, priority)
+            else:
+                _consume_group_rotate(entry.get("group_members", []), floor_take,
+                        prof_source, priority, rotation, frac_key)
         else:
             var pid: String = str(entry.get("product_id", ""))
             if pid.is_empty():
@@ -362,6 +343,12 @@ func _can_consume_full(entry: Dictionary, amt: int) -> bool:
         var members: Array = entry.get("group_members", [])
         if members.is_empty():
             return false
+        if bool(entry.get("consume_all", false)):
+            # Every member must cover its own draw for the bonus to apply.
+            for pid in members:
+                if CityData.get_storage_amount(pid) < amt:
+                    return false
+            return true
         var total: int = 0
         for pid in members:
             total += CityData.get_storage_amount(pid)
@@ -372,6 +359,58 @@ func _can_consume_full(entry: Dictionary, amt: int) -> bool:
     if pid.is_empty():
         return false
     return CityData.get_storage_amount(pid) >= amt
+
+# The basket mode of a group draw: the full amount is taken from EVERY member
+# that has stock. The order of the members has no effect; the quality priority
+# still applies within each member, because each one is paid for by its own
+# quality breakdown.
+func _consume_group_all(members: Array, amount: int, source_id: String, priority: String) -> void:
+    for raw_pid in members:
+        var pid := str(raw_pid)
+        if pid.is_empty():
+            continue
+        var avail: int = CityData.get_storage_amount(pid)
+        if avail <= 0:
+            continue
+        var take: int = mini(avail, amount)
+        if take <= 0:
+            continue
+        var consumed: Dictionary = CityData.remove_from_storage(pid, take, priority)
+        CityData.record_consumption_source(pid, source_id, take)
+        CityData.record_market_consumption(pid, take)
+        var income: int = CityData.get_internal_market_income(pid, consumed)
+        CityData.add_treasury(income)
+        CityData.record_treasury_income(source_id, income, pid)
+
+# The other mode of a group draw: one member per write-off, cycling over the
+# members that have stock. The index lives in the consumer's timers, so the
+# rotation continues after a load. The quality priority still applies within
+# the chosen member.
+func _consume_group_rotate(members: Array, amount: int, source_id: String,
+        priority: String, rotation: Dictionary, rot_key: String) -> void:
+    var count: int = members.size()
+    if count <= 0:
+        return
+    var start: int = int(rotation.get(rot_key, 0)) % count
+    for offset in range(count):
+        var idx: int = (start + offset) % count
+        var pid := str(members[idx])
+        if pid.is_empty():
+            continue
+        var avail: int = CityData.get_storage_amount(pid)
+        if avail <= 0:
+            continue
+        var take: int = mini(avail, amount)
+        if take <= 0:
+            continue
+        var consumed: Dictionary = CityData.remove_from_storage(pid, take, priority)
+        CityData.record_consumption_source(pid, source_id, take)
+        CityData.record_market_consumption(pid, take)
+        var income: int = CityData.get_internal_market_income(pid, consumed)
+        CityData.add_treasury(income)
+        CityData.record_treasury_income(source_id, income, pid)
+        rotation[rot_key] = (idx + 1) % count
+        return
 
 # The DISPLAY_KEY of a record of the consumption is the single addressing key of the settings
 # of the inner market (CityData.market_consumption_enabled /
@@ -392,10 +431,11 @@ func _fractional_key(entry: Dictionary) -> String:
     return str(entry.get("product_id", entry.get("display_key", "")))
 
 # The serialization of the timers of the consumption for the save.
-# The format: [{ "row": int, "col": int, "fractional": { dkey: float, ... } }, ...]
-# The fractional remains accumulate by dkey (the id of a product or the @-group) - after
-# the switch to the continuous model there is nothing to store except for them (the new rules
-# amount/interval are computed from the profession on the load).
+# The format: [{ "row": int, "col": int, "fractional": { dkey: float, ... },
+#                "rotation": { "@group": int, ... } }, ...]
+# The fractional remains accumulate by dkey (the id of a product or the @-group); the
+# rotation keeps the next member of a group draw. amount/interval are computed from
+# the profession on the load.
 func serialize_consumption_timers() -> Array:
     var result = []
     for key in consumption_timers.keys():
@@ -404,7 +444,8 @@ func serialize_consumption_timers() -> Array:
             result.append({
                 "row": int(parts[0]),
                 "col": int(parts[1]),
-                "fractional": (consumption_timers[key].get("fractional", {}) as Dictionary).duplicate(true)
+                "fractional": (consumption_timers[key].get("fractional", {}) as Dictionary).duplicate(true),
+                "rotation": (consumption_timers[key].get("rotation", {}) as Dictionary).duplicate(true)
             })
     return result
 
@@ -417,12 +458,16 @@ func load_consumption_timers(timers: Array):
             if row >= 0 and col >= 0:
                 var frac_raw = item.get("fractional", {})
                 var frac: Dictionary = frac_raw if frac_raw is Dictionary else {}
+                var rot_raw = item.get("rotation", {})
+                var rot: Dictionary = rot_raw if rot_raw is Dictionary else {}
                 consumption_timers[str(row) + "," + str(col)] = {
-                    "fractional": frac
+                    "fractional": frac,
+                    "rotation": rot
                 }
 
 # The serialization of the timers of the consumption of the buildings (see building_consumption_timers).
-# The format: [{ "index": int, "fractional": { dkey: float, ... } }, ...]
+# The format: [{ "index": int, "fractional": { dkey: float, ... },
+#                "rotation": { "@group": int, ... } }, ...]
 func serialize_building_consumption_timers() -> Array:
     var result = []
     for key in building_consumption_timers.keys():
@@ -431,7 +476,8 @@ func serialize_building_consumption_timers() -> Array:
             continue
         result.append({
             "index": int(k.substr(1)),
-            "fractional": (building_consumption_timers[key].get("fractional", {}) as Dictionary).duplicate(true)
+            "fractional": (building_consumption_timers[key].get("fractional", {}) as Dictionary).duplicate(true),
+            "rotation": (building_consumption_timers[key].get("rotation", {}) as Dictionary).duplicate(true)
         })
     return result
 
@@ -443,8 +489,11 @@ func load_building_consumption_timers(timers: Array):
             if idx >= 0:
                 var frac_raw = item.get("fractional", {})
                 var frac: Dictionary = frac_raw if frac_raw is Dictionary else {}
+                var rot_raw = item.get("rotation", {})
+                var rot: Dictionary = rot_raw if rot_raw is Dictionary else {}
                 building_consumption_timers["b" + str(idx)] = {
-                    "fractional": frac
+                    "fractional": frac,
+                    "rotation": rot
                 }
 # --- THE URBAN CONSUMPTION (the pseudo-profession "all", all the residents of the city) ---
 # The profession "all" (data/professions.json) is the top of the hierarchy: it covers ALL
@@ -461,8 +510,9 @@ func load_building_consumption_timers(timers: Array):
 # a full coverage. If the storage has less than required, everything that
 # is there is written off, and the timer is reset; if the storage is empty - the timer is kept
 # "hot", and everything which appears is written off on the nearest tick without waiting for
-# a full interval. The greedy write-off from a @-group is as in tick_consumption().
-# production_bonus is ignored: the urban consumption gives no bonuses.
+# a full interval. A @-group is written off from every member that has stock
+# by default; an explicit "consume_all": false makes it rotate over one member
+# per tick instead. production_bonus is ignored: the urban consumption gives no bonuses.
 # It is called from main_map._process on a tick of the simulation with the step
 # CityData.SIMULATION_TICK (the same accuracy as that of the per-hex consumption).
 func tick_city_consumption(delta: float) -> void:
@@ -485,8 +535,11 @@ func tick_city_consumption(delta: float) -> void:
         if not CityData.is_market_consumption_enabled(dkey):
             continue
         if not city_consumption_timers.has(dkey):
-            city_consumption_timers[dkey] = {"elapsed": 0.0}
+            city_consumption_timers[dkey] = {"elapsed": 0.0, "rotation": {}}
         var timer: Dictionary = city_consumption_timers[dkey]
+        if not timer.has("rotation"):
+            timer["rotation"] = {}
+        var rotation: Dictionary = timer.get("rotation", {})
         timer.elapsed += delta
         if timer.elapsed < iv:
             continue
@@ -511,34 +564,13 @@ func tick_city_consumption(delta: float) -> void:
                 total += CityData.get_storage_amount(pid)
             if total <= 0:
                 continue # the storage is empty - we do not reset the timer: we will write off at once on the appearance
-            # The greedy write-off by the members of the group (the priority of the quality from
-            # CityData.consumption_priority) BY THE FACT OF
-            # THE PRESENCE: we take everything there is, but not more than required. Waiting for a full
-            # coverage (amount * the population) is not required - a partial write-off
-            # also happens (and resets the timer, see the timer.elapsed below).
-            var remaining = amt
-            # The priority of the write-off by the quality is a setting of the tab "Trade"
-            # (CityData.consumption_priority), and not a hard "best".
             var priority := CityData.get_consumption_priority(dkey)
-            for pid in members:
-                if remaining <= 0:
-                    break
-                var avail = CityData.get_storage_amount(pid)
-                if avail <= 0:
-                    continue
-                var take = min(avail, remaining)
-                var group_consumed: Dictionary = CityData.remove_from_storage(pid, take, priority)
-                CityData.record_consumption_source(pid, all_source, take)
-                # The fact of the inner market for the card of the "Trade".
-                CityData.record_market_consumption(pid, take)
-                # The residents pay for the consumed goods from the treasury (the inner market).
-                # The price is by the quality of each written-off unit.
-                var group_take_price: int = CityData.get_internal_market_income(pid, group_consumed)
-                CityData.add_treasury(group_take_price)
-                # The source of the income for the tooltip "Treasury" (the urban consumption,
-                # the name is taken from data/professions.json -> "All residents").
-                CityData.record_treasury_income(all_source, group_take_price, str(pid))
-                remaining -= take
+            if bool(entry.get("consume_all", false)):
+                # Every member is drawn on its own, so an empty shelf does not stop
+                # the other goods of the basket from being written off.
+                _consume_group_all(members, amt, all_source, priority)
+            else:
+                _consume_group_rotate(members, amt, all_source, priority, rotation, dkey)
         else:
             var pid = str(entry.get("product_id", ""))
             if pid.is_empty():
@@ -561,14 +593,15 @@ func tick_city_consumption(delta: float) -> void:
         timer.elapsed = 0.0
 
 # The serialization of the timers of the urban consumption for the save.
-# The format: [{ "resource": String, "elapsed": float }, ...]
+# The format: [{ "resource": String, "elapsed": float, "rotation": { "@group": int, ... } }, ...]
 # We do not save interval - it is computed from the data on the load.
 func serialize_city_consumption_timers() -> Array:
     var result = []
     for dkey in city_consumption_timers.keys():
         result.append({
             "resource": dkey,
-            "elapsed": float(city_consumption_timers[dkey].get("elapsed", 0.0))
+            "elapsed": float(city_consumption_timers[dkey].get("elapsed", 0.0)),
+            "rotation": (city_consumption_timers[dkey].get("rotation", {}) as Dictionary).duplicate(true)
         })
     return result
 
@@ -578,8 +611,11 @@ func load_city_consumption_timers(timers: Array):
         if item is Dictionary and item.has("resource"):
             var dkey = str(item.get("resource", ""))
             if not dkey.is_empty():
+                var rot_raw = item.get("rotation", {})
+                var rot: Dictionary = rot_raw if rot_raw is Dictionary else {}
                 city_consumption_timers[dkey] = {
-                    "elapsed": float(item.get("elapsed", 0.0))
+                    "elapsed": float(item.get("elapsed", 0.0)),
+                    "rotation": rot
                 }
 
 func serialize_assignments() -> Array:

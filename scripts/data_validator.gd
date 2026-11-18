@@ -532,6 +532,7 @@ const CONSUMPTION_FIELDS := {
     "amount": LEAF,
     "interval": LEAF,
     "production_bonus": LEAF,
+    "consume_all": LEAF,
 }
 
 const GROUP_BONUS_FIELDS := {

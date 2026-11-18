@@ -9,12 +9,12 @@
   // The target resource ("resource") can be:
   //   * an id of a single product from data/products/*.json — for example, "tools";
   //   * a reference to a product group from data/product_groups/ in the format
-  //     "@<group_id>" — for example, "@boats" (the "Boats" group). In that case
-  //     ANY suitable product from the group is written off: first the total
-  //     stock across all group members is summed, then the list is drawn
-  //     greedily from the available members (quality priority "best"). While the sum
-  //     over the group covers "amount" — the bonus applies; if not — the bonus
-  //     is removed and the improvement keeps working on the base multiplier.
+  //     "@<group_id>" — for example, "@boats" (the "Boats" group). The goods of
+  //     a group are written off either all at once (the default for "all") or
+  //     one member per tick, rotating over those in stock (the default for the
+  //     working professions). The quality priority still applies inside each
+  //     member. While a professional rule is covered — the bonus applies; if
+  //     not — the bonus is removed and the improvement keeps working on the base.
   //
   // Entry format:
   //   resource          — the product id or the group "@id" (as in craft recipes).
@@ -31,6 +31,13 @@
   //                       available members, not of all of them at once.
   //                       It does not apply to the pseudo-profession "all" (0.0):
   //                       city consumption gives no bonus at all.
+  //   consume_all       — for a group resource only. true (the default for
+  //                       "all") takes the full "amount" from EVERY member with
+  //                       stock in the same tick, so the order has no effect;
+  //                       false (the default for the professions) takes one
+  //                       member per tick, rotating over the ones with stock.
+  //                       The quality priority of the Trade tab still applies
+  //                       within each member.
   //
   // The pseudo-profession "all" (all citizens of the city, the top of the
   // profession hierarchy):
@@ -187,8 +194,7 @@
     },
     {
       // Furniture is a durable furnishing: citizens write it off less often
-      // than clothes or tableware. The group order is the write-off order:
-      // the everyday furniture goes first, the luxury one last.
+      // than clothes or tableware, and use both kinds when they are in stock.
       "resource": "@furniture",
       "profession": [ "all" ],
       "amount": 10,
