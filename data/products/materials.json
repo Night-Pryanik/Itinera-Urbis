@@ -266,6 +266,14 @@
       "icon": "charcoal.png"
     },
     {
+      "id": "coke", "price": 6,
+      "name": "Coke",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "coking",
+      "icon": "coke.png"
+    },
+    {
       "id": "copper_ore", "price": 6,
       "name": "Copper Ore",
       "type": "product",

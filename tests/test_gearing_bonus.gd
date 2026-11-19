@@ -28,7 +28,7 @@ extends SceneTree
 const WATCHDOG = preload("res://tests/watchdog.gd")
 
 const GEAR_TECH := "cogwheel"
-const WATER_TECH := "water_wheel"
+const WATER_TECH := "water_power"
 
 # A synthetic map: the water access of the city is derived from tile_data, so a
 # small grid is enough. No live map is loaded — the test stays in the fast suite.
@@ -112,6 +112,8 @@ func _test_data(gdata: Node, state: Dictionary) -> void:
             "the hand mill is turned by hands, not by gears", state)
     check(not bld.has("water_mill"),
             "the water mill pays for its wheel through its own recipe", state)
+    check(not bld.has("windmill"),
+            "the windmill pays for its sails through its own recipe", state)
 
 # --- 2. The technology --------------------------------------------------------
 func _test_technology(gdata: Node, state: Dictionary) -> void:
@@ -228,6 +230,8 @@ func _test_buildings(gdata: Node, cdata: Node, state: Dictionary) -> void:
             "the hand mill is turned by hands, not by gears", state)
     check(cdata.get_building_production_modifiers("water_mill", false).is_empty(),
             "the water mill must not receive a second bonus for the same wheel", state)
+    check(cdata.get_building_production_modifiers("windmill", false).is_empty(),
+            "the windmill must not receive a second bonus for its sails", state)
     check(cdata.get_building_production_modifiers("pottery_workshop", false).is_empty(),
             "a building outside the gear table must get no gear bonus", state)
 

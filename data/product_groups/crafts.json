@@ -157,6 +157,15 @@
       "id": "potash_woods",
       "name": "Potash Hardwoods",
       "products": [ "chestnut_wood", "maple_wood", "beech_wood", "walnut_wood", "oak_wood" ]
+    },
+    {
+      // Purified, low-sulfur solid carbon burned in smelters, bloomeries, blast furnaces,
+      // forges, jewelers' crucibles, glass furnaces and high-heat retorts. Raw peat and raw
+      // coal are excluded because ash, moisture and sulfur spoil bare metal; gunpowder,
+      // incense and hardwood potash still ask for pure wood charcoal.
+      "id": "smelting_fuel",
+      "name": "Furnace Fuel",
+      "products": [ "charcoal", "coke" ]
     }
   ]
 }

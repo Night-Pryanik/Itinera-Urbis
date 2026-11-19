@@ -334,6 +334,16 @@
       "icon": "crystal_glassware.png"
     },
     {
+      // Heavy cast cauldrons, pots and skillets poured from molten cast iron.
+      "id": "cast_iron_cookware",
+      "price": 36,
+      "name": "Cast-Iron Cookware",
+      "type": "product",
+      "category": "household_items",
+      "unlock_tech": "blast_furnace",
+      "icon": "cast_iron_cookware.png"
+    },
+    {
       "id": "metal_tableware",
       "price": 50,
       "name": "Metal Tableware",

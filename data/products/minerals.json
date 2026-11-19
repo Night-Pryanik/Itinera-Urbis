@@ -75,6 +75,24 @@
       "category": "minerals",
       "icon": "gypsum.png"
     },
+    {
+      "id": "peat",
+      "price": 3,
+      "name": "Peat",
+      "type": "product",
+      "category": "minerals",
+      "unlock_tech": "peat_cutting",
+      "icon": "peat.png"
+    },
+    {
+      "id": "coal",
+      "price": 4,
+      "name": "Coal",
+      "type": "product",
+      "category": "minerals",
+      "unlock_tech": "coal_mining",
+      "icon": "coal.png"
+    },
 
     // Pearl and coral are mineraloids, not minerals, but they are included here for convenience
     {

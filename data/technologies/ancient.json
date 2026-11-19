@@ -438,6 +438,16 @@
       "prerequisites": [ [ "limestone_burning", "wood_processing" ] ],
       "description": "Unlocks potash leached from broadleaf hardwood ashes in the kiln, potash-based forest glass and salted-out soap, and cobalt smalt.",
       "flavor": "Not every forest yields a strong lye: resinous pines leave a thin ash, so ash-burners sought out beech, maple, oak, chestnut and walnut, burned great stacks of seasoned timber, leached the ashes through water and calcined the liquor in hot pots into white potash. Costlier and slower to win than the crust of a soda lake, it freed inland workshops from distant natron and gave glassmakers, dyers and nitre-boilers an alkali of their own."
+    },
+    {
+      "id": "peat_cutting",
+      "name": "Peat Cutting",
+      "era": "ancient",
+      "science_cost": 3.0,
+      "icon": "peat_cutting.png",
+      "prerequisites": [ [ "mining" ], [ "irrigation" ] ],
+      "description": "Allows you to build peat pits on swamp bogs to cut and dry peat for domestic hearths and workshop kilns.",
+      "flavor": "Where cold water stands year after year, fallen moss and sedge do not rot away: they pack layer upon layer into dark, fibrous earth. Cut into wet bricks with a flat spade and stacked in the wind through summer, bog turf kept northern hearths warm and fired pots, brew-kettles and smokehouses wherever timber grew sparse."
     }
   ]
 }

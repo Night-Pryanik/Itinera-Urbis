@@ -121,6 +121,15 @@
       "profession": "clay_digger"
     },
     {
+      "id": "peat_pit",
+      "name": "Peat Pit",
+      "icon": "peat_pit.png",
+      "color": [ 92, 64, 42 ],
+      "work_cost": 22,
+      "unlock_tech": "peat_cutting",
+      "profession": "peat_cutter"
+    },
+    {
       "id": "plantation",
       "name": "Plantation",
       "icon": "plantation.png",

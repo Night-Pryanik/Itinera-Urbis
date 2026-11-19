@@ -2,9 +2,9 @@
 #   godot --headless --path . --script res://tests/test_water_production_bonus.gd
 #
 # The water of the game is a MATERIAL (irrigation, washing) and a source of
-# MECHANICAL MOTION (ore washing, bellows). The first lives in the block
+# MECHANICAL MOTION (ore washing, bellows, hammers). The first lives in the block
 # "fresh_water" of data/modifiers.json and needs the water alone. The second is
-# the effect of the "Water Wheel" technology and lives in the record of that
+# the effect of the "Water Power" technology and lives in the record of that
 # technology in "tech_modifiers" — the record is marked "requires_water",
 # because the water-driven machinery only works where the water runs.
 #
@@ -32,7 +32,7 @@ extends SceneTree
 const WATCHDOG = preload("res://tests/watchdog.gd")
 
 const WATER_LABEL := "Fresh water access"
-const WATER_TECH := "water_wheel"
+const WATER_TECH := "water_power"
 
 # A synthetic map: the water access of the city is derived from tile_data, so a
 # small grid is enough. No live map is loaded — the test stays in the fast suite.

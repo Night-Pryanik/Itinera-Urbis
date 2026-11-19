@@ -2,7 +2,6 @@
   "eras": [
     {"id": "ancient", "name": "Ancient", "region_width": 2},
     {"id": "antiquity", "name": "Antiquity", "region_width": 2},
-    {"id": "classical", "name": "Classical", "region_width": 2},
     {"id": "medieval", "name": "Medieval", "region_width": 2},
     {"id": "renaissance", "name": "Renaissance", "region_width": 2},
     {"id": "modern", "name": "Modern", "region_width": 2},
