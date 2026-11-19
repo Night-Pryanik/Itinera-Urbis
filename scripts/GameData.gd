@@ -1638,6 +1638,36 @@ func _rule_matches_building(rule: Dictionary, building_id: String) -> bool:
         return true
     return not building_id.is_empty() and scoped.has(building_id)
 
+# Subset of a rule's "buildings" that actually employ prof_id. Keeps multi-profession
+# building-scoped rules (e.g. millstones for mills and the oilmaker's house) from
+# attributing one profession's buildings to another in reverse-index queries.
+func _rule_buildings_for_profession(rule: Dictionary, prof_id: String) -> Array:
+    var result: Array = []
+    if prof_id.is_empty() or prof_id == "all":
+        return result
+    for raw_bid in _rule_buildings(rule):
+        var bid := str(raw_bid)
+        if get_profession_for_building(bid) == prof_id:
+            result.append(bid)
+    return result
+
+# True when prof_id also works in a building or map improvement outside listed_buildings,
+# so UI tooltips should qualify the profession name with the listed buildings.
+func profession_has_unlisted_workplace(prof_id: String, listed_buildings: Array) -> bool:
+    if prof_id.is_empty() or prof_id == "all" or listed_buildings.is_empty():
+        return false
+    for b in buildings:
+        if not (b is Dictionary):
+            continue
+        var bid := str(b.get("id", ""))
+        if not bid.is_empty() and str(b.get("profession", "")) == prof_id and not listed_buildings.has(bid):
+            return true
+    for imp_id in improvements:
+        var imp = improvements[imp_id]
+        if imp is Dictionary and str(imp.get("profession", "")) == prof_id:
+            return true
+    return false
+
 # Assembles the consumption record from the rule of data/consumption.json.
 # res_key — the "resource" field of the rule ("product_id" or "@group_id").
 # For a group the members are resolved through product_groups; if the group is not found
@@ -1758,6 +1788,11 @@ func get_consumption_consumers(res_key: String) -> Array:
                 var pair := str(prof_id)
                 if covered.has(pair):
                     continue
+                var prof_buildings: Array = []
+                if not scoped.is_empty():
+                    prof_buildings = _rule_buildings_for_profession(rule, pair)
+                    if prof_buildings.is_empty():
+                        continue
                 covered[pair] = true
                 result.append({
                     "profession_id": pair,
@@ -1766,7 +1801,7 @@ func get_consumption_consumers(res_key: String) -> Array:
                     "interval": interval,
                     "production_bonus": bonus,
                     "via_group": str(via_group.get(query, "")),
-                    "buildings": scoped.duplicate()
+                    "buildings": prof_buildings
                 })
 
     # The legacy records "from the resource": a product carries its own consumption

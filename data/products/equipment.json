@@ -1,6 +1,16 @@
 {
   "resources": [
     {
+      // Paired stones dressed with furrows for grain mills and edge-runner stones for oil presses.
+      "id": "millstone",
+      "price": 24,
+      "name": "Millstone",
+      "type": "product",
+      "category": "equipment",
+      "unlock_tech": "masonry",
+      "icon": "millstone.png"
+    },
+    {
       // Calibrated scales, calipers, dividers, astrolabes and fine bench instruments,
       // made from each workable metal once Mechanics and Metallurgy meet.
       "id": "copper_precision_instruments",

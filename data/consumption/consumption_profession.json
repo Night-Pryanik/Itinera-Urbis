@@ -432,6 +432,18 @@
       "production_bonus": 0.15
     },
     {
+      // Millstones wear smooth under steady rotation and must be redressed and replaced:
+      // animal, water and wind mills grind grain between paired stones, and the oilmaker
+      // crushes olives and oilseeds under edge-runner stones before pressing. Hand mills
+      // turn too slowly to wear millstones out and ignore this rule.
+      "resource": "millstone",
+      "profession": [ "miller", "oilmaker" ],
+      "buildings": [ "animal_mill", "water_mill", "windmill", "oilmaker_house" ],
+      "amount": 10,
+      "interval": 30,
+      "production_bonus": 0.15
+    },
+    {
       // Dried bog turf fires pottery and brick kilns, heats malt and brew kettles,
       // boils soap pans and cures fish over slow smoke where firewood is scarce.
       "resource": "peat",

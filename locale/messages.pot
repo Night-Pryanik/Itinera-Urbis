@@ -4088,6 +4088,10 @@ msgid "Sews clothes out of leather."
 msgstr ""
 
 msgctxt "crafts.description"
+msgid "Shapes and furrows hard stone into millstones for mills and oil presses."
+msgstr ""
+
+msgctxt "crafts.description"
 msgid "Shapes rough stone into a form fit for building."
 msgstr ""
 
@@ -4733,6 +4737,10 @@ msgstr ""
 
 msgctxt "crafts.name"
 msgid "Iron (from cast iron)"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Millstones"
 msgstr ""
 
 msgctxt "crafts.name"
@@ -5609,6 +5617,10 @@ msgstr ""
 
 msgctxt "product_groups.name"
 msgid "Jewelry"
+msgstr ""
+
+msgctxt "product_groups.name"
+msgid "Millstone Stones"
 msgstr ""
 
 msgctxt "product_groups.name"
@@ -6853,6 +6865,10 @@ msgstr ""
 
 msgctxt "resources.name"
 msgid "Millet"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Millstone"
 msgstr ""
 
 msgctxt "resources.name"

@@ -749,8 +749,9 @@ func show_consumption_tooltip(mouse_pos: Vector2, res_key: String, _products_dat
         # second).
         var per_sec := float(amount) if interval <= 0.0 else float(amount) / interval
         var consumer_label := str(consumer.get("profession_name", ""))
+        var prof_id := str(consumer.get("profession_id", ""))
         var scoped_buildings: Array = consumer.get("buildings", [])
-        if not scoped_buildings.is_empty():
+        if not scoped_buildings.is_empty() and GameData.profession_has_unlisted_workplace(prof_id, scoped_buildings):
             var building_names: Array = []
             for bid in scoped_buildings:
                 building_names.append(GameData.get_building_display_name(str(bid)))

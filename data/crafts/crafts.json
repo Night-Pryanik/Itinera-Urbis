@@ -202,6 +202,16 @@
       "description": "Shapes rough stone into a form fit for building."
     },
     {
+      "id": "millstone",
+      "name": "Millstones",
+      "produced_in": [ "mason_workshop" ],
+      "resources": { "@millstones": 20 },
+      "result": { "millstone": 10 },
+      "time": 6.0,
+      "unlock_tech": "masonry",
+      "description": "Shapes and furrows hard stone into millstones for mills and oil presses."
+    },
+    {
       "id": "glassware",
       "name": "Glassware",
       "produced_in": [ "glassmaker_house" ],

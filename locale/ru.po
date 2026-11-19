@@ -4109,6 +4109,10 @@ msgid "Sews clothes out of leather."
 msgstr "Шьёт одежду из кожи"
 
 msgctxt "crafts.description"
+msgid "Shapes and furrows hard stone into millstones for mills and oil presses."
+msgstr "Вытёсывает и насекает из твёрдого камня жернова для мельниц и маслобоен."
+
+msgctxt "crafts.description"
 msgid "Shapes rough stone into a form fit for building."
 msgstr "Обрабатывает дикий камень в форму, пригодную для строительства"
 
@@ -4755,6 +4759,10 @@ msgstr "Благовония"
 msgctxt "crafts.name"
 msgid "Iron (from cast iron)"
 msgstr "Железо (из чугуна)"
+
+msgctxt "crafts.name"
+msgid "Millstones"
+msgstr "Мельничные жернова"
 
 msgctxt "crafts.name"
 msgid "Sandalwood Oil"
@@ -5631,6 +5639,10 @@ msgstr "Инструменты"
 msgctxt "product_groups.name"
 msgid "Jewelry"
 msgstr "Украшения"
+
+msgctxt "product_groups.name"
+msgid "Millstone Stones"
+msgstr "Камни для мельничных жерновов"
 
 msgctxt "product_groups.name"
 msgid "Nuts"
@@ -6875,6 +6887,10 @@ msgstr "Метеоритное железо"
 msgctxt "resources.name"
 msgid "Millet"
 msgstr "Просо"
+
+msgctxt "resources.name"
+msgid "Millstone"
+msgstr "Мельничный жернов"
 
 msgctxt "resources.name"
 msgid "Mulberries"
