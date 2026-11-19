@@ -122,8 +122,8 @@
     },
     {
       // Work tools are a consumable for everyone who digs, fells, mines or shapes: the
-      // rule covers any instrument from the @instruments group, drawing one kind per
-      // tick and rotating over those in stock.
+      // rule prefers the strongest tool material in stock. All materials wear out
+      // at the same rate.
       "resource": "@instruments",
       "profession": [ 
         "miner",
@@ -142,7 +142,16 @@
       ],
       "amount": 10,
       "interval": 10,
-      "production_bonus": 0.25
+      "production_bonus": 0.25,
+      "members": {
+        "copper_tools": { "production_bonus": 0.10 },
+        "cast_iron_tools": { "production_bonus": 0.20 },
+        "bronze_tools": { "production_bonus": 0.15 },
+        "brass_tools": { "production_bonus": 0.15 },
+        "iron_tools": { "production_bonus": 0.20 },
+        "steel_tools": { "production_bonus": 0.25 },
+        "damascus_tools": { "production_bonus": 0.30 }
+      }
     },
     {
       // Glue holds the crafts of the shaped material and of the written word together: the

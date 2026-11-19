@@ -145,6 +145,16 @@
       "description": "Makes a set of tools for craftsmen."
     },
     {
+      "id": "damascus_tools",
+      "name": "Tools of <city_name> Steel",
+      "produced_in": [ "forge" ],
+      "resources": { "damascus_steel": 20, "@smelting_fuel": 20 },
+      "result": { "damascus_tools": 10 },
+      "time": 5.0,
+      "unlock_tech": "steel_making",
+      "description": "Makes a set of tools for craftsmen."
+    },
+    {
       "id": "iron_weapons",
       "name": "Iron Weapons",
       "produced_in": [ "forge" ],

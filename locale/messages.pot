@@ -9335,3 +9335,7 @@ msgstr ""
 
 msgid " Distance to city: %d hex(es)"
 msgstr ""
+
+#: data/crafts/metalworking.json data/products/metalworking.json
+msgid "Tools of <city_name> Steel"
+msgstr ""

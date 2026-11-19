@@ -33,13 +33,13 @@ func _run() -> void:
     var all_rules: Array = gdata.get_profession_consumption("all")
     var miner_rules: Array = gdata.get_profession_consumption("miner")
 
-    # --- The defaults: the citizens take the whole basket, the worker rotates ---
+    # --- The defaults: the citizens take the whole basket, the worker takes one kind ---
     var fruits = _find(all_rules, "@fruits")
     var instruments = _find(miner_rules, "@instruments")
     check(fruits != null and bool(fruits.get("consume_all", false)),
         "a city group rule must default to consume_all", state)
     check(instruments != null and not bool(instruments.get("consume_all", true)),
-        "a professional group rule must default to rotation", state)
+        "a professional group rule must not take the whole basket", state)
 
     # --- The city: a full ration from each member, whatever its place in the list ---
     var basket = _find(all_rules, "@consumer_goods")
@@ -165,6 +165,38 @@ func _run() -> void:
     wm2.free()
     gdata.consumption_rules.remove_at(gdata.consumption_rules.size() - 1)
     gdata.product_groups.erase("rotate_basket")
+
+    var tool_multipliers := {
+        "copper_tools": 1.10,
+        "cast_iron_tools": 1.20,
+        "bronze_tools": 1.15,
+        "brass_tools": 1.15,
+        "iron_tools": 1.20,
+        "steel_tools": 1.25,
+        "damascus_tools": 1.30,
+    }
+    for pid in tool_multipliers:
+        wm.consumption_timers.clear()
+        _clear_stock(city)
+        _set_one(city, pid, 30)
+        multiplier = wm.tick_consumption(0, 0, 1.0)
+        check(is_equal_approx(multiplier, float(tool_multipliers[pid])),
+            "%s must give x%.2f, got x%.2f" % [pid, tool_multipliers[pid], multiplier], state)
+        check(city.get_storage_amount(pid) == 29,
+            "%s must be consumed at one unit per second" % pid, state)
+
+    wm.consumption_timers.clear()
+    _clear_stock(city)
+    _set_one(city, "damascus_tools", 30)
+    _set_one(city, "steel_tools", 30)
+    multiplier = wm.tick_consumption(0, 0, 1.0)
+    check(is_equal_approx(multiplier, 1.30) and city.get_storage_amount("steel_tools") == 30
+            and city.get_storage_amount("damascus_tools") == 29,
+        "Damascus tools must take precedence over ordinary steel tools", state)
+    _set_one(city, "damascus_tools", 0)
+    multiplier = wm.tick_consumption(0, 0, 1.0)
+    check(is_equal_approx(multiplier, 1.25) and city.get_storage_amount("steel_tools") == 29,
+        "the miner must fall back to ordinary steel tools when Damascus tools are unavailable", state)
 
     # --- Tiered group ("members"): wooden_boat takes priority over reed_boat ---
     stub.tile_data = [[{"improvement": "fishing_boats"}]]

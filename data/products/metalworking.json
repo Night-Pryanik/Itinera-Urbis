@@ -48,6 +48,13 @@
       "icon": "steel_tools.png"
     },
     {
+      "id": "damascus_tools", "price": 200,
+      "name": "Tools of <city_name> Steel",
+      "type": "product",
+      "category": "tools",
+      "icon": "steel_tools.png"
+    },
+    {
       "id": "copper_weapons", "price": 45,
       "name": "Copper Weapons",
       "type": "product",
