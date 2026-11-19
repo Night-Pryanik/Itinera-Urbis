@@ -4,6 +4,11 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
   workflow_dispatch:
+    inputs:
+      only:
+        description: Test name filter (empty runs the full suite)
+        type: string
+        required: false
 
 permissions:
   contents: read
@@ -36,7 +41,14 @@ jobs:
         run: '"$GODOT" --headless --path . --import'
 
       - name: Run tests
-        run: python3 tools/run_tests.py --all
+        env:
+          TEST_FILTER: ${{ inputs.only }}
+        run: |
+          if [[ -n "$TEST_FILTER" ]]; then
+            python3 tools/run_tests.py --all --only "$TEST_FILTER"
+          else
+            python3 tools/run_tests.py --all
+          fi
 
       - name: Upload test logs
         if: ${{ !cancelled() }}
