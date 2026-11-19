@@ -11,6 +11,17 @@
     { "id": "gold", "price": 70, "name": "Gold", "type": "product", "category": "metals", "icon": "gold.png" },
     { "id": "silver", "price": 40, "name": "Silver", "type": "product", "category": "metals", "icon": "silver.png" },
     { "id": "iron", "price": 26, "name": "Iron", "type": "product", "category": "metals", "icon": "iron.png" },
+    {
+      // High-carbon pig iron tapped from the blast furnace: too brittle for blades,
+      // but fluid in the mould and refined in bulk into wrought iron and steel.
+      "id": "cast_iron",
+      "price": 20,
+      "name": "Cast Iron",
+      "type": "product",
+      "category": "metals",
+      "unlock_tech": "blast_furnace",
+      "icon": "cast_iron.png"
+    },
     { "id": "steel", "price": 58, "name": "Steel", "type": "product", "category": "metals", "icon": "steel.png" },
     {
       // The brand good of the steel line — see the comment at cashmere in

@@ -36,6 +36,17 @@
       "default_recipes": [ "grind_grain_water" ]
     },
     {
+      "id": "windmill",
+      "name": "Windmill",
+      "description": "A mill whose cloth sails catch the wind to turn two sets of millstones without needing running water.",
+      "work_cost": 35,
+      "additional_cost": [ { "planks": 140 }, { "@processed_construction_materials": 100 }, { "@building_stone": 10 } ],
+      "icon": "windmill.png",
+      "production_slots": 2.0,
+      "unlock_tech": "windmill",
+      "default_recipes": [ "grind_grain_wind" ]
+    },
+    {
       "id": "bakery",
       "name": "Bakery",
       "description": "Bakes bread from flour, the staple of the city diet.",
@@ -80,6 +91,18 @@
       "default_recipes": [ "charcoal" ]
     },
     {
+      "id": "coke_oven",
+      "name": "Coke Oven",
+      "description": "Bakes coal without air in a sealed brick kiln to drive off smoke and sulfur, leaving hard metallurgical coke.",
+      "work_cost": 55,
+      "additional_cost": [ { "planks": 80 }, { "@processed_construction_materials": 180 }, { "@building_stone": 20 } ],
+      "icon": "coke_oven.png",
+      "profession": "charcoal_burner",
+      "production_slots": 1.0,
+      "unlock_tech": "coking",
+      "default_recipes": [ "coke" ]
+    },
+    {
       "id": "forge",
       "name": "Forge",
       "description": "Blacksmiths forge metal tools and goods here.",
@@ -112,7 +135,20 @@
       "icon": "bloomery.png",
       "production_slots": 1.0,
       "unlock_tech": "iron_processing",
+      "upgrades_into": "blast_furnace",
       "default_recipes": [ "iron" ]
+    },
+    {
+      "id": "blast_furnace",
+      "name": "Blast Furnace",
+      "description": "A tall shaft furnace that smelts iron ore with limestone or lime flux into molten cast iron.",
+      "work_cost": 75,
+      "additional_cost": [ { "planks": 150 }, { "@processed_construction_materials": 200 }, { "@building_stone": 30 } ],
+      "icon": "blast_furnace.png",
+      "profession": "smelter",
+      "production_slots": 1.0,
+      "unlock_tech": "blast_furnace",
+      "default_recipes": [ "cast_iron" ]
     },
     {
       "id": "pottery_workshop",

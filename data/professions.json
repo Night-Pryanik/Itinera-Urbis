@@ -118,6 +118,12 @@
       "description": "Digs and sorts clay for firing."
     },
     {
+      "id": "peat_cutter",
+      "name": "Peat Cutter",
+      "icon": "profession_peat_cutter.png",
+      "description": "Cuts wet turf from the bog and stacks it to dry into fuel."
+    },
+    {
       "id": "potter",
       "name": "Potter",
       "icon": "profession_potter.png",

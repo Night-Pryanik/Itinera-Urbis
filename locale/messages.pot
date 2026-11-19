@@ -3149,7 +3149,19 @@ msgid "A mill that uses water to set the millstones in motion."
 msgstr ""
 
 msgctxt "buildings.description"
+msgid "A mill whose cloth sails catch the wind to turn two sets of millstones without needing running water."
+msgstr ""
+
+msgctxt "buildings.description"
+msgid "A tall shaft furnace that smelts iron ore with limestone or lime flux into molten cast iron."
+msgstr ""
+
+msgctxt "buildings.description"
 msgid "Bakes bread from flour, the staple of the city diet."
+msgstr ""
+
+msgctxt "buildings.description"
+msgid "Bakes coal without air in a sealed brick kiln to drive off smoke and sulfur, leaving hard metallurgical coke."
 msgstr ""
 
 msgctxt "buildings.description"
@@ -3289,6 +3301,10 @@ msgid "Bakery"
 msgstr ""
 
 msgctxt "buildings.name"
+msgid "Blast Furnace"
+msgstr ""
+
+msgctxt "buildings.name"
 msgid "Bloomery"
 msgstr ""
 
@@ -3306,6 +3322,10 @@ msgstr ""
 
 msgctxt "buildings.name"
 msgid "Charcoal Kiln"
+msgstr ""
+
+msgctxt "buildings.name"
+msgid "Coke Oven"
 msgstr ""
 
 msgctxt "buildings.name"
@@ -3434,6 +3454,10 @@ msgstr ""
 
 msgctxt "buildings.name"
 msgid "Weaver's House"
+msgstr ""
+
+msgctxt "buildings.name"
+msgid "Windmill"
 msgstr ""
 
 msgctxt "buildings.name"
@@ -3673,6 +3697,10 @@ msgid "Awards the milk of the city to the cheese the world asks for by the name 
 msgstr ""
 
 msgctxt "crafts.description"
+msgid "Bakes coal without air into hard, clean-burning metallurgical coke."
+msgstr ""
+
+msgctxt "crafts.description"
 msgid "Binds sheets of parchment or paper with leather and glue into a book."
 msgstr ""
 
@@ -3729,6 +3757,10 @@ msgid "Burns wood into charcoal."
 msgstr ""
 
 msgctxt "crafts.description"
+msgid "Casts molten iron into thick-walled cauldrons, kettles and skillets."
+msgstr ""
+
+msgctxt "crafts.description"
 msgid "Combles and spins the fleece of the city into the softest cloth a town will ask for."
 msgstr ""
 
@@ -3750,6 +3782,10 @@ msgstr ""
 
 msgctxt "crafts.description"
 msgid "Cuts stone into plates, bowls, and cups and grinds them smooth with pumice."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Decarburizes cast iron on the finery hearth and hammers it into wrought iron."
 msgstr ""
 
 msgctxt "crafts.description"
@@ -3989,6 +4025,10 @@ msgid "Makes wooden tablets with a hollow filled with wax."
 msgstr ""
 
 msgctxt "crafts.description"
+msgid "Pours molten cast iron into moulds to make large batches of plowshares, hoes and heavy tools."
+msgstr ""
+
+msgctxt "crafts.description"
 msgid "Presses oil from the seeds and fruits of oil crops."
 msgstr ""
 
@@ -4002,6 +4042,10 @@ msgstr ""
 
 msgctxt "crafts.description"
 msgid "Produces parchment from animal hides by liming them."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Refines high-carbon cast iron down to resilient steel in the finery forge."
 msgstr ""
 
 msgctxt "crafts.description"
@@ -4025,6 +4069,10 @@ msgid "Shapes rough stone into a form fit for building."
 msgstr ""
 
 msgctxt "crafts.description"
+msgid "Smelts a heavy charge of iron ore over porous coke with limestone or lime flux into molten cast iron."
+msgstr ""
+
+msgctxt "crafts.description"
 msgid "Smelts antimony ore into pure antimony."
 msgstr ""
 
@@ -4038,6 +4086,10 @@ msgstr ""
 
 msgctxt "crafts.description"
 msgid "Smelts gold ore into pure gold."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Smelts iron ore with limestone or lime flux into molten cast iron."
 msgstr ""
 
 msgctxt "crafts.description"
@@ -4469,6 +4521,18 @@ msgid "Cashmere"
 msgstr ""
 
 msgctxt "crafts.name"
+msgid "Cast Iron"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Cast-Iron Cookware"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Cast-Iron Tools"
+msgstr ""
+
+msgctxt "crafts.name"
 msgid "Charcoal"
 msgstr ""
 
@@ -4502,6 +4566,14 @@ msgstr ""
 
 msgctxt "crafts.name"
 msgid "Coffee"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Coke"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Coke Smelting"
 msgstr ""
 
 msgctxt "crafts.name"
@@ -4550,6 +4622,10 @@ msgstr ""
 
 msgctxt "crafts.name"
 msgid "Flour (with a water wheel)"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Flour (with a windmill)"
 msgstr ""
 
 msgctxt "crafts.name"
@@ -4618,6 +4694,10 @@ msgstr ""
 
 msgctxt "crafts.name"
 msgid "Incense"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Iron (from cast iron)"
 msgstr ""
 
 msgctxt "crafts.name"
@@ -4814,6 +4894,10 @@ msgstr ""
 
 msgctxt "crafts.name"
 msgid "Steel"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Steel (from cast iron)"
 msgstr ""
 
 msgctxt "crafts.name"
@@ -5185,10 +5269,6 @@ msgid "Antiquity"
 msgstr ""
 
 msgctxt "eras.name"
-msgid "Classical"
-msgstr ""
-
-msgctxt "eras.name"
 msgid "Contemporary"
 msgstr ""
 
@@ -5325,6 +5405,10 @@ msgid "Pasture"
 msgstr ""
 
 msgctxt "improvements.name"
+msgid "Peat Pit"
+msgstr ""
+
+msgctxt "improvements.name"
 msgid "Pigsty"
 msgstr ""
 
@@ -5361,6 +5445,14 @@ msgid "Construction: -10% labor cost"
 msgstr ""
 
 msgctxt "modifiers.tech_modifiers.name"
+msgid "Farms, animal mill: +20% production"
+msgstr ""
+
+msgctxt "modifiers.tech_modifiers.name"
+msgid "Farms, plantations: +25% production"
+msgstr ""
+
+msgctxt "modifiers.tech_modifiers.name"
 msgid "Farms: +50% production"
 msgstr ""
 
@@ -5386,6 +5478,10 @@ msgstr ""
 
 msgctxt "modifiers.tech_modifiers.name"
 msgid "Plantations: +30% production"
+msgstr ""
+
+msgctxt "modifiers.tech_modifiers.name"
+msgid "Reduces the effect of distance from the city on labor cost when building improvements by 20%"
 msgstr ""
 
 msgctxt "modifiers.tech_modifiers.name"
@@ -5454,6 +5550,14 @@ msgstr ""
 
 msgctxt "product_groups.name"
 msgid "Fruits"
+msgstr ""
+
+msgctxt "product_groups.name"
+msgid "Fuel"
+msgstr ""
+
+msgctxt "product_groups.name"
+msgid "Furnace Fuel"
 msgstr ""
 
 msgctxt "product_groups.name"
@@ -5578,6 +5682,10 @@ msgstr ""
 
 msgctxt "professions.description"
 msgid "Cultivates the vineyard and gathers the harvest."
+msgstr ""
+
+msgctxt "professions.description"
+msgid "Cuts wet turf from the bog and stacks it to dry into fuel."
 msgstr ""
 
 msgctxt "professions.description"
@@ -5802,6 +5910,10 @@ msgstr ""
 
 msgctxt "professions.name"
 msgid "Parchment Maker"
+msgstr ""
+
+msgctxt "professions.name"
+msgid "Peat Cutter"
 msgstr ""
 
 msgctxt "professions.name"
@@ -6149,6 +6261,18 @@ msgid "Cassava"
 msgstr ""
 
 msgctxt "resources.name"
+msgid "Cast Iron"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Cast-Iron Cookware"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Cast-Iron Tools"
+msgstr ""
+
+msgctxt "resources.name"
 msgid "Castilla"
 msgstr ""
 
@@ -6229,6 +6353,10 @@ msgid "Cloth Clothes"
 msgstr ""
 
 msgctxt "resources.name"
+msgid "Coal"
+msgstr ""
+
+msgctxt "resources.name"
 msgid "Coca"
 msgstr ""
 
@@ -6266,6 +6394,10 @@ msgstr ""
 
 msgctxt "resources.name"
 msgid "Coir"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Coke"
 msgstr ""
 
 msgctxt "resources.name"
@@ -6766,6 +6898,10 @@ msgstr ""
 
 msgctxt "resources.name"
 msgid "Peas"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Peat"
 msgstr ""
 
 msgctxt "resources.name"
@@ -7701,6 +7837,18 @@ msgid "+10% to the production of mines and quarries."
 msgstr ""
 
 msgctxt "technologies.description"
+msgid "+20% to resource production on farms and animal mills.\nReduces the effect of distance from the city on the work cost of building improvements by 20%."
+msgstr ""
+
+msgctxt "technologies.description"
+msgid "+25% to resource production on farms and plantations."
+msgstr ""
+
+msgctxt "technologies.description"
+msgid "+25% to the production of mines, quarries, the bloomery, the smelter and the forge only where fresh water is available: without water the drive gives no bonus, for the water washes the ore, works the bellows and lifts the hammers."
+msgstr ""
+
+msgctxt "technologies.description"
 msgid "+30% to resource production on plantations."
 msgstr ""
 
@@ -7765,6 +7913,10 @@ msgid "Allows you to build pastures."
 msgstr ""
 
 msgctxt "technologies.description"
+msgid "Allows you to build peat pits on swamp bogs to cut and dry peat for domestic hearths and workshop kilns."
+msgstr ""
+
+msgctxt "technologies.description"
 msgid "Allows you to build scriptoriums."
 msgstr ""
 
@@ -7777,6 +7929,10 @@ msgid "Allows you to build the apiary."
 msgstr ""
 
 msgctxt "technologies.description"
+msgid "Allows you to build the blast furnace and upgrade bloomeries into it, smelting iron ore with limestone or lime flux into cast iron.\nUnlocks finery iron and steel refined from cast iron, along with cast-iron tools and cast-iron cookware."
+msgstr ""
+
+msgctxt "technologies.description"
 msgid "Allows you to build the bookbinder's workshop.\nAllows you to bind sheets of parchment or paper into books with leather and glue."
 msgstr ""
 
@@ -7786,6 +7942,10 @@ msgstr ""
 
 msgctxt "technologies.description"
 msgid "Allows you to build the clay pit and the pottery workshop."
+msgstr ""
+
+msgctxt "technologies.description"
+msgid "Allows you to build the coke oven to bake coal into metallurgical coke, substituting for charcoal across smelters, forges and glassworks and unlocking heavier coke smelting in the blast furnace."
 msgstr ""
 
 msgctxt "technologies.description"
@@ -7857,6 +8017,10 @@ msgid "Allows you to build the weaver's house and weave clothes and carpets from
 msgstr ""
 
 msgctxt "technologies.description"
+msgid "Allows you to build the windmill (2 production slots): wind-driven sails turn the millstones at the speed of a water mill without needing fresh water or animal feed."
+msgstr ""
+
+msgctxt "technologies.description"
 msgid "Allows you to build the winemaker's house: grapes → wine."
 msgstr ""
 
@@ -7866,6 +8030,10 @@ msgstr ""
 
 msgctxt "technologies.description"
 msgid "Reduces the effect of distance from the city on the work cost of building improvements by 30%.\nUnlocks the Cart Road (road level 2): up to 30 units/sec per section instead of 10."
+msgstr ""
+
+msgctxt "technologies.description"
+msgid "Reveals coal seams in hills and mountains and allows mines to extract coal for domestic fuel, kilns and boilers."
 msgstr ""
 
 msgctxt "technologies.description"
@@ -7925,10 +8093,6 @@ msgid "Unlocks the use of draft animals to turn millstones."
 msgstr ""
 
 msgctxt "technologies.description"
-msgid "Unlocks the water mill: the running water sets the millstones in motion.\n+25% to the production of mines, quarries, the bloomery, the smelter and the forge only where fresh water is available: without water the wheel gives no bonus, for the water washes the ore and drives the bellows."
-msgstr ""
-
-msgctxt "technologies.description"
 msgid "Allows you to build the chandler's house: tallow → tallow candles, wax → wax candles."
 msgstr ""
 
@@ -7950,6 +8114,14 @@ msgstr ""
 
 msgctxt "technologies.description"
 msgid "Unlocks gunpowder in the alchemist's house, boosting ore and stone extraction in mines and quarries, and nitrary saltpeter leached from lime and potash."
+msgstr ""
+
+msgctxt "technologies.flavor"
+msgid "A bloomery never truly melted its iron: it coaxed a spongy lump from the ore one batch at a time and halted to pull it from the hearth. Raise the shaft, feed it limestone to run the stony gangue off as liquid slag and drive the bellows without pause, and the metal pours from the tap-hole like bright water — brittle under the hammer, yet matchless in the mould and ready to be fined in bulk into bar iron and steel. Cast in China since antiquity and towering beside the millstreams of medieval Europe, the blast furnace turned iron from a smith's batch into an industry."
+msgstr ""
+
+msgctxt "technologies.flavor"
+msgid "A field sown with the same grain year after year gives less with every harvest until the earth lies spent. Alternating winter and spring cereals with pulses, fodder and rested fallow — practiced across Chinese bean-and-millet fields, the irrigated gardens of the Islamic world and the three-field manors of medieval Europe — returned strength to the soil and raised more from the same land."
 msgstr ""
 
 msgctxt "technologies.flavor"
@@ -7977,11 +8149,19 @@ msgid "A wheel that rolls is not yet a machine; the teeth are. They turn one tur
 msgstr ""
 
 msgctxt "technologies.flavor"
+msgid "An ancient throat-and-girth strap pressed against a horse's windpipe the moment it leaned into a heavy load; the harder the animal pulled, the less it could breathe. Developed along the northern frontiers of China from earlier breast-strap harness and carried west across the steppe to medieval farms and roads, the padded rigid collar shifted the pull onto the shoulders, turning the horse into a fast, tireless draft partner for plow, mill and wagon alike."
+msgstr ""
+
+msgctxt "technologies.flavor"
 msgid "An emporion was neither a colony nor a city: a foothold on a foreign shore where the road met the sea and goods changed hands."
 msgstr ""
 
 msgctxt "technologies.flavor"
 msgid "Ancient civilizations could count, but only now has knowledge moved from simple recipes to strict proofs. Geometry and abstract calculation let people not just watch the world but compute it: from the shape of a wheel's teeth to the motion of the stars."
+msgstr ""
+
+msgctxt "technologies.flavor"
+msgid "Black stone that burns hotter and longer than firewood cropped out along hillsides and river cuts from northern China to Britain and the Meuse valley. Once miners drove deeper galleries with iron picks and windlasses, mineral coal fed city hearths, glasshouses, brew-kettles, stills, dye-vats and pottery kilns — though its biting, sulfurous smoke still spoiled bare iron in the furnace."
 msgstr ""
 
 msgctxt "technologies.flavor"
@@ -8085,6 +8265,10 @@ msgid "Plantations made it possible to grow olives and citrus in bulk, providing
 msgstr ""
 
 msgctxt "technologies.flavor"
+msgid "Raw coal ruins hot iron with sulfur and chokes a furnace with thick tarry smoke, yet the remedy lay in the charcoal burner's own craft. Baked slowly with little air until its volatile fumes burned off, stone coal turned into hard, porous grey coke — first charged into the iron furnaces of Song China when the surrounding hills ran short of timber, bearing heavier ore burdens than fragile wood charcoal ever could."
+msgstr ""
+
+msgctxt "technologies.flavor"
 msgid "Raw leaf is harsh and spoils quickly. Cured and cut, it keeps for years, so curing is what turned a harvested leaf into a stored good."
 msgstr ""
 
@@ -8173,7 +8357,19 @@ msgid "To boil a liquid and to catch its breath in a cold vessel is to take the 
 msgstr ""
 
 msgctxt "technologies.flavor"
+msgid "Turning a millstone was only the first errand given to a river. Once cams and levers were fitted to the axle of the wheel, steady rotation became a measured stroke: Han ironmasters led streams to push the bellows of their furnaces day and night, ore stamps pounded vein-rock beside mountain sluices, and heavy trip hammers beat glowing blooms on the anvil without tiring."
+msgstr ""
+
+msgctxt "technologies.flavor"
 msgid "Vegetable oil became an important food and a source of light."
+msgstr ""
+
+msgctxt "technologies.flavor"
+msgid "Where cold water stands year after year, fallen moss and sedge do not rot away: they pack layer upon layer into dark, fibrous earth. Cut into wet bricks with a flat spade and stacked in the wind through summer, bog turf kept northern hearths warm and fired pots, brew-kettles and smokehouses wherever timber grew sparse."
+msgstr ""
+
+msgctxt "technologies.flavor"
+msgid "Where rivers ran dry in summer or never crossed the plain at all, millers looked up instead of down. First on vertical axles behind wind-catching walls in Sistan and Khorasan, then on pivoting timber posts and stone towers whose cloth sails could be turned to face any breeze, the windmill brought tireless grinding to dry uplands and open coasts alike."
 msgstr ""
 
 msgctxt "technologies.flavor"
@@ -8221,6 +8417,10 @@ msgid "Beekeeping"
 msgstr ""
 
 msgctxt "technologies.name"
+msgid "Blast Furnace"
+msgstr ""
+
+msgctxt "technologies.name"
 msgid "Bookbinding"
 msgstr ""
 
@@ -8249,7 +8449,19 @@ msgid "Cheese Making"
 msgstr ""
 
 msgctxt "technologies.name"
+msgid "Coal Mining"
+msgstr ""
+
+msgctxt "technologies.name"
 msgid "Cog Wheel"
+msgstr ""
+
+msgctxt "technologies.name"
+msgid "Coking"
+msgstr ""
+
+msgctxt "technologies.name"
+msgid "Crop Rotation"
 msgstr ""
 
 msgctxt "technologies.name"
@@ -8294,6 +8506,10 @@ msgstr ""
 
 msgctxt "technologies.name"
 msgid "Hopping"
+msgstr ""
+
+msgctxt "technologies.name"
+msgid "Horse Collar"
 msgstr ""
 
 msgctxt "technologies.name"
@@ -8361,6 +8577,10 @@ msgid "Parchment"
 msgstr ""
 
 msgctxt "technologies.name"
+msgid "Peat Cutting"
+msgstr ""
+
+msgctxt "technologies.name"
 msgid "Perfumery"
 msgstr ""
 
@@ -8421,6 +8641,10 @@ msgid "Tobacco Curing"
 msgstr ""
 
 msgctxt "technologies.name"
+msgid "Water Power"
+msgstr ""
+
+msgctxt "technologies.name"
 msgid "Water Wheel"
 msgstr ""
 
@@ -8430,6 +8654,10 @@ msgstr ""
 
 msgctxt "technologies.name"
 msgid "Wheel"
+msgstr ""
+
+msgctxt "technologies.name"
+msgid "Windmill"
 msgstr ""
 
 msgctxt "technologies.name"
@@ -8474,6 +8702,10 @@ msgstr ""
 
 msgctxt "technologies.unlock_effects.name"
 msgid "Allows you to build improvements on explored resource hexes outside the Region."
+msgstr ""
+
+msgctxt "technologies.unlock_effects.name"
+msgid "Reveals coal seams and allows you to mine coal."
 msgstr ""
 
 msgctxt "technologies.unlock_effects.name"
@@ -8913,6 +9145,10 @@ msgstr ""
 
 msgctxt "technologies.description"
 msgid "Unlocks calamine mining and the cementation of copper with calamine into brass, along with brass tools and brass jewelry."
+msgstr ""
+
+msgctxt "technologies.description"
+msgid "Unlocks the water mill: the running water sets the millstones in motion."
 msgstr ""
 
 msgctxt "technologies.flavor"

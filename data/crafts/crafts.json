@@ -25,6 +25,14 @@
       "time": 2
     },
     {
+      "id": "grind_grain_wind",
+      "name": "Flour (with a windmill)",
+      "produced_in": [ "windmill" ],
+      "resources": { "@millable_grains": 20 },
+      "result": { "flour": 10 },
+      "time": 2
+    },
+    {
       "id": "pottery",
       "name": "Pottery",
       "produced_in": [ "pottery_workshop" ],
@@ -199,7 +207,7 @@
       "id": "glassware_from_potash",
       "name": "Glassware (forest glass)",
       "produced_in": [ "glassmaker_house" ],
-      "resources": { "quartz_sand": 20, "potash": 10, "lime": 10, "charcoal": 10 },
+      "resources": { "quartz_sand": 20, "potash": 10, "lime": 10, "@smelting_fuel": 10 },
       "result": { "glassware": 10 },
       "time": 9.0,
       "unlock_tech": "potash_making",
@@ -209,7 +217,7 @@
       "id": "glass_bottle_from_potash",
       "name": "Glass Bottle (forest glass)",
       "produced_in": [ "glassmaker_house" ],
-      "resources": { "quartz_sand": 20, "potash": 10, "lime": 10, "charcoal": 10 },
+      "resources": { "quartz_sand": 20, "potash": 10, "lime": 10, "@smelting_fuel": 10 },
       "result": { "glass_bottle": 10 },
       "time": 9.0,
       "unlock_tech": "glassblowing",
@@ -333,7 +341,7 @@
       "id": "sulfur_from_pyrite",
       "name": "Sulfur",
       "produced_in": [ "lime_kilns" ],
-      "resources": { "pyrite": 20, "charcoal": 10 },
+      "resources": { "pyrite": 20, "@smelting_fuel": 10 },
       "result": { "sulfur": 10 },
       "time": 8.0,
       "unlock_tech": "limestone_burning",
@@ -420,6 +428,16 @@
       "time": 5.0,
       "unlock_tech": "native_metals",
       "description": "Burns wood into charcoal."
+    },
+    {
+      "id": "coke",
+      "name": "Coke",
+      "produced_in": [ "coke_oven" ],
+      "resources": { "coal": 20 },
+      "result": { "coke": 15 },
+      "time": 6.0,
+      "unlock_tech": "coking",
+      "description": "Bakes coal without air into hard, clean-burning metallurgical coke."
     },
     {
       "id": "wax_tablets",

@@ -123,7 +123,7 @@
           "value": 0.20,
           "improvements": [
             "mine", "quarry", "soda_quarry", "salt_pond",
-            "tar_pit", "lumberjack_hut", "clay_pit"
+            "tar_pit", "lumberjack_hut", "clay_pit", "peat_pit"
           ]
         }
       ]

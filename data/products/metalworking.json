@@ -23,6 +23,17 @@
       "icon": "brass_tools.png"
     },
     {
+      // Mass-cast plowshares, hoes, sledges and anvils poured straight into moulds:
+      // cheaper per piece than forged iron tools, produced in large batches to keep
+      // farms, mines and quarries supplied.
+      "id": "cast_iron_tools", "price": 45,
+      "name": "Cast-Iron Tools",
+      "type": "product",
+      "category": "tools",
+      "unlock_tech": "blast_furnace",
+      "icon": "cast_iron_tools.png"
+    },
+    {
       "id": "iron_tools", "price": 90,
       "name": "Iron Tools",
       "type": "product",

@@ -47,7 +47,7 @@
       "science_cost": 5.0,
       "prerequisites": [ [ "irrigation", "wheel" ] ],
       "icon": "water_wheel.png",
-      "description": "Unlocks the water mill: the running water sets the millstones in motion.\n+25% to the production of mines, quarries, the bloomery, the smelter and the forge only where fresh water is available: without water the wheel gives no bonus, for the water washes the ore and drives the bellows.",
+      "description": "Unlocks the water mill: the running water sets the millstones in motion.",
       "flavor": "The water wheel became an important source of power in the ancient world, automating the processing of grain and other materials."
     },
     {
@@ -89,6 +89,18 @@
       "icon": "mechanics.png",
       "description": "Adds one production slot to the animal mill and the water mill.\n+10% to the production of the woodcutter's camp.",
       "flavor": "The workshops knew the lever and the pulley long before anyone wrote them down. Heron of Alexandria set the pieces in order in his Mechanics, and later al-Khazini weighed the same pieces of rope and iron in the Book of the Balance of Wisdom. A machine, they wrote, is what moves a load we could not lift: a wheel on an axle, a crank, a connecting rod, a frame to hold it all. From this the hoist, the press and the mill stop being clever tricks and become craft — they can be built again, and then improved."
+    },
+    {
+      // Cams, levers and linkage turn the steady rotation of the water wheel into
+      // reciprocating strokes for ore dressing, furnace bellows and forge hammers.
+      "id": "water_power",
+      "name": "Water Power",
+      "era": "antiquity",
+      "science_cost": 5.0,
+      "prerequisites": [ [ "water_wheel", "mechanics" ] ],
+      "icon": "water_power.png",
+      "description": "+25% to the production of mines, quarries, the bloomery, the smelter and the forge only where fresh water is available: without water the drive gives no bonus, for the water washes the ore, works the bellows and lifts the hammers.",
+      "flavor": "Turning a millstone was only the first errand given to a river. Once cams and levers were fitted to the axle of the wheel, steady rotation became a measured stroke: Han ironmasters led streams to push the bellows of their furnaces day and night, ore stamps pounded vein-rock beside mountain sluices, and heavy trip hammers beat glowing blooms on the anvil without tiring."
     },
     {
       // Milestone where theoretical mechanics and fine metalwork meet, unlocking calibrated
@@ -185,16 +197,6 @@
       "prerequisites": [ [ "glassmaking" ] ],
       "description": "Unlocks recipe for glass bottles.",
       "flavor": "The first step towards the modern glass industry."
-    },
-    {
-      "id": "hopping",
-      "name": "Hopping",
-      "era": "antiquity",
-      "science_cost": 3.0,
-      "icon": "hopping.png",
-      "prerequisites": [ [ "fermentation" ], [ "plantations" ] ],
-      "description": "Unlocks the recipe for hopped beer.",
-      "flavor": "Hops made beer keep. Grain alone gave a drink that soured within days; a bittering charge of hops held it back, and beer became a good that could be stored and shipped."
     },
     {
       // A mountain spring is hidden until this technology is known: only a society

@@ -217,6 +217,17 @@
       "amount": 5,
       "interval": 10,
       "production_bonus": 0.0
+    },
+    {
+      // Household hearth and stove fuel: citizens take one fuel per tick (peat or coal),
+      // rotating over those in stock rather than burning both at once, at a moderate rate
+      // that leaves fuel in storage for kilns, boilers and coke ovens.
+      "resource": "@fuel",
+      "profession": [ "all" ],
+      "amount": 5,
+      "interval": 10,
+      "production_bonus": 0.0,
+      "consume_all": false
     }
   ]
 }

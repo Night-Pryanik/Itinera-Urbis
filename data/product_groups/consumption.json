@@ -86,6 +86,7 @@
         "glassware",
         "fine_ceramics",
         "porcelain",
+        "cast_iron_cookware",
         "metal_tableware",
         "crystal_glassware",
         "silver_tableware"
@@ -179,7 +180,7 @@
       // over the kinds that are in stock; the order sets where the rotation starts.
       "id": "instruments",
       "name": "Instruments",
-      "products": [ "copper_tools", "bronze_tools", "brass_tools", "iron_tools", "steel_tools" ]
+      "products": [ "copper_tools", "cast_iron_tools", "bronze_tools", "brass_tools", "iron_tools", "steel_tools" ]
     },
     {
       // Calibrated balances, calipers, dividers, astrolabes and fine bench tools across
@@ -208,6 +209,14 @@
       "id": "candles",
       "name": "Candles",
       "products": [ "tallow_candles", "wax_candles" ]
+    },
+    {
+      // Household hearth and stove fuel: bog peat and mineral coal. Citizens draw
+      // one fuel per tick (consume_all: false), rotating over those in stock; wood,
+      // charcoal and coke stay dedicated workshop and furnace feedstocks.
+      "id": "fuel",
+      "name": "Fuel",
+      "products": [ "peat", "coal" ]
     }
   ]
 }

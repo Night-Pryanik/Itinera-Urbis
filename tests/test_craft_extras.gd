@@ -139,7 +139,7 @@ func _test_recipe_built(gd, city, state: Dictionary) -> void:
     for group in groups:
         for variant in group:
             keys.append(str(variant.get("key", "")))
-    check("gold" in keys and "charcoal" in keys and "lazurite_ore" in keys,
+    check("gold" in keys and "@smelting_fuel" in keys and "lazurite_ore" in keys,
         "the stone is an ordinary ingredient of the generated recipe", state)
     var amount := 0
     for variant in groups[2]:

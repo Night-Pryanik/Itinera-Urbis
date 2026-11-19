@@ -537,6 +537,55 @@
       "produces": { "gypsum": 10 },
       "icon": "gypsum.png",
       "color": [ 238, 235, 228 ]
+    },
+    {
+      // Compressed bog turf of the cold and mild wetlands: tundra moss bogs, stunted
+      // taiga mires and wooded temperate carrs, never warm reed swamps. The terrain
+      // is named by its family ("swamp") and the climate zones keep it out of the warm belts.
+      "id": "peat_deposit",
+      "price": 3,
+      "name": "Peat",
+      "type": "raw",
+      "category": "minerals",
+      "group": "minerals",
+      "subgroup": "",
+      "strategic": true,
+      "spawn_count": [ 2, 6 ],
+      "tech_required": "peat_cutting",
+      "allowed_terrain": [ "swamp" ],
+      "allowed_cover": [ "none", "tundra_moss", "swamp_forest_sparse", "swamp_forest" ],
+      "allowed_climate_zones": [ "tundra_dry", "tundra_wet", "boreal_dry", "boreal_wet", "steppe", "prairie" ],
+      "improved_by": "peat_pit",
+      "produces": { "peat": 10 },
+      "icon": "peat.png",
+      "color": [ 92, 64, 42 ]
+    },
+    {
+      // Sedimentary seams of black mineral coal in hills and mountains across cold, mild
+      // and warm belts. Hidden until coal mining is researched, then worked by mines to
+      // fuel hearths, kilns and boilers and to be baked into metallurgical coke.
+      "id": "coal_deposit",
+      "price": 4,
+      "name": "Coal",
+      "type": "raw",
+      "category": "minerals",
+      "group": "minerals",
+      "subgroup": "",
+      "strategic": true,
+      "spawn_count": [ 2, 8 ],
+      "tech_reveal": "coal_mining",
+      "tech_required": "coal_mining",
+      "allowed_terrain": [ "hill", "mountain" ],
+      "allowed_cover": [
+        "none", "tundra_moss", "taiga_sparse", "taiga",
+        "temperate_rainforest_sparse", "temperate_dry_forest_sparse",
+        "temperate_rainforest", "temperate_dry_forest",
+        "tropical_dry_forest_sparse", "tropical_rainforest_sparse"
+      ],
+      "improved_by": "mine",
+      "produces": { "coal": 10 },
+      "icon": "coal.png",
+      "color": [ 38, 38, 42 ]
     }
   ]
 }

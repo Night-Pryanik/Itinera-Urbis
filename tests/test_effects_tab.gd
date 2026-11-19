@@ -132,7 +132,7 @@ func _run() -> void:
         "the Russian water wheel caption names all five distinct recipients and the water condition", state)
     TranslationServer.set_locale(original_locale)
 
-    var production_buildings := {"water_wheel": "forge", "cogwheel": "animal_mill"}
+    var production_buildings := {"water_power": "forge", "cogwheel": "animal_mill"}
     for tech_id in production_buildings:
         var building_id: String = production_buildings[tech_id]
         city.unlocked_technologies.clear()

@@ -111,6 +111,7 @@
         "farmer",
         "planter",
         "clay_digger",
+        "peat_cutter",
         "potter",
         "vinedresser",
         "blacksmith",
@@ -221,6 +222,7 @@
         "miner",
         "quarryman",
         "clay_digger",
+        "peat_cutter",
         "soda_extractor",
         "lumberjack",
         "charcoal_burner",
@@ -400,6 +402,24 @@
       "amount": 10,
       "interval": 15,
       "production_bonus": 0.15
+    },
+    {
+      // Dried bog turf fires pottery and brick kilns, heats malt and brew kettles,
+      // boils soap pans and cures fish over slow smoke where firewood is scarce.
+      "resource": "peat",
+      "profession": [ "potter", "brewer", "soap_maker", "smoker" ],
+      "amount": 10,
+      "interval": 15,
+      "production_bonus": 0.05
+    },
+    {
+      // Mineral coal feeds hot, steady fires under pottery kilns, glass pots, brew
+      // kettles, stills, soap pans and dye vats without touching molten iron directly.
+      "resource": "coal",
+      "profession": [ "potter", "glassmaker", "brewer", "distiller", "soap_maker", "dyer" ],
+      "amount": 10,
+      "interval": 15,
+      "production_bonus": 0.1
     }
   ]
 }

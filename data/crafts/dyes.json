@@ -164,7 +164,7 @@
       "id": "minium",
       "name": "Minium",
       "produced_in": [ "lime_kilns", "dyer_house" ],
-      "resources": { "lead": 10, "charcoal": 10 },
+      "resources": { "lead": 10, "@smelting_fuel": 10 },
       "result": { "minium": 10 },
       "time": 6.0,
       "unlock_tech": "limestone_burning",
