@@ -182,6 +182,21 @@
       "products": [ "copper_tools", "bronze_tools", "brass_tools", "iron_tools", "steel_tools" ]
     },
     {
+      // Calibrated balances, calipers, dividers, astrolabes and fine bench tools across
+      // every workable metal. Scholars, alchemists and jewelers draw one kind at a time,
+      // rotating over the kinds in stock.
+      "id": "precision_instruments",
+      "name": "Precision Instruments",
+      "products": [
+        "copper_precision_instruments",
+        "bronze_precision_instruments",
+        "brass_precision_instruments",
+        "iron_precision_instruments",
+        "steel_precision_instruments",
+        "damascus_precision_instruments"
+      ]
+    },
+    {
       // Furniture the citizens write off: both the everyday piece and the
       // costly one are used when in stock.
       "id": "furniture",

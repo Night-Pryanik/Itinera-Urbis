@@ -4246,10 +4246,6 @@ msgid "Forges and casts corrosion-resistant brass tools for craftsmen."
 msgstr "Куёт и отливает стойкие к коррозии латунные инструменты для ремесленников."
 
 msgctxt "crafts.description"
-msgid "Casts and engraves graduated brass balances, dividers and astrolabes for scholars."
-msgstr "Отливает и гравирует из латуни точные весы, циркули и астролябии для учёных."
-
-msgctxt "crafts.description"
 msgid "Smelts and cupels galena ore into soft lead and a smaller yield of silver."
 msgstr "Выплавляет и купелирует галенитовую руду в мягкий свинец с попутным выходом серебра."
 
@@ -4368,6 +4364,30 @@ msgstr "Растворяет нашатырь в азотной кислоте, 
 msgctxt "crafts.description"
 msgid "Compounds concentrated nitric and hydrochloric acids into gold-dissolving aqua regia."
 msgstr "Соединяет концентрированные азотную и соляную кислоты в растворяющую золото царскую водку."
+
+msgctxt "crafts.description"
+msgid "Shapes and calibrates copper balance beams, pans and sighting rings."
+msgstr "Выковывает и выверяет медные коромысла, чаши весов и визирные кольца."
+
+msgctxt "crafts.description"
+msgid "Casts and engraves graduated bronze calipers, dividers and geared dials."
+msgstr "Отливает и гравирует градуированные бронзовые штангенциркули, циркули и зубчатые лимбы."
+
+msgctxt "crafts.description"
+msgid "Casts and engraves fine brass assay balances, dividers and astrolabes."
+msgstr "Отливает и гравирует тонкие латунные пробирные весы, циркули и астролябии."
+
+msgctxt "crafts.description"
+msgid "Forges and files rigid iron compasses, squares, calipers and steelyards."
+msgstr "Выковывает и доводит жёсткие железные циркули, угольники, кронциркули и безмены."
+
+msgctxt "crafts.description"
+msgid "Tempers and grinds hardened steel pivots, dividers, gravers and precision gauges."
+msgstr "Закаливает и шлифует твёрдые стальные оси, разметочные циркули, штихели и точные калибры."
+
+msgctxt "crafts.description"
+msgid "Tempers and grinds the watered bar of the city into master pivots, dividers, gravers and precision gauges."
+msgstr "Закаливает и шлифует узорчатую полосу города в эталонные оси, циркули, штихели и точные калибры."
 
 msgctxt "crafts.name"
 msgid "Aged Cheese"
@@ -5042,10 +5062,6 @@ msgid "Brass Tools"
 msgstr "Латунные инструменты"
 
 msgctxt "crafts.name"
-msgid "Precision Instruments"
-msgstr "Точные приборы"
-
-msgctxt "crafts.name"
 msgid "Lead"
 msgstr "Свинец"
 
@@ -5156,6 +5172,30 @@ msgstr "Царская водка (из нашатыря)"
 msgctxt "crafts.name"
 msgid "Aqua Regia (from acids)"
 msgstr "Царская водка (из кислот)"
+
+msgctxt "crafts.name"
+msgid "Copper Precision Instruments"
+msgstr "Медные точные инструменты"
+
+msgctxt "crafts.name"
+msgid "Bronze Precision Instruments"
+msgstr "Бронзовые точные инструменты"
+
+msgctxt "crafts.name"
+msgid "Brass Precision Instruments"
+msgstr "Латунные точные инструменты"
+
+msgctxt "crafts.name"
+msgid "Iron Precision Instruments"
+msgstr "Железные точные инструменты"
+
+msgctxt "crafts.name"
+msgid "Steel Precision Instruments"
+msgstr "Стальные точные инструменты"
+
+msgctxt "crafts.name"
+msgid "Damascus Precision Instruments"
+msgstr "Дамасские точные инструменты"
 
 msgctxt "eras.name"
 msgid "Ancient"
@@ -5540,6 +5580,10 @@ msgstr "Поташные породы дерева"
 msgctxt "product_groups.name"
 msgid "Candles"
 msgstr "Свечи"
+
+msgctxt "product_groups.name"
+msgid "Precision Instruments"
+msgstr "Точные инструменты"
 
 msgctxt "professions.description"
 msgid "A pseudo-profession that covers the whole population of the city, including employed citizens."
@@ -7466,10 +7510,6 @@ msgid "Brass Jewelry"
 msgstr "Латунные украшения"
 
 msgctxt "resources.name"
-msgid "Precision Instruments"
-msgstr "Точные приборы"
-
-msgctxt "resources.name"
 msgid "Fine Ceramics"
 msgstr "Тонкая керамика"
 
@@ -7496,6 +7536,30 @@ msgstr "Восковые свечи"
 msgctxt "resources.name"
 msgid "Tofu"
 msgstr "Тофу"
+
+msgctxt "resources.name"
+msgid "Copper Precision Instruments"
+msgstr "Медные точные инструменты"
+
+msgctxt "resources.name"
+msgid "Bronze Precision Instruments"
+msgstr "Бронзовые точные инструменты"
+
+msgctxt "resources.name"
+msgid "Brass Precision Instruments"
+msgstr "Латунные точные инструменты"
+
+msgctxt "resources.name"
+msgid "Iron Precision Instruments"
+msgstr "Железные точные инструменты"
+
+msgctxt "resources.name"
+msgid "Steel Precision Instruments"
+msgstr "Стальные точные инструменты"
+
+msgctxt "resources.name"
+msgid "<city_name>-steel Precision Instruments"
+msgstr "Точные инструменты из стали <city_name>"
 
 msgctxt "roads.description"
 msgid "A leveled road for carts. Three times the load of a trail."
@@ -7888,10 +7952,6 @@ msgstr "Открывает водяную мельницу: течение во�
 msgctxt "technologies.description"
 msgid "Allows you to build the chandler's house: tallow → tallow candles, wax → wax candles."
 msgstr "Позволяет строить дом свечника: животный жир → сальные свечи, воск → восковые свечи."
-
-msgctxt "technologies.description"
-msgid "Unlocks calamine mining and the cementation of copper with calamine into brass, along with brass tools, brass jewelry and precision instruments."
-msgstr "Открывает добычу каламина и выплавку латуни из меди с каламином, а также латунные инструменты, латунные украшения и точные приборы."
 
 msgctxt "technologies.description"
 msgid "Unlocks potash leached from broadleaf hardwood ashes in the kiln, potash-based forest glass and salted-out soap, and cobalt smalt."
@@ -8860,13 +8920,29 @@ msgctxt "technologies.name"
 msgid "Concrete"
 msgstr "Бетон"
 
+msgctxt "technologies.name"
+msgid "Precision Instruments"
+msgstr "Точные инструменты"
+
 msgctxt "technologies.description"
 msgid "Reveals the mountain springs and allows you to build aqueducts: a channel of concrete brings fresh water from a spring to the city."
 msgstr "Выявляет горные источники и позволяет строить акведуки: канал из бетона приносит пресную воду от источника в город."
 
+msgctxt "technologies.description"
+msgid "Unlocks precision instruments crafted from copper, bronze, brass, iron or steel in the forge and the jeweler's house."
+msgstr "Открывает производство точных инструментов из меди, бронзы, латуни, железа и стали в кузнице и доме ювелира."
+
+msgctxt "technologies.description"
+msgid "Unlocks calamine mining and the cementation of copper with calamine into brass, along with brass tools and brass jewelry."
+msgstr "Открывает добычу каламина и выплавку латуни из меди с каламином, а также латунные инструменты и латунные украшения."
+
 msgctxt "technologies.flavor"
 msgid "Lime burned in a kiln, mixed with sand and stone, sets into a mass harder than the rock it came from. A channel lined with it keeps its slope and its walls for generations, so water can leave the mountain and reach a city that has no river of its own."
 msgstr "Известь, обожжённая в печи, смешанная с песком и камнем, схватывается в массу твёрже породы, из которой она вышла. Выложенный ею канал поколениями держит свой уклон и стенки, и вода может уйти из горы в город, у которого нет своей реки."
+
+msgctxt "technologies.flavor"
+msgid "Between the smith's hammer and the scholar's theorem lies a quiet threshold: the moment a hand learns to divide a circle evenly, balance a beam to a grain and file a pivot that does not wobble. Once geometry, gearing and clean metalwork met at one bench — in Han bronze calipers and armillary rings, in Hellenistic dioptras and geared spheres, in the assay balances of al-Khazini and the astrolabe-makers' workshops — any sound metal could be turned into an instrument that measured rather than guessed."
+msgstr "Между молотом кузнеца и теоремой учёного лежит незримый рубеж — миг, когда рука научается ровно делить круг, уравновешивать коромысло до единого зерна и вытачивать ось без люфта. Как только геометрия, механика и чистая работа по металлу сошлись за одним верстаком — в ханьских бронзовых штангенциркулях и армиллярных кольцах, в эллинистических диоптрах и зубчатых сферах, в пробирных весах аль-Хазини и мастерских астролябистов, — любой добротный металл стал обращаться в инструмент, который не прикидывает на глаз, а точно измеряет."
 
 msgctxt "technologies.unlock_effects.name"
 msgid "Reveals mountain springs and allows you to build aqueducts to the city."
@@ -8931,4 +9007,3 @@ msgstr "Пресноводный источник: акведук частичн
 
 msgid " Distance to city: %d hex(es)"
 msgstr " Расстояние до города: %d гекс."
-
