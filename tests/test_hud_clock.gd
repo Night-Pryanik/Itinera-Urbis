@@ -57,14 +57,15 @@ func _run() -> void:
     # A known starting point: the machine may carry any settings.cfg.
     var seed_cfg := ConfigFile.new()
     seed_cfg.set_value("interface", "show_clock", false)
-    seed_cfg.save("user://settings.cfg")
+    check(seed_cfg.save("user://settings.cfg") == OK, "clock settings fixture saved", state)
 
     var save_manager = get_root().get_node("SaveManager")
     save_manager.new_game()
     var main_map = load("res://scenes/MainMap.tscn").instantiate()
     get_root().add_child(main_map)
-    await process_frame
-    await process_frame
+    # World generation can yield before the map loads its HUD settings.
+    while main_map._clock_timer == null:
+        await process_frame
     check(not main_map.show_clock,
         "main_map._load_settings() read show_clock = false (got: %s)" % main_map.show_clock, state)
     check(main_map.clock_label != null and not main_map.clock_label.visible,
@@ -75,7 +76,7 @@ func _run() -> void:
 
     seed_cfg = ConfigFile.new()
     seed_cfg.set_value("interface", "show_clock", true)
-    seed_cfg.save("user://settings.cfg")
+    check(seed_cfg.save("user://settings.cfg") == OK, "clock settings fixture saved", state)
     main_map.apply_settings()
     check(main_map.show_clock and main_map.clock_label.visible,
         "apply_settings() shows the clock label again", state)
