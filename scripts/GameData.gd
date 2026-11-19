@@ -1668,6 +1668,137 @@ func profession_has_unlisted_workplace(prof_id: String, listed_buildings: Array)
             return true
     return false
 
+# Normalized per-member overrides from rule["members"] restricted to products present in
+# group_members: { pid: { "interval": float, "production_bonus": float } }. Missing fields
+# inherit the rule's base interval and production_bonus.
+func _rule_member_overrides(rule: Dictionary, group_members: Array) -> Dictionary:
+    var out: Dictionary = {}
+    var raw = rule.get("members", null)
+    if not (raw is Dictionary) or raw.is_empty():
+        return out
+    var base_interval := float(rule.get("interval", 0.0))
+    var base_bonus := float(rule.get("production_bonus", 0.0))
+    for raw_pid in group_members:
+        var pid := str(raw_pid)
+        if not raw.has(pid):
+            continue
+        var spec = raw[pid]
+        if not (spec is Dictionary):
+            continue
+        var iv := float(spec.get("interval", base_interval)) if spec.has("interval") else base_interval
+        var bn := float(spec.get("production_bonus", base_bonus)) if spec.has("production_bonus") else base_bonus
+        out[pid] = {
+            "interval": iv,
+            "production_bonus": bn,
+        }
+    return out
+
+# Effective consumption interval for a single member of a group entry (falls back to the
+# entry's base interval when the member carries no override).
+func get_entry_member_interval(entry: Dictionary, pid: String) -> float:
+    var overrides = entry.get("member_overrides", null)
+    if overrides is Dictionary and overrides.has(pid):
+        var spec: Dictionary = overrides[pid]
+        return float(spec.get("interval", entry.get("interval", 0.0)))
+    return float(entry.get("interval", 0.0))
+
+# Effective production_bonus for a single member of a group entry (falls back to the
+# entry's base bonus when the member carries no override).
+func get_entry_member_bonus(entry: Dictionary, pid: String) -> float:
+    var overrides = entry.get("member_overrides", null)
+    if overrides is Dictionary and overrides.has(pid):
+        var spec: Dictionary = overrides[pid]
+        return float(spec.get("production_bonus", entry.get("production_bonus", 0.0)))
+    return float(entry.get("production_bonus", 0.0))
+
+# Group members ordered from highest tier to lowest: higher production_bonus first, then
+# longer interval (slower wear), preserving the declared order on ties.
+func get_entry_members_ordered_by_tier(entry: Dictionary) -> Array:
+    var members: Array = entry.get("group_members", [])
+    if members.size() <= 1:
+        return members.duplicate()
+    var indexed: Array = []
+    for i in range(members.size()):
+        var pid := str(members[i])
+        indexed.append({
+            "pid": pid,
+            "bonus": get_entry_member_bonus(entry, pid),
+            "interval": get_entry_member_interval(entry, pid),
+            "index": i,
+        })
+    indexed.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
+        var ba := float(a["bonus"])
+        var bb := float(b["bonus"])
+        if not is_equal_approx(ba, bb):
+            return ba > bb
+        var ia := float(a["interval"])
+        var ib := float(b["interval"])
+        if not is_equal_approx(ia, ib):
+            return ia > ib
+        return int(a["index"]) < int(b["index"])
+    )
+    var ordered: Array = []
+    for item in indexed:
+        ordered.append(str(item["pid"]))
+    return ordered
+
+# Min/max per-second consumption rate (for one consumer) and production_bonus across all
+# members of a tiered group entry. Returns {} when the entry has no member overrides.
+func get_entry_rate_bonus_bounds(entry: Dictionary) -> Dictionary:
+    var overrides = entry.get("member_overrides", null)
+    if not (overrides is Dictionary) or overrides.is_empty():
+        return {}
+    var members: Array = entry.get("group_members", [])
+    var amount := int(entry.get("amount", 0))
+    if members.is_empty() or amount <= 0:
+        return {}
+    var rate_min := INF
+    var rate_max := -INF
+    var bonus_min := INF
+    var bonus_max := -INF
+    for raw_pid in members:
+        var pid := str(raw_pid)
+        var iv := get_entry_member_interval(entry, pid)
+        var rate := float(amount) if iv <= 0.0 else float(amount) / iv
+        var bn := get_entry_member_bonus(entry, pid)
+        rate_min = minf(rate_min, rate)
+        rate_max = maxf(rate_max, rate)
+        bonus_min = minf(bonus_min, bn)
+        bonus_max = maxf(bonus_max, bn)
+    return {
+        "rate_min": rate_min,
+        "rate_max": rate_max,
+        "bonus_min": bonus_min,
+        "bonus_max": bonus_max,
+    }
+
+# Per-member consumption stats for a group tooltip when the group's consumption rule
+# defines "members": { pid: { "per_sec": float, "production_bonus": float } }. Returns {}
+# for plain groups so their composition tooltips stay unchanged.
+func get_group_member_consumption_specs(group_key: String) -> Dictionary:
+    var gkey := group_key if is_group_key(group_key) else ("@" + group_key)
+    for rule in consumption_rules:
+        if not (rule is Dictionary) or str(rule.get("resource", "")) != gkey:
+            continue
+        var entry := _build_consumption_entry(gkey, rule)
+        if entry.is_empty():
+            continue
+        var overrides: Dictionary = entry.get("member_overrides", {})
+        if overrides.is_empty():
+            continue
+        var amount := int(entry.get("amount", 0))
+        var out: Dictionary = {}
+        for raw_pid in entry.get("group_members", []):
+            var pid := str(raw_pid)
+            var iv := get_entry_member_interval(entry, pid)
+            var per_sec := float(amount) if iv <= 0.0 else float(amount) / iv
+            out[pid] = {
+                "per_sec": per_sec,
+                "production_bonus": get_entry_member_bonus(entry, pid),
+            }
+        return out
+    return {}
+
 # Assembles the consumption record from the rule of data/consumption.json.
 # res_key — the "resource" field of the rule ("product_id" or "@group_id").
 # For a group the members are resolved through product_groups; if the group is not found
@@ -1687,7 +1818,8 @@ func _build_consumption_entry(res_key: String, rule: Dictionary) -> Dictionary:
         "production_bonus": float(rule.get("production_bonus", 0.0)),
         # Only group records use it; on a single product it has no effect.
         "consume_all": bool(rule.get("consume_all", default_all)),
-        "buildings": _rule_buildings(rule)
+        "buildings": _rule_buildings(rule),
+        "member_overrides": {}
     }
     if is_group_key(res_key):
         var gkey = res_key.trim_prefix("@")
@@ -1707,6 +1839,7 @@ func _build_consumption_entry(res_key: String, rule: Dictionary) -> Dictionary:
         # otherwise the first icon among the members (GameData.get_product_group_icon_info).
         # Previously there was a separate walk of the members here, duplicating the rule.
         entry["icon"] = get_product_group_icon(res_key)
+        entry["member_overrides"] = _rule_member_overrides(rule, members)
     else:
         # A non-existent product: previously the record was created anyway, with
         # an identifier as the label and an empty icon, and it quietly hung in the
@@ -1783,6 +1916,22 @@ func get_consumption_consumers(res_key: String) -> Array:
                 continue
             var interval := float(rule.get("interval", 0))
             var bonus := float(rule.get("production_bonus", 0.0))
+            var via := str(via_group.get(query, ""))
+            var bounds: Dictionary = {}
+            if not via.is_empty():
+                # Concrete product resolved through a group rule: use its own tier values if set.
+                var raw_members = rule.get("members", null)
+                if raw_members is Dictionary and raw_members.has(res_key):
+                    var mspec = raw_members[res_key]
+                    if mspec is Dictionary:
+                        if mspec.has("interval"):
+                            interval = float(mspec.get("interval", interval))
+                        if mspec.has("production_bonus"):
+                            bonus = float(mspec.get("production_bonus", bonus))
+            elif is_group_key(query):
+                var built := _build_consumption_entry(query, rule)
+                if not built.is_empty():
+                    bounds = get_entry_rate_bonus_bounds(built)
             var scoped := _rule_buildings(rule)
             for prof_id in rule.get("profession", []):
                 var pair := str(prof_id)
@@ -1794,15 +1943,21 @@ func get_consumption_consumers(res_key: String) -> Array:
                     if prof_buildings.is_empty():
                         continue
                 covered[pair] = true
-                result.append({
+                var rec := {
                     "profession_id": pair,
                     "profession_name": get_profession_name(pair),
                     "amount": amount,
                     "interval": interval,
                     "production_bonus": bonus,
-                    "via_group": str(via_group.get(query, "")),
+                    "via_group": via,
                     "buildings": prof_buildings
-                })
+                }
+                if not bounds.is_empty():
+                    rec["rate_min"] = float(bounds["rate_min"])
+                    rec["rate_max"] = float(bounds["rate_max"])
+                    rec["bonus_min"] = float(bounds["bonus_min"])
+                    rec["bonus_max"] = float(bounds["bonus_max"])
+                result.append(rec)
 
     # The legacy records "from the resource": a product carries its own consumption
     # inline. A single product has no group rule of its own, so it is queried for the
@@ -1976,7 +2131,8 @@ func get_profession_consumption(prof_id: String, building_id: String = "") -> Ar
             "display_key": pid,
             "icon": prod.get("icon", ""),
             "consume_all": false,
-            "buildings": []
+            "buildings": [],
+            "member_overrides": {}
         })
     return result
 

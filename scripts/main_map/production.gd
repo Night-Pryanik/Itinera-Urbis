@@ -164,7 +164,7 @@ func _simulation_tick(delta: float) -> void:
                     tile.get("terrain", ""), eff_res)
 
             # We apply the bonus of the occupational consumption (for example,
-            # +50% to the production of fish, while there are reed boats).
+            # the fisherman's bonus from boats in storage).
             # The multiplier comes from worker_manager.tick_consumption();
             # it is equal to 1.0 without the bonus or with a shortage of the supplies.
             production_multiplier *= consumption_multiplier

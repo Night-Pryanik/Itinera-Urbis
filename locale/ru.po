@@ -86,6 +86,9 @@ msgstr " (%d чел.)"
 msgid " (+%d%% to production)"
 msgstr " (+%d%% к производству)"
 
+msgid " (+%d–%d%% to production)"
+msgstr " (+%d–%d%% к производству)"
+
 msgid " (base %d)"
 msgstr " (база %d)"
 
@@ -149,6 +152,12 @@ msgstr "Технологии строительства: ×%.2f"
 msgid "Construction technologies: ×1.00"
 msgstr "Технологии строительства: ×1.00"
 
+msgid "Consumption rule %s lists \"%s\" in members, which does not belong to \"%s\"."
+msgstr "Правило потребления %s указывает в поле members товар «%s», не входящий в «%s»."
+
+msgid "Consumption rule overrides a product outside its group"
+msgstr "Правило потребления переопределяет товар не из своей группы"
+
 msgid "Consumption rule references a nonexistent building"
 msgstr "Правило потребления ссылается на несуществующее здание"
 
@@ -190,6 +199,9 @@ msgstr "За участок: от %d до %d труда"
 
 msgid "Per section: %d work"
 msgstr "За участок: %d труда"
+
+msgid "Per-member interval and bonus overrides apply only to products declared inside the rule's @-group. Add the product to the group or remove the key from members."
+msgstr "Индивидуальные интервал и бонус задаются только для товаров, входящих в @-группу правила. Добавьте товар в группу или уберите ключ из поля members."
 
 msgid "Road to the city (%s): %d work, %d new sections"
 msgstr "Дорога до города (%s): %d труда, новых участков: %d"

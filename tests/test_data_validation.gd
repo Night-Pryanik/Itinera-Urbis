@@ -112,9 +112,10 @@ func _test_detector(state: Dictionary):
         # Consumption rules. The reference owner is the rule itself, and it is
         # identified by the value "resource" (see data_validator
         # _validate_consumption), so source_id equals ref_id.
-        "consumption_resource": [["ghost_product", "ghost_product"], ["jewelry", "jewelry"]],
+        "consumption_resource": [["ghost_product", "ghost_product"], ["jewelry", "jewelry"], ["ghost_member", "@food"]],
         "consumption_group": [["@ghost_group", "@ghost_group"], ["@tools", "@tools"]],
         "consumption_building": [["ghost_building", "wheat"]],
+        "consumption_member": [["tools", "@food"], ["flour", "wheat"]],
         "prerequisite": [["ghost_tech", "bad_tech_prereq"]],
         # A branch that waits for a challenge no era task and no product tier carries. The two
         # branches that wait for the tiers of "cheese" and "wool" must stay silent here, including
@@ -252,6 +253,9 @@ func _test_no_false_positives_on_synthetic(state: Dictionary):
         state)
     check(_find(problems, "consumption_building", "bakery", "tools").is_empty(),
         "a consumption rule scoped to an existing building must not be considered a breakage",
+        state)
+    check(_find(problems, "consumption_member", "tools", "@jewelry").is_empty(),
+        "a per-member override for a real member of the rule's @-group must stay silent",
         state)
     # A forgotten "@": the name is a group, and the hint must name the group.
     var hint_group := _find(problems, "consumption_resource", "jewelry", "jewelry")
@@ -631,10 +635,14 @@ func _test_blacklisted_modifier_buildings(state: Dictionary) -> void:
     keys = _only_unknown_keys(validator.validate(gd))
     check(keys.size() == 4, "missing targets without a blacklist are reported", state)
 
-    gd.blacklisted = {"buildings": {"removed_house": true}}
+    gd.blacklisted = {"buildings": {"removed_house": true}, "resources": {"removed_boat": true}}
     gd.crafts.append({"id": "broken_recipe", "produced_in": ["typo_house"]})
     gd.consumption_rules.append({"resource": "flour", "profession": ["farmer"],
             "buildings": ["removed_house", "typo_house"]})
+    gd.product_groups["boats_bl"] = ["flour"]
+    gd.product_group_names["boats_bl"] = "Boats"
+    gd.consumption_rules.append({"resource": "@boats_bl", "profession": ["farmer"],
+            "members": {"flour": {"interval": 20}, "removed_boat": {"interval": 10}}})
     var bl_problems: Array = validator.validate(gd)
     check(not _find(bl_problems, "produced_in", "typo_house", "broken_recipe").is_empty(),
             "a misspelled recipe building is still reported", state)
@@ -642,6 +650,9 @@ func _test_blacklisted_modifier_buildings(state: Dictionary) -> void:
             "a consumption rule scoped to a blacklisted building stays silent", state)
     check(not _find(bl_problems, "consumption_building", "typo_house", "flour").is_empty(),
             "a misspelled consumption rule building is reported", state)
+    check(_find(bl_problems, "consumption_resource", "removed_boat", "@boats_bl").is_empty()
+            and _find(bl_problems, "consumption_member", "removed_boat", "@boats_bl").is_empty(),
+            "a blacklisted product in consumption members stays silent", state)
     gd.free()
 
 
@@ -1158,16 +1169,21 @@ func _make_data() -> Node:
     # this once happened with "jewelry", which does not exist as a product —
     # only the group "@jewelry" does).
     gd.consumption_rules = [
-        # Good records (including one scoped to an existing building).
+        # Good records (building-scoped and per-member tiered).
         {"resource": "tools", "profession": ["farmer"], "buildings": ["bakery"]},
-        {"resource": "@jewelry", "profession": ["blacksmith"]},
-        # Bad: a non-existent @-group, a non-existent product,
-        # a non-existent profession, a non-existent building.
+        {"resource": "@jewelry", "profession": ["blacksmith"],
+                "members": {"tools": {"interval": 20, "production_bonus": 0.2}}},
+        # Bad: non-existent @-group, non-existent product, forgotten/extra "@",
+        # non-existent profession/building, and invalid members overrides.
         {"resource": "@ghost_group", "profession": ["farmer"]},
         {"resource": "ghost_product", "profession": ["farmer"]},
         {"resource": "jewelry", "profession": ["blacksmith"]},
         {"resource": "@tools", "profession": ["farmer"]},
-        {"resource": "wheat", "profession": ["ghost_prof"], "buildings": ["ghost_building"]},
+        {"resource": "wheat", "profession": ["ghost_prof"], "buildings": ["ghost_building"],
+                "members": {"flour": {"production_bonus": 0.1}}},
+        {"resource": "@food", "profession": ["farmer"],
+                "members": {"wheat": {"interval": 15}, "tools": {"interval": 30},
+                        "ghost_member": {"interval": 10}}},
     ]
 
     # --- The specializations of the city and the challenges of the era ---

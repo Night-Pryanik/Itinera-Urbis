@@ -40,9 +40,18 @@
   //                       "all") takes the full "amount" from EVERY member with
   //                       stock in the same tick, so the order has no effect;
   //                       false (the default for the professions) takes one
-  //                       member per tick, rotating over the ones with stock.
-  //                       The quality priority of the Trade tab still applies
-  //                       within each member.
+  //                       member per tick, rotating over the ones with stock
+  //                       unless "members" sets per-member tiers. The quality
+  //                       priority of the Trade tab still applies within each
+  //                       member.
+  //   members           — optional map { product_id: { interval?, production_bonus? } }
+  //                       for a group resource with consume_all = false. Overrides
+  //                       the interval and/or production_bonus of specific members
+  //                       (omitted fields and unlisted members inherit the rule's
+  //                       base interval and production_bonus) and switches the draw
+  //                       from rotation to highest-tier-first: better bonus first,
+  //                       then longer interval, falling back to lower tiers only
+  //                       when higher ones run out.
   //
   // Duplicating declarations: if the same resource is described both here and in
   // a product (data/products/*.json, the "consumption" field) for one profession,
@@ -57,11 +66,18 @@
   // their rule; the "all" rule gives no bonus.
   "consumption": [
     {
+      // Boats lift the catch on every fishing ground. Planked wooden boats take
+      // precedence over reed boats when both are in stock, giving twice the bonus
+      // and wearing out half as fast.
       "resource": "@boats",
       "profession": [ "fisherman" ],
       "amount": 10,
       "interval": 30,
-      "production_bonus": 0.5
+      "production_bonus": 0.2,
+      "members": {
+        "reed_boat": { "interval": 20, "production_bonus": 0.1 },
+        "wooden_boat": { "interval": 40, "production_bonus": 0.2 }
+      }
     },
     {
       "resource": "writing_set",

@@ -555,6 +555,7 @@ func show_group_tooltip(mouse_pos: Vector2, group_key: String, products_data: Di
     # found).
     # We assemble the names separately, in order to align the special_yield to the
     # column of the longest name of a resource.
+    var member_cons_specs: Dictionary = GameData.get_group_member_consumption_specs(group_key)
     var product_labels: Array = []
     for prod_id in member_ids:
         var pdata = products_data.get(prod_id, {})
@@ -650,6 +651,24 @@ func show_group_tooltip(mouse_pos: Vector2, group_key: String, products_data: Di
             yield_label.add_theme_color_override("font_color", UI_THEME.color("warning"))
             yield_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
             row.add_child(yield_label)
+
+        if member_cons_specs.has(prod_id):
+            var cspec: Dictionary = member_cons_specs[prod_id]
+            var csep = Label.new()
+            csep.text = " - "
+            csep.add_theme_color_override("font_color", UI_THEME.color("text_secondary"))
+            csep.mouse_filter = Control.MOUSE_FILTER_IGNORE
+            row.add_child(csep)
+
+            var clabel = Label.new()
+            var ctext := ConsumptionUi.format_rate_with_unit(float(cspec.get("per_sec", 0.0)))
+            var cbonus := float(cspec.get("production_bonus", 0.0))
+            if cbonus > 0.0:
+                ctext += tr(" (+%d%% to production)") % int(round(cbonus * 100.0))
+            clabel.text = ctext
+            clabel.add_theme_color_override("font_color", UI_THEME.color("text_secondary"))
+            clabel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+            row.add_child(clabel)
         
         group_tooltip_content.add_child(row)
 
@@ -756,11 +775,19 @@ func show_consumption_tooltip(mouse_pos: Vector2, res_key: String, _products_dat
             for bid in scoped_buildings:
                 building_names.append(GameData.get_building_display_name(str(bid)))
             consumer_label = "%s (%s)" % [consumer_label, ", ".join(building_names)]
-        var row_text := "%s: %s" % [
-            consumer_label,
-            ConsumptionUi.format_rate_with_unit(per_sec)
-        ]
-        if bonus > 0.0:
+        var rate_text := ""
+        if consumer.has("rate_min") and consumer.has("rate_max"):
+            rate_text = ConsumptionUi.format_rate_range_with_unit(
+                float(consumer.get("rate_min", per_sec)),
+                float(consumer.get("rate_max", per_sec)))
+        else:
+            rate_text = ConsumptionUi.format_rate_with_unit(per_sec)
+        var row_text := "%s: %s" % [consumer_label, rate_text]
+        if consumer.has("bonus_min") and consumer.has("bonus_max"):
+            row_text += ConsumptionUi.format_bonus_suffix(
+                float(consumer.get("bonus_min", bonus)),
+                float(consumer.get("bonus_max", bonus)))
+        elif bonus > 0.0:
             row_text += tr(" (+%d%% to production)") % int(round(bonus * 100.0))
         consumption_tooltip_content.add_child(
             _make_bullet_row("•", row_text, UI_THEME.color("text")))

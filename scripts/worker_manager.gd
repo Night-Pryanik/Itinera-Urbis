@@ -226,16 +226,85 @@ func _aggregate_production_bonus(cons_list: Array) -> float:
     for entry in cons_list:
         if not CityData.is_market_consumption_enabled(_entry_display_key(entry)):
             continue
-        var b := float(entry.get("production_bonus", 0.0))
+        var b := _entry_effective_bonus(entry)
         if b <= 0.0:
-            continue
-        if not _can_consume_full(entry, int(entry.get("amount", 0))):
             continue
         if entry.get("is_group", false):
             group_max = maxf(group_max, b)
         else:
             single_sum += b
     return group_max + single_sum
+
+# True when a group entry carries per-member interval/bonus overrides ("members") and
+# draws one member at a time rather than a whole basket.
+func _has_member_overrides(entry: Dictionary) -> bool:
+    if not bool(entry.get("is_group", false)) or bool(entry.get("consume_all", false)):
+        return false
+    var overrides = entry.get("member_overrides", null)
+    return overrides is Dictionary and not overrides.is_empty()
+
+# Highest-tier member of a tiered group with at least min_stock units in storage, or "".
+func _best_stocked_tier_member(entry: Dictionary, min_stock: int = 1) -> String:
+    for raw_pid in GameData.get_entry_members_ordered_by_tier(entry):
+        var pid := str(raw_pid)
+        if not pid.is_empty() and CityData.get_storage_amount(pid) >= min_stock:
+            return pid
+    return ""
+
+# Highest-tier member currently in stock, or (when none is stored yet) highest-tier
+# member currently being produced; "" if no member is obtainable.
+func _best_available_tier_member(entry: Dictionary) -> String:
+    var stocked := _best_stocked_tier_member(entry, 1)
+    if not stocked.is_empty():
+        return stocked
+    var planned_prod: Dictionary = CityData.get_planned_production_map()
+    for raw_pid in GameData.get_entry_members_ordered_by_tier(entry):
+        var pid := str(raw_pid)
+        if pid.is_empty():
+            continue
+        if int(CityData.production_rates.get(pid, 0)) > 0 or not planned_prod.get(pid, {}).is_empty():
+            return pid
+    return ""
+
+# Effective consumption interval for an entry: uses the active highest-tier member when
+# the rule specifies "members", falling back to the entry's base interval.
+func _entry_effective_interval(entry: Dictionary, include_planned: bool = false) -> float:
+    if _has_member_overrides(entry):
+        var active := _best_available_tier_member(entry) if include_planned else _best_stocked_tier_member(entry, 1)
+        if not active.is_empty():
+            return GameData.get_entry_member_interval(entry, active)
+    return float(entry.get("interval", 0.0))
+
+# Effective production_bonus granted by an entry given current warehouse stock. For a
+# tiered group the highest-tier member with a full pack of `amount` wins; if only a
+# mixed stock reaches `amount`, the lowest bonus among stocked members applies so tier
+# handovers never dip to zero while a single top-tier unit cannot unlock the top bonus.
+func _entry_effective_bonus(entry: Dictionary) -> float:
+    var amt := int(entry.get("amount", 0))
+    if amt <= 0:
+        return 0.0
+    if _has_member_overrides(entry):
+        var full_pid := _best_stocked_tier_member(entry, amt)
+        if not full_pid.is_empty():
+            return maxf(0.0, GameData.get_entry_member_bonus(entry, full_pid))
+        var total := 0
+        var fallback_bonus := INF
+        for raw_pid in entry.get("group_members", []):
+            var pid := str(raw_pid)
+            var stock := CityData.get_storage_amount(pid)
+            if stock <= 0:
+                continue
+            total += stock
+            fallback_bonus = minf(fallback_bonus, GameData.get_entry_member_bonus(entry, pid))
+        if total >= amt and fallback_bonus < INF:
+            return maxf(0.0, fallback_bonus)
+        return 0.0
+    var b := float(entry.get("production_bonus", 0.0))
+    if b <= 0.0:
+        return 0.0
+    if not _can_consume_full(entry, amt):
+        return 0.0
+    return b
 
 # The common core of the professional consumption: it advances the sub-unit accumulators
 # of the passed dictionary of the timers (timers), writes off the resources from the storage and
@@ -292,7 +361,7 @@ func _tick_profession_consumption(prof: String, key: String, timers: Dictionary,
         if not CityData.is_market_consumption_enabled(entry_key):
             continue
         var amt: int = int(entry.get("amount", 0))
-        var interval: float = float(entry.get("interval", 0))
+        var interval: float = _entry_effective_interval(entry)
         if amt <= 0 or interval <= 0.0:
             continue
 
@@ -316,6 +385,8 @@ func _tick_profession_consumption(prof: String, key: String, timers: Dictionary,
         if entry.get("is_group", false):
             if bool(entry.get("consume_all", false)):
                 _consume_group_all(entry.get("group_members", []), floor_take, prof_source, priority)
+            elif _has_member_overrides(entry):
+                _consume_group_tiered(entry, floor_take, prof_source, priority)
             else:
                 _consume_group_rotate(entry.get("group_members", []), floor_take,
                         prof_source, priority, rotation, frac_key)
@@ -420,6 +491,30 @@ func _consume_group_rotate(members: Array, amount: int, source_id: String,
         CityData.record_treasury_income(source_id, income, pid)
         rotation[rot_key] = (idx + 1) % count
         return
+
+# Tiered group draw (rules with "members"): spends the highest-tier member in stock first,
+# spilling into the next lower tier only when the better one runs dry.
+func _consume_group_tiered(entry: Dictionary, amount: int, source_id: String, priority: String) -> void:
+    var remaining: int = amount
+    for raw_pid in GameData.get_entry_members_ordered_by_tier(entry):
+        if remaining <= 0:
+            return
+        var pid := str(raw_pid)
+        if pid.is_empty():
+            continue
+        var avail: int = CityData.get_storage_amount(pid)
+        if avail <= 0:
+            continue
+        var take: int = mini(avail, remaining)
+        if take <= 0:
+            continue
+        var consumed: Dictionary = CityData.remove_from_storage(pid, take, priority)
+        CityData.record_consumption_source(pid, source_id, take)
+        CityData.record_market_consumption(pid, take)
+        var income: int = CityData.get_internal_market_income(pid, consumed)
+        CityData.add_treasury(income)
+        CityData.record_treasury_income(source_id, income, pid)
+        remaining -= take
 
 # The DISPLAY_KEY of a record of the consumption is the single addressing key of the settings
 # of the inner market (CityData.market_consumption_enabled /
@@ -908,7 +1003,7 @@ func _append_population_entry(result: Dictionary, source_id: String, entry: Dict
         # The norm PER ONE consumer is declared in data/consumption/*.json without
         # multiplying by the consumer headcount; shown on the Trade card.
         "unit_amount": int(entry.get("amount", 0)),
-        "interval": float(entry.get("interval", 0)),
+        "interval": _entry_effective_interval(entry, true),
         "count": int(prev.get("count", 0)) + consumer_count,
         "is_population": is_population,
     }
@@ -1099,6 +1194,8 @@ func _planned_market_income_rows() -> Array:
         var product_name: String = GameData.get_product_name(pid)
         for source_id in planned[pid]:
             var entry: Dictionary = planned[pid][source_id]
+            if bool(entry.get("tiered_inactive", false)):
+                continue
             var amount := float(entry.get("amount", 0))
             var interval := float(entry.get("interval", 0))
             # The per-second consumption of a record (see ui_helpers._planned_per_sec).
@@ -1260,21 +1357,26 @@ func _append_planned_consumption_entry(result: Dictionary, source_id: String, en
         return
     var interval = float(entry.get("interval", 0))
     var is_group: bool = entry.get("is_group", false)
+    var tiered := _has_member_overrides(entry)
+    var active_tier := _best_available_tier_member(entry) if tiered else ""
     var targets: Array = entry.get("group_members", []) if is_group else [entry.get("product_id", "")]
     var group_name: String = str(entry.get("product_name", "")) if is_group else ""
     for pid in targets:
-        if str(pid).is_empty():
+        var pid_str := str(pid)
+        if pid_str.is_empty():
             continue
-        _record_planned_entry(result, str(pid), source_id, amount, interval, consumer_count, is_group, group_name, is_population, str(entry.get("display_key", "")))
+        var pid_interval: float = GameData.get_entry_member_interval(entry, pid_str) if tiered else float(interval)
+        var inactive: bool = tiered and not active_tier.is_empty() and pid_str != active_tier
+        _record_planned_entry(result, pid_str, source_id, amount, pid_interval, consumer_count, is_group, group_name, is_population, str(entry.get("display_key", "")), inactive)
 
 # The helper of the recording/aggregation of the planned consumption (see get_planned_consumption_map).
 # The key by_source is the identifier of the source (GameData.get_source_display_name).
-func _record_planned_entry(result: Dictionary, pid: String, source_id: String, amount: int, interval: float, count: int, is_group: bool, group_name: String, is_population: bool, display_key: String = ""):
+func _record_planned_entry(result: Dictionary, pid: String, source_id: String, amount: int, interval: float, count: int, is_group: bool, group_name: String, is_population: bool, display_key: String = "", tiered_inactive: bool = false):
     if not result.has(pid):
         result[pid] = {}
     var by_source: Dictionary = result[pid]
     if not by_source.has(source_id):
-        by_source[source_id] = {"amount": 0, "interval": interval, "count": 0, "is_group": false, "group_name": "", "is_population": false, "display_key": ""}
+        by_source[source_id] = {"amount": 0, "interval": interval, "count": 0, "is_group": false, "group_name": "", "is_population": false, "display_key": "", "tiered_inactive": tiered_inactive}
     var entry: Dictionary = by_source[source_id]
     entry["amount"] = int(entry.get("amount", 0)) + amount
     entry["interval"] = minf(float(entry.get("interval", interval)), interval)
@@ -1283,6 +1385,7 @@ func _record_planned_entry(result: Dictionary, pid: String, source_id: String, a
     if str(entry.get("group_name", "")) == "":
         entry["group_name"] = group_name
     entry["is_population"] = bool(entry.get("is_population", false)) or is_population
+    entry["tiered_inactive"] = bool(entry.get("tiered_inactive", false)) and tiered_inactive
     # display_key addresses the CARD, and pid - a concrete goods. The same
     # consumption of the "Fruits" is written by the plan into each member of the group, and without
     # display_key it would be impossible to fold these records back into one row

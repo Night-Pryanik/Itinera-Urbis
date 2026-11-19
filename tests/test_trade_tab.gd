@@ -180,7 +180,7 @@ func _run() -> void:
         "after the permission the write-off must resume", state)
 
     # ---- 4b. The prohibition removes the production bonus ----
-    # We take the record of the fisherman (@boats): it has production_bonus +50%.
+    # We take the record of the fisherman (@boats): it carries a positive production_bonus.
     var boats_key := "@boats"
     if gdata.product_groups.has("boats"):
         for m in gdata.product_groups["boats"]:

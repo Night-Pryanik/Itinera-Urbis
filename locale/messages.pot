@@ -86,6 +86,9 @@ msgstr ""
 msgid " (+%d%% to production)"
 msgstr ""
 
+msgid " (+%d–%d%% to production)"
+msgstr ""
+
 msgid " (base %d)"
 msgstr ""
 
@@ -149,6 +152,12 @@ msgstr ""
 msgid "Construction technologies: ×1.00"
 msgstr ""
 
+msgid "Consumption rule %s lists \"%s\" in members, which does not belong to \"%s\"."
+msgstr ""
+
+msgid "Consumption rule overrides a product outside its group"
+msgstr ""
+
 msgid "Consumption rule references a nonexistent building"
 msgstr ""
 
@@ -189,6 +198,9 @@ msgid "Per section: %d to %d work"
 msgstr ""
 
 msgid "Per section: %d work"
+msgstr ""
+
+msgid "Per-member interval and bonus overrides apply only to products declared inside the rule's @-group. Add the product to the group or remove the key from members."
 msgstr ""
 
 msgid "Road to the city (%s): %d work, %d new sections"
