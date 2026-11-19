@@ -374,13 +374,13 @@ func _tick_profession_consumption(prof: String, key: String, timers: Dictionary,
         var per_tick: float = float(amt) / interval * delta
         var frac_key: String = _fractional_key(entry)
         var cur_frac: float = float(fractional.get(frac_key, 0.0)) + per_tick
-        var floor_take: int = int(floor(cur_frac))
+        # Repeated fractional ticks can land just below a whole unit.
+        var floor_take := floori(cur_frac + 1e-9)
         if floor_take <= 0:
             fractional[frac_key] = cur_frac
             continue
 
-        cur_frac -= float(floor_take)
-        fractional[frac_key] = cur_frac
+        fractional[frac_key] = maxf(0.0, cur_frac - float(floor_take))
 
         if entry.get("is_group", false):
             if bool(entry.get("consume_all", false)):
