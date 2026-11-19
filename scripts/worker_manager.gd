@@ -170,36 +170,45 @@ func tick_consumption(row: int, col: int, delta: float) -> float:
         return 1.0
     return _tick_profession_consumption(prof, str(row) + "," + str(col), consumption_timers, delta)
 
+func get_building_id(b_index: int) -> String:
+    if b_index < 0 or b_index >= CityData.city_built_buildings.size():
+        return ""
+    return str(CityData.city_built_buildings[b_index].get("id", ""))
+
 # The profession of a resident in an urban building (the field "profession" in
 # data/buildings.json). An empty string - the building has no profession.
 func get_building_profession(b_index: int) -> String:
-    if b_index < 0 or b_index >= CityData.city_built_buildings.size():
+    var bld_id := get_building_id(b_index)
+    if bld_id.is_empty():
         return ""
-    var bld_id := str(CityData.city_built_buildings[b_index].get("id", ""))
     return GameData.get_profession_for_building(bld_id)
 
 # The consumption and the bonus of the profession of a resident in a building: the same mechanic as for a
-# hex (tick_consumption), but the timers live in a separate dictionary
-# building_consumption_timers, and the key is "b<index of the building>". The indices of the buildings
-# are stable (there is no demolition, an upgrade preserves the index), therefore the key does not "drift".
-# It is called from CityData.do_tick() only for a WORKING building (there is a
-# resident and at least one non-empty slot): an idle building does not spend
-# the consumables.
+# hex (tick_consumption), but scoped to the building's id (so rules with "buildings" apply only to
+# listed buildings), with timers stored in building_consumption_timers under "b<index>". Building
+# indices are stable (no demolition; upgrades preserve the index). Called from CityData.do_tick()
+# only for WORKING buildings (an assigned resident and at least one non-empty slot).
 func tick_building_consumption(b_index: int, delta: float) -> float:
-    var prof = get_building_profession(b_index)
+    var bld_id := get_building_id(b_index)
+    if bld_id.is_empty():
+        return 1.0
+    var prof := GameData.get_profession_for_building(bld_id)
     if prof.is_empty():
         return 1.0
-    return _tick_profession_consumption(prof, "b" + str(b_index), building_consumption_timers, delta)
+    return _tick_profession_consumption(prof, "b" + str(b_index), building_consumption_timers, delta, bld_id)
 
 # The final multiplier of the production of the profession of a resident in a building WITHOUT the expense and
 # the movement of the timers - for the planned production
 # (CityData.get_building_planned_production), so that the mark "=" coincides with
 # the fact. 1.0 - the building has no profession or there are not enough consumables.
 func get_building_production_bonus(b_index: int) -> float:
-    var prof = get_building_profession(b_index)
+    var bld_id := get_building_id(b_index)
+    if bld_id.is_empty():
+        return 1.0
+    var prof := GameData.get_profession_for_building(bld_id)
     if prof.is_empty():
         return 1.0
-    return 1.0 + _aggregate_production_bonus(GameData.get_profession_consumption(prof))
+    return 1.0 + _aggregate_production_bonus(GameData.get_profession_consumption(prof, bld_id))
 
 # The total production_bonus of a profession by the available consumables:
 #   * The SINGLE records - every available one adds its bonus (they add up):
@@ -243,8 +252,8 @@ func _aggregate_production_bonus(cons_list: Array) -> float:
 #     write-off happens at once.
 # The object NEVER "stops": it always gives at least the base production.
 # The bonus is an extra for the supply of the profession with the consumables.
-func _tick_profession_consumption(prof: String, key: String, timers: Dictionary, delta: float) -> float:
-    var cons_list = GameData.get_profession_consumption(prof)
+func _tick_profession_consumption(prof: String, key: String, timers: Dictionary, delta: float, building_id: String = "") -> float:
+    var cons_list = GameData.get_profession_consumption(prof, building_id)
     if cons_list.is_empty():
         return 1.0
 
@@ -522,6 +531,7 @@ func tick_city_consumption(delta: float) -> void:
         return
     var profession_counts := _merge_profession_counts(
             count_workers_by_profession(), CityData.get_townsfolk_professions_count())
+    var working_buildings: Dictionary = CityData.get_working_buildings_count()
     for entry in cons_list:
         var iv = float(entry.get("interval", 0))
         if iv <= 0:
@@ -547,7 +557,7 @@ func tick_city_consumption(delta: float) -> void:
         # How much needs to be written off per tick: amount is per one resident.
         # The citizens of a profession with its own rule for this resource are
         # excluded — that rule writes the resource off for them and grants the bonus.
-        var residents := _resident_consumer_count(dkey, profession_counts)
+        var residents := _resident_consumer_count(dkey, profession_counts, working_buildings)
         if residents <= 0:
             continue
         var amt = int(entry.get("amount", 0)) * residents
@@ -680,60 +690,58 @@ func _merge_profession_counts(improvement_workers: Dictionary, town_workers: Dic
         result[str(prof_id)] = int(result.get(str(prof_id), 0)) + int(town_workers[prof_id])
     return result
 
-# The headcount of the pseudo-profession "all" for ONE resource. A citizen of a
-# profession that has a dedicated rule for the same resource is subtracted: the
-# professional rule has priority, writes the resource off for them and grants its
-# production bonus. Counting them here as well would spend the resource twice.
-func _resident_consumer_count(display_key: String, profession_counts: Dictionary) -> int:
+# The headcount of the pseudo-profession "all" for ONE resource. Citizens covered by a
+# dedicated professional rule for the same resource are subtracted so the resource is
+# written off only once: unrestricted rules subtract the full profession headcount, while
+# building-scoped rules subtract only citizens working in the listed buildings.
+func _resident_consumer_count(display_key: String, profession_counts: Dictionary, working_buildings: Dictionary = {}) -> int:
     var count := CityData.total_population
     for prof_id in GameData.get_resource_consumer_professions(display_key):
         count -= int(profession_counts.get(str(prof_id), 0))
+    if not working_buildings.is_empty():
+        for bld_id in GameData.get_resource_consumer_buildings(display_key):
+            count -= int(working_buildings.get(str(bld_id), 0))
     return maxi(count, 0)
 
+# Active working copies of buildings in `buildings` whose assigned profession is prof_id.
+func _scoped_building_consumer_count(prof_id: String, buildings: Array, working_buildings: Dictionary) -> int:
+    var total := 0
+    for bld_id in buildings:
+        var bid := str(bld_id)
+        if GameData.get_profession_for_building(bid) != prof_id:
+            continue
+        total += int(working_buildings.get(bid, 0))
+    return total
+
 # Collects the full map of the planned consumption:
-#   product_id -> { "The name of the source" -> { "amount": int, "interval": float,
+#   product_id -> { source_id -> { "amount": int, "interval": float,
 #                  "count": int, "is_group": bool, "group_name": String,
 #                  "is_population": bool } }
 # The sources:
-#   1) the professional consumption of the workers at the improvements and of the residents in the
-#      buildings (data/consumption.json and the legacy products[*].consumption):
-#      amount of each record × the number of the workers/residents of the profession; for the buildings
-#      only the WORKING ones are taken into account (there is a resident and a non-empty slot) -
-#      CityData.get_townsfolk_professions_count;
-#      with several records of one source amount is summed, and interval
-#      is taken as the minimum - exactly as tick_consumption writes off (all the records
-#      of the list at once by the minimum interval);
-#   2) the urban consumption "all": amount × the headcount of the rule (is_population).
-#      The citizens of professions with a dedicated rule for the same resource are
-#      subtracted from that headcount, so the resource is not spent twice;
-#   3) the demand of the built buildings (the recipes of the slots,
-#      CityData.get_building_planned_consumption): amount is the demand for one craft,
-#      interval is the time of the recipe (`time`), see CityData.get_craft_time.
-# For the group records the plan refers to ANY member of the group; in the tooltip such
-# rows are marked with the name of the group (group_name = the name of the group from the data).
+#   1) the professional consumption of workers at improvements and residents in working
+#      buildings (data/consumption/*.json and legacy products[*].consumption):
+#      unrestricted rules scale by total active workers of the profession, while rules
+#      with "buildings" scale only by active working copies of those buildings;
+#   2) the urban consumption "all": amount × the remaining resident headcount
+#      (excluding citizens covered by a dedicated rule for the same resource);
+#   3) the demand of built buildings' active craft slots and map improvements' feed.
 func get_planned_consumption_map(include_production_inputs: bool = true) -> Dictionary:
     var result: Dictionary = {}
-    # The professional consumption: by the actual workers at the improvements.
-    var workers = count_workers_by_profession()
-    for prof_id in workers:
+    var workers: Dictionary = count_workers_by_profession()
+    var town_workers: Dictionary = CityData.get_townsfolk_professions_count()
+    var working_buildings: Dictionary = CityData.get_working_buildings_count()
+    var profession_counts := _merge_profession_counts(workers, town_workers)
+    for prof_id in profession_counts:
         if prof_id == "all":
-            continue # the pseudo-profession is not assigned to the hexes; it is processed below
-        _record_profession_planned(result, prof_id, int(workers[prof_id]), false)
-    # The professional consumption of the urban buildings: the profession of a resident
-    # (the field "profession" in data/buildings.json). Only the WORKING
-    # buildings are taken into account - there is a resident and at least one non-empty slot: the consumables
-    # of an idle building do not fall into the plan (see get_townsfolk_professions_count).
-    var town_workers = CityData.get_townsfolk_professions_count()
+            continue
+        _record_profession_planned(result, str(prof_id), int(profession_counts[prof_id]), false)
     for prof_id in town_workers:
         if prof_id == "all":
-            continue # the pseudo-profession is not assigned to the buildings; it is processed below
-        _record_profession_planned(result, prof_id, int(town_workers[prof_id]), false)
-    # The urban consumption "All residents" - always (the population >= 1), per capita:
-    # the headcount of each rule is reduced by the citizens of the professions that
-    # consume the same resource by a dedicated rule (see _resident_consumer_count).
+            continue
+        _record_scoped_profession_planned(result, str(prof_id), working_buildings)
     if CityData.total_population > 0:
         _record_profession_planned(result, "all", CityData.total_population, true,
-                _merge_profession_counts(workers, town_workers))
+                profession_counts, working_buildings)
     if not include_production_inputs:
         return result
     # The demand of the buildings (the recipes): amount is for one craft, interval is the time of the recipe.
@@ -801,16 +809,18 @@ func get_population_consumption_map() -> Dictionary:
         _record_population_row(result, str(prof_id), int(workers[prof_id]), false)
     # The professional consumption of the urban buildings (the field "profession").
     var town_workers = CityData.get_townsfolk_professions_count()
+    var working_buildings: Dictionary = CityData.get_working_buildings_count()
     for prof_id in town_workers:
         if prof_id == "all":
             continue
         _record_population_row(result, str(prof_id), int(town_workers[prof_id]), false)
+        _record_scoped_population_rows(result, str(prof_id), working_buildings)
     # The pseudo-profession "all" - always, as long as there is a population. Each of
-    # its rules loses the citizens of the professions with a dedicated rule for the
-    # same resource, so the two rules do not spend it twice.
+    # its rules loses the citizens covered by a dedicated rule for the same resource,
+    # so the two rules do not spend it twice.
     if CityData.total_population > 0:
         _record_population_row(result, "all", CityData.total_population, true,
-                _merge_profession_counts(workers, town_workers))
+                _merge_profession_counts(workers, town_workers), working_buildings)
     # We count the totals for each row.
     for display_key in result:
         _finalize_population_row(result, display_key)
@@ -846,56 +856,62 @@ func is_resource_obtainable(row: Dictionary) -> bool:
 # Adds/complements a row of the card by the profession prof_id with count
 # consumers. The same profession can come from two sources
 # (the workers on the map and the residents in the buildings) - their amounts add up.
-func _record_population_row(result: Dictionary, prof_id: String, count: int, is_population: bool, profession_counts: Dictionary = {}) -> void:
+func _record_population_row(result: Dictionary, prof_id: String, count: int, is_population: bool, profession_counts: Dictionary = {}, working_buildings: Dictionary = {}) -> void:
     if count <= 0:
         return
-    # The key of the source is the identifier of the profession; the label is resolved by trade_tab.
     var source_id: String = GameData.profession_source_id(prof_id)
     for entry in GameData.get_profession_consumption(prof_id):
         var consumer_count := count
         if is_population:
-            consumer_count = _resident_consumer_count(_entry_display_key(entry), profession_counts)
-        if consumer_count <= 0:
-            continue
-        var amount := int(entry.get("amount", 0)) * consumer_count
-        if amount <= 0:
-            continue
-        var display_key := _entry_display_key(entry)
-        if display_key.is_empty():
-            continue
-        var is_group: bool = bool(entry.get("is_group", false))
-        if not result.has(display_key):
-            result[display_key] = {
-                "name": str(entry.get("product_name", display_key)),
-                "is_group": is_group,
-                "members": (entry.get("group_members", []) as Array).duplicate() if is_group else [str(entry.get("product_id", ""))],
-                "icon": str(entry.get("icon", "")),
-                "enabled": CityData.is_market_consumption_enabled(display_key),
-                "priority": CityData.get_consumption_priority(display_key),
-                "sources": {},
-            }
-        var row: Dictionary = result[display_key]
-        # The row could have come from another profession - we complement the composition of the fields
-        # once, without overwriting the already collected sources.
-        if is_group and (row.get("members", []) as Array).is_empty():
-            row["members"] = (entry.get("group_members", []) as Array).duplicate()
-        var sources: Dictionary = row["sources"]
-        var prev: Dictionary = sources.get(source_id, {})
-        var prev_amount: int = int(prev.get("amount", 0))
-        sources[source_id] = {
-            "amount": prev_amount + amount,
-            # The norm PER ONE consumer is exactly what is declared in
-            # data/consumption.json (amount), without a multiplication by the number of the
-            # consumers. Exactly it is shown by the card of the "Trade" in the row
-            # "The expense for 1": the sum over the residents (10 units × 21 = 210) - that is already
-            # "how much the city eats", and it must not be confused with the norm.
-            "unit_amount": int(entry.get("amount", 0)),
-            "interval": float(entry.get("interval", 0)),
-            # One profession can come from both the improvements and the buildings:
-            # the amounts and the headcounts add up for both of them.
-            "count": int(prev.get("count", 0)) + consumer_count,
-            "is_population": is_population,
+            consumer_count = _resident_consumer_count(_entry_display_key(entry), profession_counts, working_buildings)
+        _append_population_entry(result, source_id, entry, consumer_count, is_population)
+
+# Adds building-scoped consumption rules of prof_id, scaled only by active working
+# copies of the buildings named in each rule's "buildings" field.
+func _record_scoped_population_rows(result: Dictionary, prof_id: String, working_buildings: Dictionary) -> void:
+    if working_buildings.is_empty():
+        return
+    var source_id: String = GameData.profession_source_id(prof_id)
+    for entry in GameData.get_profession_building_scoped_consumption(prof_id):
+        var scoped: Array = entry.get("buildings", [])
+        var consumer_count := _scoped_building_consumer_count(prof_id, scoped, working_buildings)
+        _append_population_entry(result, source_id, entry, consumer_count, false)
+
+func _append_population_entry(result: Dictionary, source_id: String, entry: Dictionary, consumer_count: int, is_population: bool) -> void:
+    if consumer_count <= 0:
+        return
+    var amount := int(entry.get("amount", 0)) * consumer_count
+    if amount <= 0:
+        return
+    var display_key := _entry_display_key(entry)
+    if display_key.is_empty():
+        return
+    var is_group: bool = bool(entry.get("is_group", false))
+    if not result.has(display_key):
+        result[display_key] = {
+            "name": str(entry.get("product_name", display_key)),
+            "is_group": is_group,
+            "members": (entry.get("group_members", []) as Array).duplicate() if is_group else [str(entry.get("product_id", ""))],
+            "icon": str(entry.get("icon", "")),
+            "enabled": CityData.is_market_consumption_enabled(display_key),
+            "priority": CityData.get_consumption_priority(display_key),
+            "sources": {},
         }
+    var row: Dictionary = result[display_key]
+    if is_group and (row.get("members", []) as Array).is_empty():
+        row["members"] = (entry.get("group_members", []) as Array).duplicate()
+    var sources: Dictionary = row["sources"]
+    var prev: Dictionary = sources.get(source_id, {})
+    var prev_amount: int = int(prev.get("amount", 0))
+    sources[source_id] = {
+        "amount": prev_amount + amount,
+        # The norm PER ONE consumer is declared in data/consumption/*.json without
+        # multiplying by the consumer headcount; shown on the Trade card.
+        "unit_amount": int(entry.get("amount", 0)),
+        "interval": float(entry.get("interval", 0)),
+        "count": int(prev.get("count", 0)) + consumer_count,
+        "is_population": is_population,
+    }
 
 # Recounts the totals of the row of the card: the number of the consumers and the planned
 # rate of the expense per second. The rate is amount × SIMULATION_TICK / interval
@@ -1215,34 +1231,41 @@ func _fill_consumption_income(result: Dictionary) -> void:
 # consumers into the result. For the pseudo-profession "all" count = the population of the city and
 # is_population = true (the tooltip shows "(N persons)"); each of its rules is then
 # reduced by the citizens of the professions with a dedicated rule for the same resource.
-func _record_profession_planned(result: Dictionary, prof_id: String, count: int, is_population: bool, profession_counts: Dictionary = {}):
+func _record_profession_planned(result: Dictionary, prof_id: String, count: int, is_population: bool, profession_counts: Dictionary = {}, working_buildings: Dictionary = {}):
     if count <= 0:
         return
-    # The key of the source is the identifier of the profession; the label is resolved by ui_helpers.
     var source_id: String = GameData.profession_source_id(prof_id)
     for entry in GameData.get_profession_consumption(prof_id):
-        # A resource forbidden on the inner market does not fall into the plan: otherwise
-        # the tab "Resources" would show the expense, and the tooltip of the treasury - the income,
-        # which will not be. The card of the "Trade" itself shows the ban
-        # separately (see get_population_consumption_map).
-        if not CityData.is_market_consumption_enabled(_entry_display_key(entry)):
-            continue
         var consumer_count := count
         if is_population:
-            consumer_count = _resident_consumer_count(_entry_display_key(entry), profession_counts)
-        if consumer_count <= 0:
+            consumer_count = _resident_consumer_count(_entry_display_key(entry), profession_counts, working_buildings)
+        _append_planned_consumption_entry(result, source_id, entry, consumer_count, is_population)
+
+func _record_scoped_profession_planned(result: Dictionary, prof_id: String, working_buildings: Dictionary) -> void:
+    if working_buildings.is_empty():
+        return
+    var source_id: String = GameData.profession_source_id(prof_id)
+    for entry in GameData.get_profession_building_scoped_consumption(prof_id):
+        var scoped: Array = entry.get("buildings", [])
+        var consumer_count := _scoped_building_consumer_count(prof_id, scoped, working_buildings)
+        _append_planned_consumption_entry(result, source_id, entry, consumer_count, false)
+
+func _append_planned_consumption_entry(result: Dictionary, source_id: String, entry: Dictionary, consumer_count: int, is_population: bool) -> void:
+    if not CityData.is_market_consumption_enabled(_entry_display_key(entry)):
+        return
+    if consumer_count <= 0:
+        return
+    var amount = int(entry.get("amount", 0)) * consumer_count
+    if amount <= 0:
+        return
+    var interval = float(entry.get("interval", 0))
+    var is_group: bool = entry.get("is_group", false)
+    var targets: Array = entry.get("group_members", []) if is_group else [entry.get("product_id", "")]
+    var group_name: String = str(entry.get("product_name", "")) if is_group else ""
+    for pid in targets:
+        if str(pid).is_empty():
             continue
-        var amount = int(entry.get("amount", 0)) * consumer_count
-        if amount <= 0:
-            continue
-        var interval = float(entry.get("interval", 0))
-        var is_group: bool = entry.get("is_group", false)
-        var targets: Array = entry.get("group_members", []) if is_group else [entry.get("product_id", "")]
-        var group_name: String = str(entry.get("product_name", "")) if is_group else ""
-        for pid in targets:
-            if str(pid).is_empty():
-                continue
-            _record_planned_entry(result, str(pid), source_id, amount, interval, consumer_count, is_group, group_name, is_population, str(entry.get("display_key", "")))
+        _record_planned_entry(result, str(pid), source_id, amount, interval, consumer_count, is_group, group_name, is_population, str(entry.get("display_key", "")))
 
 # The helper of the recording/aggregation of the planned consumption (see get_planned_consumption_map).
 # The key by_source is the identifier of the source (GameData.get_source_display_name).

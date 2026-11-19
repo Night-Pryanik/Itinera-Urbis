@@ -21,6 +21,11 @@
   //   profession        — an array of profession ids that consume the resource
   //                       (data/professions.json). Several professions may
   //                       consume the same resource.
+  //   buildings         — optional array of building ids (data/buildings.json).
+  //                       When set, only citizens of the listed professions
+  //                       working in those specific buildings consume the
+  //                       resource and receive its bonus; map improvements and
+  //                       other buildings of the same profession ignore the rule.
   //   amount            — how many units are written off per one "consumption tick".
   //   interval          — the period between write-offs in seconds (fractions allowed).
   //   production_bonus  — an addition to the production multiplier of the object
@@ -116,7 +121,8 @@
         "vinedresser",
         "blacksmith",
         "furniture_maker",
-        "mason"
+        "mason",
+        "boatbuilder"
       ],
       "amount": 10,
       "interval": 10,
@@ -142,10 +148,10 @@
       "production_bonus": 0.1
     },
     {
-      // The cooper seals the barrel with tar: the staves hold the vessel together, but only
-      // the coating makes it watertight.
+      // Tar makes cask staves watertight for the cooper, seals hull seams for the
+      // boatbuilder and protects heavy sailcloth and stitched edges against rot.
       "resource": "tar",
-      "profession": [ "cooper" ],
+      "profession": [ "cooper", "sailmaker", "boatbuilder" ],
       "amount": 10,
       "interval": 10,
       "production_bonus": 0.1
@@ -168,10 +174,10 @@
       "production_bonus": 0.1
     },
     {
-      // Rosin pitches barrels inside, enriches soap lather, sizes paper sheets against
-      // ink bleed and serves as soldering flux at the forge.
+      // Rosin pitches barrels inside, seals planked boat hulls against leaks, enriches
+      // soap lather, sizes paper sheets against ink bleed and serves as soldering flux.
       "resource": "rosin",
-      "profession": [ "cooper", "soap_maker", "paper_maker", "blacksmith" ],
+      "profession": [ "cooper", "soap_maker", "paper_maker", "blacksmith", "boatbuilder" ],
       "amount": 10,
       "interval": 10,
       "production_bonus": 0.1
@@ -229,6 +235,7 @@
         "tar_collector",
         "smelter",
         "blacksmith",
+        "boatbuilder",
         "farmer",
         "planter",
         "vinedresser"
@@ -372,9 +379,10 @@
       "production_bonus": 0.1
     },
     {
-      // Rendered tallow curries and waterproofs tanned hides and tallows cask joints.
+      // Rendered tallow curries tanned hides, tallows cask joints, waterproofs sailcloth
+      // against spray and greases boat seams, oarlocks and launching skids.
       "resource": "tallow",
-      "profession": [ "tanner", "cooper" ],
+      "profession": [ "tanner", "cooper", "sailmaker", "boatbuilder" ],
       "amount": 10,
       "interval": 10,
       "production_bonus": 0.1
@@ -396,9 +404,29 @@
       "production_bonus": 0.15
     },
     {
-      // Tarred ropes haul ore and stone from wet shafts and quarries and rig fishing boats.
+      // Tarred ropes haul ore and stone from wet shafts and quarries, edge stitched sails
+      // as rot-proof bolt-ropes and rig and caulk wooden and fishing boats.
       "resource": "tarred_ropes",
-      "profession": [ "miner", "quarryman", "fisherman" ],
+      "profession": [ "miner", "quarryman", "fisherman", "sailmaker", "boatbuilder" ],
+      "amount": 10,
+      "interval": 15,
+      "production_bonus": 0.15
+    },
+    {
+      // Beeswax dresses heavy canvas and coats sewing twine so sails shed water and seams
+      // pull tight without fraying.
+      "resource": "wax",
+      "profession": [ "sailmaker" ],
+      "amount": 10,
+      "interval": 10,
+      "production_bonus": 0.1
+    },
+    {
+      // Windmill sweeps fray in wind and weather; fresh canvas keeps the sails taut and
+      // turning fast. Hand, animal and water mills have no sails and ignore this rule.
+      "resource": "canvas",
+      "profession": [ "miller" ],
+      "buildings": [ "windmill" ],
       "amount": 10,
       "interval": 15,
       "production_bonus": 0.15

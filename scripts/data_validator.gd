@@ -40,6 +40,7 @@
 #   resource           — a recipe requires a non-existent resource
 #   consumption_resource— a consumption rule → a non-existent product
 #   consumption_group   — a consumption rule → a non-existent @-group
+#   consumption_building— a consumption rule → a building that is neither present nor blacklisted
 #   prerequisite       — a technology requires a non-existent technology
 #   specialization_*   — a branch names a non-existent predecessor, improvement, good or challenge
 #   fame_trigger       — a tier of the fame of a good counts an unknown way
@@ -529,6 +530,7 @@ const SPECIAL_ACTION_FIELDS := {
 const CONSUMPTION_FIELDS := {
     "resource": LEAF,
     "profession": LEAF,
+    "buildings": LEAF,
     "amount": LEAF,
     "interval": LEAF,
     "production_bonus": LEAF,
@@ -1046,6 +1048,8 @@ static func check_title(kind: String) -> String:
             return TranslationServer.translate("Consumption rule references a nonexistent product")
         "consumption_group":
             return TranslationServer.translate("Consumption rule references a nonexistent goods group")
+        "consumption_building":
+            return TranslationServer.translate("Consumption rule references a nonexistent building")
         "craft_extra":
             return TranslationServer.translate("Additional ingredient spends a nonexistent product")
         "craft_extra_kind":
@@ -1163,6 +1167,7 @@ const CHECK_ORDER := [
     "resource",
     "consumption_resource",
     "consumption_group",
+    "consumption_building",
     "craft_extra",
     "craft_extra_kind",
     "prerequisite",
@@ -1231,7 +1236,8 @@ func validate(gd: Object) -> Array:
     _validate_resources(products, raw_resources, categories, technologies, improvements, problems)
     _validate_product_sources(products, _produced_ids(gd, all_resources), problems)
     _validate_product_groups(product_groups, group_names, products, problems)
-    _validate_consumption(gd.consumption_rules, products, product_groups, professions, problems)
+    _validate_consumption(gd.consumption_rules, products, product_groups, professions,
+            buildings, blacklisted_buildings, problems)
     _validate_technologies(technologies, problems)
     _validate_tech_modifiers(gd.modifiers, technologies, problems)
     _validate_specializations(gd.specializations, improvements, all_resources, product_groups,
@@ -2176,7 +2182,8 @@ func _validate_product_groups(product_groups: Dictionary, group_names: Dictionar
 # often the name of a group that exists (see _at_sign_hint). The hint is passed to the problem as an
 # extra field, and build_text turns it into the last sentence of the message.
 func _validate_consumption(rules, products: Dictionary, product_groups: Dictionary,
-        professions: Dictionary, problems: Array) -> void:
+        professions: Dictionary, buildings: Dictionary, blacklisted_buildings: Dictionary,
+        problems: Array) -> void:
     if not (rules is Array):
         return
     for rule in rules:
@@ -2201,6 +2208,12 @@ func _validate_consumption(rules, products: Dictionary, product_groups: Dictiona
         # the message "a reference to a non-existent profession" is equally true here.
         _check_profession_ref(rule.get("profession", []), professions, problems,
                 "consumption_rule", res_key, res_key, "profession")
+
+        for building_id in _as_string_list(rule.get("buildings", [])):
+            # A rule scoped to a blacklisted building stays dormant alongside it, like produced_in.
+            if not buildings.has(building_id) and not blacklisted_buildings.has(building_id):
+                _add(problems, "consumption_building", "building", building_id,
+                        "consumption_rule", res_key, res_key, "buildings")
 
 
 # --- THE HINT OF A FORGOTTEN "@" ------------------------------------------------

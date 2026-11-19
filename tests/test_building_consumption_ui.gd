@@ -102,6 +102,8 @@ func _run() -> void:
         await _test_building_panel(state, city_ui, building_id)
     if WATCHDOG.wants_case("actual_consumption"):
         _test_actual_consumption(state, building_id)
+    if WATCHDOG.wants_case("building_scoped_consumption"):
+        _test_building_scoped_consumption(state)
 
     _finish(main_map, state)
 
@@ -699,6 +701,138 @@ func _test_actual_consumption(state: Dictionary, building_id: String) -> void:
     check(_storage_of(product_key) == restored2,
         "with empty slots no expense is made (was %d, became %d)"
             % [restored2, _storage_of(product_key)], state)
+
+
+# -------------------------------------------------------
+# 6. Building-scoped occupational consumption ("buildings")
+# -------------------------------------------------------
+
+# All four mills employ a miller, but only the windmill spends canvas on its sails.
+# Non-wind mills must neither show canvas, nor spend it, nor earn its bonus, nor add
+# to planned/domestic-market demand, nor exclude their millers from an "all" rule.
+func _test_building_scoped_consumption(state: Dictionary) -> void:
+    for mill_id in ["hand_mill", "animal_mill", "water_mill", "windmill"]:
+        check(str(_gdata.get_profession_for_building(mill_id)) == "miller",
+            "\"%s\" must assign the miller profession" % mill_id, state)
+
+    check(_gdata.get_profession_consumption("miller").is_empty(),
+        "miller must have no unrestricted consumption rules outside specific buildings", state)
+
+    for other_mill in ["hand_mill", "animal_mill", "water_mill"]:
+        check(_gdata.get_profession_consumption("miller", other_mill).is_empty(),
+            "\"%s\" must ignore windmill-only consumption rules" % other_mill, state)
+        check(_consumption_ui.build_rows_for_building(other_mill).is_empty(),
+            "\"%s\" must have no ConsumptionUi rows" % other_mill, state)
+
+    var wind_entries: Array = _gdata.get_profession_consumption("miller", "windmill")
+    var canvas_entry := {}
+    for e in wind_entries:
+        if str(e.get("display_key", "")) == "canvas":
+            canvas_entry = e
+            break
+    check(not canvas_entry.is_empty(),
+        "windmill must receive the canvas consumption rule for miller", state)
+    if canvas_entry.is_empty():
+        return
+    var amount := int(canvas_entry.get("amount", 0))
+    var interval := float(canvas_entry.get("interval", 0.0))
+    var bonus := float(canvas_entry.get("production_bonus", 0.0))
+    check(amount > 0 and interval > 0.0 and bonus > 0.0,
+        "windmill canvas rule must carry positive amount, interval and bonus", state)
+
+    var wind_rows: Array = _consumption_ui.build_rows_for_building("windmill")
+    var has_canvas_row := false
+    for row in wind_rows:
+        if str(row.get("display_key", "")) == "canvas":
+            has_canvas_row = true
+            break
+    check(has_canvas_row, "ConsumptionUi must show canvas for windmill", state)
+
+    var miller_consumer := {}
+    for c in _gdata.get_consumption_consumers("canvas"):
+        if str(c.get("profession_id", "")) == "miller":
+            miller_consumer = c
+            break
+    check(not miller_consumer.is_empty() and (miller_consumer.get("buildings", []) as Array).has("windmill"),
+        "reverse consumer index for canvas must scope miller to windmill", state)
+
+    # Reset working buildings, timers and canvas stock before live simulation checks.
+    for k in _tm.assigned_buildings.keys():
+        _tm.remove_townsfolk(int(k))
+    _wm.building_consumption_timers.clear()
+    _clear_storage("canvas")
+    _cdata.idle_population = maxi(_cdata.idle_population, 4)
+
+    # Working water mill alone: canvas stays untouched and out of planned/market maps.
+    _cdata.city_built_buildings = [
+        {"id": "water_mill", "slots": ["grind_grain_water"], "quality_priority": "best"},
+    ]
+    _tm.assign_townsfolk(0)
+    var stocked := _fill_storage("canvas", amount * 4)
+    check(is_equal_approx(_wm.get_building_production_bonus(0), 1.0),
+        "a working water mill must not receive the windmill canvas bonus", state)
+    var steps := maxi(1, int(ceil(interval / SIMULATION_TICK)))
+    for _i in range(steps):
+        _wm.tick_building_consumption(0, SIMULATION_TICK)
+    check(_storage_of("canvas") == stocked,
+        "a working water mill must not spend canvas (was %d, became %d)"
+            % [stocked, _storage_of("canvas")], state)
+    check(not _wm.get_planned_consumption_map(false).has("canvas"),
+        "a working water mill must not add planned canvas consumption", state)
+    check(not _wm.get_population_consumption_map().has("canvas"),
+        "a working water mill must not create a Trade-tab canvas row", state)
+
+    # Add a working windmill beside the working water mill: only the windmill counts.
+    _cdata.city_built_buildings.append(
+        {"id": "windmill", "slots": ["grind_grain_wind", "empty"], "quality_priority": "best"}
+    )
+    _tm.assign_townsfolk(1)
+    check(is_equal_approx(_wm.get_building_production_bonus(0), 1.0),
+        "the water mill bonus stays 1.0 beside a supplied windmill", state)
+    check(is_equal_approx(_wm.get_building_production_bonus(1), 1.0 + bonus),
+        "a supplied windmill receives 1 + canvas bonus", state)
+
+    var prof_src: String = _gdata.profession_source_id("miller")
+    var planned: Dictionary = _wm.get_planned_consumption_map(false)
+    var plan_src: Dictionary = planned.get("canvas", {}).get(prof_src, {})
+    check(int(plan_src.get("count", 0)) == 1 and int(plan_src.get("amount", 0)) == amount,
+        "planned canvas demand must count only the 1 windmill, not the water mill (got: %s)"
+            % str(plan_src), state)
+
+    var pop_map: Dictionary = _wm.get_population_consumption_map()
+    var pop_src: Dictionary = pop_map.get("canvas", {}).get("sources", {}).get(prof_src, {})
+    check(int(pop_src.get("count", 0)) == 1 and int(pop_src.get("amount", 0)) == amount,
+        "domestic-market canvas row must count only the 1 windmill (got: %s)"
+            % str(pop_src), state)
+
+    var before_both := _storage_of("canvas")
+    for _i in range(steps):
+        _wm.tick_building_consumption(0, SIMULATION_TICK)
+        _wm.tick_building_consumption(1, SIMULATION_TICK)
+    var spent := before_both - _storage_of("canvas")
+    check(spent == amount,
+        "one water mill plus one windmill must spend one windmill portion (%d, got %d)"
+            % [amount, spent], state)
+
+    # Priority against a city-wide "all" rule: only the windmill miller is subtracted,
+    # leaving the water-mill miller inside the "all" headcount.
+    var prev_pop: int = _cdata.total_population
+    _cdata.total_population = maxi(prev_pop, 5)
+    _gdata.consumption_rules.append({
+        "resource": "canvas",
+        "profession": ["all"],
+        "amount": 10,
+        "interval": 10,
+        "production_bonus": 0.0,
+    })
+    var all_src: String = _gdata.profession_source_id("all")
+    var all_pop: Dictionary = _wm.get_population_consumption_map()
+    var all_entry: Dictionary = all_pop.get("canvas", {}).get("sources", {}).get(all_src, {})
+    check(int(all_entry.get("count", -1)) == _cdata.total_population - 1,
+        "an \"all\" rule on canvas must exclude only the 1 windmill miller (expected %d, got %d)"
+            % [_cdata.total_population - 1, int(all_entry.get("count", -1))], state)
+    _gdata.consumption_rules.remove_at(_gdata.consumption_rules.size() - 1)
+    _cdata.total_population = prev_pop
 
 
 # Runs the building consumption for the length of the interval in SIMULATION_TICK steps —

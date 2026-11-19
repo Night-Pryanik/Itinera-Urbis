@@ -149,6 +149,9 @@ msgstr ""
 msgid "Construction technologies: ×1.00"
 msgstr ""
 
+msgid "Consumption rule references a nonexistent building"
+msgstr ""
+
 msgid "Cost: %d work"
 msgstr ""
 
@@ -3181,6 +3184,10 @@ msgid "Brews various low-alcohol drinks by fermentation."
 msgstr ""
 
 msgctxt "buildings.description"
+msgid "Builds sturdy wooden boats rigged with cloth sails and rope."
+msgstr ""
+
+msgctxt "buildings.description"
 msgid "Burns wood in a sealed kiln to produce charcoal."
 msgstr ""
 
@@ -3277,6 +3284,10 @@ msgid "Turns milk into cheese, a good that keeps for a long time."
 msgstr ""
 
 msgctxt "buildings.description"
+msgid "Weaves, cuts and dresses heavy canvas for boat sails and windmill sweeps."
+msgstr ""
+
+msgctxt "buildings.description"
 msgid "Works stone into hewn blocks and stone goods for construction."
 msgstr ""
 
@@ -3306,6 +3317,10 @@ msgstr ""
 
 msgctxt "buildings.name"
 msgid "Bloomery"
+msgstr ""
+
+msgctxt "buildings.name"
+msgid "Boatyard"
 msgstr ""
 
 msgctxt "buildings.name"
@@ -3402,6 +3417,10 @@ msgstr ""
 
 msgctxt "buildings.name"
 msgid "Ropemaker's House"
+msgstr ""
+
+msgctxt "buildings.name"
+msgid "Sailmaker's Workshop"
 msgstr ""
 
 msgctxt "buildings.name"
@@ -3746,6 +3765,10 @@ msgstr ""
 
 msgctxt "crafts.description"
 msgid "Builds a boat from reeds."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Builds planked wooden boats rigged with cloth sails and rope."
 msgstr ""
 
 msgctxt "crafts.description"
@@ -4149,6 +4172,10 @@ msgid "Twists ropes and cables from fibers."
 msgstr ""
 
 msgctxt "crafts.description"
+msgid "Weaves and stitches heavy sailcloth from plant fibers."
+msgstr ""
+
+msgctxt "crafts.description"
 msgid "Weaves clothes out of cloth."
 msgstr ""
 
@@ -4420,6 +4447,10 @@ msgctxt "crafts.description"
 msgid "Tempers and grinds the watered bar of the city into master pivots, dividers, gravers and precision gauges."
 msgstr ""
 
+msgctxt "crafts.description"
+msgid "Weaves heavy sailcloth from plant fibers on a hand loom."
+msgstr ""
+
 msgctxt "crafts.name"
 msgid "Aged Cheese"
 msgstr ""
@@ -4494,6 +4525,10 @@ msgstr ""
 
 msgctxt "crafts.name"
 msgid "Campeche"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Canvas"
 msgstr ""
 
 msgctxt "crafts.name"
@@ -4986,6 +5021,10 @@ msgstr ""
 
 msgctxt "crafts.name"
 msgid "Wooden Barrel"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Wooden Boats"
 msgstr ""
 
 msgctxt "crafts.name"
@@ -5737,11 +5776,19 @@ msgid "Forges tools, weapons and ornaments from metal."
 msgstr ""
 
 msgctxt "professions.description"
+msgid "Frames, planks and rigs wooden boats."
+msgstr ""
+
+msgctxt "professions.description"
 msgid "Gathers and boils down natural tar."
 msgstr ""
 
 msgctxt "professions.description"
 msgid "Grinds aromatic resins into perfumes and incense."
+msgstr ""
+
+msgctxt "professions.description"
+msgid "Grinds grain between millstones and tends the mill."
 msgstr ""
 
 msgctxt "professions.description"
@@ -5801,6 +5848,10 @@ msgid "Weaves cloth, clothes and carpets from fibers."
 msgstr ""
 
 msgctxt "professions.description"
+msgid "Weaves, cuts and treats heavy sailcloth for boats and mills."
+msgstr ""
+
+msgctxt "professions.description"
 msgid "Works the fields and tends the crops."
 msgstr ""
 
@@ -5846,6 +5897,10 @@ msgstr ""
 
 msgctxt "professions.name"
 msgid "Blacksmith"
+msgstr ""
+
+msgctxt "professions.name"
+msgid "Boatbuilder"
 msgstr ""
 
 msgctxt "professions.name"
@@ -5897,6 +5952,10 @@ msgid "Lumberjack"
 msgstr ""
 
 msgctxt "professions.name"
+msgid "Miller"
+msgstr ""
+
+msgctxt "professions.name"
 msgid "Miner"
 msgstr ""
 
@@ -5930,6 +5989,10 @@ msgstr ""
 
 msgctxt "professions.name"
 msgid "Quarryman"
+msgstr ""
+
+msgctxt "professions.name"
+msgid "Sailmaker"
 msgstr ""
 
 msgctxt "professions.name"
@@ -6226,6 +6289,10 @@ msgstr ""
 
 msgctxt "resources.name"
 msgid "Canihua"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Canvas"
 msgstr ""
 
 msgctxt "resources.name"
@@ -7385,6 +7452,10 @@ msgid "Wooden Barrel"
 msgstr ""
 
 msgctxt "resources.name"
+msgid "Wooden Boat"
+msgstr ""
+
+msgctxt "resources.name"
 msgid "Wool"
 msgstr ""
 
@@ -7981,6 +8052,10 @@ msgid "Allows you to build the ropemaker's house: fibers → ropes."
 msgstr ""
 
 msgctxt "technologies.description"
+msgid "Allows you to build the sailmaker's workshop and the boatyard.\nUnlocks fast sailcloth production and wooden boats rigged with cloth sails."
+msgstr ""
+
+msgctxt "technologies.description"
 msgid "Allows you to build the silkmaker's house: cocoons → silk."
 msgstr ""
 
@@ -8017,7 +8092,7 @@ msgid "Allows you to build the weaver's house and weave clothes and carpets from
 msgstr ""
 
 msgctxt "technologies.description"
-msgid "Allows you to build the windmill (2 production slots): wind-driven sails turn the millstones at the speed of a water mill without needing fresh water or animal feed."
+msgid "Allows you to build the windmill (2 production slots): wind-driven canvas sails turn the millstones without needing fresh water or animal feed."
 msgstr ""
 
 msgctxt "technologies.description"
@@ -8118,6 +8193,10 @@ msgstr ""
 
 msgctxt "technologies.flavor"
 msgid "A bloomery never truly melted its iron: it coaxed a spongy lump from the ore one batch at a time and halted to pull it from the hearth. Raise the shaft, feed it limestone to run the stony gangue off as liquid slag and drive the bellows without pause, and the metal pours from the tap-hole like bright water — brittle under the hammer, yet matchless in the mould and ready to be fined in bulk into bar iron and steel. Cast in China since antiquity and towering beside the millstreams of medieval Europe, the blast furnace turned iron from a smith's batch into an industry."
+msgstr ""
+
+msgctxt "technologies.flavor"
+msgid "A bundle of reeds floats only until it swells with water; a planked hull keeps the water outside. Sawn boards joined edge to edge over curved ribs, stayed with twisted cordage and driven by a square of heavy canvas let boatmen leave the shallows behind, work deeper fishing grounds in rough weather and carry timber and grain along every river and coast."
 msgstr ""
 
 msgctxt "technologies.flavor"
@@ -8614,6 +8693,10 @@ msgstr ""
 
 msgctxt "technologies.name"
 msgid "Sericulture"
+msgstr ""
+
+msgctxt "technologies.name"
+msgid "Shipbuilding"
 msgstr ""
 
 msgctxt "technologies.name"

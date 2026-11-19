@@ -35,9 +35,9 @@
       "name": "Windmill",
       "era": "medieval",
       "science_cost": 5.0,
-      "prerequisites": [ [ "mechanics", "weaving" ] ],
+      "prerequisites": [ [ "mechanics", "rope_making" ] ],
       "icon": "windmill_tech.png",
-      "description": "Allows you to build the windmill (2 production slots): wind-driven sails turn the millstones at the speed of a water mill without needing fresh water or animal feed.",
+      "description": "Allows you to build the windmill (2 production slots): wind-driven canvas sails turn the millstones without needing fresh water or animal feed.",
       "flavor": "Where rivers ran dry in summer or never crossed the plain at all, millers looked up instead of down. First on vertical axles behind wind-catching walls in Sistan and Khorasan, then on pivoting timber posts and stone towers whose cloth sails could be turned to face any breeze, the windmill brought tireless grinding to dry uplands and open coasts alike."
     },
     {

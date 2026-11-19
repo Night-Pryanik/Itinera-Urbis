@@ -1616,6 +1616,28 @@ func get_source_display_name(source_id: String) -> String:
         return get_improvement_display_name(source_id.substr(SRC_PREFIX_IMPROVEMENT.length()))
     return source_id
 
+# Normalized list of building ids a consumption rule is restricted to. An empty array
+# means the rule applies everywhere the profession works — on map improvements and in
+# every building assigned to that profession.
+func _rule_buildings(rule: Dictionary) -> Array:
+    var result: Array = []
+    var raw = rule.get("buildings", null)
+    if raw is String:
+        if not str(raw).is_empty():
+            result.append(str(raw))
+    elif raw is Array:
+        for item in raw:
+            var bid := str(item)
+            if not bid.is_empty() and not result.has(bid):
+                result.append(bid)
+    return result
+
+func _rule_matches_building(rule: Dictionary, building_id: String) -> bool:
+    var scoped := _rule_buildings(rule)
+    if scoped.is_empty():
+        return true
+    return not building_id.is_empty() and scoped.has(building_id)
+
 # Assembles the consumption record from the rule of data/consumption.json.
 # res_key — the "resource" field of the rule ("product_id" or "@group_id").
 # For a group the members are resolved through product_groups; if the group is not found
@@ -1634,7 +1656,8 @@ func _build_consumption_entry(res_key: String, rule: Dictionary) -> Dictionary:
         "interval": float(rule.get("interval", 0)),
         "production_bonus": float(rule.get("production_bonus", 0.0)),
         # Only group records use it; on a single product it has no effect.
-        "consume_all": bool(rule.get("consume_all", default_all))
+        "consume_all": bool(rule.get("consume_all", default_all)),
+        "buildings": _rule_buildings(rule)
     }
     if is_group_key(res_key):
         var gkey = res_key.trim_prefix("@")
@@ -1730,6 +1753,7 @@ func get_consumption_consumers(res_key: String) -> Array:
                 continue
             var interval := float(rule.get("interval", 0))
             var bonus := float(rule.get("production_bonus", 0.0))
+            var scoped := _rule_buildings(rule)
             for prof_id in rule.get("profession", []):
                 var pair := str(prof_id)
                 if covered.has(pair):
@@ -1741,7 +1765,8 @@ func get_consumption_consumers(res_key: String) -> Array:
                     "amount": amount,
                     "interval": interval,
                     "production_bonus": bonus,
-                    "via_group": str(via_group.get(query, ""))
+                    "via_group": str(via_group.get(query, "")),
+                    "buildings": scoped.duplicate()
                 })
 
     # The legacy records "from the resource": a product carries its own consumption
@@ -1766,18 +1791,21 @@ func get_consumption_consumers(res_key: String) -> Array:
                         "amount": amount2,
                         "interval": interval2,
                         "production_bonus": bonus2,
-                        "via_group": ""
+                        "via_group": "",
+                        "buildings": []
                     })
     return result
 
-# The professions that consume a resource by a dedicated rule, i.e. not through the
-# pseudo-profession "all". The resource is addressed by its display_key — the bare id of
-# a product ("coca_leaf") or the "@id" of a group ("@boats"). Both the registry and the
-# legacy product-side rules are taken into account.
+# The professions that consume a resource across all of their workplaces (i.e. by an
+# unrestricted dedicated rule, not through the pseudo-profession "all"). The resource is
+# addressed by its display_key — the bare id of a product ("coca_leaf") or the "@id" of a
+# group ("@boats"). Both the registry and the legacy product-side rules are included.
 #
 # Such a profession has priority: its citizens are excluded from the headcount of "all"
 # for the same resource (see worker_manager._resident_consumer_count), so a resource
-# declared for both a profession and all residents is written off only once.
+# declared for both a profession and all residents is written off only once. Rules scoped
+# to specific buildings exclude only citizens working in those buildings (see
+# get_resource_consumer_buildings).
 func get_resource_consumer_professions(display_key: String) -> Array:
     var result: Array = []
     if display_key.is_empty():
@@ -1798,6 +1826,8 @@ func get_resource_consumer_professions(display_key: String) -> Array:
             continue
         if int(rule.get("amount", 0)) <= 0 or float(rule.get("interval", 0)) <= 0.0:
             continue
+        if not _rule_buildings(rule).is_empty():
+            continue
         for prof_id in rule.get("profession", []):
             var pid := str(prof_id)
             if pid.is_empty() or pid == "all" or result.has(pid):
@@ -1817,37 +1847,68 @@ func get_resource_consumer_professions(display_key: String) -> Array:
                     result.append(pid)
     return result
 
-# Returns the array of the consumption records for a profession. The sources (in the order of
-# priority):
-#   1) the registry data/consumption.json — the records of the kind
-#      { "resource": "<id>|@<group>", "profession": ["<id>"],
+# The building ids whose working citizens consume display_key through a building-scoped
+# rule and are not already covered by get_resource_consumer_professions(display_key).
+# Used by worker_manager._resident_consumer_count so citizens of the same profession in
+# other buildings still take part in an "all" rule for that resource.
+func get_resource_consumer_buildings(display_key: String) -> Array:
+    var result: Array = []
+    if display_key.is_empty():
+        return result
+    var valid: bool
+    if is_group_key(display_key):
+        valid = not product_groups.get(display_key.trim_prefix("@"), []).is_empty()
+    else:
+        valid = products.has(display_key)
+    if not valid:
+        return result
+    var unrestricted := get_resource_consumer_professions(display_key)
+    for rule in consumption_rules:
+        if not (rule is Dictionary):
+            continue
+        if str(rule.get("resource", "")) != display_key:
+            continue
+        if int(rule.get("amount", 0)) <= 0 or float(rule.get("interval", 0)) <= 0.0:
+            continue
+        var scoped := _rule_buildings(rule)
+        if scoped.is_empty():
+            continue
+        var rule_profs: Array = rule.get("profession", [])
+        for raw_bid in scoped:
+            var bid := str(raw_bid)
+            var bprof := get_profession_for_building(bid)
+            if bprof.is_empty() or bprof == "all" or unrestricted.has(bprof):
+                continue
+            if rule_profs.has(bprof) and not result.has(bid):
+                result.append(bid)
+    return result
+
+# Returns the array of the consumption records for a profession. When building_id is
+# empty (map improvements or profession-wide queries), rules restricted to specific
+# buildings via "buildings" are omitted; when building_id is given, both unrestricted
+# rules and rules whose "buildings" includes building_id are returned.
+# Sources (in priority order):
+#   1) the registry data/consumption/*.json —
+#      { "resource": "<id>|@<group>", "profession": ["<id>"], "buildings": ["<id>"],
 #        "amount": N, "interval": S, "production_bonus": B }.
-#      It supports the product groups: any suitable product is consumed
-#      from the group (see worker_manager.tick_consumption()).
-#   2) the deprecated "from the resource" scheme: the consumption field of the product in
-#      data/products/*.json (left for the single cases — when the resource
-#      has no analogue for the group). The infrastructure is not changed.
-# The duplicates are cut off by display_key: the same resource will not get into
-# the result twice (the record from the registry takes priority). Each record:
+#   2) the legacy product-side "consumption" field in data/products/*.json.
+# Duplicates are filtered by display_key (registry records take priority). Each record:
 #   { "product_id": String, "product_name": String,
 #     "amount": int, "interval": float, "production_bonus": float,
 #     "is_group": bool, "group_members": Array[String], "consume_all": bool,
-#     "display_key": String, "icon": String }
-# product_id is empty for the group records; product_name — the name of the group.
-# production_bonus — an addition to the production multiplier, while the resource is
-# in the storage (0.5 = +50%, that is, the multiplier x1.5). 0 = no bonus.
-# If the profession is unknown or has no consumers — an empty array.
-func get_profession_consumption(prof_id: String) -> Array:
+#     "buildings": Array, "display_key": String, "icon": String }
+func get_profession_consumption(prof_id: String, building_id: String = "") -> Array:
     var result: Array = []
     if prof_id.is_empty():
         return result
-    # Source 1: the registry data/consumption.json.
     var covered := {} # display_key -> true (protection from a double write-off)
     for rule in consumption_rules:
         if not (rule is Dictionary):
             continue
         var target_list: Array = rule.get("profession", [])
         if not (prof_id in target_list):
+            continue
+        if not _rule_matches_building(rule, building_id):
             continue
         var res_key = str(rule.get("resource", ""))
         if res_key.is_empty():
@@ -1859,9 +1920,6 @@ func get_profession_consumption(prof_id: String) -> Array:
             continue
         covered[entry["display_key"]] = true
         result.append(entry)
-    # Source 2: the consumption "from the resource" (products[*].consumption).
-    # The records already covered by the registry are skipped, so that the resource
-    # is not written off twice by one profession.
     for pid in products:
         var prod = products[pid]
         if not prod.has("consumption"):
@@ -1882,8 +1940,39 @@ func get_profession_consumption(prof_id: String) -> Array:
             "group_members": [],
             "display_key": pid,
             "icon": prod.get("icon", ""),
-            "consume_all": false
+            "consume_all": false,
+            "buildings": []
         })
+    return result
+
+# Returns only the building-scoped consumption records of prof_id (those with a non-empty
+# "buildings" list) that are not shadowed by an unrestricted rule for the same resource.
+# Planned-consumption and Trade-tab maps scale these records by working buildings in
+# entry["buildings"] rather than by the total headcount of the profession.
+func get_profession_building_scoped_consumption(prof_id: String) -> Array:
+    var result: Array = []
+    if prof_id.is_empty() or prof_id == "all":
+        return result
+    var unrestricted_keys := {}
+    for entry in get_profession_consumption(prof_id):
+        unrestricted_keys[str(entry.get("display_key", ""))] = true
+    for rule in consumption_rules:
+        if not (rule is Dictionary):
+            continue
+        var target_list: Array = rule.get("profession", [])
+        if not (prof_id in target_list):
+            continue
+        if _rule_buildings(rule).is_empty():
+            continue
+        var res_key := str(rule.get("resource", ""))
+        if res_key.is_empty():
+            continue
+        var entry := _build_consumption_entry(res_key, rule)
+        if entry.is_empty():
+            continue
+        if unrestricted_keys.has(str(entry["display_key"])):
+            continue
+        result.append(entry)
     return result
 
 # Returns all the resources that are consumed by a profession (without the details of
@@ -1894,9 +1983,9 @@ func get_profession_consumption(prof_id: String) -> Array:
 #   "production_bonus": float }.
 # The key of a single product is its id; of a group resource it is "@<group_id>".
 # If different resources are required with a different frequency, the first encountered one is taken.
-func get_profession_consumption_summary(prof_id: String) -> Dictionary:
+func get_profession_consumption_summary(prof_id: String, building_id: String = "") -> Dictionary:
     var result: Dictionary = {}
-    for entry in get_profession_consumption(prof_id):
+    for entry in get_profession_consumption(prof_id, building_id):
         var dkey = entry.get("display_key", entry.get("product_id", ""))
         if result.has(dkey):
             continue

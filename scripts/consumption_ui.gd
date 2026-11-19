@@ -76,7 +76,7 @@ static func _plural(count: int, one: String, few: String, many: String) -> Strin
 #     "workers": int,
 #     "rate_label": String,    — "2 units/sec (+25% to production)",
 #     "label": String }        — "Feathers: 2 units/sec (+25% to production)"
-static func build_rows(prof_id: String, workers: int = 1) -> Array:
+static func build_rows(prof_id: String, workers: int = 1, building_id: String = "") -> Array:
     var rows: Array = []
     if prof_id.is_empty():
         return rows
@@ -84,7 +84,7 @@ static func build_rows(prof_id: String, workers: int = 1) -> Array:
     # the absence of workers is reflected only in the label.
     var count := maxi(workers, 0)
     var multiplier := float(maxi(count, 1))
-    for entry in GameData.get_profession_consumption(prof_id):
+    for entry in GameData.get_profession_consumption(prof_id, building_id):
         var amount := int(entry.get("amount", 0))
         var interval := float(entry.get("interval", 0.0))
         # The display is per second: the amount of the entry divided by its interval.
@@ -114,13 +114,13 @@ static func build_rows(prof_id: String, workers: int = 1) -> Array:
     return rows
 
 
-# The same as build_rows, but the profession is taken from the building itself (the
-# "profession" field in data/buildings.json). For a building without a profession —
-# an empty array: they work by the general slot model and do not spend supplies.
+# The same as build_rows, scoped to building_id so both profession-wide rules and
+# rules restricted to that building via "buildings" are shown. For a building
+# without a profession — an empty array.
 static func build_rows_for_building(building_id: String, workers: int = 1) -> Array:
     if building_id.is_empty():
         return []
-    return build_rows(GameData.get_profession_for_building(building_id), workers)
+    return build_rows(GameData.get_profession_for_building(building_id), workers, building_id)
 
 
 # The part of the row after the product name: "2 units/sec (+25% to production)".

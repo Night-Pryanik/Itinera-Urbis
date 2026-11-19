@@ -16,7 +16,7 @@
     {
       "id": "boats",
       "name": "Boats",
-      "products": [ "reed_boat" ]
+      "products": [ "reed_boat", "wooden_boat" ]
     },
     {
       "id": "fruits",

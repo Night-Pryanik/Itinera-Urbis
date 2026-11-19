@@ -211,6 +211,16 @@
       "description": "Reveals the mountain springs and allows you to build aqueducts: a channel of concrete brings fresh water from a spring to the city.",
       "flavor": "Lime burned in a kiln, mixed with sand and stone, sets into a mass harder than the rock it came from. A channel lined with it keeps its slope and its walls for generations, so water can leave the mountain and reach a city that has no river of its own.",
       "unlock_effects": [ { "icon": "water_chain.png", "name": "Reveals mountain springs and allows you to build aqueducts to the city." } ]
+    },
+    {
+      "id": "shipbuilding",
+      "name": "Shipbuilding",
+      "era": "antiquity",
+      "science_cost": 4.0,
+      "icon": "shipbuilding.png",
+      "prerequisites": [ [ "fishing", "wood_processing", "rope_making" ] ],
+      "description": "Allows you to build the sailmaker's workshop and the boatyard.\nUnlocks fast sailcloth production and wooden boats rigged with cloth sails.",
+      "flavor": "A bundle of reeds floats only until it swells with water; a planked hull keeps the water outside. Sawn boards joined edge to edge over curved ribs, stayed with twisted cordage and driven by a square of heavy canvas let boatmen leave the shallows behind, work deeper fishing grounds in rough weather and carry timber and grain along every river and coast."
     }
   ]
 }

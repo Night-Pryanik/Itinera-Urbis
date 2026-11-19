@@ -149,6 +149,9 @@ msgstr "Технологии строительства: ×%.2f"
 msgid "Construction technologies: ×1.00"
 msgstr "Технологии строительства: ×1.00"
 
+msgid "Consumption rule references a nonexistent building"
+msgstr "Правило потребления ссылается на несуществующее здание"
+
 msgid "Cost: %d work"
 msgstr "Стоимость: %d труда"
 
@@ -3202,6 +3205,10 @@ msgid "Brews various low-alcohol drinks by fermentation."
 msgstr "Варка различных слабоалкогольных напитков путём ферментации."
 
 msgctxt "buildings.description"
+msgid "Builds sturdy wooden boats rigged with cloth sails and rope."
+msgstr "Строит прочные деревянные лодки с парусом и канатной оснасткой."
+
+msgctxt "buildings.description"
 msgid "Burns wood in a sealed kiln to produce charcoal."
 msgstr "Обжиг древесины в закрытой печи для получения древесного угля."
 
@@ -3298,6 +3305,10 @@ msgid "Turns milk into cheese, a good that keeps for a long time."
 msgstr "Перерабатывает молоко в сыр — продукт, который долго хранится."
 
 msgctxt "buildings.description"
+msgid "Weaves, cuts and dresses heavy canvas for boat sails and windmill sweeps."
+msgstr "Ткёт, кроит и пропитывает плотную парусину для лодочных парусов и крыльев мельниц."
+
+msgctxt "buildings.description"
 msgid "Works stone into hewn blocks and stone goods for construction."
 msgstr "Обработка камня: тесаные блоки и каменные изделия для строительства."
 
@@ -3328,6 +3339,10 @@ msgstr "Доменная печь"
 msgctxt "buildings.name"
 msgid "Bloomery"
 msgstr "Сыродутная печь"
+
+msgctxt "buildings.name"
+msgid "Boatyard"
+msgstr "Лодочная мастерская"
 
 msgctxt "buildings.name"
 msgid "Bookbinder's Workshop"
@@ -3424,6 +3439,10 @@ msgstr "Гончарная мастерская"
 msgctxt "buildings.name"
 msgid "Ropemaker's House"
 msgstr "Дом канатчика"
+
+msgctxt "buildings.name"
+msgid "Sailmaker's Workshop"
+msgstr "Парусная мастерская"
 
 msgctxt "buildings.name"
 msgid "Scriptorium"
@@ -3768,6 +3787,10 @@ msgstr "Варит тодди из пальмового сока"
 msgctxt "crafts.description"
 msgid "Builds a boat from reeds."
 msgstr "Создает лодку из тростника"
+
+msgctxt "crafts.description"
+msgid "Builds planked wooden boats rigged with cloth sails and rope."
+msgstr "Строит дощатые деревянные лодки с парусом и канатной оснасткой."
 
 msgctxt "crafts.description"
 msgid "Burns limestone into lime."
@@ -4170,6 +4193,10 @@ msgid "Twists ropes and cables from fibers."
 msgstr "Свивает верёвки и канаты из волокон"
 
 msgctxt "crafts.description"
+msgid "Weaves and stitches heavy sailcloth from plant fibers."
+msgstr "Ткёт и сшивает плотную парусину из растительных волокон."
+
+msgctxt "crafts.description"
 msgid "Weaves clothes out of cloth."
 msgstr "Ткёт одежду из ткани"
 
@@ -4441,6 +4468,10 @@ msgctxt "crafts.description"
 msgid "Tempers and grinds the watered bar of the city into master pivots, dividers, gravers and precision gauges."
 msgstr "Закаливает и шлифует узорчатую полосу города в эталонные оси, циркули, штихели и точные калибры."
 
+msgctxt "crafts.description"
+msgid "Weaves heavy sailcloth from plant fibers on a hand loom."
+msgstr "Ткёт плотную парусину из растительных волокон на ручном станке."
+
 msgctxt "crafts.name"
 msgid "Aged Cheese"
 msgstr "Выдержанный сыр"
@@ -4516,6 +4547,10 @@ msgstr "Верблюжатина"
 msgctxt "crafts.name"
 msgid "Campeche"
 msgstr "Кампеш"
+
+msgctxt "crafts.name"
+msgid "Canvas"
+msgstr "Парусина"
 
 msgctxt "crafts.name"
 msgid "Carmine"
@@ -5008,6 +5043,10 @@ msgstr "Древесная смола"
 msgctxt "crafts.name"
 msgid "Wooden Barrel"
 msgstr "Деревянная бочка"
+
+msgctxt "crafts.name"
+msgid "Wooden Boats"
+msgstr "Деревянные лодки"
 
 msgctxt "crafts.name"
 msgid "Wool Clothes"
@@ -5758,12 +5797,20 @@ msgid "Forges tools, weapons and ornaments from metal."
 msgstr "Кует инструменты, оружие и украшения из металла."
 
 msgctxt "professions.description"
+msgid "Frames, planks and rigs wooden boats."
+msgstr "Собирает набор, обшивает досками и оснащает деревянные лодки."
+
+msgctxt "professions.description"
 msgid "Gathers and boils down natural tar."
 msgstr "Собирает и выпаривает природную смолу."
 
 msgctxt "professions.description"
 msgid "Grinds aromatic resins into perfumes and incense."
 msgstr "Стирает ароматические смолы в духи и благовония."
+
+msgctxt "professions.description"
+msgid "Grinds grain between millstones and tends the mill."
+msgstr "Мелет зерно на жерновах и следит за работой мельницы."
 
 msgctxt "professions.description"
 msgid "Grows technical and spice crops."
@@ -5822,6 +5869,10 @@ msgid "Weaves cloth, clothes and carpets from fibers."
 msgstr "Ткёт ткани, одежду и ковры из волокон."
 
 msgctxt "professions.description"
+msgid "Weaves, cuts and treats heavy sailcloth for boats and mills."
+msgstr "Ткёт, кроит и пропитывает плотную парусину для лодок и мельниц."
+
+msgctxt "professions.description"
 msgid "Works the fields and tends the crops."
 msgstr "Возделывает поля, ухаживает за посевами."
 
@@ -5868,6 +5919,10 @@ msgstr "Пчеловод"
 msgctxt "professions.name"
 msgid "Blacksmith"
 msgstr "Кузнец"
+
+msgctxt "professions.name"
+msgid "Boatbuilder"
+msgstr "Лодочный мастер"
 
 msgctxt "professions.name"
 msgid "Bookbinder"
@@ -5918,6 +5973,10 @@ msgid "Lumberjack"
 msgstr "Лесоруб"
 
 msgctxt "professions.name"
+msgid "Miller"
+msgstr "Мельник"
+
+msgctxt "professions.name"
 msgid "Miner"
 msgstr "Шахтёр"
 
@@ -5952,6 +6011,10 @@ msgstr "Гончар"
 msgctxt "professions.name"
 msgid "Quarryman"
 msgstr "Каменотёс"
+
+msgctxt "professions.name"
+msgid "Sailmaker"
+msgstr "Парусный мастер"
 
 msgctxt "professions.name"
 msgid "Scholar"
@@ -6248,6 +6311,10 @@ msgstr "Древесина кампешевого дерева"
 msgctxt "resources.name"
 msgid "Canihua"
 msgstr "Каньива"
+
+msgctxt "resources.name"
+msgid "Canvas"
+msgstr "Парусина"
 
 msgctxt "resources.name"
 msgid "Carmine"
@@ -7406,6 +7473,10 @@ msgid "Wooden Barrel"
 msgstr "Деревянная бочка"
 
 msgctxt "resources.name"
+msgid "Wooden Boat"
+msgstr "Деревянная лодка"
+
+msgctxt "resources.name"
 msgid "Wool"
 msgstr "Шерсть"
 
@@ -8002,6 +8073,10 @@ msgid "Allows you to build the ropemaker's house: fibers → ropes."
 msgstr "Даёт возможность строить дом канатчика: волокна → верёвки."
 
 msgctxt "technologies.description"
+msgid "Allows you to build the sailmaker's workshop and the boatyard.\nUnlocks fast sailcloth production and wooden boats rigged with cloth sails."
+msgstr "Позволяет построить парусную и лодочную мастерские.\nОткрывает быстрое производство парусины и деревянные лодки под парусом."
+
+msgctxt "technologies.description"
 msgid "Allows you to build the silkmaker's house: cocoons → silk."
 msgstr "Даёт возможность строить дом шелкопряда: коконы → шёлк."
 
@@ -8038,8 +8113,8 @@ msgid "Allows you to build the weaver's house and weave clothes and carpets from
 msgstr "Позволяет построить дом ткача, где из волокон ткут одежду и ковры."
 
 msgctxt "technologies.description"
-msgid "Allows you to build the windmill (2 production slots): wind-driven sails turn the millstones at the speed of a water mill without needing fresh water or animal feed."
-msgstr "Позволяет построить ветряную мельницу (2 слота производства): крылья на ветру вращают жернова со скоростью водяной мельницы, не требуя ни пресной воды, ни корма."
+msgid "Allows you to build the windmill (2 production slots): wind-driven canvas sails turn the millstones without needing fresh water or animal feed."
+msgstr "Позволяет построить ветряную мельницу (2 слота производства): парусиновые крылья на ветру вращают жернова, не требуя ни пресной воды, ни корма."
 
 msgctxt "technologies.description"
 msgid "Allows you to build the winemaker's house: grapes → wine."
@@ -8140,6 +8215,10 @@ msgstr "Открывает производство чёрного пороха 
 msgctxt "technologies.flavor"
 msgid "A bloomery never truly melted its iron: it coaxed a spongy lump from the ore one batch at a time and halted to pull it from the hearth. Raise the shaft, feed it limestone to run the stony gangue off as liquid slag and drive the bellows without pause, and the metal pours from the tap-hole like bright water — brittle under the hammer, yet matchless in the mould and ready to be fined in bulk into bar iron and steel. Cast in China since antiquity and towering beside the millstreams of medieval Europe, the blast furnace turned iron from a smith's batch into an industry."
 msgstr "Сыродутная печь никогда не плавила железо дожидка: она вытягивала из руды губчатую крицу по одной плавке за раз и останавливалась, чтобы её вынули из горна. Стоило поднять шахту выше, задать в шихту известняк, уводящий пустую породу в жидкий шлак, и гнать дутьё без передышки — и металл хлынул из лётки светлой струёй: хрупкий под молотом, но непревзойдённый в литье и готовый к массовому переделу в ковкое железо и сталь. Освоенная в Китае ещё в древности и вставшая у мельничных запруд средневековой Европы, доменная печь превратила железо из штучного ремесла в промышленность."
+
+msgctxt "technologies.flavor"
+msgid "A bundle of reeds floats only until it swells with water; a planked hull keeps the water outside. Sawn boards joined edge to edge over curved ribs, stayed with twisted cordage and driven by a square of heavy canvas let boatmen leave the shallows behind, work deeper fishing grounds in rough weather and carry timber and grain along every river and coast."
+msgstr "Связка тростника держится на плаву лишь пока не напитается водой; дощатый корпус оставляет воду снаружи. Пилёные доски, подогнанные кромка к кромке поверх гнутых шпангоутов, стянутые витым такелажем и влекомые прямым полотнищем плотной парусины, позволили лодочникам уйти с мелководий, промышлять на глубоких плёсах в непогоду и возить лес и зерно по каждой реке и вдоль морских берегов."
 
 msgctxt "technologies.flavor"
 msgid "A field sown with the same grain year after year gives less with every harvest until the earth lies spent. Alternating winter and spring cereals with pulses, fodder and rested fallow — practiced across Chinese bean-and-millet fields, the irrigated gardens of the Islamic world and the three-field manors of medieval Europe — returned strength to the soil and raised more from the same land."
@@ -8636,6 +8715,10 @@ msgstr "Скриптории"
 msgctxt "technologies.name"
 msgid "Sericulture"
 msgstr "Шёлководство"
+
+msgctxt "technologies.name"
+msgid "Shipbuilding"
+msgstr "Кораблестроение"
 
 msgctxt "technologies.name"
 msgid "Soap Making"

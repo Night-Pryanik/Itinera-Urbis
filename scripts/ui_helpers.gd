@@ -748,8 +748,15 @@ func show_consumption_tooltip(mouse_pos: Vector2, res_key: String, _products_dat
         # (amount / interval; interval = 0 means "per tick", and a tick equals a
         # second).
         var per_sec := float(amount) if interval <= 0.0 else float(amount) / interval
+        var consumer_label := str(consumer.get("profession_name", ""))
+        var scoped_buildings: Array = consumer.get("buildings", [])
+        if not scoped_buildings.is_empty():
+            var building_names: Array = []
+            for bid in scoped_buildings:
+                building_names.append(GameData.get_building_display_name(str(bid)))
+            consumer_label = "%s (%s)" % [consumer_label, ", ".join(building_names)]
         var row_text := "%s: %s" % [
-            str(consumer.get("profession_name", "")),
+            consumer_label,
             ConsumptionUi.format_rate_with_unit(per_sec)
         ]
         if bonus > 0.0:

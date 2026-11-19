@@ -969,6 +969,25 @@ func get_townsfolk_professions_count() -> Dictionary:
         result[prof] = int(result.get(prof, 0)) + 1
     return result
 
+# The number of WORKING built buildings by building id: building_id -> count. Uses the
+# same working condition as get_townsfolk_professions_count (assigned citizen and at
+# least one non-empty slot) so building-scoped consumption rules count only active copies.
+func get_working_buildings_count() -> Dictionary:
+    var result: Dictionary = {}
+    var tm = _get_townsfolk()
+    if tm == null:
+        return result
+    for i in range(city_built_buildings.size()):
+        if not tm.has_townsfolk(i):
+            continue
+        if are_all_slots_empty(i):
+            continue
+        var bld_id := str(city_built_buildings[i].get("id", ""))
+        if bld_id.is_empty():
+            continue
+        result[bld_id] = int(result.get(bld_id, 0)) + 1
+    return result
+
 # Returns the planned demand of the BUILT buildings for the resources per one crafting of the
 # recipe. The recipe in do_tick() is executed once per `time` seconds with a citizen assigned
 # and the ingredients present, therefore the demand goes together with the time of the
@@ -1768,9 +1787,12 @@ func do_tick():
                 # the multiplier is applied to the sum at the output. bonus_names are the
                 # products whose consumption gives the bonus of the profession of the building.
                 var bonus_names: Array = []
+                var sci_bld_id: String = str(bld.get("id", ""))
                 var bld_prof: String = str(bld.get("profession", ""))
+                if bld_prof.is_empty():
+                    bld_prof = GameData.get_profession_for_building(sci_bld_id)
                 if bld_prof != "" and prof_multiplier > 1.001:
-                    for cons_entry in GameData.get_profession_consumption(bld_prof):
+                    for cons_entry in GameData.get_profession_consumption(bld_prof, sci_bld_id):
                         if float(cons_entry.get("production_bonus", 0.0)) <= 0.0:
                             continue
                         bonus_names.append(str(cons_entry.get("product_name", "")))

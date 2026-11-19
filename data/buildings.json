@@ -7,6 +7,7 @@
       "work_cost": 10,
       "additional_cost": [ { "planks": 30 } ],
       "icon": "hand_mill.png",
+      "profession": "miller",
       "production_slots": 1.0,
       "upgrades_into": "animal_mill",
       "default_recipes": [ "grind_grain_hand" ]
@@ -18,6 +19,7 @@
       "work_cost": 25,
       "additional_cost": [ { "planks": 80 }, { "@building_stone": 10 } ],
       "icon": "animal_mill.png",
+      "profession": "miller",
       "production_slots": 1.0,
       "unlock_tech": "draft_animals",
       "upgrades_into": "water_mill",
@@ -30,6 +32,7 @@
       "work_cost": 30,
       "additional_cost": [ { "planks": 120 }, { "@processed_construction_materials": 100 }, { "@building_stone": 10 } ],
       "icon": "water_mill.png",
+      "profession": "miller",
       "production_slots": 1.0,
       "unlock_tech": "water_wheel",
       "additional_req": "running_water",
@@ -40,8 +43,9 @@
       "name": "Windmill",
       "description": "A mill whose cloth sails catch the wind to turn two sets of millstones without needing running water.",
       "work_cost": 35,
-      "additional_cost": [ { "planks": 140 }, { "@processed_construction_materials": 100 }, { "@building_stone": 10 } ],
+      "additional_cost": [ { "planks": 140 }, { "@processed_construction_materials": 100 }, { "@building_stone": 10 }, { "canvas": 40 }, { "ropes": 20 } ],
       "icon": "windmill.png",
+      "profession": "miller",
       "production_slots": 2.0,
       "unlock_tech": "windmill",
       "default_recipes": [ "grind_grain_wind" ]
@@ -538,6 +542,30 @@
       "production_slots": 1.0,
       "unlock_tech": "candle_making",
       "default_recipes": [  ]
+    },
+    {
+      "id": "sailmaker_house",
+      "name": "Sailmaker's Workshop",
+      "description": "Weaves, cuts and dresses heavy canvas for boat sails and windmill sweeps.",
+      "work_cost": 35,
+      "additional_cost": [ { "planks": 120 }, { "ropes": 20 } ],
+      "icon": "sailmaker_house.png",
+      "profession": "sailmaker",
+      "production_slots": 1.0,
+      "unlock_tech": "shipbuilding",
+      "default_recipes": [ "canvas" ]
+    },
+    {
+      "id": "boatyard",
+      "name": "Boatyard",
+      "description": "Builds sturdy wooden boats rigged with cloth sails and rope.",
+      "work_cost": 45,
+      "additional_cost": [ { "planks": 150 }, { "ropes": 30 } ],
+      "icon": "boatyard.png",
+      "profession": "boatbuilder",
+      "production_slots": 1.0,
+      "unlock_tech": "shipbuilding",
+      "default_recipes": [ "wooden_boat" ]
     }
   ]
 }
