@@ -209,12 +209,15 @@ func _run() -> void:
         "the engine fallback font followed too (the map draws its labels with it)", state)
 
     # --- 4b. A family with a single STATIC face ---
-    # The bundled "Terminus (TTF)" has one file, and that file calls itself 500, so
-    # choose_faces() names it as the emphasis too. A static font cannot be varied, so
-    # without a guard the emphasis is handed back as the body file and every section
-    # heading renders in the body face — the family has to be emboldened instead.
-    fm.rescan(["res://fonts"])
-    check(fm.set_font("Terminus (TTF)"), "the single-face family is applied", state)
+    # Model a lone medium face using the bundled font for glyphs, so this branch
+    # does not depend on which optional fonts are installed on the test machine.
+    var single_family := "Test Single Medium"
+    var single_face: Dictionary = face.duplicate()
+    single_face["family"] = single_family
+    single_face["weight"] = 500
+    single_face["wght"] = Vector2.ZERO
+    fm._groups[single_family] = [single_face]
+    check(fm.set_font(single_family), "the single-face family is applied", state)
     await process_frame
     var single_body: Font = theme.default_font
     var single_emphasis: Font = theme.get_font("font", "Button")
@@ -232,6 +235,7 @@ func _run() -> void:
     check(single_heading.get_theme_font("font") != single_body,
         "a section heading is not drawn in the body face of a single-face family", state)
     single_heading.queue_free()
+    fm._groups.erase(single_family)
 
     # --- 5. The start of the game ---
     _write_font_setting("No Such Font")
