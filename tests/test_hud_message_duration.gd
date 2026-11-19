@@ -105,8 +105,9 @@ func _run() -> void:
     save_manager.new_game()
     var main_map = load("res://scenes/MainMap.tscn").instantiate()
     get_root().add_child(main_map)
-    await process_frame
-    await process_frame
+    # The clock timer is created after the map applies the message duration.
+    while main_map._clock_timer == null:
+        await process_frame
     check(is_equal_approx(main_map.hud_message_duration, 5.0),
         "main_map._load_settings() read 5 from cfg (got: %s)" % main_map.hud_message_duration, state)
     check(is_equal_approx(main_map.hud.message_duration, 5.0),
