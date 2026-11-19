@@ -4225,10 +4225,6 @@ msgid "Forges and casts corrosion-resistant brass tools for craftsmen."
 msgstr ""
 
 msgctxt "crafts.description"
-msgid "Casts and engraves graduated brass balances, dividers and astrolabes for scholars."
-msgstr ""
-
-msgctxt "crafts.description"
 msgid "Smelts and cupels galena ore into soft lead and a smaller yield of silver."
 msgstr ""
 
@@ -4346,6 +4342,30 @@ msgstr ""
 
 msgctxt "crafts.description"
 msgid "Compounds concentrated nitric and hydrochloric acids into gold-dissolving aqua regia."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Shapes and calibrates copper balance beams, pans and sighting rings."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Casts and engraves graduated bronze calipers, dividers and geared dials."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Casts and engraves fine brass assay balances, dividers and astrolabes."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Forges and files rigid iron compasses, squares, calipers and steelyards."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Tempers and grinds hardened steel pivots, dividers, gravers and precision gauges."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Tempers and grinds the watered bar of the city into master pivots, dividers, gravers and precision gauges."
 msgstr ""
 
 msgctxt "crafts.name"
@@ -5021,10 +5041,6 @@ msgid "Brass Tools"
 msgstr ""
 
 msgctxt "crafts.name"
-msgid "Precision Instruments"
-msgstr ""
-
-msgctxt "crafts.name"
 msgid "Lead"
 msgstr ""
 
@@ -5134,6 +5150,30 @@ msgstr ""
 
 msgctxt "crafts.name"
 msgid "Aqua Regia (from acids)"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Copper Precision Instruments"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Bronze Precision Instruments"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Brass Precision Instruments"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Iron Precision Instruments"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Steel Precision Instruments"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Damascus Precision Instruments"
 msgstr ""
 
 msgctxt "eras.name"
@@ -5518,6 +5558,10 @@ msgstr ""
 
 msgctxt "product_groups.name"
 msgid "Candles"
+msgstr ""
+
+msgctxt "product_groups.name"
+msgid "Precision Instruments"
 msgstr ""
 
 msgctxt "professions.description"
@@ -7445,10 +7489,6 @@ msgid "Brass Jewelry"
 msgstr ""
 
 msgctxt "resources.name"
-msgid "Precision Instruments"
-msgstr ""
-
-msgctxt "resources.name"
 msgid "Fine Ceramics"
 msgstr ""
 
@@ -7474,6 +7514,30 @@ msgstr ""
 
 msgctxt "resources.name"
 msgid "Tofu"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Copper Precision Instruments"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Bronze Precision Instruments"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Brass Precision Instruments"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Iron Precision Instruments"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Steel Precision Instruments"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "<city_name>-steel Precision Instruments"
 msgstr ""
 
 msgctxt "roads.description"
@@ -7866,10 +7930,6 @@ msgstr ""
 
 msgctxt "technologies.description"
 msgid "Allows you to build the chandler's house: tallow → tallow candles, wax → wax candles."
-msgstr ""
-
-msgctxt "technologies.description"
-msgid "Unlocks calamine mining and the cementation of copper with calamine into brass, along with brass tools, brass jewelry and precision instruments."
 msgstr ""
 
 msgctxt "technologies.description"
@@ -8839,12 +8899,28 @@ msgctxt "technologies.name"
 msgid "Concrete"
 msgstr ""
 
+msgctxt "technologies.name"
+msgid "Precision Instruments"
+msgstr ""
+
 msgctxt "technologies.description"
 msgid "Reveals the mountain springs and allows you to build aqueducts: a channel of concrete brings fresh water from a spring to the city."
 msgstr ""
 
+msgctxt "technologies.description"
+msgid "Unlocks precision instruments crafted from copper, bronze, brass, iron or steel in the forge and the jeweler's house."
+msgstr ""
+
+msgctxt "technologies.description"
+msgid "Unlocks calamine mining and the cementation of copper with calamine into brass, along with brass tools and brass jewelry."
+msgstr ""
+
 msgctxt "technologies.flavor"
 msgid "Lime burned in a kiln, mixed with sand and stone, sets into a mass harder than the rock it came from. A channel lined with it keeps its slope and its walls for generations, so water can leave the mountain and reach a city that has no river of its own."
+msgstr ""
+
+msgctxt "technologies.flavor"
+msgid "Between the smith's hammer and the scholar's theorem lies a quiet threshold: the moment a hand learns to divide a circle evenly, balance a beam to a grain and file a pivot that does not wobble. Once geometry, gearing and clean metalwork met at one bench — in Han bronze calipers and armillary rings, in Hellenistic dioptras and geared spheres, in the assay balances of al-Khazini and the astrolabe-makers' workshops — any sound metal could be turned into an instrument that measured rather than guessed."
 msgstr ""
 
 msgctxt "technologies.unlock_effects.name"
@@ -8912,4 +8988,3 @@ msgstr ""
 
 msgid " Distance to city: %d hex(es)"
 msgstr ""
-

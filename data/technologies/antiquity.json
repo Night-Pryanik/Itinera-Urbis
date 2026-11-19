@@ -91,6 +91,18 @@
       "flavor": "The workshops knew the lever and the pulley long before anyone wrote them down. Heron of Alexandria set the pieces in order in his Mechanics, and later al-Khazini weighed the same pieces of rope and iron in the Book of the Balance of Wisdom. A machine, they wrote, is what moves a load we could not lift: a wheel on an axle, a crank, a connecting rod, a frame to hold it all. From this the hoist, the press and the mill stop being clever tricks and become craft — they can be built again, and then improved."
     },
     {
+      // Milestone where theoretical mechanics and fine metalwork meet, unlocking calibrated
+      // instruments across every workable metal rather than tying them to a single alloy.
+      "id": "precision_instruments",
+      "name": "Precision Instruments",
+      "era": "antiquity",
+      "science_cost": 5.0,
+      "prerequisites": [ [ "mechanics", "metallurgy" ] ],
+      "icon": "precision_instruments.png",
+      "description": "Unlocks precision instruments crafted from copper, bronze, brass, iron or steel in the forge and the jeweler's house.",
+      "flavor": "Between the smith's hammer and the scholar's theorem lies a quiet threshold: the moment a hand learns to divide a circle evenly, balance a beam to a grain and file a pivot that does not wobble. Once geometry, gearing and clean metalwork met at one bench — in Han bronze calipers and armillary rings, in Hellenistic dioptras and geared spheres, in the assay balances of al-Khazini and the astrolabe-makers' workshops — any sound metal could be turned into an instrument that measured rather than guessed."
+    },
+    {
       "id": "paper",
       "name": "Paper",
       "era": "antiquity",

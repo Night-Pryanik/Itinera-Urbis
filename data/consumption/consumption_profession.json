@@ -269,12 +269,15 @@
       "production_bonus": 0.25
     },
     {
-      // Graduated brass balances, dividers and astrolabes speed measurement and calculation.
-      "resource": "precision_instruments",
-      "profession": [ "scientist" ],
+      // Calibrated balances, dividers, calipers and fine bench instruments aid
+      // measurement in the library and scriptorium, weighing in the alchemist's
+      // house and assaying and engraving at the jeweler's bench. The rule draws
+      // one metal kind per tick, rotating over those in stock.
+      "resource": "@precision_instruments",
+      "profession": [ "scientist", "alchemist", "jeweler" ],
       "amount": 10,
       "interval": 20,
-      "production_bonus": 0.2
+      "production_bonus": 0.1
     },
     {
       // Molten lead draws base impurities out of silver and gold in cupellation and assaying.

@@ -250,14 +250,66 @@
       "description": "Forges and casts corrosion-resistant brass tools for craftsmen."
     },
     {
-      "id": "precision_instruments",
-      "name": "Precision Instruments",
-      "produced_in": [ "jeweler_house", "forge" ],
+      "id": "copper_precision_instruments",
+      "name": "Copper Precision Instruments",
+      "produced_in": [ "forge", "jeweler_house" ],
+      "resources": { "copper": 20, "charcoal": 10 },
+      "result": { "copper_precision_instruments": 10 },
+      "time": 10.0,
+      "unlock_tech": "precision_instruments",
+      "description": "Shapes and calibrates copper balance beams, pans and sighting rings."
+    },
+    {
+      "id": "bronze_precision_instruments",
+      "name": "Bronze Precision Instruments",
+      "produced_in": [ "forge", "jeweler_house" ],
+      "resources": { "bronze": 20, "charcoal": 10 },
+      "result": { "bronze_precision_instruments": 10 },
+      "time": 10.0,
+      "unlock_tech": "precision_instruments",
+      "description": "Casts and engraves graduated bronze calipers, dividers and geared dials."
+    },
+    {
+      "id": "brass_precision_instruments",
+      "name": "Brass Precision Instruments",
+      "produced_in": [ "forge", "jeweler_house" ],
       "resources": { "brass": 20, "charcoal": 10 },
-      "result": { "precision_instruments": 10 },
+      "result": { "brass_precision_instruments": 10 },
+      "time": 10.0,
+      "unlock_tech": "precision_instruments",
+      "description": "Casts and engraves fine brass assay balances, dividers and astrolabes."
+    },
+    {
+      "id": "iron_precision_instruments",
+      "name": "Iron Precision Instruments",
+      "produced_in": [ "forge", "jeweler_house" ],
+      "resources": [ [ { "iron": 20 }, { "meteorite_iron": 20 } ], { "charcoal": 20 } ],
+      "result": { "iron_precision_instruments": 10 },
+      "time": 10.0,
+      "unlock_tech": "precision_instruments",
+      "description": "Forges and files rigid iron compasses, squares, calipers and steelyards."
+    },
+    {
+      "id": "steel_precision_instruments",
+      "name": "Steel Precision Instruments",
+      "produced_in": [ "forge", "jeweler_house" ],
+      "resources": { "steel": 20, "charcoal": 20 },
+      "result": { "steel_precision_instruments": 10 },
+      "time": 10.0,
+      "unlock_tech": "precision_instruments",
+      "description": "Tempers and grinds hardened steel pivots, dividers, gravers and precision gauges."
+    },
+    {
+      // Precision work of the brand bar: stands above the steel tier and opens automatically
+      // once both Precision Instruments is researched and the steel line's brand rung is earned.
+      "id": "damascus_precision_instruments",
+      "name": "Damascus Precision Instruments",
+      "produced_in": [ "forge", "jeweler_house" ],
+      "resources": { "damascus_steel": 20, "charcoal": 20 },
+      "result": { "damascus_precision_instruments": 10 },
       "time": 12.0,
-      "unlock_tech": "brass_working",
-      "description": "Casts and engraves graduated brass balances, dividers and astrolabes for scholars."
+      "unlock_tech": "precision_instruments",
+      "description": "Tempers and grinds the watered bar of the city into master pivots, dividers, gravers and precision gauges."
     },
     {
       // Argentiferous galena yields a minor silver fraction alongside lead on cupellation.
