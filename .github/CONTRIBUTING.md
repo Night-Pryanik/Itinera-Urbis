@@ -21,6 +21,10 @@ new good usually means a new record in the JSON and no code at all.
 
 ## Running the tests
 
+GitHub Actions runs the full suite on pull requests when they are opened,
+reopened, or updated with new commits. The **Godot tests** check shows the
+result, and the workflow run provides a **godot-test-logs** artifact.
+
 The tests are headless scripts in `tests/`. The runner starts Godot itself and
 runs them in parallel:
 
