@@ -331,10 +331,11 @@ func _test_group_member() -> void:
     for i in range(40):
         var pools: Dictionary = _te.build_pools("town_grp_%d" % i, [WOOD, COPPER_ORE])
         var buy: Array = pools["buy_pool"]
+        var buys_bronze_alloys := buy.has("@bronze_alloys")
         for pid in buy:
             var key := str(pid)
             if not key.begins_with("@"):
-                _check(not members.has(key),
+                _check(not buys_bronze_alloys or not members.has(key),
                     ("a member of @bronze_alloys (\"%s\") must not stand in the buy pool "
                     + "beside the group") % key)
                 continue
