@@ -62,12 +62,13 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 TESTS_DIR = PROJECT_ROOT / "tests"
 LOG_DIR = PROJECT_ROOT / "tools" / "test_logs"
 
-# The user data directory Godot writes to. APPDATA redirects it on Windows, so
-# each parallel worker gets its own sandbox and two tests can never read or
-# write the same settings.cfg / savegame.json / sentinel. Two tests really do
-# touch it: test_resource_display_interval writes settings.cfg, and
-# test_pause_menu_confirm writes a sentinel file.
-USER_DATA_RELATIVE = Path("Godot") / "app_userdata" / "The City"
+# Match Godot's platform-specific user data root and directory casing.
+if sys.platform.startswith("linux"):
+    USER_DATA_ENV = "XDG_DATA_HOME"
+    USER_DATA_RELATIVE = Path("godot") / "app_userdata" / "The City"
+else:
+    USER_DATA_ENV = "APPDATA"
+    USER_DATA_RELATIVE = Path("Godot") / "app_userdata" / "The City"
 
 # A test that prints no verdict line and is not in MARKERLESS is treated as
 # broken, not as passing. Every test currently prints a standard "<NAME> TEST OK"
@@ -232,7 +233,7 @@ def run_one(case: TestCase, godot: str, appdata_root: Path, cases: list[str] | N
             sentinel_path.unlink()
 
     env = dict(os.environ)
-    env["APPDATA"] = str(sandbox)
+    env[USER_DATA_ENV] = str(sandbox)
 
     cmd = [
         godot,
