@@ -342,7 +342,7 @@ def _critical_lines(output: str, limit: int = 12) -> list[str]:
         for line in output.splitlines()
         if re.search(
             r"SCRIPT ERROR|Parse Error|ASSERT|FAIL|ERROR|WATCHDOG|Invalid|"
-            r"at: |^ERROR",
+            r"^ERROR",
             line,
         )
     ]
@@ -518,6 +518,10 @@ def main() -> int:
             print(f"\n### {case.name}: {case.reason}")
             for line in case.critical:
                 print(f"    {line}")
+            if os.environ.get("GITHUB_ACTIONS") == "true":
+                message = "\n".join([f"{case.name}: {case.reason}", *case.critical])
+                escaped = message.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+                print(f"::error::{escaped}")
     print(
         f"{len(results) - len(failed)}/{len(results)} passed"
         f"   (wall {total:.1f}s of test time, {jobs} workers)"
