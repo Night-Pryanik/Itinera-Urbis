@@ -57,13 +57,15 @@ func _run() -> void:
     # A known starting point: the machine may carry any settings.cfg.
     var seed_cfg := ConfigFile.new()
     seed_cfg.set_value("interface", "show_fps", false)
-    seed_cfg.save("user://settings.cfg")
+    check(seed_cfg.save("user://settings.cfg") == OK, "FPS settings fixture saved", state)
 
     var save_manager = get_root().get_node("SaveManager")
     save_manager.new_game()
     var main_map = load("res://scenes/MainMap.tscn").instantiate()
     get_root().add_child(main_map)
-    await process_frame
+    # The map initializes HUD settings after world generation.
+    while main_map._clock_timer == null:
+        await process_frame
     await process_frame
     check(not main_map.show_fps,
         "main_map._load_settings() read show_fps = false (got: %s)" % main_map.show_fps, state)
@@ -73,10 +75,12 @@ func _run() -> void:
 
     seed_cfg = ConfigFile.new()
     seed_cfg.set_value("interface", "show_fps", true)
-    seed_cfg.save("user://settings.cfg")
+    check(seed_cfg.save("user://settings.cfg") == OK, "FPS settings fixture saved", state)
     main_map.apply_settings()
     check(main_map.show_fps and main_map.fps_label.visible,
         "apply_settings() shows the FPS label again", state)
+    # Showing a child queues a container layout update.
+    await process_frame
     check(main_map.top_right_panel.size.x > hidden_panel_width,
         "the panel grows to make room for the counter (%.1f -> %.1f)"
             % [hidden_panel_width, main_map.top_right_panel.size.x], state)
