@@ -40,6 +40,8 @@
 #   resource           — a recipe requires a non-existent resource
 #   consumption_resource— a consumption rule → a non-existent product
 #   consumption_group   — a consumption rule → a non-existent @-group
+#   consumption_building— a consumption rule → a building that is neither present nor blacklisted
+#   consumption_member  — a consumption rule's members map names a product outside its @-group
 #   prerequisite       — a technology requires a non-existent technology
 #   specialization_*   — a branch names a non-existent predecessor, improvement, good or challenge
 #   fame_trigger       — a tier of the fame of a good counts an unknown way
@@ -526,13 +528,20 @@ const SPECIAL_ACTION_FIELDS := {
     "unlock_tech": LEAF,
 }
 
+const CONSUMPTION_MEMBER_FIELDS := {
+    "interval": LEAF,
+    "production_bonus": LEAF,
+}
+
 const CONSUMPTION_FIELDS := {
     "resource": LEAF,
     "profession": LEAF,
+    "buildings": LEAF,
     "amount": LEAF,
     "interval": LEAF,
     "production_bonus": LEAF,
     "consume_all": LEAF,
+    "members": {"id_map": CONSUMPTION_MEMBER_FIELDS},
 }
 
 const PRODUCT_GROUP_BONUS_FIELDS := {
@@ -1046,6 +1055,10 @@ static func check_title(kind: String) -> String:
             return TranslationServer.translate("Consumption rule references a nonexistent product")
         "consumption_group":
             return TranslationServer.translate("Consumption rule references a nonexistent goods group")
+        "consumption_building":
+            return TranslationServer.translate("Consumption rule references a nonexistent building")
+        "consumption_member":
+            return TranslationServer.translate("Consumption rule overrides a product outside its group")
         "craft_extra":
             return TranslationServer.translate("Additional ingredient spends a nonexistent product")
         "craft_extra_kind":
@@ -1163,6 +1176,8 @@ const CHECK_ORDER := [
     "resource",
     "consumption_resource",
     "consumption_group",
+    "consumption_building",
+    "consumption_member",
     "craft_extra",
     "craft_extra_kind",
     "prerequisite",
@@ -1215,6 +1230,7 @@ func validate(gd: Object) -> Array:
     all_resources.merge(products)
     var blacklisted: Dictionary = gd.get("blacklisted")
     var blacklisted_buildings: Dictionary = blacklisted.get("buildings", {})
+    var blacklisted_resources: Dictionary = blacklisted.get("resources", {})
     var challenges := _index_by_id(gd.get("challenges"))
     # The task identifiers the gates of the data may name: the challenges of the era and the tiers of
     # the fame of a good. Built before the recipes, which are checked against them.
@@ -1231,7 +1247,8 @@ func validate(gd: Object) -> Array:
     _validate_resources(products, raw_resources, categories, technologies, improvements, problems)
     _validate_product_sources(products, _produced_ids(gd, all_resources), problems)
     _validate_product_groups(product_groups, group_names, products, problems)
-    _validate_consumption(gd.consumption_rules, products, product_groups, professions, problems)
+    _validate_consumption(gd.consumption_rules, products, product_groups, professions,
+            buildings, blacklisted_buildings, blacklisted_resources, problems)
     _validate_technologies(technologies, problems)
     _validate_tech_modifiers(gd.modifiers, technologies, problems)
     _validate_specializations(gd.specializations, improvements, all_resources, product_groups,
@@ -2176,7 +2193,8 @@ func _validate_product_groups(product_groups: Dictionary, group_names: Dictionar
 # often the name of a group that exists (see _at_sign_hint). The hint is passed to the problem as an
 # extra field, and build_text turns it into the last sentence of the message.
 func _validate_consumption(rules, products: Dictionary, product_groups: Dictionary,
-        professions: Dictionary, problems: Array) -> void:
+        professions: Dictionary, buildings: Dictionary, blacklisted_buildings: Dictionary,
+        blacklisted_resources: Dictionary, problems: Array) -> void:
     if not (rules is Array):
         return
     for rule in rules:
@@ -2201,6 +2219,27 @@ func _validate_consumption(rules, products: Dictionary, product_groups: Dictiona
         # the message "a reference to a non-existent profession" is equally true here.
         _check_profession_ref(rule.get("profession", []), professions, problems,
                 "consumption_rule", res_key, res_key, "profession")
+
+        for building_id in _as_string_list(rule.get("buildings", [])):
+            # A rule scoped to a blacklisted building stays dormant alongside it, like produced_in.
+            if not buildings.has(building_id) and not blacklisted_buildings.has(building_id):
+                _add(problems, "consumption_building", "building", building_id,
+                        "consumption_rule", res_key, res_key, "buildings")
+
+        var member_map = rule.get("members", null)
+        if member_map is Dictionary:
+            var group_known := res_key.begins_with("@") and product_groups.has(res_key.substr(1))
+            var group_list: Array = product_groups.get(res_key.substr(1), []) if group_known else []
+            for raw_mid in member_map.keys():
+                var mid := str(raw_mid)
+                if blacklisted_resources.has(mid):
+                    continue
+                if not products.has(mid):
+                    _add(problems, "consumption_resource", "product", mid,
+                            "consumption_rule", res_key, res_key, "members")
+                elif not res_key.begins_with("@") or (group_known and not group_list.has(mid)):
+                    _add(problems, "consumption_member", "product", mid,
+                            "consumption_rule", res_key, res_key, "members")
 
 
 # --- THE HINT OF A FORGOTTEN "@" ------------------------------------------------
@@ -2672,6 +2711,9 @@ static func build_text(problem: Dictionary) -> void:
         "cover_belt":
             headline = TranslationServer.translate("Terrain cover %s names the temperature belt \"%s\", which does not exist.") % [_quote_owner(str(problem.get("source_name", "")), str(problem.get("source_id", ""))), str(problem.get("ref_id", ""))]
             where = TranslationServer.translate("The belts the generator rolls are: polar, cold, mild, subtropical, tropical. A cover is asked for its belts literally, so a misspelled belt is a belt that never happens and the cover simply does not grow there. If EVERY belt of the list is misspelled, the cover never appears on the map at all. An empty list means no restriction, not \"nowhere\".")
+        "consumption_member":
+            headline = TranslationServer.translate("Consumption rule %s lists \"%s\" in members, which does not belong to \"%s\".") % [_quote_owner(str(problem.get("source_name", "")), str(problem.get("source_id", ""))), str(problem.get("ref_id", "")), str(problem.get("source_id", ""))]
+            where = TranslationServer.translate("Per-member interval and bonus overrides apply only to products declared inside the rule's @-group. Add the product to the group or remove the key from members.")
         _:
             # The other checks are a broken REFERENCE: "There is no X with the identifier …
             # exists" + where exactly it was referred to.

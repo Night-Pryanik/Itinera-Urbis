@@ -64,6 +64,17 @@
       ]
     },
     {
+      // Hard, gritty stones fit for grinding: softer stones like limestone, marble
+      // and soapstone crumble into the flour instead of shearing the grain.
+      "id": "millstones",
+      "name": "Millstone Stones",
+      "products": [
+        "basalt",
+        "sandstone",
+        "granite"
+      ]
+    },
+    {
       "id": "oil_crops",
       "name": "Oil Crops",
       "products": [

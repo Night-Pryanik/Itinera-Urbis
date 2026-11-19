@@ -1616,6 +1616,189 @@ func get_source_display_name(source_id: String) -> String:
         return get_improvement_display_name(source_id.substr(SRC_PREFIX_IMPROVEMENT.length()))
     return source_id
 
+# Normalized list of building ids a consumption rule is restricted to. An empty array
+# means the rule applies everywhere the profession works — on map improvements and in
+# every building assigned to that profession.
+func _rule_buildings(rule: Dictionary) -> Array:
+    var result: Array = []
+    var raw = rule.get("buildings", null)
+    if raw is String:
+        if not str(raw).is_empty():
+            result.append(str(raw))
+    elif raw is Array:
+        for item in raw:
+            var bid := str(item)
+            if not bid.is_empty() and not result.has(bid):
+                result.append(bid)
+    return result
+
+func _rule_matches_building(rule: Dictionary, building_id: String) -> bool:
+    var scoped := _rule_buildings(rule)
+    if scoped.is_empty():
+        return true
+    return not building_id.is_empty() and scoped.has(building_id)
+
+# Subset of a rule's "buildings" that actually employ prof_id. Keeps multi-profession
+# building-scoped rules (e.g. millstones for mills and the oilmaker's house) from
+# attributing one profession's buildings to another in reverse-index queries.
+func _rule_buildings_for_profession(rule: Dictionary, prof_id: String) -> Array:
+    var result: Array = []
+    if prof_id.is_empty() or prof_id == "all":
+        return result
+    for raw_bid in _rule_buildings(rule):
+        var bid := str(raw_bid)
+        if get_profession_for_building(bid) == prof_id:
+            result.append(bid)
+    return result
+
+# True when prof_id also works in a building or map improvement outside listed_buildings,
+# so UI tooltips should qualify the profession name with the listed buildings.
+func profession_has_unlisted_workplace(prof_id: String, listed_buildings: Array) -> bool:
+    if prof_id.is_empty() or prof_id == "all" or listed_buildings.is_empty():
+        return false
+    for b in buildings:
+        if not (b is Dictionary):
+            continue
+        var bid := str(b.get("id", ""))
+        if not bid.is_empty() and str(b.get("profession", "")) == prof_id and not listed_buildings.has(bid):
+            return true
+    for imp_id in improvements:
+        var imp = improvements[imp_id]
+        if imp is Dictionary and str(imp.get("profession", "")) == prof_id:
+            return true
+    return false
+
+# Normalized per-member overrides from rule["members"] restricted to products present in
+# group_members: { pid: { "interval": float, "production_bonus": float } }. Missing fields
+# inherit the rule's base interval and production_bonus.
+func _rule_member_overrides(rule: Dictionary, group_members: Array) -> Dictionary:
+    var out: Dictionary = {}
+    var raw = rule.get("members", null)
+    if not (raw is Dictionary) or raw.is_empty():
+        return out
+    var base_interval := float(rule.get("interval", 0.0))
+    var base_bonus := float(rule.get("production_bonus", 0.0))
+    for raw_pid in group_members:
+        var pid := str(raw_pid)
+        if not raw.has(pid):
+            continue
+        var spec = raw[pid]
+        if not (spec is Dictionary):
+            continue
+        var iv := float(spec.get("interval", base_interval)) if spec.has("interval") else base_interval
+        var bn := float(spec.get("production_bonus", base_bonus)) if spec.has("production_bonus") else base_bonus
+        out[pid] = {
+            "interval": iv,
+            "production_bonus": bn,
+        }
+    return out
+
+# Effective consumption interval for a single member of a group entry (falls back to the
+# entry's base interval when the member carries no override).
+func get_entry_member_interval(entry: Dictionary, pid: String) -> float:
+    var overrides = entry.get("member_overrides", null)
+    if overrides is Dictionary and overrides.has(pid):
+        var spec: Dictionary = overrides[pid]
+        return float(spec.get("interval", entry.get("interval", 0.0)))
+    return float(entry.get("interval", 0.0))
+
+# Effective production_bonus for a single member of a group entry (falls back to the
+# entry's base bonus when the member carries no override).
+func get_entry_member_bonus(entry: Dictionary, pid: String) -> float:
+    var overrides = entry.get("member_overrides", null)
+    if overrides is Dictionary and overrides.has(pid):
+        var spec: Dictionary = overrides[pid]
+        return float(spec.get("production_bonus", entry.get("production_bonus", 0.0)))
+    return float(entry.get("production_bonus", 0.0))
+
+# Group members ordered from highest tier to lowest: higher production_bonus first, then
+# longer interval (slower wear), preserving the declared order on ties.
+func get_entry_members_ordered_by_tier(entry: Dictionary) -> Array:
+    var members: Array = entry.get("group_members", [])
+    if members.size() <= 1:
+        return members.duplicate()
+    var indexed: Array = []
+    for i in range(members.size()):
+        var pid := str(members[i])
+        indexed.append({
+            "pid": pid,
+            "bonus": get_entry_member_bonus(entry, pid),
+            "interval": get_entry_member_interval(entry, pid),
+            "index": i,
+        })
+    indexed.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
+        var ba := float(a["bonus"])
+        var bb := float(b["bonus"])
+        if not is_equal_approx(ba, bb):
+            return ba > bb
+        var ia := float(a["interval"])
+        var ib := float(b["interval"])
+        if not is_equal_approx(ia, ib):
+            return ia > ib
+        return int(a["index"]) < int(b["index"])
+    )
+    var ordered: Array = []
+    for item in indexed:
+        ordered.append(str(item["pid"]))
+    return ordered
+
+# Min/max per-second consumption rate (for one consumer) and production_bonus across all
+# members of a tiered group entry. Returns {} when the entry has no member overrides.
+func get_entry_rate_bonus_bounds(entry: Dictionary) -> Dictionary:
+    var overrides = entry.get("member_overrides", null)
+    if not (overrides is Dictionary) or overrides.is_empty():
+        return {}
+    var members: Array = entry.get("group_members", [])
+    var amount := int(entry.get("amount", 0))
+    if members.is_empty() or amount <= 0:
+        return {}
+    var rate_min := INF
+    var rate_max := -INF
+    var bonus_min := INF
+    var bonus_max := -INF
+    for raw_pid in members:
+        var pid := str(raw_pid)
+        var iv := get_entry_member_interval(entry, pid)
+        var rate := float(amount) if iv <= 0.0 else float(amount) / iv
+        var bn := get_entry_member_bonus(entry, pid)
+        rate_min = minf(rate_min, rate)
+        rate_max = maxf(rate_max, rate)
+        bonus_min = minf(bonus_min, bn)
+        bonus_max = maxf(bonus_max, bn)
+    return {
+        "rate_min": rate_min,
+        "rate_max": rate_max,
+        "bonus_min": bonus_min,
+        "bonus_max": bonus_max,
+    }
+
+# Per-member consumption stats for a group tooltip when the group's consumption rule
+# defines "members": { pid: { "per_sec": float, "production_bonus": float } }. Returns {}
+# for plain groups so their composition tooltips stay unchanged.
+func get_group_member_consumption_specs(group_key: String) -> Dictionary:
+    var gkey := group_key if is_group_key(group_key) else ("@" + group_key)
+    for rule in consumption_rules:
+        if not (rule is Dictionary) or str(rule.get("resource", "")) != gkey:
+            continue
+        var entry := _build_consumption_entry(gkey, rule)
+        if entry.is_empty():
+            continue
+        var overrides: Dictionary = entry.get("member_overrides", {})
+        if overrides.is_empty():
+            continue
+        var amount := int(entry.get("amount", 0))
+        var out: Dictionary = {}
+        for raw_pid in entry.get("group_members", []):
+            var pid := str(raw_pid)
+            var iv := get_entry_member_interval(entry, pid)
+            var per_sec := float(amount) if iv <= 0.0 else float(amount) / iv
+            out[pid] = {
+                "per_sec": per_sec,
+                "production_bonus": get_entry_member_bonus(entry, pid),
+            }
+        return out
+    return {}
+
 # Assembles the consumption record from the rule of data/consumption.json.
 # res_key — the "resource" field of the rule ("product_id" or "@group_id").
 # For a group the members are resolved through product_groups; if the group is not found
@@ -1634,7 +1817,9 @@ func _build_consumption_entry(res_key: String, rule: Dictionary) -> Dictionary:
         "interval": float(rule.get("interval", 0)),
         "production_bonus": float(rule.get("production_bonus", 0.0)),
         # Only group records use it; on a single product it has no effect.
-        "consume_all": bool(rule.get("consume_all", default_all))
+        "consume_all": bool(rule.get("consume_all", default_all)),
+        "buildings": _rule_buildings(rule),
+        "member_overrides": {}
     }
     if is_group_key(res_key):
         var gkey = res_key.trim_prefix("@")
@@ -1654,6 +1839,7 @@ func _build_consumption_entry(res_key: String, rule: Dictionary) -> Dictionary:
         # otherwise the first icon among the members (GameData.get_product_group_icon_info).
         # Previously there was a separate walk of the members here, duplicating the rule.
         entry["icon"] = get_product_group_icon(res_key)
+        entry["member_overrides"] = _rule_member_overrides(rule, members)
     else:
         # A non-existent product: previously the record was created anyway, with
         # an identifier as the label and an empty icon, and it quietly hung in the
@@ -1730,19 +1916,48 @@ func get_consumption_consumers(res_key: String) -> Array:
                 continue
             var interval := float(rule.get("interval", 0))
             var bonus := float(rule.get("production_bonus", 0.0))
+            var via := str(via_group.get(query, ""))
+            var bounds: Dictionary = {}
+            if not via.is_empty():
+                # Concrete product resolved through a group rule: use its own tier values if set.
+                var raw_members = rule.get("members", null)
+                if raw_members is Dictionary and raw_members.has(res_key):
+                    var mspec = raw_members[res_key]
+                    if mspec is Dictionary:
+                        if mspec.has("interval"):
+                            interval = float(mspec.get("interval", interval))
+                        if mspec.has("production_bonus"):
+                            bonus = float(mspec.get("production_bonus", bonus))
+            elif is_group_key(query):
+                var built := _build_consumption_entry(query, rule)
+                if not built.is_empty():
+                    bounds = get_entry_rate_bonus_bounds(built)
+            var scoped := _rule_buildings(rule)
             for prof_id in rule.get("profession", []):
                 var pair := str(prof_id)
                 if covered.has(pair):
                     continue
+                var prof_buildings: Array = []
+                if not scoped.is_empty():
+                    prof_buildings = _rule_buildings_for_profession(rule, pair)
+                    if prof_buildings.is_empty():
+                        continue
                 covered[pair] = true
-                result.append({
+                var rec := {
                     "profession_id": pair,
                     "profession_name": get_profession_name(pair),
                     "amount": amount,
                     "interval": interval,
                     "production_bonus": bonus,
-                    "via_group": str(via_group.get(query, ""))
-                })
+                    "via_group": via,
+                    "buildings": prof_buildings
+                }
+                if not bounds.is_empty():
+                    rec["rate_min"] = float(bounds["rate_min"])
+                    rec["rate_max"] = float(bounds["rate_max"])
+                    rec["bonus_min"] = float(bounds["bonus_min"])
+                    rec["bonus_max"] = float(bounds["bonus_max"])
+                result.append(rec)
 
     # The legacy records "from the resource": a product carries its own consumption
     # inline. A single product has no group rule of its own, so it is queried for the
@@ -1766,18 +1981,21 @@ func get_consumption_consumers(res_key: String) -> Array:
                         "amount": amount2,
                         "interval": interval2,
                         "production_bonus": bonus2,
-                        "via_group": ""
+                        "via_group": "",
+                        "buildings": []
                     })
     return result
 
-# The professions that consume a resource by a dedicated rule, i.e. not through the
-# pseudo-profession "all". The resource is addressed by its display_key — the bare id of
-# a product ("coca_leaf") or the "@id" of a group ("@boats"). Both the registry and the
-# legacy product-side rules are taken into account.
+# The professions that consume a resource across all of their workplaces (i.e. by an
+# unrestricted dedicated rule, not through the pseudo-profession "all"). The resource is
+# addressed by its display_key — the bare id of a product ("coca_leaf") or the "@id" of a
+# group ("@boats"). Both the registry and the legacy product-side rules are included.
 #
 # Such a profession has priority: its citizens are excluded from the headcount of "all"
 # for the same resource (see worker_manager._resident_consumer_count), so a resource
-# declared for both a profession and all residents is written off only once.
+# declared for both a profession and all residents is written off only once. Rules scoped
+# to specific buildings exclude only citizens working in those buildings (see
+# get_resource_consumer_buildings).
 func get_resource_consumer_professions(display_key: String) -> Array:
     var result: Array = []
     if display_key.is_empty():
@@ -1798,6 +2016,8 @@ func get_resource_consumer_professions(display_key: String) -> Array:
             continue
         if int(rule.get("amount", 0)) <= 0 or float(rule.get("interval", 0)) <= 0.0:
             continue
+        if not _rule_buildings(rule).is_empty():
+            continue
         for prof_id in rule.get("profession", []):
             var pid := str(prof_id)
             if pid.is_empty() or pid == "all" or result.has(pid):
@@ -1817,37 +2037,68 @@ func get_resource_consumer_professions(display_key: String) -> Array:
                     result.append(pid)
     return result
 
-# Returns the array of the consumption records for a profession. The sources (in the order of
-# priority):
-#   1) the registry data/consumption.json — the records of the kind
-#      { "resource": "<id>|@<group>", "profession": ["<id>"],
+# The building ids whose working citizens consume display_key through a building-scoped
+# rule and are not already covered by get_resource_consumer_professions(display_key).
+# Used by worker_manager._resident_consumer_count so citizens of the same profession in
+# other buildings still take part in an "all" rule for that resource.
+func get_resource_consumer_buildings(display_key: String) -> Array:
+    var result: Array = []
+    if display_key.is_empty():
+        return result
+    var valid: bool
+    if is_group_key(display_key):
+        valid = not product_groups.get(display_key.trim_prefix("@"), []).is_empty()
+    else:
+        valid = products.has(display_key)
+    if not valid:
+        return result
+    var unrestricted := get_resource_consumer_professions(display_key)
+    for rule in consumption_rules:
+        if not (rule is Dictionary):
+            continue
+        if str(rule.get("resource", "")) != display_key:
+            continue
+        if int(rule.get("amount", 0)) <= 0 or float(rule.get("interval", 0)) <= 0.0:
+            continue
+        var scoped := _rule_buildings(rule)
+        if scoped.is_empty():
+            continue
+        var rule_profs: Array = rule.get("profession", [])
+        for raw_bid in scoped:
+            var bid := str(raw_bid)
+            var bprof := get_profession_for_building(bid)
+            if bprof.is_empty() or bprof == "all" or unrestricted.has(bprof):
+                continue
+            if rule_profs.has(bprof) and not result.has(bid):
+                result.append(bid)
+    return result
+
+# Returns the array of the consumption records for a profession. When building_id is
+# empty (map improvements or profession-wide queries), rules restricted to specific
+# buildings via "buildings" are omitted; when building_id is given, both unrestricted
+# rules and rules whose "buildings" includes building_id are returned.
+# Sources (in priority order):
+#   1) the registry data/consumption/*.json —
+#      { "resource": "<id>|@<group>", "profession": ["<id>"], "buildings": ["<id>"],
 #        "amount": N, "interval": S, "production_bonus": B }.
-#      It supports the product groups: any suitable product is consumed
-#      from the group (see worker_manager.tick_consumption()).
-#   2) the deprecated "from the resource" scheme: the consumption field of the product in
-#      data/products/*.json (left for the single cases — when the resource
-#      has no analogue for the group). The infrastructure is not changed.
-# The duplicates are cut off by display_key: the same resource will not get into
-# the result twice (the record from the registry takes priority). Each record:
+#   2) the legacy product-side "consumption" field in data/products/*.json.
+# Duplicates are filtered by display_key (registry records take priority). Each record:
 #   { "product_id": String, "product_name": String,
 #     "amount": int, "interval": float, "production_bonus": float,
 #     "is_group": bool, "group_members": Array[String], "consume_all": bool,
-#     "display_key": String, "icon": String }
-# product_id is empty for the group records; product_name — the name of the group.
-# production_bonus — an addition to the production multiplier, while the resource is
-# in the storage (0.5 = +50%, that is, the multiplier x1.5). 0 = no bonus.
-# If the profession is unknown or has no consumers — an empty array.
-func get_profession_consumption(prof_id: String) -> Array:
+#     "buildings": Array, "display_key": String, "icon": String }
+func get_profession_consumption(prof_id: String, building_id: String = "") -> Array:
     var result: Array = []
     if prof_id.is_empty():
         return result
-    # Source 1: the registry data/consumption.json.
     var covered := {} # display_key -> true (protection from a double write-off)
     for rule in consumption_rules:
         if not (rule is Dictionary):
             continue
         var target_list: Array = rule.get("profession", [])
         if not (prof_id in target_list):
+            continue
+        if not _rule_matches_building(rule, building_id):
             continue
         var res_key = str(rule.get("resource", ""))
         if res_key.is_empty():
@@ -1859,9 +2110,6 @@ func get_profession_consumption(prof_id: String) -> Array:
             continue
         covered[entry["display_key"]] = true
         result.append(entry)
-    # Source 2: the consumption "from the resource" (products[*].consumption).
-    # The records already covered by the registry are skipped, so that the resource
-    # is not written off twice by one profession.
     for pid in products:
         var prod = products[pid]
         if not prod.has("consumption"):
@@ -1882,8 +2130,40 @@ func get_profession_consumption(prof_id: String) -> Array:
             "group_members": [],
             "display_key": pid,
             "icon": prod.get("icon", ""),
-            "consume_all": false
+            "consume_all": false,
+            "buildings": [],
+            "member_overrides": {}
         })
+    return result
+
+# Returns only the building-scoped consumption records of prof_id (those with a non-empty
+# "buildings" list) that are not shadowed by an unrestricted rule for the same resource.
+# Planned-consumption and Trade-tab maps scale these records by working buildings in
+# entry["buildings"] rather than by the total headcount of the profession.
+func get_profession_building_scoped_consumption(prof_id: String) -> Array:
+    var result: Array = []
+    if prof_id.is_empty() or prof_id == "all":
+        return result
+    var unrestricted_keys := {}
+    for entry in get_profession_consumption(prof_id):
+        unrestricted_keys[str(entry.get("display_key", ""))] = true
+    for rule in consumption_rules:
+        if not (rule is Dictionary):
+            continue
+        var target_list: Array = rule.get("profession", [])
+        if not (prof_id in target_list):
+            continue
+        if _rule_buildings(rule).is_empty():
+            continue
+        var res_key := str(rule.get("resource", ""))
+        if res_key.is_empty():
+            continue
+        var entry := _build_consumption_entry(res_key, rule)
+        if entry.is_empty():
+            continue
+        if unrestricted_keys.has(str(entry["display_key"])):
+            continue
+        result.append(entry)
     return result
 
 # Returns all the resources that are consumed by a profession (without the details of
@@ -1894,9 +2174,9 @@ func get_profession_consumption(prof_id: String) -> Array:
 #   "production_bonus": float }.
 # The key of a single product is its id; of a group resource it is "@<group_id>".
 # If different resources are required with a different frequency, the first encountered one is taken.
-func get_profession_consumption_summary(prof_id: String) -> Dictionary:
+func get_profession_consumption_summary(prof_id: String, building_id: String = "") -> Dictionary:
     var result: Dictionary = {}
-    for entry in get_profession_consumption(prof_id):
+    for entry in get_profession_consumption(prof_id, building_id):
         var dkey = entry.get("display_key", entry.get("product_id", ""))
         if result.has(dkey):
             continue

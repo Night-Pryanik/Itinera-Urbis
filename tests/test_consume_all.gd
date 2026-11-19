@@ -163,11 +163,89 @@ func _run() -> void:
         "the rotation index must survive save/load, got %d"
             % int(rot.get("@@rotate_basket", -1)), state)
     wm2.free()
+    gdata.consumption_rules.remove_at(gdata.consumption_rules.size() - 1)
+    gdata.product_groups.erase("rotate_basket")
+
+    # --- Tiered group ("members"): wooden_boat takes priority over reed_boat ---
+    stub.tile_data = [[{"improvement": "fishing_boats"}]]
+    wm.consumption_timers.clear()
+    _clear_stock(city)
+    city.idle_population = maxi(city.idle_population, 2)
+    wm.assign_worker(0, 0)
+
+    var fisher_rules: Array = gdata.get_profession_consumption("fisherman")
+    var boats = _find(fisher_rules, "@boats")
+    check(boats != null, "@boats rule must exist for fisherman", state)
+    if boats != null:
+        var boat_amt := int(boats.get("amount", 0))
+        var reed_iv: float = gdata.get_entry_member_interval(boats, "reed_boat")
+        var wood_iv: float = gdata.get_entry_member_interval(boats, "wooden_boat")
+        var reed_bn: float = gdata.get_entry_member_bonus(boats, "reed_boat")
+        var wood_bn: float = gdata.get_entry_member_bonus(boats, "wooden_boat")
+        check(is_equal_approx(reed_bn, 0.1) and is_equal_approx(wood_bn, 0.2),
+            "reed_boat must give +10%% and wooden_boat +20%% (got %.2f / %.2f)"
+                % [reed_bn, wood_bn], state)
+        check(wood_iv > reed_iv and reed_iv > 0.0,
+            "wooden_boat must wear out more slowly than reed_boat (%.1f vs %.1f s)"
+                % [wood_iv, reed_iv], state)
+
+        # Reverse index reports each boat's own interval and bonus.
+        var reed_cons: Array = gdata.get_consumption_consumers("reed_boat")
+        var wood_cons: Array = gdata.get_consumption_consumers("wooden_boat")
+        check(not reed_cons.is_empty() and is_equal_approx(float(reed_cons[0].get("production_bonus", 0.0)), reed_bn)
+                and is_equal_approx(float(reed_cons[0].get("interval", 0.0)), reed_iv),
+            "get_consumption_consumers(reed_boat) must carry reed_boat tier values", state)
+        check(not wood_cons.is_empty() and is_equal_approx(float(wood_cons[0].get("production_bonus", 0.0)), wood_bn)
+                and is_equal_approx(float(wood_cons[0].get("interval", 0.0)), wood_iv),
+            "get_consumption_consumers(wooden_boat) must carry wooden_boat tier values", state)
+
+        # Both boats stocked: wooden_boat is spent exclusively, bonus is +20% (no stacking).
+        _set_one(city, "reed_boat", boat_amt * 3)
+        _set_one(city, "wooden_boat", boat_amt * 3)
+        var mult_both: float = 1.0
+        for _t in range(int(round(wood_iv))):
+            mult_both = wm.tick_consumption(0, 0, 1.0)
+        check(is_equal_approx(mult_both, 1.0 + wood_bn),
+            "with both boats stocked the multiplier must be %.2f, got %.2f"
+                % [1.0 + wood_bn, mult_both], state)
+        check(city.get_storage_amount("wooden_boat") == boat_amt * 2
+                and city.get_storage_amount("reed_boat") == boat_amt * 3,
+            "wooden_boat must be spent first while reed_boat stays untouched (wood=%d, reed=%d)"
+                % [city.get_storage_amount("wooden_boat"), city.get_storage_amount("reed_boat")], state)
+
+        var pop_wood: Dictionary = wm.get_population_consumption_map().get("@boats", {})
+        check(is_equal_approx(float(pop_wood.get("per_consumer_interval", 0.0)), wood_iv),
+            "Trade card for @boats must reflect wooden_boat interval when stocked", state)
+
+        # Anti-exploit: 1 wooden_boat + (amount - 1) reed_boat gives reed_boat bonus, not wooden_boat.
+        _clear_stock(city)
+        _set_one(city, "wooden_boat", 1)
+        _set_one(city, "reed_boat", boat_amt - 1)
+        var mixed_bonus: float = wm._aggregate_production_bonus([boats])
+        check(is_equal_approx(mixed_bonus, reed_bn),
+            "a single wooden_boat mixed with reed_boats must grant only %.2f, got %.2f"
+                % [reed_bn, mixed_bonus], state)
+
+        # Only reed_boat stocked: reed_boat is spent at reed_iv with +10% bonus.
+        wm.consumption_timers.clear()
+        _clear_stock(city)
+        _set_one(city, "reed_boat", boat_amt * 3)
+        var mult_reed: float = 1.0
+        for _t in range(int(round(reed_iv))):
+            mult_reed = wm.tick_consumption(0, 0, 1.0)
+        check(is_equal_approx(mult_reed, 1.0 + reed_bn),
+            "with only reed_boat stocked the multiplier must be %.2f, got %.2f"
+                % [1.0 + reed_bn, mult_reed], state)
+        check(city.get_storage_amount("reed_boat") == boat_amt * 2,
+            "reed_boat must lose one pack (%d) over %.1f s, left %d"
+                % [boat_amt, reed_iv, city.get_storage_amount("reed_boat")], state)
+
+        var pop_reed: Dictionary = wm.get_population_consumption_map().get("@boats", {})
+        check(is_equal_approx(float(pop_reed.get("per_consumer_interval", 0.0)), reed_iv),
+            "Trade card for @boats must switch to reed_boat interval when wooden_boat is absent", state)
 
     wm.free()
     stub.free()
-    gdata.consumption_rules.remove_at(gdata.consumption_rules.size() - 1)
-    gdata.product_groups.erase("rotate_basket")
     city.total_population = 1
     _clear_stock(city)
     city.market_consumption_enabled.clear()

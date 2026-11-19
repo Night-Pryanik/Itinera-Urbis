@@ -102,6 +102,8 @@ func _run() -> void:
         await _test_building_panel(state, city_ui, building_id)
     if WATCHDOG.wants_case("actual_consumption"):
         _test_actual_consumption(state, building_id)
+    if WATCHDOG.wants_case("building_scoped_consumption"):
+        _test_building_scoped_consumption(state)
 
     _finish(main_map, state)
 
@@ -183,7 +185,7 @@ func _test_ui_rows(state: Dictionary, building_id: String) -> void:
     var prof: String = _gdata.get_profession_for_building(building_id)
     check(not prof.is_empty(),
         "the building \"%s\" must have a profession (got: \"%s\")" % [building_id, prof], state)
-    var entries: Array = _gdata.get_profession_consumption(prof)
+    var entries: Array = _gdata.get_profession_consumption(prof, building_id)
     check(not entries.is_empty(),
         "the profession \"%s\" must have consumption in consumption.json" % prof, state)
     if entries.is_empty():
@@ -270,7 +272,7 @@ func _test_details_tooltip(state: Dictionary, city_ui, building_id: String) -> v
     var prof := str(_gdata.get_profession_for_building(building_id))
     if prof.is_empty():
         return
-    var entries: Array = _gdata.get_profession_consumption(prof)
+    var entries: Array = _gdata.get_profession_consumption(prof, building_id)
     if entries.is_empty():
         return
 
@@ -331,7 +333,7 @@ func _test_details_tooltip(state: Dictionary, city_ui, building_id: String) -> v
 # Expectations are derived from the same data, not from specific balance numbers.
 func _test_consumption_marker(state: Dictionary, city_ui, building_id: String) -> void:
     var prof := str(_gdata.get_profession_for_building(building_id))
-    var entries: Array = _gdata.get_profession_consumption(prof)
+    var entries: Array = _gdata.get_profession_consumption(prof, building_id)
     if entries.is_empty():
         return
 
@@ -554,7 +556,7 @@ func _test_building_panel(state: Dictionary, city_ui, building_id: String) -> vo
     var prof := str(_gdata.get_profession_for_building(building_id))
     if prof.is_empty():
         return
-    var entries: Array = _gdata.get_profession_consumption(prof)
+    var entries: Array = _gdata.get_profession_consumption(prof, building_id)
     if entries.is_empty():
         return
 
@@ -623,7 +625,7 @@ func _test_building_panel(state: Dictionary, city_ui, building_id: String) -> vo
 # written off per interval; without the resource there is no bonus.
 func _test_actual_consumption(state: Dictionary, building_id: String) -> void:
     var prof := str(_gdata.get_profession_for_building(building_id))
-    var entries: Array = _gdata.get_profession_consumption(prof)
+    var entries: Array = _gdata.get_profession_consumption(prof, building_id)
     if entries.is_empty():
         return
     var entry: Dictionary = entries[0]
@@ -699,6 +701,203 @@ func _test_actual_consumption(state: Dictionary, building_id: String) -> void:
     check(_storage_of(product_key) == restored2,
         "with empty slots no expense is made (was %d, became %d)"
             % [restored2, _storage_of(product_key)], state)
+
+
+# -------------------------------------------------------
+# 6. Building-scoped occupational consumption ("buildings")
+# -------------------------------------------------------
+
+# All four mills employ a miller: the hand mill spends nothing, animal and water mills
+# spend millstones, the windmill spends both millstones and canvas, and the oilmaker's
+# house shares the millstone rule while keeping its own unrestricted supplies.
+func _test_building_scoped_consumption(state: Dictionary) -> void:
+    for mill_id in ["hand_mill", "animal_mill", "water_mill", "windmill"]:
+        check(str(_gdata.get_profession_for_building(mill_id)) == "miller",
+            "\"%s\" must assign the miller profession" % mill_id, state)
+
+    check(_gdata.get_profession_consumption("miller").is_empty(),
+        "miller must have no unrestricted consumption rules outside specific buildings", state)
+    check(_gdata.get_profession_consumption("miller", "hand_mill").is_empty(),
+        "hand_mill must ignore building-scoped miller consumption rules", state)
+    check(_consumption_ui.build_rows_for_building("hand_mill").is_empty(),
+        "hand_mill must have no ConsumptionUi rows", state)
+
+    for powered_mill in ["animal_mill", "water_mill"]:
+        var pm_entries: Array = _gdata.get_profession_consumption("miller", powered_mill)
+        var pm_has_stone := false
+        var pm_has_canvas := false
+        for e in pm_entries:
+            var dk := str(e.get("display_key", ""))
+            if dk == "millstone":
+                pm_has_stone = true
+            elif dk == "canvas":
+                pm_has_canvas = true
+        check(pm_has_stone and not pm_has_canvas,
+            "\"%s\" must consume millstone and not canvas" % powered_mill, state)
+
+    var wind_entries: Array = _gdata.get_profession_consumption("miller", "windmill")
+    var canvas_entry := {}
+    var stone_entry := {}
+    for e in wind_entries:
+        var dk := str(e.get("display_key", ""))
+        if dk == "canvas":
+            canvas_entry = e
+        elif dk == "millstone":
+            stone_entry = e
+    check(not canvas_entry.is_empty() and not stone_entry.is_empty(),
+        "windmill must receive both canvas and millstone consumption rules", state)
+    if canvas_entry.is_empty() or stone_entry.is_empty():
+        return
+
+    var oil_entries: Array = _gdata.get_profession_consumption("oilmaker", "oilmaker_house")
+    var oil_has_stone := false
+    for e in oil_entries:
+        if str(e.get("display_key", "")) == "millstone":
+            oil_has_stone = true
+            break
+    check(oil_has_stone, "oilmaker_house must receive the shared millstone rule", state)
+
+    var amount := int(canvas_entry.get("amount", 0))
+    var interval := float(canvas_entry.get("interval", 0.0))
+    var bonus := float(canvas_entry.get("production_bonus", 0.0))
+    var stone_amount := int(stone_entry.get("amount", 0))
+    var stone_bonus := float(stone_entry.get("production_bonus", 0.0))
+    check(amount > 0 and interval > 0.0 and bonus > 0.0 and stone_amount > 0 and stone_bonus > 0.0,
+        "windmill canvas and millstone rules must carry positive amount, interval and bonus", state)
+
+    var wind_rows: Array = _consumption_ui.build_rows_for_building("windmill")
+    var has_canvas_row := false
+    var has_stone_row := false
+    for row in wind_rows:
+        var rdk := str(row.get("display_key", ""))
+        if rdk == "canvas":
+            has_canvas_row = true
+        elif rdk == "millstone":
+            has_stone_row = true
+    check(has_canvas_row and has_stone_row,
+        "ConsumptionUi must show both canvas and millstone for windmill", state)
+
+    # Reverse consumer index scopes each profession to its own buildings only.
+    var stone_miller := {}
+    var stone_oilmaker := {}
+    for c in _gdata.get_consumption_consumers("millstone"):
+        var cpid := str(c.get("profession_id", ""))
+        if cpid == "miller":
+            stone_miller = c
+        elif cpid == "oilmaker":
+            stone_oilmaker = c
+    var miller_blds: Array = stone_miller.get("buildings", [])
+    var oil_blds: Array = stone_oilmaker.get("buildings", [])
+    check(miller_blds.has("animal_mill") and miller_blds.has("water_mill")
+            and miller_blds.has("windmill") and not miller_blds.has("hand_mill")
+            and not miller_blds.has("oilmaker_house"),
+        "reverse consumer index for millstone must list only the three powered mills under miller (got: %s)"
+            % str(miller_blds), state)
+    check(oil_blds.size() == 1 and oil_blds.has("oilmaker_house"),
+        "reverse consumer index for millstone must list only oilmaker_house under oilmaker (got: %s)"
+            % str(oil_blds), state)
+
+    # Reset working buildings, timers and stocks before live simulation checks.
+    for k in _tm.assigned_buildings.keys():
+        _tm.remove_townsfolk(int(k))
+    _wm.building_consumption_timers.clear()
+    _clear_storage("canvas")
+    _clear_storage("millstone")
+    _cdata.idle_population = maxi(_cdata.idle_population, 6)
+
+    # Working hand mill + water mill with only canvas stocked: canvas stays untouched.
+    _cdata.city_built_buildings = [
+        {"id": "hand_mill", "slots": ["grind_grain_hand"], "quality_priority": "best"},
+        {"id": "water_mill", "slots": ["grind_grain_water"], "quality_priority": "best"},
+    ]
+    _tm.assign_townsfolk(0)
+    _tm.assign_townsfolk(1)
+    var stocked := _fill_storage("canvas", amount * 4)
+    check(is_equal_approx(_wm.get_building_production_bonus(0), 1.0)
+            and is_equal_approx(_wm.get_building_production_bonus(1), 1.0),
+        "hand and water mills must not receive the windmill canvas bonus", state)
+    var steps := maxi(1, int(ceil(interval / SIMULATION_TICK)))
+    for _i in range(steps):
+        _wm.tick_building_consumption(0, SIMULATION_TICK)
+        _wm.tick_building_consumption(1, SIMULATION_TICK)
+    check(_storage_of("canvas") == stocked,
+        "hand and water mills must not spend canvas (was %d, became %d)"
+            % [stocked, _storage_of("canvas")], state)
+    check(not _wm.get_planned_consumption_map(false).has("canvas"),
+        "hand and water mills must not add planned canvas consumption", state)
+    check(not _wm.get_population_consumption_map().has("canvas"),
+        "hand and water mills must not create a Trade-tab canvas row", state)
+
+    # Add a working windmill and oilmaker's house, and stock millstones as well.
+    _cdata.city_built_buildings.append(
+        {"id": "windmill", "slots": ["grind_grain_wind", "empty"], "quality_priority": "best"}
+    )
+    _cdata.city_built_buildings.append(
+        {"id": "oilmaker_house", "slots": ["vegetable_oil"], "quality_priority": "best"}
+    )
+    _tm.assign_townsfolk(2)
+    _tm.assign_townsfolk(3)
+    _fill_storage("millstone", stone_amount * 4)
+
+    check(is_equal_approx(_wm.get_building_production_bonus(0), 1.0),
+        "hand mill bonus stays 1.0 even with canvas and millstone stocked", state)
+    check(is_equal_approx(_wm.get_building_production_bonus(1), 1.0 + stone_bonus),
+        "supplied water mill receives 1 + millstone bonus", state)
+    check(is_equal_approx(_wm.get_building_production_bonus(2), 1.0 + bonus + stone_bonus),
+        "supplied windmill stacks canvas and millstone bonuses", state)
+
+    var miller_src: String = _gdata.profession_source_id("miller")
+    var oil_src: String = _gdata.profession_source_id("oilmaker")
+    var planned: Dictionary = _wm.get_planned_consumption_map(false)
+    var canvas_plan: Dictionary = planned.get("canvas", {}).get(miller_src, {})
+    check(int(canvas_plan.get("count", 0)) == 1 and int(canvas_plan.get("amount", 0)) == amount,
+        "planned canvas demand must count only the 1 windmill (got: %s)" % str(canvas_plan), state)
+    var stone_miller_plan: Dictionary = planned.get("millstone", {}).get(miller_src, {})
+    var stone_oil_plan: Dictionary = planned.get("millstone", {}).get(oil_src, {})
+    check(int(stone_miller_plan.get("count", 0)) == 2
+            and int(stone_miller_plan.get("amount", 0)) == stone_amount * 2,
+        "planned millstone demand for miller must count water_mill + windmill, not hand_mill (got: %s)"
+            % str(stone_miller_plan), state)
+    check(int(stone_oil_plan.get("count", 0)) == 1
+            and int(stone_oil_plan.get("amount", 0)) == stone_amount,
+        "planned millstone demand for oilmaker must count 1 oilmaker_house (got: %s)"
+            % str(stone_oil_plan), state)
+
+    var pop_map: Dictionary = _wm.get_population_consumption_map()
+    var stone_card: Dictionary = pop_map.get("millstone", {})
+    check(int(stone_card.get("consumers_total", 0)) == 3,
+        "Trade-tab millstone row must count 3 consumers (water_mill, windmill, oilmaker_house), got %d"
+            % int(stone_card.get("consumers_total", 0)), state)
+
+    var before_canvas := _storage_of("canvas")
+    for _i in range(steps):
+        _wm.tick_building_consumption(0, SIMULATION_TICK)
+        _wm.tick_building_consumption(1, SIMULATION_TICK)
+        _wm.tick_building_consumption(2, SIMULATION_TICK)
+    var spent_canvas := before_canvas - _storage_of("canvas")
+    check(spent_canvas == amount,
+        "hand + water + wind mill must spend one windmill canvas portion (%d, got %d)"
+            % [amount, spent_canvas], state)
+
+    # Priority against a city-wide "all" rule on millstone: excludes water_mill, windmill
+    # and oilmaker_house (3), while the hand_mill miller remains inside "all".
+    var prev_pop: int = _cdata.total_population
+    _cdata.total_population = maxi(prev_pop, 6)
+    _gdata.consumption_rules.append({
+        "resource": "millstone",
+        "profession": ["all"],
+        "amount": 10,
+        "interval": 10,
+        "production_bonus": 0.0,
+    })
+    var all_src: String = _gdata.profession_source_id("all")
+    var all_pop: Dictionary = _wm.get_population_consumption_map()
+    var all_entry: Dictionary = all_pop.get("millstone", {}).get("sources", {}).get(all_src, {})
+    check(int(all_entry.get("count", -1)) == _cdata.total_population - 3,
+        "an \"all\" rule on millstone must exclude only the 3 consuming buildings (expected %d, got %d)"
+            % [_cdata.total_population - 3, int(all_entry.get("count", -1))], state)
+    _gdata.consumption_rules.remove_at(_gdata.consumption_rules.size() - 1)
+    _cdata.total_population = prev_pop
 
 
 # Runs the building consumption for the length of the interval in SIMULATION_TICK steps —

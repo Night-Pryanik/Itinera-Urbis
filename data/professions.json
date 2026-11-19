@@ -306,6 +306,24 @@
       "name": "Smoker",
       "icon": "profession_smoker.png",
       "description": "Cures and smokes fish over slow wood fires."
+    },
+    {
+      "id": "miller",
+      "name": "Miller",
+      "icon": "profession_miller.png",
+      "description": "Grinds grain between millstones and tends the mill."
+    },
+    {
+      "id": "sailmaker",
+      "name": "Sailmaker",
+      "icon": "profession_sailmaker.png",
+      "description": "Weaves, cuts and treats heavy sailcloth for boats and mills."
+    },
+    {
+      "id": "boatbuilder",
+      "name": "Boatbuilder",
+      "icon": "profession_boatbuilder.png",
+      "description": "Frames, planks and rigs wooden boats."
     }
   ]
 }

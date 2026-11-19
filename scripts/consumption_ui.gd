@@ -42,6 +42,27 @@ static func format_rate_with_unit(value: float) -> String:
     return "%s %s" % [format_rate(value), TranslationServer.translate("units/sec")]
 
 
+# Range form for tiered groups whose members wear out at different speeds: "0.3–0.5 units/sec",
+# collapsing to a single number when both rounded endpoints coincide.
+static func format_rate_range_with_unit(min_value: float, max_value: float) -> String:
+    var lo := format_rate(minf(min_value, max_value))
+    var hi := format_rate(maxf(min_value, max_value))
+    if lo == hi:
+        return "%s %s" % [lo, TranslationServer.translate("units/sec")]
+    return "%s–%s %s" % [lo, hi, TranslationServer.translate("units/sec")]
+
+
+# Formats the production-bonus suffix: " (+20% to production)" or " (+10–20% to production)".
+static func format_bonus_suffix(min_bonus: float, max_bonus: float) -> String:
+    var hi_pct := int(round(maxf(min_bonus, max_bonus) * 100.0))
+    if hi_pct <= 0:
+        return ""
+    var lo_pct := maxi(0, int(round(minf(min_bonus, max_bonus) * 100.0)))
+    if lo_pct == hi_pct or lo_pct <= 0:
+        return TranslationServer.translate(" (+%d%% to production)") % hi_pct
+    return TranslationServer.translate(" (+%d–%d%% to production)") % [lo_pct, hi_pct]
+
+
 # The Russian form of the numeral: 1 building / 2 buildings / 5 buildings.
 static func _plural(count: int, one: String, few: String, many: String) -> String:
     var mod100 := count % 100
@@ -76,7 +97,7 @@ static func _plural(count: int, one: String, few: String, many: String) -> Strin
 #     "workers": int,
 #     "rate_label": String,    — "2 units/sec (+25% to production)",
 #     "label": String }        — "Feathers: 2 units/sec (+25% to production)"
-static func build_rows(prof_id: String, workers: int = 1) -> Array:
+static func build_rows(prof_id: String, workers: int = 1, building_id: String = "") -> Array:
     var rows: Array = []
     if prof_id.is_empty():
         return rows
@@ -84,15 +105,32 @@ static func build_rows(prof_id: String, workers: int = 1) -> Array:
     # the absence of workers is reflected only in the label.
     var count := maxi(workers, 0)
     var multiplier := float(maxi(count, 1))
-    for entry in GameData.get_profession_consumption(prof_id):
+    for entry in GameData.get_profession_consumption(prof_id, building_id):
         var amount := int(entry.get("amount", 0))
         var interval := float(entry.get("interval", 0.0))
+        var bonus := float(entry.get("production_bonus", 0.0))
+        var bounds: Dictionary = GameData.get_entry_rate_bonus_bounds(entry)
+        var active_pid := ""
+        if not bounds.is_empty() and not bool(entry.get("consume_all", false)):
+            active_pid = _active_tier_member_in_storage(entry, amount)
+            if not active_pid.is_empty():
+                interval = GameData.get_entry_member_interval(entry, active_pid)
+                bonus = GameData.get_entry_member_bonus(entry, active_pid)
         # The display is per second: the amount of the entry divided by its interval.
         # interval = 0 means "per tick", and the simulation tick equals a second —
         # there is nothing to divide by, the rate equals amount.
         var per_sec := float(amount) if interval <= 0.0 else float(amount) / interval
         per_sec *= multiplier
-        var bonus := float(entry.get("production_bonus", 0.0))
+        var rate_label := ""
+        if not bounds.is_empty() and active_pid.is_empty():
+            rate_label = _format_range_rate_label(
+                float(bounds["rate_min"]) * multiplier,
+                float(bounds["rate_max"]) * multiplier,
+                float(bounds["bonus_min"]),
+                float(bounds["bonus_max"]),
+                count)
+        else:
+            rate_label = _format_rate_label(per_sec, bonus, count)
         rows.append({
             "display_key": str(entry.get("display_key", entry.get("product_id", ""))),
             "name": str(entry.get("product_name", entry.get("product_id", ""))),
@@ -103,7 +141,7 @@ static func build_rows(prof_id: String, workers: int = 1) -> Array:
             "per_sec": per_sec,
             "production_bonus": bonus,
             "workers": count,
-            "rate_label": _format_rate_label(per_sec, bonus, count),
+            "rate_label": rate_label,
         })
     for row in rows:
         # The product name is added here, and not in _format_rate_label(): the places
@@ -114,13 +152,13 @@ static func build_rows(prof_id: String, workers: int = 1) -> Array:
     return rows
 
 
-# The same as build_rows, but the profession is taken from the building itself (the
-# "profession" field in data/buildings.json). For a building without a profession —
-# an empty array: they work by the general slot model and do not spend supplies.
+# The same as build_rows, scoped to building_id so both profession-wide rules and
+# rules restricted to that building via "buildings" are shown. For a building
+# without a profession — an empty array.
 static func build_rows_for_building(building_id: String, workers: int = 1) -> Array:
     if building_id.is_empty():
         return []
-    return build_rows(GameData.get_profession_for_building(building_id), workers)
+    return build_rows(GameData.get_profession_for_building(building_id), workers, building_id)
 
 
 # The part of the row after the product name: "2 units/sec (+25% to production)".
@@ -149,3 +187,32 @@ static func _format_rate_label(per_sec: float, bonus: float, workers: int) -> St
     if bonus > 0.0:
         text += TranslationServer.translate(" (+%d%% to production)") % int(round(bonus * 100.0))
     return text
+
+
+static func _format_range_rate_label(rate_min: float, rate_max: float, bonus_min: float, bonus_max: float, workers: int) -> String:
+    var text := format_rate_range_with_unit(rate_min, rate_max)
+    if workers > 1:
+        text += " (%d %s)" % [workers, _plural(workers,
+            TranslationServer.translate("building", "consumption_buildings_one"),
+            TranslationServer.translate("buildings", "consumption_buildings_few"),
+            TranslationServer.translate("buildings", "consumption_buildings_many"))]
+    elif workers == 0:
+        text += TranslationServer.translate(" (no working buildings)")
+    text += format_bonus_suffix(bonus_min, bonus_max)
+    return text
+
+
+# Highest-tier member of a tiered group with a full pack of `amount` in storage, or
+# the highest-tier member with any positive stock when none has a full pack yet.
+static func _active_tier_member_in_storage(entry: Dictionary, amount: int) -> String:
+    var ordered: Array = GameData.get_entry_members_ordered_by_tier(entry)
+    if amount > 0:
+        for raw_pid in ordered:
+            var pid := str(raw_pid)
+            if not pid.is_empty() and CityData.get_storage_amount(pid) >= amount:
+                return pid
+    for raw_pid in ordered:
+        var pid := str(raw_pid)
+        if not pid.is_empty() and CityData.get_storage_amount(pid) > 0:
+            return pid
+    return ""

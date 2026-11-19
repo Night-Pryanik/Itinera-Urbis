@@ -123,6 +123,15 @@
       "icon": "ropes.png"
     },
     {
+      "id": "canvas",
+      "price": 14,
+      "name": "Canvas",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "weaving",
+      "icon": "canvas.png"
+    },
+    {
       "id": "tar",
       "price": 6,
       "name": "Tar",
@@ -176,6 +185,15 @@
       "category": "other",
       "unlock_tech": "fishing",
       "icon": "reed_boat.png"
+    },
+    {
+      "id": "wooden_boat",
+      "price": 38,
+      "name": "Wooden Boat",
+      "type": "product",
+      "category": "other",
+      "unlock_tech": "shipbuilding",
+      "icon": "wooden_boat.png"
     },
     {
       "id": "parchment",
