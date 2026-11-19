@@ -180,7 +180,7 @@
       // over the kinds that are in stock; the order sets where the rotation starts.
       "id": "instruments",
       "name": "Instruments",
-      "products": [ "copper_tools", "cast_iron_tools", "bronze_tools", "brass_tools", "iron_tools", "steel_tools" ]
+      "products": [ "copper_tools", "cast_iron_tools", "bronze_tools", "brass_tools", "iron_tools", "steel_tools", "damascus_tools" ]
     },
     {
       // Calibrated balances, calipers, dividers, astrolabes and fine bench tools across

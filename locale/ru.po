@@ -9354,3 +9354,7 @@ msgstr "Пресноводный источник: акведук частичн
 
 msgid " Distance to city: %d hex(es)"
 msgstr " Расстояние до города: %d гекс."
+
+#: data/crafts/metalworking.json data/products/metalworking.json
+msgid "Tools of <city_name> Steel"
+msgstr "Инструменты из стали «<city_name>»"
