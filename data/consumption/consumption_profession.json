@@ -305,13 +305,27 @@
     {
       // Calibrated balances, dividers, calipers and fine bench instruments aid
       // measurement in the library and scriptorium, weighing in the alchemist's
-      // house and assaying and engraving at the jeweler's bench. The rule draws
-      // one metal kind per tick, rotating over those in stock.
+      // house and assaying and engraving at the jeweler's bench.
+      //
+      // The metal sets the precision, as it does for the work tools (@instruments):
+      // a soft copper or bronze scale bends and loses its graduation, while iron,
+      // steel and the watered bar of the city hold the exact division. The ladder
+      // follows the work tools metal for metal, so a profession gains the same step
+      // for the same metal in both rules. One kind is consumed at a time, the
+      // better one first; all metals wear out at the same rate.
       "resource": "@precision_instruments",
       "profession": [ "scientist", "alchemist", "jeweler" ],
       "amount": 10,
       "interval": 20,
-      "production_bonus": 0.1
+      "production_bonus": 0.25,
+      "members": {
+        "copper_precision_instruments": { "production_bonus": 0.10 },
+        "bronze_precision_instruments": { "production_bonus": 0.15 },
+        "brass_precision_instruments": { "production_bonus": 0.15 },
+        "iron_precision_instruments": { "production_bonus": 0.20 },
+        "steel_precision_instruments": { "production_bonus": 0.25 },
+        "damascus_precision_instruments": { "production_bonus": 0.30 }
+      }
     },
     {
       // Molten lead draws base impurities out of silver and gold in cupellation and assaying.
