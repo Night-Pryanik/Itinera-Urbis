@@ -198,6 +198,49 @@ func _run() -> void:
     check(is_equal_approx(multiplier, 1.25) and city.get_storage_amount("steel_tools") == 29,
         "the miner must fall back to ordinary steel tools when Damascus tools are unavailable", state)
 
+    # --- The precision instruments follow the same metal ladder as the work tools ---
+    # The scholar's instruments are drawn, but this test has no building to host him: the
+    # ladder is read directly from the assembled rule, the same way the boats and the work
+    # tools are checked above.
+    var scholar_rules: Array = gdata.get_profession_consumption("scientist")
+    var precision = _find(scholar_rules, "@precision_instruments")
+    check(precision != null, "@precision_instruments rule must exist for the scholar", state)
+    if precision != null:
+        # The group is drawn one kind at a time and the tiers order it: the best metal first.
+        var ordered: Array = gdata.get_entry_members_ordered_by_tier(precision)
+        check(str(ordered[0]) == "damascus_precision_instruments"
+                and str(ordered[ordered.size() - 1]) == "copper_precision_instruments",
+            "the precision instruments must be ordered from damascus down to copper (got: %s)"
+                % str(ordered), state)
+
+        # The same metal is worth the same in both families of instruments, and the metal
+        # ladder does not stretch the interval: every precision instrument wears out at the
+        # rate of the rule, as every work tool does.
+        for raw_pid in ["copper", "bronze", "brass", "iron", "steel", "damascus"]:
+            var pid: String = str(raw_pid)
+            var member: String = pid + "_precision_instruments"
+            var prec_bn: float = gdata.get_entry_member_bonus(precision, member)
+            var prec_iv: float = gdata.get_entry_member_interval(precision, member)
+            var tool_bn: float = float(tool_multipliers[pid + "_tools"]) - 1.0
+            check(is_equal_approx(prec_bn, tool_bn),
+                "the %s step must match the work tools: expected +%.2f, got +%.2f"
+                    % [pid, tool_bn, prec_bn], state)
+            check(is_equal_approx(prec_iv, float(precision.get("interval", 0.0))),
+                "every precision instrument must wear out at the rule interval: %s has %.1f s"
+                    % [pid, prec_iv], state)
+
+        # A stock of one kind grants the step of that kind, and the steps never add up.
+        _clear_stock(city)
+        _set_one(city, "damascus_precision_instruments", 30)
+        _set_one(city, "copper_precision_instruments", 30)
+        var both: float = float(wm._aggregate_production_bonus([precision]))
+        check(is_equal_approx(both, 0.30),
+            "two stocked kinds must grant the best step only, got +%.2f" % both, state)
+        _set_one(city, "damascus_precision_instruments", 0)
+        var copper_only: float = float(wm._aggregate_production_bonus([precision]))
+        check(is_equal_approx(copper_only, 0.10),
+            "the copper instruments alone must grant +0.10, got +%.2f" % copper_only, state)
+
     # --- Tiered group ("members"): wooden_boat takes priority over reed_boat ---
     stub.tile_data = [[{"improvement": "fishing_boats"}]]
     wm.consumption_timers.clear()

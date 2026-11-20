@@ -184,8 +184,9 @@
     },
     {
       // Calibrated balances, calipers, dividers, astrolabes and fine bench tools across
-      // every workable metal. Scholars, alchemists and jewelers draw one kind at a time,
-      // rotating over the kinds in stock.
+      // every workable metal. Scholars, alchemists and jewelers draw one kind at a time;
+      // the metal sets the precision the same way it sets the quality of a work tool
+      // (the ladder of data/consumption/consumption_profession.json).
       "id": "precision_instruments",
       "name": "Precision Instruments",
       "products": [
