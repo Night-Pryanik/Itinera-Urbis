@@ -112,6 +112,15 @@
       "prerequisites": [ [ "distillation" ] ],
       "description": "Unlocks gunpowder in the alchemist's house, boosting ore and stone extraction in mines and quarries, and nitrary saltpeter leached from lime and potash.",
       "flavor": "Alchemists searching for elixirs in Tang and Song China ground saltpeter with sulfur and charcoal and named the sudden roar fire-medicine. Carried west along the trade roads through Persian, Arab and European workshops, the black grain did more than reshape battlefields: tamped into a drilled hole, it split in a breath the granite and vein-rock that picks and wedges had worried for weeks."
+    },
+    {
+      "id": "wedge_oil_press",
+      "name": "Wedge Oil Press",
+      "era": "medieval",
+      "science_cost": 5.0,
+      "prerequisites": [ [ "oil_making", "screw_press" ] ],
+      "icon": "wedge_oil_press.png",
+      "description": "Unlocks the oil mill."
     }
   ]
 }

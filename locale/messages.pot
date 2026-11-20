@@ -9368,10 +9368,8 @@ msgctxt "covers.name"
 msgid "Mountain Spring"
 msgstr ""
 
-
 msgid "Fresh water spring: aqueduct is partly built"
 msgstr ""
-
 
 msgid " Distance to city: %d hex(es)"
 msgstr ""
@@ -9426,4 +9424,16 @@ msgstr ""
 #: data/resources/minerals.json
 msgctxt "resources.name"
 msgid "Salt Spring"
+msgstr ""
+
+msgid "Oil Mill"
+msgstr ""
+
+msgid "Wedge presses squeeze oil from batches of oil crops."
+msgstr ""
+
+msgid "Wedge Oil Press"
+msgstr ""
+
+msgid "Unlocks the oil mill."
 msgstr ""

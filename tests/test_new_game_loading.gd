@@ -95,8 +95,8 @@ func _run() -> void:
 
 # The picture of the new game window is the world the player gets: the seed it shows is handed
 # over, and the same stages run from it again. The terrain of the guaranteed food plant is repaired
-# after the picture is drawn, so a hex or two of the starting ring may differ; nothing beyond it
-# may.
+# after the picture is drawn. Outside the ring, the spring guarantee may raise a single mountain
+# if no suitable natural mountain was found.
 func _check_picture_is_the_world(state: Dictionary, map, preview_seed: int, sea: Dictionary,
         climate: String) -> void:
     var city_data = get_root().get_node("CityData")
@@ -105,6 +105,8 @@ func _check_picture_is_the_world(state: Dictionary, map, preview_seed: int, sea:
                     % [city_data.world_seed, preview_seed], state)
     var preview = load("res://scripts/world_preview.gd")
     var pictured: Array = preview.relief_tiles(map.map_rows, sea, preview_seed, climate)
+    var game_data = get_root().get_node("GameData")
+    var spring: Dictionary = map.find_fresh_water_spring()
     var outside := 0
     var inside := 0
     for row in range(map.map_rows):
@@ -116,10 +118,17 @@ func _check_picture_is_the_world(state: Dictionary, map, preview_seed: int, sea:
                     and col >= map.start_influence_start_col \
                     and col <= map.start_influence_end_col:
                 inside += 1
+            elif row == int(spring.get("row", -1)) and col == int(spring.get("col", -1)) \
+                    and game_data.terrain_family(str(map.tile_data[row][col].terrain)) == "mountain":
+                continue
             else:
+                if outside == 0:
+                    print("Preview mismatch: seed=%d row=%d col=%d pictured=%s actual=%s"
+                            % [preview_seed, row, col, pictured[row][col].terrain,
+                                    map.tile_data[row][col].terrain])
                 outside += 1
     check(outside == 0,
-            "the map beyond the starting ring is the picture hex for hex (%d differences)"
+            "outside the ring only the guaranteed spring mountain may differ from the picture (%d differences)"
                     % outside, state)
     var plant_hexes: int = load("res://scripts/map_generator.gd").FOOD_PLANT_TERRAIN_HEXES
     check(inside <= plant_hexes,

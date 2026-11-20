@@ -793,8 +793,9 @@ func _test_building_scoped_consumption(state: Dictionary) -> void:
             and not miller_blds.has("oilmaker_house"),
         "reverse consumer index for millstone must list only the three powered mills under miller (got: %s)"
             % str(miller_blds), state)
-    check(oil_blds.size() == 1 and oil_blds.has("oilmaker_house"),
-        "reverse consumer index for millstone must list only oilmaker_house under oilmaker (got: %s)"
+    check(oil_blds.size() == 2 and oil_blds.has("oilmaker_house")
+            and oil_blds.has("oil_mill"),
+        "reverse consumer index for millstone must list the two oil-making buildings under oilmaker (got: %s)"
             % str(oil_blds), state)
 
     # Reset working buildings, timers and stocks before live simulation checks.

@@ -347,7 +347,7 @@ func _test_blacklist_example(state: Dictionary) -> void:
     for modifier in _game_data.modifiers.get("tech_modifiers", []):
         if modifier.get("tech_id", "") == "screw_press":
             grants = modifier.get("building_production_slots", {})
-    check(grants.size() == 5 and int(grants.get("winemaker_house", 0)) == 1,
+    check(grants.size() == 6 and int(grants.get("winemaker_house", 0)) == 1,
             "the blacklist leaves the vanilla slot modifier unchanged", state)
     var cdata = get_root().get_node("CityData")
     var unlocked: Array = cdata.unlocked_technologies.duplicate()
@@ -358,7 +358,7 @@ func _test_blacklist_example(state: Dictionary) -> void:
         check(cdata.get_production_slot_count(building_id) == 2,
                 "the blacklist preserves the slot bonus of %s" % building_id, state)
     var recipient_names: Array[String] = []
-    for building_id in ["oilmaker_house", "dairy", "paper_workshop", "jeweler_house"]:
+    for building_id in ["oilmaker_house", "oil_mill", "dairy", "paper_workshop", "jeweler_house"]:
         recipient_names.append(_game_data.get_building_display_name(building_id))
     var expected_caption := "%s: %s" % [", ".join(recipient_names), tr("+%d production slot") % 1]
     var rows := 0

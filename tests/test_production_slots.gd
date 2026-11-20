@@ -3,7 +3,7 @@ extends SceneTree
 const WATCHDOG = preload("res://tests/watchdog.gd")
 
 const TECH := "screw_press"
-const GRANTED := ["winemaker_house", "oilmaker_house", "dairy", "paper_workshop", "jeweler_house"]
+const GRANTED := ["winemaker_house", "oilmaker_house", "oil_mill", "dairy", "paper_workshop", "jeweler_house"]
 
 func _initialize():
     WATCHDOG.arm(self)
@@ -77,9 +77,12 @@ func _test_data(gdata: Node, state: Dictionary) -> void:
             "the grant names exactly the expected workshops (got %d)" % grants.size(), state)
 
 # --- 2. The gate ---------------------------------------------------------------
+func _base_slots(id: String) -> int:
+    return 2 if id == "oil_mill" else 1
+
 func _test_gate(cdata: Node, state: Dictionary) -> void:
     for building_id in GRANTED:
-        check(cdata.get_production_slot_count(building_id) == 1,
+        check(cdata.get_production_slot_count(building_id) == _base_slots(building_id),
                 "\"%s\" keeps its base slot before the research" % building_id, state)
     check(cdata.get_production_slot_count("hand_mill") == 1,
             "a building outside the grant table is untouched", state)
@@ -103,7 +106,7 @@ func _test_research_grants(cdata: Node, state: Dictionary) -> void:
             "an idle winemaker's house gains a second empty slot (got %s)" % str(winemaker),
             state)
     for building_id in GRANTED:
-        check(cdata.get_production_slot_count(building_id) == 2,
+        check(cdata.get_production_slot_count(building_id) == _base_slots(building_id) + 1,
                 "\"%s\" counts two slots after the research" % building_id, state)
 
     # The instant debug path grants the same way.
@@ -258,7 +261,7 @@ func _test_absent_building_ignored(gdata: Node, cdata: Node, state: Dictionary) 
             "a removed building has no production slots", state)
     for building_id in GRANTED:
         if building_id != "winemaker_house":
-            check(cdata.get_production_slot_count(building_id) == 2,
+            check(cdata.get_production_slot_count(building_id) == _base_slots(building_id) + 1,
                     "the remaining buildings keep their slot bonus", state)
 
     var rows := 0
@@ -306,7 +309,7 @@ func _test_absent_building_ignored(gdata: Node, cdata: Node, state: Dictionary) 
     check(_slot_grants(gdata) == grants, "ignoring absent buildings never rewrites the modifier", state)
     gdata.buildings = buildings
     for building_id in GRANTED:
-        check(cdata.get_production_slot_count(building_id) == 2,
+        check(cdata.get_production_slot_count(building_id) == _base_slots(building_id) + 1,
                 "a restored building receives its bonus again", state)
     tree.free()
 

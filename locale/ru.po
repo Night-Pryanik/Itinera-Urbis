@@ -9445,7 +9445,6 @@ msgstr "Горный источник"
 msgid "Fresh water spring: aqueduct is partly built"
 msgstr "Пресноводный источник: акведук частично построен"
 
-
 msgid " Distance to city: %d hex(es)"
 msgstr " Расстояние до города: %d гекс."
 
@@ -9500,3 +9499,15 @@ msgstr "Солёный источник"
 msgctxt "resources.name"
 msgid "Salt Spring"
 msgstr "Солёный источник"
+
+msgid "Oil Mill"
+msgstr "Маслобойня"
+
+msgid "Wedge presses squeeze oil from batches of oil crops."
+msgstr "В маслобойне отжимают растительное масло клиновыми прессами."
+
+msgid "Wedge Oil Press"
+msgstr "Клиновой маслобойный пресс"
+
+msgid "Unlocks the oil mill."
+msgstr "Открывает маслобойню."

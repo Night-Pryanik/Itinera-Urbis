@@ -289,7 +289,7 @@
     {
       "id": "vegetable_oil",
       "name": "Vegetable Oil",
-      "produced_in": [ "oilmaker_house" ],
+      "produced_in": [ "oilmaker_house", "oil_mill" ],
       "resources": { "@oil_crops": 20 },
       "result": { "vegetable_oil": 10 },
       "time": 5.0,
