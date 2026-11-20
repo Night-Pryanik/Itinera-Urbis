@@ -194,7 +194,7 @@
     {
       "id": "beer",
       "name": "Beer",
-      "produced_in": [ "brewer_house" ],
+      "produced_in": [ "brewer_house", "fermentation_workshop" ],
       "resources": { "@millable_grains": 20 },
       "result": { "beer": 10 },
       "time": 5.0,
@@ -207,7 +207,7 @@
       // brewhouse and for the grain.
       "id": "hopped_beer",
       "name": "Hopped Beer",
-      "produced_in": [ "brewer_house" ],
+      "produced_in": [ "brewer_house", "fermentation_workshop" ],
       "resources": { "@millable_grains": 20, "hops": 10 },
       "result": { "hopped_beer": 10 },
       "time": 6.0,
@@ -217,7 +217,7 @@
     {
       "id": "mead",
       "name": "Mead",
-      "produced_in": [ "brewer_house" ],
+      "produced_in": [ "brewer_house", "fermentation_workshop" ],
       "resources": { "honey": 20 },
       "result": { "mead": 10 },
       "time": 5.0,
@@ -227,7 +227,7 @@
     {
       "id": "sake",
       "name": "Sake",
-      "produced_in": [ "brewer_house" ],
+      "produced_in": [ "brewer_house", "fermentation_workshop" ],
       "resources": { "rice": 20 },
       "result": { "sake": 10 },
       "time": 5.0,
@@ -237,7 +237,7 @@
     {
       "id": "pulque",
       "name": "Pulque",
-      "produced_in": [ "brewer_house" ],
+      "produced_in": [ "brewer_house", "fermentation_workshop" ],
       "resources": { "agave": 20 },
       "result": { "pulque": 10 },
       "time": 5.0,
@@ -249,7 +249,7 @@
       // into a drink within hours, so the two workshops compete for one harvest.
       "id": "toddy",
       "name": "Toddy",
-      "produced_in": [ "brewer_house" ],
+      "produced_in": [ "brewer_house", "fermentation_workshop" ],
       "resources": { "palm_sap": 20 },
       "result": { "toddy": 10 },
       "time": 5.0,
@@ -259,7 +259,7 @@
     {
       "id": "cider",
       "name": "Cider",
-      "produced_in": [ "brewer_house" ],
+      "produced_in": [ "brewer_house", "fermentation_workshop" ],
       "resources": { "apples": 20 },
       "result": { "cider": 10 },
       "time": 5.0,
@@ -329,7 +329,7 @@
     {
       "id": "vinegar",
       "name": "Vinegar",
-      "produced_in": [ "brewer_house" ],
+      "produced_in": [ "brewer_house", "fermentation_workshop" ],
       "resources": { "@alcohol": 20 },
       "result": { "vinegar": 10 },
       "time": 5.0,

@@ -9511,3 +9511,15 @@ msgstr "Клиновой маслобойный пресс"
 
 msgid "Unlocks the oil mill."
 msgstr "Открывает маслобойню."
+
+msgid "Vat Fermentation"
+msgstr "Чановое брожение"
+
+msgid "Fermentation Workshop"
+msgstr "Бродильный цех"
+
+msgid "Unlocks the fermentation workshop."
+msgstr "Открывает бродильный цех."
+
+msgid "Large wooden vats hold separate batches of fermenting drink or vinegar."
+msgstr "В больших деревянных чанах готовят отдельные партии напитков или уксуса."

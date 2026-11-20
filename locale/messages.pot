@@ -9437,3 +9437,15 @@ msgstr ""
 
 msgid "Unlocks the oil mill."
 msgstr ""
+
+msgid "Vat Fermentation"
+msgstr ""
+
+msgid "Fermentation Workshop"
+msgstr ""
+
+msgid "Unlocks the fermentation workshop."
+msgstr ""
+
+msgid "Large wooden vats hold separate batches of fermenting drink or vinegar."
+msgstr ""
