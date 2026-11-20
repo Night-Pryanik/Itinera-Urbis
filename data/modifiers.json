@@ -58,17 +58,17 @@
       },
       {
         // Water as a source of MECHANICAL MOTION: ore washing and stamps at a
-        // mine/quarry, water-driven bellows and hammers in metallurgy. The record
+        // mine/quarry, water-driven bellows in metallurgy. The record
         // needs the running water AND the Water Power technology — unlike
         // irrigation, which needs the water only, and unlike the Water Mill,
         // whose own recipe already encodes the gain from the Water Wheel.
         "tech_id": "water_power",
         "icon": "water_chain.png",
-        "name": "Mine, quarry, bloomery, smelter, forge: +25% production only where fresh water is available",
+        "name": "Mine, quarry, bloomery, smelter: +25% production only where fresh water is available",
         "requires_water": true,
         "production_multiplier": { "mine": 1.25, "quarry": 1.25 },
         "building_production_multiplier": {
-          "bloomery": 1.25, "smelter": 1.25, "forge": 1.25
+          "bloomery": 1.25, "smelter": 1.25
         }
       },
       {
@@ -137,7 +137,7 @@
         "tech_id": "screw_press",
         "building_production_slots": {
           "winemaker_house": 1, "oilmaker_house": 1, "oil_mill": 1, "dairy": 1,
-          "paper_workshop": 1, "jeweler_house": 1
+          "paper_workshop": 1, "paper_mill": 1, "jeweler_house": 1
         }
       },
       {

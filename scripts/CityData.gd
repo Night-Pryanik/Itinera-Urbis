@@ -2312,6 +2312,9 @@ func _collect_tech_chain(tech_id: String, chain: Array, visiting: Dictionary) ->
 func is_building_unlocked(building_id: String) -> bool:
     for b in GameData.buildings:
         if b["id"] == building_id:
+            var prerequisite := str(b.get("requires_tech", ""))
+            if prerequisite != "" and not is_tech_unlocked(prerequisite):
+                return false
             var required_tech = b.get("unlock_tech", "")
             if required_tech != "":
                 return is_tech_unlocked(required_tech)

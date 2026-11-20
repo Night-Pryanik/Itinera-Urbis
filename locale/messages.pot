@@ -5528,7 +5528,7 @@ msgid "Mine, quarry, animal mill, oilmaker's house, weaver's and silkmaker's hou
 msgstr ""
 
 msgctxt "modifiers.tech_modifiers.name"
-msgid "Mine, quarry, bloomery, smelter, forge: +25% production only where fresh water is available"
+msgid "Mine, quarry, bloomery, smelter: +25% production only where fresh water is available"
 msgstr ""
 
 msgctxt "modifiers.tech_modifiers.name"
@@ -7960,7 +7960,7 @@ msgid "+25% to resource production on farms and plantations."
 msgstr ""
 
 msgctxt "technologies.description"
-msgid "+25% to the production of mines, quarries, the bloomery, the smelter and the forge only where fresh water is available: without water the drive gives no bonus, for the water washes the ore, works the bellows and lifts the hammers."
+msgid "Enables water-powered upgrades for the paper workshop and forge. +25% production for mines, quarries, bloomeries and smelters only where fresh water is available."
 msgstr ""
 
 msgctxt "technologies.description"
@@ -9448,4 +9448,20 @@ msgid "Unlocks the fermentation workshop."
 msgstr ""
 
 msgid "Large wooden vats hold separate batches of fermenting drink or vinegar."
+msgstr ""
+
+msgctxt "buildings.name"
+msgid "Paper Mill"
+msgstr ""
+
+msgctxt "buildings.description"
+msgid "Water-driven stampers beat plant fibres into pulp for paper."
+msgstr ""
+
+msgctxt "buildings.name"
+msgid "Smithing Workshop"
+msgstr ""
+
+msgctxt "buildings.description"
+msgid "A water wheel drives the workshop hammer."
 msgstr ""

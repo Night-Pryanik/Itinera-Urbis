@@ -492,7 +492,7 @@
     {
       "id": "paper",
       "name": "Paper",
-      "produced_in": [ "paper_workshop" ],
+      "produced_in": [ "paper_workshop", "paper_mill" ],
       "resources": { "@paper_fibers": 10, "lime": 10 },
       "result": { "paper": 10 },
       "time": 5.0,

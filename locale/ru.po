@@ -5603,8 +5603,8 @@ msgid "Mine, quarry, animal mill, oilmaker's house, weaver's and silkmaker's hou
 msgstr "Шахта, каменоломня, мельница с животной тягой, дом маслодела, дом ткача и шелковода, мастерская каменщика, плотника и ювелира: +25% к производству"
 
 msgctxt "modifiers.tech_modifiers.name"
-msgid "Mine, quarry, bloomery, smelter, forge: +25% production only where fresh water is available"
-msgstr "Шахта, каменоломня, сыродутная печь, плавильня, кузница: +25% к производству только при наличии пресной воды"
+msgid "Mine, quarry, bloomery, smelter: +25% production only where fresh water is available"
+msgstr "Шахта, каменоломня, сыродутная печь, плавильня: +25% к производству только при наличии пресной воды"
 
 msgctxt "modifiers.tech_modifiers.name"
 msgid "Mine, quarry: +10% production"
@@ -8035,8 +8035,8 @@ msgid "+25% to resource production on farms and plantations."
 msgstr "+25% к производству на фермах и плантациях."
 
 msgctxt "technologies.description"
-msgid "+25% to the production of mines, quarries, the bloomery, the smelter and the forge only where fresh water is available: without water the drive gives no bonus, for the water washes the ore, works the bellows and lifts the hammers."
-msgstr "+25% к производству шахт и каменоломен, сыродутной печи, плавильни и кузницы только при наличии пресной воды: без воды привод бонуса не даёт, поскольку именно вода промывает руду, качает меха и поднимает молоты."
+msgid "Enables water-powered upgrades for the paper workshop and forge. +25% production for mines, quarries, bloomeries and smelters only where fresh water is available."
+msgstr "Позволяет улучшить бумажную мастерскую и кузницу при наличии пресной воды. Шахты, каменоломни, сыродутные печи и плавильни с доступом к пресной воде производят на 25% больше."
 
 msgctxt "technologies.description"
 msgid "+30% to resource production on plantations."
@@ -9523,3 +9523,19 @@ msgstr "Открывает бродильный цех."
 
 msgid "Large wooden vats hold separate batches of fermenting drink or vinegar."
 msgstr "В больших деревянных чанах готовят отдельные партии напитков или уксуса."
+
+msgctxt "buildings.name"
+msgid "Paper Mill"
+msgstr "Бумажная мельница"
+
+msgctxt "buildings.description"
+msgid "Water-driven stampers beat plant fibres into pulp for paper."
+msgstr "Водяные толчеи размалывают растительные волокна в бумажную массу."
+
+msgctxt "buildings.name"
+msgid "Smithing Workshop"
+msgstr "Кузнечный цех"
+
+msgctxt "buildings.description"
+msgid "A water wheel drives the workshop hammer."
+msgstr "Водяное колесо приводит в движение кузнечный молот."
