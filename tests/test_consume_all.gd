@@ -216,8 +216,9 @@ func _run() -> void:
         # The same metal is worth the same in both families of instruments, and the metal
         # ladder does not stretch the interval: every precision instrument wears out at the
         # rate of the rule, as every work tool does.
-        for pid in ["copper", "bronze", "brass", "iron", "steel", "damascus"]:
-            var member := pid + "_precision_instruments"
+        for raw_pid in ["copper", "bronze", "brass", "iron", "steel", "damascus"]:
+            var pid: String = str(raw_pid)
+            var member: String = pid + "_precision_instruments"
             var prec_bn: float = gdata.get_entry_member_bonus(precision, member)
             var prec_iv: float = gdata.get_entry_member_interval(precision, member)
             var tool_bn: float = float(tool_multipliers[pid + "_tools"]) - 1.0
@@ -232,11 +233,11 @@ func _run() -> void:
         _clear_stock(city)
         _set_one(city, "damascus_precision_instruments", 30)
         _set_one(city, "copper_precision_instruments", 30)
-        var both := wm._aggregate_production_bonus([precision])
+        var both: float = float(wm._aggregate_production_bonus([precision]))
         check(is_equal_approx(both, 0.30),
             "two stocked kinds must grant the best step only, got +%.2f" % both, state)
         _set_one(city, "damascus_precision_instruments", 0)
-        var copper_only := wm._aggregate_production_bonus([precision])
+        var copper_only: float = float(wm._aggregate_production_bonus([precision]))
         check(is_equal_approx(copper_only, 0.10),
             "the copper instruments alone must grant +0.10, got +%.2f" % copper_only, state)
 
