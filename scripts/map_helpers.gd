@@ -1000,6 +1000,9 @@ static func is_hex_conditions_met(tile_data: Array, row: int, col: int, data: Di
             if cond_type == "near_river":
                 # The hex shares an edge with a river ⇔ it has river_edges.
                 ok = tile_data[row][col].get("river_edges", []).size() > 0
+            elif cond_type == "near_cover":
+                var required_cover := str(cond.get("cover_id", ""))
+                ok = _has_nearby_cover(tile_data, row, col, required_cover)
             elif cond_type == "terrain":
                 # The universal condition by terrain: the hex must stand on the terrain_id of the
                 # condition. It is used, for example, by the soda_deposit resource
@@ -1016,6 +1019,16 @@ static func is_hex_conditions_met(tile_data: Array, row: int, col: int, data: Di
                 group_met = false
                 break
         if group_met:
+            return true
+    return false
+
+static func _has_nearby_cover(tile_data: Array, row: int, col: int, cover_id: String) -> bool:
+    if cover_id.is_empty():
+        return false
+    if str(tile_data[row][col].get("cover", "none")) == cover_id:
+        return true
+    for neighbour in HexUtils.get_neighbors_odd_r(row, col, tile_data.size(), tile_data[row].size()):
+        if str(tile_data[neighbour.row][neighbour.col].get("cover", "none")) == cover_id:
             return true
     return false
 
