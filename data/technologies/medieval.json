@@ -21,6 +21,16 @@
       "flavor": "An ancient throat-and-girth strap pressed against a horse's windpipe the moment it leaned into a heavy load; the harder the animal pulled, the less it could breathe. Developed along the northern frontiers of China from earlier breast-strap harness and carried west across the steppe to medieval farms and roads, the padded rigid collar shifted the pull onto the shoulders, turning the horse into a fast, tireless draft partner for plow, mill and wagon alike."
     },
     {
+      "id": "road_administration",
+      "name": "Road Administration",
+      "era": "medieval",
+      "science_cost": 5.0,
+      "prerequisites": [ [ "road_paving", "cartography" ] ],
+      "icon": "road_administration.png",
+      "description": "Unlocks Great Highways (road level 4): up to 80 units/sec per section.",
+      "flavor": "A map shows where one road meets the next. Surveyors set the width, crews clear the ditches, and each stretch has someone responsible for its upkeep."
+    },
+    {
       "id": "crop_rotation",
       "name": "Crop Rotation",
       "era": "medieval",
