@@ -212,6 +212,19 @@
       "profession": "brewer",
       "production_slots": 1.0,
       "unlock_tech": "fermentation",
+      "upgrades_into": "fermentation_workshop",
+      "default_recipes": [  ]
+    },
+    {
+      "id": "fermentation_workshop",
+      "name": "Fermentation Workshop",
+      "description": "Large wooden vats hold separate batches of fermenting drink or vinegar.",
+      "work_cost": 50,
+      "additional_cost": [ { "planks": 150 }, { "@processed_construction_materials": 90 } ],
+      "icon": "fermentation_workshop.png",
+      "profession": "brewer",
+      "production_slots": 2.0,
+      "unlock_tech": "vat_fermentation",
       "default_recipes": [  ]
     },
     {

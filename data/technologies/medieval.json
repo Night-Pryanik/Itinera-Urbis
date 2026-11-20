@@ -121,6 +121,15 @@
       "prerequisites": [ [ "oil_making", "screw_press" ] ],
       "icon": "wedge_oil_press.png",
       "description": "Unlocks the oil mill."
+    },
+    {
+      "id": "vat_fermentation",
+      "name": "Vat Fermentation",
+      "era": "medieval",
+      "science_cost": 5.0,
+      "prerequisites": [ [ "fermentation" ] ],
+      "icon": "vat_fermentation.png",
+      "description": "Unlocks the fermentation workshop."
     }
   ]
 }
