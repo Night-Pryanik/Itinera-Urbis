@@ -333,6 +333,9 @@ func _test_deserts_hot_dry(state: Dictionary) -> void:
 # applies to the plains, the hills and the mountains alike. The swamp is the exception — its
 # vegetation is the pool of its own record, and _test_swamp_reeds_warm guards the part of it that
 # matters.
+#
+# A cover that carries spawn_chance (a volcano) is a geological overlay, not vegetation: it is
+# rolled outside the zone pool, over the eligible relief only, and the pool must never name it.
 func _test_covers_from_zone(state: Dictionary) -> void:
     _generate()
     for r in range(ROWS):
@@ -343,9 +346,22 @@ func _test_covers_from_zone(state: Dictionary) -> void:
                 continue
             var pool: Dictionary = _zone(r, c).get("cover_chance", {})
             var cover_id := str(_tiles[r][c].get("cover", "none"))
+            if _is_overlay_cover(cover_id):
+                check(not pool.has(cover_id),
+                        "the overlay %s must not be in the pool of %s at (%d,%d)" %
+                        [cover_id, _zone_id(r, c), r, c], state)
+                var families: Array = _gdata.covers[cover_id].get("terrain_families", [])
+                check(families.has(_family(r, c)),
+                        "the overlay %s lies on the foreign relief %s at (%d,%d)" %
+                        [cover_id, _family(r, c), r, c], state)
+                continue
             check(pool.has(cover_id),
                     "the cover %s is not in the pool of %s at (%d,%d)" % [cover_id, _zone_id(r, c), r, c],
                     state)
+
+# Whether a cover is a geological overlay rolled outside the pool of its climate zone.
+func _is_overlay_cover(cover_id: String) -> bool:
+    return float(_gdata.covers.get(cover_id, {}).get("spawn_chance", 0.0)) > 0.0
 
 func _test_city_terrain(state: Dictionary) -> void:
     _generate()

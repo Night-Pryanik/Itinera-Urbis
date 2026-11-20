@@ -19,7 +19,9 @@ func _run() -> void:
     check(volcano.get("terrain_families", []) == ["mountain"],
             "volcanoes must be restricted to the mountain relief", state)
     var jewelry_options: Array = gdata.get_recipe_extra_options("gold_jewelry")
-    var gemstone_items: Array = jewelry_options[0].get("items", []) if not jewelry_options.is_empty() else []
+    var gemstone_items: Array = []
+    if not jewelry_options.is_empty():
+        gemstone_items = jewelry_options[0].get("items", [])
     var obsidian_is_gem_option := false
     for item in gemstone_items:
         if str(item.get("product", "")) == "obsidian":
@@ -27,7 +29,8 @@ func _run() -> void:
             break
     check(obsidian_is_gem_option,
             "obsidian must be available as an optional gemstone in jewelry recipes", state)
-    check(float(volcano.get("spawn_chance", 0.0)) > 0.0 and float(volcano.get("spawn_chance", 0.0)) < 5.0,
+    var volcano_chance := float(volcano.get("spawn_chance", 0.0))
+    check(volcano_chance > 0.0 and volcano_chance < 5.0,
             "volcanoes must have a rare spawn chance", state)
 
     var tile_data := []
