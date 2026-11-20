@@ -8189,8 +8189,8 @@ msgid "Unlocks recipes for making jewelry out of metals."
 msgstr "Открывает рецепты изготовления ювелирных изделий из металлов."
 
 msgctxt "technologies.description"
-msgid "Unlocks salt extraction in salt deposits (on the surface of salt lakes and in salt mines) and the salt pond."
-msgstr "Открывает возможность добычи соли в соляных месторождениях (на поверхности соляных озёр и в соляных шахтах) и соляном пруду."
+msgid "Unlocks salt extraction from mines and salt lakes, and salt ponds that evaporate brine from seawater or salt springs."
+msgstr "Открывает добычу соли в шахтах и на соляных озёрах, а также соляные пруды для выпаривания морской воды или рассола солёных источников."
 
 msgctxt "technologies.description"
 msgid "Unlocks steel in the forge and the goods forged of it."
@@ -9363,6 +9363,71 @@ msgctxt "covers.name"
 msgid "Volcano"
 msgstr "Вулкан"
 
+#: data/covers.json
+msgctxt "covers.name"
+msgid "Mineral Spring"
+msgstr "Минеральный источник"
+
 msgctxt "resources.name"
 msgid "Obsidian"
 msgstr "Обсидиан"
+
+#: data/resources/minerals.json
+msgctxt "resources.name"
+msgid "Mineral Spring"
+msgstr "Минеральный источник"
+
+#: data/products/materials.json
+msgctxt "resources.name"
+msgid "Unbottled Spring Water"
+msgstr "Неразлитая родниковая вода"
+
+#: data/products/drinks.json
+msgctxt "resources.name"
+msgid "Mineral Water"
+msgstr "Минеральная вода"
+
+#: data/improvements.json
+msgctxt "improvements.name"
+msgid "Spring Catchment"
+msgstr "Каптаж источника"
+
+#: data/professions.json
+msgctxt "professions.name"
+msgid "Water Drawer"
+msgstr "Водонос"
+
+#: data/professions.json
+msgctxt "professions.description"
+msgid "Collects mineral water at a spring catchment."
+msgstr "Набирает минеральную воду из каптажа."
+
+#: data/crafts/food_drinks.json
+msgctxt "crafts.name"
+msgid "Bottling Mineral Water"
+msgstr "Розлив минеральной воды"
+
+#: data/crafts/food_drinks.json
+msgctxt "crafts.description"
+msgid "Fills and seals amphoras with mineral spring water for storage and trade."
+msgstr "Наполняет амфоры минеральной водой и запечатывает их для хранения и торговли."
+
+#: data/technologies/ancient.json
+msgctxt "technologies.unlock_effects.name"
+msgid "Unlocks mineral water bottling."
+msgstr "Открывает розлив минеральной воды."
+
+#: data/technologies/ancient.json
+msgctxt "technologies.unlock_effects.name"
+msgid "Unlocks spring catchments for collecting mineral spring water."
+msgstr "Открывает строительство каптажей для сбора минеральной воды."
+
+#: data/covers.json
+msgctxt "covers.name"
+msgid "Salt Spring"
+msgstr "Солёный источник"
+
+#: data/resources/minerals.json
+msgctxt "resources.name"
+msgid "Salt Spring"
+msgstr "Солёный источник"

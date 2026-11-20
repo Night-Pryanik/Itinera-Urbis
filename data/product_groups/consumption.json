@@ -73,7 +73,7 @@
     {
       "id": "non_alcoholic_beverages",
       "name": "Beverages",
-      "products": [ "tea", "coffee", "cocoa", "mate", "karkadeh" ]
+      "products": [ "tea", "coffee", "cocoa", "mate", "karkadeh", "mineral_water" ]
     },
     {
       // The citizens set the table with every kind of vessel in stock, from

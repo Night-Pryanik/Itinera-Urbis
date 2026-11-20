@@ -1,6 +1,16 @@
 {
   "crafts": [
     {
+      "id": "bottle_mineral_water",
+      "name": "Bottling Mineral Water",
+      "description": "Fills and seals amphoras with mineral spring water for storage and trade.",
+      "produced_in": [ "pottery_workshop" ],
+      "resources": { "spring_water": 10, "amphora": 10 },
+      "result": { "mineral_water": 10 },
+      "time": 5,
+      "unlock_tech": "pottery"
+    },
+    {
       "id": "bread",
       "name": "Bread",
       "produced_in": [ "bakery" ],

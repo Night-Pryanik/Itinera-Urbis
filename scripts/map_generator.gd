@@ -1198,6 +1198,8 @@ func _smooth_cover_patches(tile_data: Array, rows: int, cols: int, applies: Call
             if mask[r][c] and patch_neighbours == 0:
                 changes.append({"row": r, "col": c, "cover": "none"})
             elif not mask[r][c] and patch_neighbours >= counted_neighbours - 1 and counted_neighbours >= 5:
+                if MapHelpers.has_geological_cover(tile):
+                    continue
                 var cover := str(filler.call(tile))
                 if cover != "":
                     changes.append({"row": r, "col": c, "cover": cover})
@@ -1411,28 +1413,35 @@ func _place_resources(tile_data: Array, res_dict: Dictionary, _rows: int, _cols:
         var data = res_dict[res_id]
         if not MapHelpers.spawn_conditions_met(data):
             continue
-        # spawn_count: how many specimens of the resource to spawn (a number or [min, max]).
-        # 0 — the resource is not spawned at all.
-        var spawn_total = _resolve_spawn_count(data)
-        for i in range(spawn_total):
-            var possible = []
-            for terrain_id in data.get("allowed_terrain", []):
-                for cover_id in data.get("allowed_cover", []):
-                    var key = "%s|%s" % [terrain_id, cover_id]
-                    if not hex_index.has(key):
-                        continue
-                    var arr: Array = hex_index[key]
-                    for hex in arr:
-                        if not _climate_allowed(tile_data[hex.row][hex.col], data):
-                            continue
-                        if MapHelpers.is_hex_conditions_met(tile_data, hex.row, hex.col, data):
-                            possible.append(hex)
-            if possible.size() > 0:
-                var hex = possible[randi() % possible.size()]
-                tile_data[hex.row][hex.col]["resource"] = res_id
-                tile_data[hex.row][hex.col]["quality"] = GameData.roll_quality()
-                _remove_hex_from_index(hex_index, hex.row, hex.col,
-                        tile_data[hex.row][hex.col]["terrain"], tile_data[hex.row][hex.col].get("cover", "none"))
+        if bool(data.get("spawn_on_every_match", false)):
+            for hex in _matching_resource_hexes(tile_data, data, hex_index):
+                if tile_data[hex.row][hex.col].get("resource", null) == null:
+                    _place_resource_on_hex(tile_data, res_id, hex, hex_index)
+            continue
+        for i in range(_resolve_spawn_count(data)):
+            var possible := _matching_resource_hexes(tile_data, data, hex_index)
+            if possible.is_empty():
+                break
+            _place_resource_on_hex(tile_data, res_id, possible[randi() % possible.size()], hex_index)
+
+func _matching_resource_hexes(tile_data: Array, data: Dictionary, hex_index: Dictionary) -> Array:
+    var possible := []
+    for terrain_id in data.get("allowed_terrain", []):
+        for cover_id in data.get("allowed_cover", []):
+            var key := "%s|%s" % [terrain_id, cover_id]
+            for hex in hex_index.get(key, []):
+                if not _climate_allowed(tile_data[hex.row][hex.col], data):
+                    continue
+                if MapHelpers.is_hex_conditions_met(tile_data, hex.row, hex.col, data):
+                    possible.append(hex)
+    return possible
+
+func _place_resource_on_hex(tile_data: Array, res_id: String, hex: Dictionary, hex_index: Dictionary) -> void:
+    var tile: Dictionary = tile_data[hex.row][hex.col]
+    tile["resource"] = res_id
+    tile["quality"] = GameData.roll_quality()
+    _remove_hex_from_index(hex_index, hex.row, hex.col,
+            str(tile["terrain"]), str(tile.get("cover", "none")))
 
 # Places the wild plants ONLY inside the starting Influence Ring.
 # The number of specimens is taken from the spawn_count field of the resource (a number or

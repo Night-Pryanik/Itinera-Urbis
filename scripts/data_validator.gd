@@ -322,6 +322,8 @@ const RESOURCE_FIELDS := {
     "breeding": {"array": {"array": {"terrain": LEAF, "cover": LEAF}}},
     "spawn_conditions": {"array": {"array": {"type": LEAF, "chance": LEAF, "terrain_id": LEAF, "cover_id": LEAF}}},
     "spawn_count": LEAF,
+    # A feature whose cover already controls rarity can supply a resource on every free match.
+    "spawn_on_every_match": LEAF,
     "feed_consumption": LEAF,
     "time_to_mature": LEAF,
     # The legacy consumption "from the resource" (see GameData.get_consumption_consumers): the

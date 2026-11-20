@@ -124,6 +124,12 @@
       "description": "Cuts wet turf from the bog and stacks it to dry into fuel."
     },
     {
+      "id": "water_drawer",
+      "name": "Water Drawer",
+      "icon": "spring_water.svg",
+      "description": "Collects mineral water at a spring catchment."
+    },
+    {
       "id": "potter",
       "name": "Potter",
       "icon": "profession_potter.png",
