@@ -84,7 +84,7 @@
         "name": "Mine, quarry, animal mill, oilmaker's house, weaver's and silkmaker's house, mason's, carpenter's and jeweler's workshop: +25% production",
         "production_multiplier": { "mine": 1.25, "quarry": 1.25 },
         "building_production_multiplier": {
-          "animal_mill": 1.25, "oilmaker_house": 1.25, "weaver_house": 1.25,
+          "animal_mill": 1.25, "oilmaker_house": 1.25, "oil_mill": 1.25, "weaver_house": 1.25,
           "silk_maker_house": 1.25, "mason_workshop": 1.25, "jeweler_house": 1.25,
           "carpenter_workshop": 1.25
         }
@@ -136,7 +136,7 @@
         // Blacklisted buildings remain in the map but receive no effect.
         "tech_id": "screw_press",
         "building_production_slots": {
-          "winemaker_house": 1, "oilmaker_house": 1, "dairy": 1,
+          "winemaker_house": 1, "oilmaker_house": 1, "oil_mill": 1, "dairy": 1,
           "paper_workshop": 1, "jeweler_house": 1
         }
       },

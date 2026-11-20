@@ -477,7 +477,7 @@
       // turn too slowly to wear millstones out and ignore this rule.
       "resource": "millstone",
       "profession": [ "miller", "oilmaker" ],
-      "buildings": [ "animal_mill", "water_mill", "windmill", "oilmaker_house" ],
+      "buildings": [ "animal_mill", "water_mill", "windmill", "oilmaker_house", "oil_mill" ],
       "amount": 10,
       "interval": 30,
       "production_bonus": 0.15
