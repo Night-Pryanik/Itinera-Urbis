@@ -444,6 +444,8 @@ func _find_spring_hex(bounds: Dictionary) -> Dictionary:
                 continue
             if tile.get("resource", null) != null or tile.get("crop_bred", null) != null:
                 continue
+            if MapHelpers.has_geological_cover(tile):
+                continue
             # The spring is an INERT source: it must not double as an ordinary
             # water hex (a river edge, a lakeshore, an oasis). Otherwise the
             # mountain would grant the usual bonus before any aqueduct exists.
@@ -484,7 +486,7 @@ func _raise_spring_mountain(bounds: Dictionary) -> Dictionary:
                 continue
             if bool(tile.get("has_town", false)) or bool(tile.get("in_town_influence", false)):
                 continue
-            if bool(tile.get("in_influence", false)):
+            if bool(tile.get("in_influence", false)) or MapHelpers.has_geological_cover(tile):
                 continue
             if not tile.get("river_edges", []).is_empty():
                 continue

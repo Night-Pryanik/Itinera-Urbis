@@ -1,6 +1,21 @@
 {
   "resources": [
     {
+      "id": "mineral_water_source",
+      "name": "Mineral Water",
+      "type": "raw",
+      "category": "minerals",
+      "group": "minerals",
+      "allowed_terrain": [ "hill", "mountain" ],
+      "allowed_cover": [ "mineral_spring" ],
+      "spawn_on_every_match": true,
+      "breedable": false,
+      "improved_by": "spring_catchment",
+      "produces": { "mineral_water": 2 },
+      "icon": "mineral_water.svg",
+      "color": [ 63, 148, 145 ]
+    },
+    {
       "id": "basalt_deposit",
       "price": 4,
       "name": "Basalt",
@@ -291,6 +306,24 @@
       "icon": "salt.png",
       "color": [ 255, 255, 255 ],
       "spawn_conditions": [ [ { "type": "terrain", "terrain_id": "beach", "chance": 100 } ] ]
+    },
+    {
+      "id": "salt_spring_brine",
+      "price": 6,
+      "name": "Salt Spring",
+      "type": "raw",
+      "category": "minerals",
+      "group": "minerals",
+      "strategic": true,
+      "tech_required": "salt_extraction",
+      "allowed_terrain": [ "hill", "mountain" ],
+      "allowed_cover": [ "salt_spring" ],
+      "spawn_on_every_match": true,
+      "breedable": false,
+      "improved_by": "salt_pond",
+      "produces": { "salt": 6 },
+      "icon": "salt.png",
+      "color": [ 255, 255, 255 ]
     },
     {
       "id": "cinnabar_deposit",

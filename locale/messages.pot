@@ -8168,7 +8168,7 @@ msgid "Unlocks recipes for making jewelry out of metals."
 msgstr ""
 
 msgctxt "technologies.description"
-msgid "Unlocks salt extraction in salt deposits (on the surface of salt lakes and in salt mines) and the salt pond."
+msgid "Unlocks salt extraction from mines and salt lakes, and salt ponds that evaporate brine from seawater or salt springs."
 msgstr ""
 
 msgctxt "technologies.description"
@@ -9344,6 +9344,46 @@ msgctxt "covers.name"
 msgid "Volcano"
 msgstr ""
 
+#: data/covers.json
+msgctxt "covers.name"
+msgid "Mineral Spring"
+msgstr ""
+
 msgctxt "resources.name"
 msgid "Obsidian"
+msgstr ""
+
+#: data/products/drinks.json data/resources/minerals.json
+msgctxt "resources.name"
+msgid "Mineral Water"
+msgstr ""
+
+#: data/improvements.json
+msgctxt "improvements.name"
+msgid "Spring Catchment"
+msgstr ""
+
+#: data/professions.json
+msgctxt "professions.name"
+msgid "Water Drawer"
+msgstr ""
+
+#: data/professions.json
+msgctxt "professions.description"
+msgid "Collects mineral water at a spring catchment."
+msgstr ""
+
+#: data/technologies/ancient.json
+msgctxt "technologies.unlock_effects.name"
+msgid "Unlocks spring catchments for collecting mineral spring water."
+msgstr ""
+
+#: data/covers.json
+msgctxt "covers.name"
+msgid "Salt Spring"
+msgstr ""
+
+#: data/resources/minerals.json
+msgctxt "resources.name"
+msgid "Salt Spring"
 msgstr ""

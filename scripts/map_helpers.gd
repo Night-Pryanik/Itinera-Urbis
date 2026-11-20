@@ -277,6 +277,11 @@ static func get_road_step_work_cost(
         "construction_tech_mult": construction_tech_mult
     }
 
+## Geological covers are placed independently of vegetation and should not be replaced by it.
+static func has_geological_cover(tile: Dictionary) -> bool:
+    var cover: Dictionary = GameData.covers.get(str(tile.get("cover", "none")), {})
+    return float(cover.get("spawn_chance", 0.0)) > 0.0
+
 ## --- The forest clearing (lumberjack_hut) ---
 
 ## The yield of the wood of the cover of a hex (the field wood_yield in

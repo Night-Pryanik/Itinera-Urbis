@@ -1,6 +1,15 @@
 {
   "resources": [
     {
+      "id": "mineral_water",
+      "price": 26,
+      "name": "Mineral Water",
+      "type": "product",
+      "category": "drinks",
+      "unlock_tech": "masonry",
+      "icon": "mineral_water.svg"
+    },
+    {
       "id": "beer",
       "price": 8,
       "name": "Beer",
