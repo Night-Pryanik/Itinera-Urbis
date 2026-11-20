@@ -1,6 +1,6 @@
 # The City — Design document
 
-**Version:** 2026-08-21  
+**Version:** 2026-11-20  
 **Repository:** https://github.com/Night-Pryanik/The-City  
 **Engine:** Godot (GDScript)  
 **Purpose of the document:** a canonical description of the game for continuing development (including by a new assistant) without reading the whole chat history. The code and JSON in the repository are the source of truth for the implementation; this file is the source of truth for the *intent*.
@@ -279,6 +279,7 @@ Two independent fields:
 - "Surface" resources are visible after scouting / in a bought zone, but may be locked until `tech_required`.
 - `tech_reveal`: even in a bought zone they stay hidden until the corresponding tech is researched; on reveal — a message; if the hex already has another improvement — the UI shows an exclamation mark, tooltip "discovered / demolish / build".
 - Scouting over hidden iron may honestly report "no resources" — the scouts did not recognise the ore.
+- How a resource is mined, and where the mines appear (Terrain/Map/Resource/Climate list — simply "its natural environment"; see climate.json).
 
 ### 4.3. Domestication
 
@@ -319,11 +320,11 @@ Two independent fields:
 - Action time = f(cost in the data, current labour speed, modifiers such as satiety, the Wheel).
 - **The Wheel:** −30% to the influence of distance from the city on the labour cost when building improvements.
 
-### 5.4. Trade and specialisations (design, partly ahead)
+### 5.4. Trade and specialisations
 
 - Domestic/foreign market, prices, imports for chains.
 - **Reputation / "known for X"** from volumes → a soft bonus.
-- **Challenges** (including dynamic ones by product/quality): complete one → the brand "good (CityName)", a specialisation branch, unique buildings.
+- **Challenges** (including dynamic ones by product/quality): complete one → the brand "good (CityName)", a specialisation branch, unique buildings. Data lives in `data/challenges.json` and `data/specializations.json`.
 - A meta-achievement for "completing a challenge by reselling an import" is deliberately allowed as a clever workaround.
 - Static achievements: "Monogamist", "I don't want to wait" (buy out the Region before an era change), etc.
 
@@ -335,15 +336,13 @@ Two independent fields:
 
 - A tree (UI: root, links; highlighting of paths to parents).
 - They unlock: buildings, improvements, mechanics, sometimes resource reveals, bonuses.
-- Split by eras (planned): in each era only the technologies of that era can be unlocked. Until the player advances from the Ancient era to the Antiquity era, Antiquity technologies are not available.
+- Split by eras: in each era only the technologies of that era can be unlocked. Until the player advances from the Ancient era to the Antiquity era, Antiquity technologies are not available.
 
 ### 6.2. Eras
 
-- Plan: several major eras (either 3 (major, carefully crafted), or 7 — **not yet finalised**).
+- Six major eras are defined in `data/eras.json`: **Ancient → Antiquity → Medieval → Renaissance → Modern → Contemporary**. Technology data files currently exist for the first four eras (`data/technologies/`).
 - Transition by goals (food / other metrics in the future).
 - On transition: territory expansion, new opportunities; old buildings may be preserved, change function, or become obsolete (the "city through the ages" intent).
-
-**Open question:** a full run through to modern times vs a focus on antiquity–early modernity with deep chains. The fallback option is a limited chronological span.
 
 ---
 
@@ -381,6 +380,10 @@ The "Development" mode originally blocked the normal map; there was discussion o
 | Rivers | river manager / generator / renderer |
 | Resources, tech fields | resource JSON + spawn logic |
 | City, UI | `city_ui/`, city managers |
+| Trade / challenges | `data/challenges.json`, `data/specializations.json`, `data/professions.json` |
+| Consumption | `data/consumption/` |
+| Products and crafts | `data/products/`, `data/product_groups/`, `data/crafts/` |
+| Modding | `mods/` |
 | Documentation in code | comments in the generator, `docs` if present |
 
 The assistant **can and should** read GitHub/raw files. Do not simulate reading.
@@ -399,7 +402,7 @@ The internet and the repository are the primary way of synchronising the project
 
 ### Open design decisions
 
-1. The final number and content of **eras**.    
+1. The final scope of the later eras: the framework of six eras is fixed, the depth of technology content for the last two is being decided.
 2. The boundary of **urban planning** (roads as logistics — yes; street-level C:S — no, while the core is economic).  
 3. Full trade, challenges, brands — the design is broadly agreed, implementation as the base becomes ready.  
 
