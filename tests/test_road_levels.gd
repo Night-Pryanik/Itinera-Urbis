@@ -80,6 +80,8 @@ func _run() -> void:
         _test_road_data(state)
     if WATCHDOG.wants_case("unlock_by_wheel"):
         _test_unlock_by_wheel(state)
+    if WATCHDOG.wants_case("later_road_levels"):
+        _test_later_road_levels(state)
     if WATCHDOG.wants_case("segment_level"):
         _test_segment_level(state)
     if WATCHDOG.wants_case("route_and_speeds"):
@@ -123,7 +125,7 @@ func _make_map() -> Array:
         tile_data.append(row)
     return tile_data
 
-# Unlock the technology that opens the level (currently the "Wheel").
+# Mark the technology that opens the level as researched.
 # The unlock_tech field can be null, so we skip null explicitly: `null or ""`
 # in GDScript does not give an empty string.
 func _unlock_level(level: int) -> void:
@@ -195,6 +197,50 @@ func _test_unlock_by_wheel(state: Dictionary) -> void:
     # The trail stays available: the player can choose any previous level.
     check(_gdata.is_road_level_unlocked(1),
             "after the \"Wheel\" the trail must stay available", state)
+
+
+func _test_later_road_levels(state: Dictionary) -> void:
+    var previous_techs: Array = _cdata.unlocked_technologies.duplicate()
+    var previous_era: int = _cdata.current_era_index
+    var registry = get_root().get_node("IconRegistry")
+
+    _cdata.unlocked_technologies.assign(["wheel"])
+    _cdata.current_era_index = _cdata.get_tech_era_index("wheel")
+    for spec in [
+        {"level": 3, "tech": "road_paving", "era": "antiquity", "prereq": "masonry", "capacity": 50},
+        {"level": 4, "tech": "road_administration", "era": "medieval", "prereq": "cartography", "capacity": 80},
+    ]:
+        var level: int = spec.level
+        var tech_id: String = spec.tech
+        check(_gdata.get_road_by_level(level).get("unlock_tech") == tech_id,
+                "level %d is unlocked by %s" % [level, tech_id], state)
+        check(_gdata.get_road_max_speed(level) == spec.capacity,
+                "level %d carries %d units/sec per section" % [level, spec.capacity], state)
+        check(not _gdata.is_road_level_unlocked(level),
+                "level %d is locked before its technology is researched" % level, state)
+
+        var era_index: int = _cdata.get_tech_era_index(tech_id)
+        check(era_index >= 0 and _gdata.eras[era_index].id == spec.era,
+                "%s belongs to %s" % [tech_id, spec.era], state)
+        check(not _cdata.is_tech_era_allowed(tech_id),
+                "%s is not available in the previous era" % tech_id, state)
+        _cdata.current_era_index = era_index
+        check(not _cdata.is_tech_available(tech_id),
+                "%s still requires %s" % [tech_id, spec.prereq], state)
+        _cdata.unlocked_technologies.append(spec.prereq)
+        check(_cdata.is_tech_available(tech_id),
+                "%s is available in its era with the prerequisites researched" % tech_id, state)
+        check(registry.get_texture(_cdata.get_tech_icon(tech_id)) != null,
+                "%s has a loadable technology icon" % tech_id, state)
+
+        _unlock_level(level)
+        check(_gdata.get_max_unlocked_road_level() == level,
+                "level %d becomes the default after research" % level, state)
+    check(_gdata.get_unlocked_road_levels() == [1, 2, 3, 4],
+            "researching the last level keeps earlier roads available", state)
+
+    _cdata.unlocked_technologies.assign(previous_techs)
+    _cdata.current_era_index = previous_era
 
 
 # -------------------------------------------------------

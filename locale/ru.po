@@ -7804,9 +7804,25 @@ msgctxt "roads.description"
 msgid "A simple footpath worn into the ground. Cheap, but it carries very little."
 msgstr "Простая тропа, протоптанная в земле. Дёшево, но мало что везёт."
 
+msgctxt "roads.description"
+msgid "Stone paving and a firm foundation keep loaded carts from sinking into mud."
+msgstr "Каменное покрытие и прочное основание не дают гружёным телегам увязнуть в грязи."
+
+msgctxt "roads.description"
+msgid "Wide, well-drained routes give heavy wagons room to pass."
+msgstr "На широких трактах с хорошим водоотводом тяжёлые возы могут разъехаться."
+
 msgctxt "roads.name"
 msgid "Cart Road"
 msgstr "Тележная дорога"
+
+msgctxt "roads.name"
+msgid "Great Highways"
+msgstr "Большие тракты"
+
+msgctxt "roads.name"
+msgid "Paved Roads"
+msgstr "Мощеные дороги"
 
 msgctxt "roads.name"
 msgid "Trail"
@@ -8165,6 +8181,14 @@ msgid "Specialized farming: growing cash crops. Allows you to build plantations.
 msgstr "Специализированное земледелие: выращивание товарных культур. Даёт возможность строить плантации."
 
 msgctxt "technologies.description"
+msgid "Unlocks Great Highways (road level 4): up to 80 units/sec per section."
+msgstr "Открывает большие тракты (дорога 4-го уровня): до 80 ед./с на участок."
+
+msgctxt "technologies.description"
+msgid "Unlocks Paved Roads (road level 3): up to 50 units/sec per section."
+msgstr "Открывает мощеные дороги (дорога 3-го уровня): до 50 ед./с на участок."
+
+msgctxt "technologies.description"
 msgid "Unlocks parchment and allows you to create written material."
 msgstr "Открывает пергамент и позволяет создавать письменные материалы."
 
@@ -8251,6 +8275,14 @@ msgstr "Связка тростника держится на плаву лиш�
 msgctxt "technologies.flavor"
 msgid "A field sown with the same grain year after year gives less with every harvest until the earth lies spent. Alternating winter and spring cereals with pulses, fodder and rested fallow — practiced across Chinese bean-and-millet fields, the irrigated gardens of the Islamic world and the three-field manors of medieval Europe — returned strength to the soil and raised more from the same land."
 msgstr "Поле, засеваемое одним и тем же зерном из года в год, скудеет с каждой жатвой, пока земля совсем не выдохнется. Чередование озимых и яровых хлебов с бобовыми, кормовыми травами и паром — от бобово-просяных полей Китая и орошаемых садов исламского мира до трёхполья средневековой Европы — возвращало почве силу и позволяло снимать больше с той же земли."
+
+msgctxt "technologies.flavor"
+msgid "A firm bed of rubble carries the weight; fitted stones hold the surface together. When the rains come, loaded carts can still reach the city."
+msgstr "Прочное основание из щебня выдерживает тяжесть возов, а плотно подогнанные камни держат покрытие. Даже в дождь гружёные телеги добираются до города."
+
+msgctxt "technologies.flavor"
+msgid "A map shows where one road meets the next. Surveyors set the width, crews clear the ditches, and each stretch has someone responsible for its upkeep."
+msgstr "На карте видно, где сходятся дороги. Землемеры размечают ширину тракта, рабочие чистят канавы, и за содержание каждого участка кто-то отвечает."
 
 msgctxt "technologies.flavor"
 msgid "A page cut in wood or cast in metal gives as many copies as the press can pull, and no copy argues with another. The woodblock came first in China, movable type followed there and in Korea, where the letters were cast in bronze; Gutenberg set the same idea in lead and gave it the screw press and paper. A scribe copies a book in a year, a workshop prints it in a season."
@@ -8723,6 +8755,14 @@ msgstr "Плуг"
 msgctxt "technologies.name"
 msgid "Printing"
 msgstr "Книгопечатание"
+
+msgctxt "technologies.name"
+msgid "Road Administration"
+msgstr "Дорожное хозяйство"
+
+msgctxt "technologies.name"
+msgid "Road Paving"
+msgstr "Дорожное мощение"
 
 msgctxt "technologies.name"
 msgid "Rope Making"

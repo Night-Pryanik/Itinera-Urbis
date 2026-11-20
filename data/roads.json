@@ -48,10 +48,8 @@
   // separate list, otherwise two structures about the same thing would have to be
   // kept and synchronised manually.
   //
-  // AT THE MOMENT there are two levels in the game — that is enough to verify the
-  // full path of a level (build → route → average speed → road upgrade).
-  // Further levels are added here as entries + one technology per era; no code
-  // change is needed for that.
+  // Each era's road technology unlocks its level here; the construction and
+  // upgrade systems use the same entries.
   "roads": [
     {
       "id": "trail",
@@ -74,6 +72,28 @@
       "unlock_tech": "wheel",
       "color": [ 120, 90, 55 ],
       "width": 8
+    },
+    {
+      "id": "paved_roads",
+      "level": 3,
+      "name": "Paved Roads",
+      "description": "Stone paving and a firm foundation keep loaded carts from sinking into mud.",
+      "work_cost": 20,
+      "max_speed": 50,
+      "unlock_tech": "road_paving",
+      "color": [ 126, 122, 115 ],
+      "width": 10
+    },
+    {
+      "id": "great_highways",
+      "level": 4,
+      "name": "Great Highways",
+      "description": "Wide, well-drained routes give heavy wagons room to pass.",
+      "work_cost": 35,
+      "max_speed": 80,
+      "unlock_tech": "road_administration",
+      "color": [ 156, 116, 69 ],
+      "width": 13
     }
   ]
 }

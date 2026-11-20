@@ -31,6 +31,16 @@
       "flavor": "People have tracked the turning of the seasons since the earliest times, but only now has the calendar become a standard tool of management: precise planning of sowing, pruning and harvest let plantations reach their full potential."
     },
     {
+      "id": "road_paving",
+      "name": "Road Paving",
+      "era": "antiquity",
+      "science_cost": 4.0,
+      "prerequisites": [ [ "wheel", "masonry" ] ],
+      "icon": "road_paving.png",
+      "description": "Unlocks Paved Roads (road level 3): up to 50 units/sec per section.",
+      "flavor": "A firm bed of rubble carries the weight; fitted stones hold the surface together. When the rains come, loaded carts can still reach the city."
+    },
+    {
       "id": "draft_animals",
       "name": "Draft Animals",
       "era": "antiquity",
