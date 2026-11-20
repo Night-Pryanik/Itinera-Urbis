@@ -12,35 +12,91 @@
 # (with an automatic decrease of the font, if it does not fit).
 # LMB — start the research (through the signal research_requested), or drag the tree
 # when the cursor moves past DRAG_THRESHOLD before the button is released.
+# The wheel — zoom the tree (as the wheel zooms the map).
 # Hover — the built-in tooltip with the description of the technology.
 extends Control
 
 const UI_THEME = preload("res://scripts/ui_theme.gd")
 
 # --- The dimensions ---
-const COL_GAP: int = 80 # the horizontal gap between the columns
-const COL_PADDING: int = 24 # the indent from the edge of _inner
-const BUTTON_HEIGHT: int = 75 # the fixed height of the button
-const BUTTON_VERTICAL_GAP: int = 16 # the vertical gap between the buttons in a column
-const ICON_SIZE: int = 65 # the size of the icon of the technology
-const UNLOCK_ICON_SIZE: int = 40 # the size of the icon of the unlocked content on the button of the technology
-const UNLOCK_ICONS_MARGIN: int = 3 # the distance from the icons to the edges of the button
-const UNLOCK_ICONS_SEPARATION: int = 4 # the gap between the icons of the unlocked content
-const UNLOCK_ICONS_LEFT: int = 8 + ICON_SIZE + 8 # the row starts behind the icon of the technology
-const UNLOCK_ICONS_VISIBLE: int = 4 # the number of slots the row has: for icons, and for arrows
-const UNLOCK_ROW_SLOT: int = UNLOCK_ICON_SIZE + UNLOCK_ICONS_SEPARATION # the pitch of one slot: an icon, or an arrow
-const UNLOCK_ARROW_SIZE: int = 22 # the side of the arrow that scrolls the row of unlocked icons
+# The metrics of the layout are variables, not constants: they are multiplied by the zoom of
+# the tree (see _update_metrics). The BASE_* constants hold the values at zoom = 1.
+const BASE_COL_GAP: float = 80.0 # the horizontal gap between the columns
+const BASE_COL_PADDING: float = 24.0 # the indent from the edge of _inner
+const BASE_BUTTON_HEIGHT: float = 75.0 # the fixed height of the button
+const BASE_BUTTON_VERTICAL_GAP: float = 16.0 # the vertical gap between the buttons in a column
+const BASE_ICON_SIZE: float = 65.0 # the size of the icon of the technology
+const BASE_UNLOCK_ICON_SIZE: float = 40.0 # the size of the icon of the unlocked content on the button of the technology
+const BASE_UNLOCK_ICONS_MARGIN: float = 3.0 # the distance from the icons to the edges of the button
+const BASE_UNLOCK_ICONS_SEPARATION: float = 4.0 # the gap between the icons of the unlocked content
+const BASE_UNLOCK_ARROW_SIZE: float = 22.0 # the side of the arrow that scrolls the row of unlocked icons
 
-# The width of the strip while no arrow takes a slot: the button is as wide as the row it
-# has to hold, so a technology that opens more than UNLOCK_ICONS_VISIBLE things scrolls the
-# row instead of shrinking the icons, and the names of the technologies fit on one line.
-const UNLOCK_ROW_PLAIN_WIDTH: int = (UNLOCK_ICONS_VISIBLE * UNLOCK_ICON_SIZE
-        + (UNLOCK_ICONS_VISIBLE - 1) * UNLOCK_ICONS_SEPARATION)
-const BUTTON_WIDTH: int = UNLOCK_ICONS_LEFT + UNLOCK_ROW_PLAIN_WIDTH + 8
+# The paddings inside the button of a technology.
+const BUTTON_PADDING_H: float = 8.0 # the indent from the left/right edge of the button
+const BUTTON_PADDING_V: float = 6.0 # the indent from the top/bottom edge of the button
+const BUTTON_CONTENT_GAP: float = 8.0 # the gap between the icon of the technology and its name
+const PROGRESS_HEIGHT: float = 6.0 # the height of the strip of the progress on the button
+
+# The number of the slots of the row of the unlocked content (a count, not a metric).
+const UNLOCK_ICONS_VISIBLE: int = 4
+
+# The metrics of the layout at the current zoom (see _update_metrics).
+var COL_GAP: float = BASE_COL_GAP
+var COL_PADDING: float = BASE_COL_PADDING
+var BUTTON_HEIGHT: float = BASE_BUTTON_HEIGHT
+var BUTTON_VERTICAL_GAP: float = BASE_BUTTON_VERTICAL_GAP
+var ICON_SIZE: float = BASE_ICON_SIZE
+var UNLOCK_ICON_SIZE: float = BASE_UNLOCK_ICON_SIZE
+var UNLOCK_ICONS_MARGIN: float = BASE_UNLOCK_ICONS_MARGIN
+var UNLOCK_ICONS_SEPARATION: float = BASE_UNLOCK_ICONS_SEPARATION
+var UNLOCK_ARROW_SIZE: float = BASE_UNLOCK_ARROW_SIZE
+var UNLOCK_ICONS_LEFT: float = 0.0
+var UNLOCK_ROW_SLOT: float = 0.0
+var UNLOCK_ROW_PLAIN_WIDTH: float = 0.0
+var BUTTON_WIDTH: float = 0.0
+
+# --- The zoom of the tree ---
+# The tree is laid out in pixels, therefore the zoom multiplies its metrics. The structure of
+# the columns (the layers of the dependencies) does not depend on the zoom and stays cached.
+#
+# The tree is built once, for the zoom of that moment, and afterwards it is shown as a scaled
+# picture: the wheel sets the target, and the tree approaches it smoothly, as the map does.
+# The tree is not rebuilt for the zoom: a rebuild of the tree of 76 technologies costs about
+# 0.12 s and would freeze the game right after the gesture, and the scaled picture is as
+# sharp as the native one — the text of the tree is a distance field, and the icons are much
+# larger than the places they take.
+const ZOOM_MIN: float = 0.6
+const ZOOM_MAX: float = 1.6
+const ZOOM_STEP: float = 1.15 # one notch of the wheel
+const ZOOM_SMOOTHING: float = 14.0 # the rate of the approach to the target (1/s): a notch settles in ~0.2 s
+const ZOOM_SETTLED: float = 0.002 # the distance to the target at which the animation snaps
+const SETTINGS_PATH := "user://settings.cfg"
+const SETTINGS_SECTION := "interface"
+const SETTINGS_KEY := "tech_zoom"
+# The zoom the tree is built for, the zoom the wheel asks for and the zoom that is shown now.
+# The tree is drawn as a scaled picture, while the shown zoom differs from the built one.
+var _zoom: float = 1.0
+var _zoom_target: float = 1.0
+var _zoom_visual: float = 1.0
+# The point of the tree under the cursor (in the coordinates of the layout) and the place of
+# the cursor on the screen: the point stays under the cursor while the tree zooms.
+var _zoom_anchor: Vector2 = Vector2.ZERO
+var _zoom_cursor: Vector2 = Vector2.ZERO
+var _zoom_animating: bool = false
+# The size of the tree at the zoom it is built for (without the scale of the animation).
+var _layout_size: Vector2 = Vector2.ZERO
 
 const ICON_NEW_RECIPES := "new_recipe.png" # the badge of a technology that opens recipes
 const ICON_ARROW_LEFT := "chevron_left.svg"
 const ICON_ARROW_RIGHT := "chevron_right.svg"
+
+# --- The sharp text of the tree ---
+# The tree is scaled as a picture, and a normal font is a bitmap: it becomes blurry under
+# the scale. A multi-channel signed distance field is computed per pixel of the
+# destination, therefore the text of the tree stays sharp under any scale.
+const MSDF_PIXEL_RANGE := 6
+var _msdf_font: Font = null # the face of the interface, drawn as a distance field
+var _msdf_source: Font = null # the face the distance field was built from
 
 # --- The separation by eras ---
 # Each technology in the JSON contains the field "era" (the id of the era), and the human-readable
@@ -48,9 +104,12 @@ const ICON_ARROW_RIGHT := "chevron_right.svg"
 # The consecutive columns of one era are visually united: above them
 # a heading with the name of the era is drawn, and between the groups of the eras — a thick
 # vertical line-separator (see ERA_LABEL_HEIGHT, ERA_LINE_*).
-const ERA_LABEL_HEIGHT: int = 64 # the height of the strip above the columns under the headings of the eras
-const ERA_LABEL_WIDTH: int = 200 # the fixed width of the heading of the era
-const ERA_LINE_WIDTH: float = 2.0 # the thickness of the vertical separator of the eras
+const BASE_ERA_LABEL_HEIGHT: float = 64.0 # the height of the strip above the columns under the headings of the eras
+const BASE_ERA_LABEL_WIDTH: float = 200.0 # the fixed width of the heading of the era
+const BASE_ERA_LINE_WIDTH: float = 2.0 # the thickness of the vertical separator of the eras
+var ERA_LABEL_HEIGHT: float = BASE_ERA_LABEL_HEIGHT # the height of the strip above the columns under the headings of the eras
+var ERA_LABEL_WIDTH: float = BASE_ERA_LABEL_WIDTH # the fixed width of the heading of the era
+var ERA_LINE_WIDTH: float = BASE_ERA_LINE_WIDTH # the thickness of the vertical separator of the eras
 
 # A press turns into a pan only after this many pixels, so a click on a technology
 # is still a click and a drag does not start the research.
@@ -73,6 +132,7 @@ var _drag_possible: bool = false # LMB was pressed inside the tree
 var _dragging: bool = false # the threshold was passed, so this gesture is a pan
 var _suppress_click: bool = false # the release of a pan must not start a research
 var _inner: Control # a large Control, the size = the whole area of the tree
+var _content: Control # the content of the tree (the columns, the headings of the eras)
 var _columns: Array = [] # [Control, Control, ...] by the columns
 var _tech_nodes: Dictionary = {} # tech_id -> {button, column, row}
 var _arrows_layer: Control # the Control in which _draw draws the arrows
@@ -117,8 +177,202 @@ func setup(parent: Control, current_lbl: Label, science_lbl: Label = null):
     _cached_layout = {}
     _layout_valid = false
     _relations_cache_valid = false
+    # The zoom is a player preference: the tree is built with the metrics of the saved zoom.
+    _zoom = _load_zoom_level()
+    _zoom_target = _zoom
+    _zoom_visual = _zoom
+    _update_metrics()
+    _build_msdf_font()
     _build_ui(parent)
     _setup_science_tooltip()
+
+func _init() -> void:
+    # The metrics are always consistent with the zoom, even before the setup.
+    _update_metrics()
+
+# --- The sharp text of the tree ---
+
+# Builds the distance-field variant of the face of the interface: the same face, but
+# drawn as a signed distance field.
+func _build_msdf_font() -> void:
+    var face: Font = get_theme_font("font", "Label")
+    if face == null:
+        face = ThemeDB.fallback_font
+    _msdf_source = face
+    _msdf_font = _as_msdf_font(face)
+
+# The same face as a distance field. A FontVariation (the weight of the face) keeps its
+# settings and gets a distance-field base.
+func _as_msdf_font(face: Font) -> Font:
+    if face is FontVariation:
+        var variation: FontVariation = (face as FontVariation).duplicate()
+        variation.base_font = _as_msdf_font(variation.base_font)
+        return variation
+    if face is FontFile:
+        var file: FontFile = (face as FontFile).duplicate()
+        file.multichannel_signed_distance_field = true
+        file.msdf_pixel_range = MSDF_PIXEL_RANGE
+        return file
+    return face
+
+# The face of the interface has changed (the player has chosen another one): the distance
+# field is built from the new face and given to the labels of the tree.
+func _on_theme_changed() -> void:
+    var face: Font = get_theme_font("font", "Label")
+    if face == _msdf_source:
+        return
+    _build_msdf_font()
+    _apply_msdf_font()
+
+# Gives the distance field to every label of the tree.
+func _apply_msdf_font() -> void:
+    if _msdf_font == null:
+        return
+    for tech_id in _tech_nodes:
+        var entry = _tech_nodes[tech_id]
+        if not is_instance_valid(entry):
+            continue
+        var label: Label = _find_label_in_button(entry["button"])
+        if label != null and is_instance_valid(label):
+            label.add_theme_font_override("font", _msdf_font)
+    for lab in _era_labels:
+        if lab is RichTextLabel:
+            (lab as RichTextLabel).add_theme_font_override("normal_font", _msdf_font)
+        elif lab is Label:
+            (lab as Label).add_theme_font_override("font", _msdf_font)
+
+# --- The zoom of the tree ---
+
+# Multiplies the metrics of the layout by the zoom. Only the pixels change: the structure
+# of the columns (the layers of the dependencies) does not depend on the zoom.
+func _update_metrics() -> void:
+    COL_GAP = BASE_COL_GAP * _zoom
+    COL_PADDING = BASE_COL_PADDING * _zoom
+    BUTTON_HEIGHT = BASE_BUTTON_HEIGHT * _zoom
+    BUTTON_VERTICAL_GAP = BASE_BUTTON_VERTICAL_GAP * _zoom
+    ICON_SIZE = BASE_ICON_SIZE * _zoom
+    UNLOCK_ICON_SIZE = BASE_UNLOCK_ICON_SIZE * _zoom
+    UNLOCK_ICONS_MARGIN = BASE_UNLOCK_ICONS_MARGIN * _zoom
+    UNLOCK_ICONS_SEPARATION = BASE_UNLOCK_ICONS_SEPARATION * _zoom
+    UNLOCK_ARROW_SIZE = BASE_UNLOCK_ARROW_SIZE * _zoom
+    UNLOCK_ICONS_LEFT = (BUTTON_PADDING_H + BASE_ICON_SIZE + BUTTON_PADDING_H) * _zoom
+    UNLOCK_ROW_SLOT = (BASE_UNLOCK_ICON_SIZE + BASE_UNLOCK_ICONS_SEPARATION) * _zoom
+    UNLOCK_ROW_PLAIN_WIDTH = (float(UNLOCK_ICONS_VISIBLE) * BASE_UNLOCK_ICON_SIZE
+            + float(UNLOCK_ICONS_VISIBLE - 1) * BASE_UNLOCK_ICONS_SEPARATION) * _zoom
+    BUTTON_WIDTH = UNLOCK_ICONS_LEFT + UNLOCK_ROW_PLAIN_WIDTH + BUTTON_PADDING_H * _zoom
+    ERA_LABEL_HEIGHT = BASE_ERA_LABEL_HEIGHT * _zoom
+    ERA_LABEL_WIDTH = BASE_ERA_LABEL_WIDTH * _zoom
+    ERA_LINE_WIDTH = BASE_ERA_LINE_WIDTH * _zoom
+
+# The wheel: the target of the zoom changes, and the tree approaches it smoothly.
+func zoom_by(factor: float, global_pos: Vector2) -> void:
+    var target: float = clampf(_zoom_target * factor, ZOOM_MIN, ZOOM_MAX)
+    if is_equal_approx(target, _zoom_target):
+        return
+    _zoom_target = target
+    _capture_zoom_anchor(global_pos)
+    _zoom_animating = true
+
+# The point of the tree under the cursor: it stays under the cursor while the tree zooms.
+func _capture_zoom_anchor(global_pos: Vector2) -> void:
+    _zoom_cursor = global_pos - _scroll.global_position
+    # The content of the tree is scaled as a picture: the point of the tree under the
+    # cursor is therefore counted in the coordinates of the content (the layout of the
+    # tree), and not in the pixels of the screen. Otherwise the anchor would run away
+    # from the cursor on the second notch of the wheel.
+    var k: float = _zoom_visual / maxf(_zoom, 0.001)
+    var offsets := Vector2(_scroll.scroll_horizontal, _scroll.scroll_vertical)
+    _zoom_anchor = (_zoom_cursor + offsets - _content.position) / k
+
+# The animation of the zoom: the tree is scaled as a picture, and it keeps that scale
+# when the gesture settles (see _settle_zoom).
+func _process_zoom(delta: float) -> void:
+    if not _zoom_animating:
+        return
+    var diff: float = _zoom_target - _zoom_visual
+    if absf(diff) < ZOOM_SETTLED:
+        _settle_zoom()
+        return
+    _zoom_visual += diff * (1.0 - exp(-ZOOM_SMOOTHING * delta))
+    _apply_zoom_scale()
+
+# Shows the tree at the current zoom: the tree is scaled as a picture, and the bars of the
+# ScrollContainer take their range from the scaled size of the tree.
+func _apply_zoom_scale() -> void:
+    var k: float = _zoom_visual / _zoom
+    _content.scale = Vector2(k, k)
+    _inner.size = _layout_size * k
+    _inner.custom_minimum_size = _layout_size * k
+    if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+        # The player drags the tree — the scroll belongs to him now.
+        return
+    # The point of the tree under the cursor stays under the cursor.
+    var wanted_h: float = _zoom_anchor.x * k - _zoom_cursor.x
+    var wanted_v: float = _zoom_anchor.y * k - _zoom_cursor.y
+    _scroll.scroll_horizontal = wanted_h
+    _scroll.scroll_vertical = wanted_v
+    _compensate_scroll(wanted_h, wanted_v)
+
+# The scroll of the ScrollContainer is kept in whole pixels: the remainder is given to
+# the content, so that the point of the tree under the cursor does not drift from the
+# cursor (without this the drift grows with every notch of the wheel).
+# A scroll that was cut off by the range of the bars is not compensated: the tree cannot
+# be placed under the cursor when its edge is already at the edge of the window.
+func _compensate_scroll(wanted_h: float, wanted_v: float) -> void:
+    var dx: float = _scroll.scroll_horizontal - wanted_h
+    var dy: float = _scroll.scroll_vertical - wanted_v
+    _content.position = Vector2(dx if absf(dx) < 1.0 else 0.0,
+            dy if absf(dy) < 1.0 else 0.0)
+
+# The gesture has settled: the tree keeps the scale it has reached.
+#
+# The tree stays a scaled picture of its layout: the text stays sharp (the font of the
+# tree is a distance field), and the icons too (their pictures are much larger than the
+# place they take). A rebuild of the tree of 76 technologies would cost about 0.12 s and
+# would freeze the game right after the gesture — and a freeze reads as a jump of the size
+# of the elements, which is exactly what the smooth zoom is there to avoid.
+func _settle_zoom() -> void:
+    _zoom_animating = false
+    _zoom_visual = _zoom_target
+    _apply_zoom_scale()
+    _save_zoom_level()
+
+# Sets the zoom of the tree at once, without the animation. The middle of the view stays
+# on the same point of the tree.
+func set_zoom(value: float) -> void:
+    var target: float = clampf(value, ZOOM_MIN, ZOOM_MAX)
+    if is_equal_approx(target, _zoom_target) and is_equal_approx(target, _zoom_visual):
+        return
+    if _scroll == null:
+        # The interface of the tree is not built yet: the zoom is applied to the tree,
+        # when it appears.
+        _zoom_target = target
+        _zoom_visual = target
+        return
+    _capture_zoom_anchor(_scroll.global_position + _scroll.size * 0.5)
+    _zoom_target = target
+    _zoom_visual = target
+    _zoom_animating = false
+    _apply_zoom_scale()
+    _save_zoom_level()
+
+# The zoom of the tree is a player preference: it lives in settings.cfg next to the zoom
+# of the map.
+func _load_zoom_level() -> float:
+    var config := ConfigFile.new()
+    if config.load(SETTINGS_PATH) != OK:
+        return 1.0
+    return clampf(float(config.get_value(SETTINGS_SECTION, SETTINGS_KEY, 1.0)),
+            ZOOM_MIN, ZOOM_MAX)
+
+func _save_zoom_level() -> void:
+    var config := ConfigFile.new()
+    config.load(SETTINGS_PATH)
+    # The zoom that is shown is stored, and not the zoom the tree is built for: the tree
+    # is drawn as a scaled picture, and the zoom of the layout is not the zoom of the
+    # player.
+    config.set_value(SETTINGS_SECTION, SETTINGS_KEY, _zoom_visual)
+    config.save(SETTINGS_PATH)
 
 # Invalidates the cached layout. Call it when the static tech data changes
 # (new mods, changed dependencies, a changed era assignment, a language reload),
@@ -343,6 +597,19 @@ func _build_ui(parent: Control):
     # custom_minimum_size is set in rebuild() under the actual size of the tree.
     _scroll.add_child(_inner)
 
+    # The content of the tree lies inside _inner and not directly in the ScrollContainer:
+    # the container resets the scale of its child, and the scale is how the tree is zoomed
+    # while the zoom approaches its target.
+    _content = Control.new()
+    _content.mouse_filter = Control.MOUSE_FILTER_PASS
+    _inner.add_child(_content)
+
+    # The face of the interface can be changed by the player at any moment: the distance
+    # field of the text of the tree is built from it again.
+    var theme := get_theme()
+    if theme != null and not theme.changed.is_connected(_on_theme_changed):
+        theme.changed.connect(_on_theme_changed)
+
 func _input(event: InputEvent) -> void:
     if _scroll == null:
         return
@@ -354,12 +621,20 @@ func _input(event: InputEvent) -> void:
         return
     if event is InputEventMouseButton:
         var mb := event as InputEventMouseButton
+        if mb.button_index == MOUSE_BUTTON_WHEEL_UP or mb.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+            if not mb.pressed:
+                return
+            _handle_zoom_wheel(mb)
+            return
         if mb.button_index != MOUSE_BUTTON_LEFT:
             return
         if mb.pressed:
             # A fresh press lifts the suppression left by the previous pan, so the
             # next click on a technology works normally.
             _suppress_click = false
+            # The cursor may be somewhere else now: the point of the tree under it is
+            # captured again, so that the zoom keeps it under the cursor.
+            _capture_zoom_anchor(mb.global_position)
             # The bars have their own drag gesture. Leave the press to them instead
             # of starting a pan that would fight with the grabber.
             var hovered := get_viewport().gui_get_hovered_control()
@@ -373,6 +648,9 @@ func _input(event: InputEvent) -> void:
         else:
             _drag_possible = false
             _dragging = false
+            # The tree may have been dragged: the point of the tree under the cursor is
+            # captured again, so that the zoom keeps it under the cursor.
+            _capture_zoom_anchor(mb.global_position)
         return
     if event is InputEventMouseMotion and _drag_possible:
         var mm := event as InputEventMouseMotion
@@ -388,6 +666,39 @@ func _input(event: InputEvent) -> void:
         # these offsets to the size of _inner, the same as it does for the bars.
         _scroll.scroll_horizontal = _drag_start_scroll.x - delta.x
         _scroll.scroll_vertical = _drag_start_scroll.y - delta.y
+
+# The wheel over the tree zooms it, as the wheel zooms the map. The tree is scrolled by
+# the drag of the LMB and by the bars.
+func _handle_zoom_wheel(mb: InputEventMouseButton) -> void:
+    if not _scroll.get_global_rect().has_point(mb.global_position):
+        return
+    # The row of the unlocked content, if it overflows, keeps the wheel for itself: the
+    # wheel scrolls the row instead of zooming the tree.
+    if _wheel_belongs_to_unlock_row(mb.global_position):
+        return
+    var factor: float = ZOOM_STEP if mb.button_index == MOUSE_BUTTON_WHEEL_UP else 1.0 / ZOOM_STEP
+    zoom_by(factor, mb.global_position)
+    # The ScrollContainer would scroll the tree by the same wheel — the zoom replaces it.
+    get_viewport().set_input_as_handled()
+
+# Whether the cursor stands over a row of the unlocked content that overflows: such a row
+# scrolls itself by the wheel.
+func _wheel_belongs_to_unlock_row(global_pos: Vector2) -> bool:
+    for tech_id in _tech_nodes:
+        var entry = _tech_nodes[tech_id]
+        var btn: Button = entry["button"]
+        if not is_instance_valid(btn):
+            continue
+        if not btn.get_global_rect().has_point(global_pos):
+            continue
+        var strip := btn.get_node_or_null("UnlockIconsScroll") as ScrollContainer
+        if strip == null:
+            return false
+        if not strip.get_global_rect().has_point(global_pos):
+            return false
+        var row := strip.get_node_or_null("UnlockIconsRow") as HBoxContainer
+        return row != null and _unlock_row_overflows(row)
+    return false
 
 func _compute_layout() -> Dictionary:
     # It returns:
@@ -509,7 +820,6 @@ func _compute_layout() -> Dictionary:
         "columns": columns,
         "tech_col": col_for,
         "max_col_count": max_col_count,
-        "era_groups": _compute_era_groups(columns, num_cols),
     }
 
 func _build_parents_map(techs: Array) -> Dictionary:
@@ -785,11 +1095,13 @@ func _create_era_labels(era_groups: Array) -> void:
             lab.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
             lab.size = Vector2(ERA_LABEL_WIDTH, ERA_LABEL_HEIGHT)
             lab.custom_minimum_size = Vector2(ERA_LABEL_WIDTH, ERA_LABEL_HEIGHT)
-            lab.add_theme_font_size_override("font_size", 14)
+            lab.add_theme_font_size_override("font_size", int(round(14.0 * _zoom)))
             lab.add_theme_color_override("font_color", UI_THEME.color("text_secondary"))
+            if _msdf_font != null:
+                lab.add_theme_font_override("font", _msdf_font)
             lab.mouse_filter = Control.MOUSE_FILTER_IGNORE
             lab.position = Vector2(group["x_center"] - ERA_LABEL_WIDTH * 0.5, 0.0)
-            _inner.add_child(lab)
+            _content.add_child(lab)
             _era_labels.append(lab)
 
 # The heading of the era Antiquity with the condition of the transition: the Market is built (0/1).
@@ -805,7 +1117,7 @@ func _create_antiquity_era_label(group: Dictionary) -> void:
     var icon_tag: String = ""
     var market_icon_path := IconRegistry.icon_path("market.png")
     if not market_icon_path.is_empty():
-        icon_tag = "[img=18]" + market_icon_path + "[/img] "
+        icon_tag = "[img=%d]" % int(round(18.0 * _zoom)) + market_icon_path + "[/img] "
     var rtl := RichTextLabel.new()
     rtl.name = "EraLabel"
     rtl.bbcode_enabled = true
@@ -814,7 +1126,9 @@ func _create_antiquity_era_label(group: Dictionary) -> void:
     rtl.mouse_filter = Control.MOUSE_FILTER_IGNORE
     rtl.size = Vector2(ERA_LABEL_WIDTH, ERA_LABEL_HEIGHT)
     rtl.custom_minimum_size = Vector2(ERA_LABEL_WIDTH, ERA_LABEL_HEIGHT)
-    rtl.add_theme_font_size_override("normal_font_size", 12)
+    rtl.add_theme_font_size_override("normal_font_size", int(round(12.0 * _zoom)))
+    if _msdf_font != null:
+        rtl.add_theme_font_override("normal_font", _msdf_font)
     rtl.add_theme_color_override("default_color", UI_THEME.color("text_secondary"))
     rtl.position = Vector2(group["x_center"] - ERA_LABEL_WIDTH * 0.5, 0.0)
     # The colour of the hint is substituted after the translation, so that the text keeps
@@ -822,7 +1136,7 @@ func _create_antiquity_era_label(group: Dictionary) -> void:
     var hint: String = tr("[center][color=#c9c9c9]Advance requirement:[/color] build ")
     hint = hint.replace("#c9c9c9", "#" + UI_THEME.color("text_muted").to_html(false))
     rtl.text = "[center]" + group["era_name"] + "[/center]\n" + hint + icon_tag + tr("Market (") + count_text + ")" + check + "[/center]"
-    _inner.add_child(rtl)
+    _content.add_child(rtl)
     _era_labels.append(rtl)
 
 func rebuild():
@@ -856,13 +1170,27 @@ func rebuild():
     var num_cols: int = 1
     if not columns.is_empty():
         num_cols = int(columns.keys().max()) + 1
-    var col_height: int = max_col_count * (BUTTON_HEIGHT + BUTTON_VERTICAL_GAP) - BUTTON_VERTICAL_GAP
-    var total_width: int = COL_PADDING * 2 + num_cols * BUTTON_WIDTH + max(0, num_cols - 1) * COL_GAP
+    # The groups of the eras are counted for every build: they hold the pixel positions,
+    # which depend on the zoom.
+    var era_groups: Array = _compute_era_groups(columns, num_cols)
+    var col_height: float = max_col_count * (BUTTON_HEIGHT + BUTTON_VERTICAL_GAP) - BUTTON_VERTICAL_GAP
+    var total_width: float = COL_PADDING * 2.0 + num_cols * BUTTON_WIDTH + max(0.0, float(num_cols - 1)) * COL_GAP
     # The height includes the strip of the headings of the eras (ERA_LABEL_HEIGHT) — the columns
     # are shifted down by this value, and on the top there is a place left for the headings.
-    var total_height: int = ERA_LABEL_HEIGHT + COL_PADDING * 2 + max(col_height, BUTTON_HEIGHT)
-    _inner.size = Vector2(total_width, total_height)
-    _inner.custom_minimum_size = Vector2(total_width, total_height)
+    var total_height: float = ERA_LABEL_HEIGHT + COL_PADDING * 2.0 + max(col_height, BUTTON_HEIGHT)
+    _layout_size = Vector2(total_width, total_height)
+    # While the zoom approaches its target, the content of the tree is scaled as a picture:
+    # the size of the area of the tree follows the scale, so that the bars of the
+    # ScrollContainer cover it.
+    var k: float = _zoom_visual / _zoom
+    _content.size = _layout_size
+    _content.custom_minimum_size = _layout_size
+    _content.scale = Vector2(k, k)
+    # The shift that compensates the whole pixels of the scroll belongs to the place of the
+    # tree on the screen, and the layout of the tree does not change with the rebuild:
+    # therefore the shift stays as it is.
+    _inner.size = _layout_size * k
+    _inner.custom_minimum_size = _layout_size * k
     # A ScrollContainer takes the range of its bars from a minimum-size query, and the anchored
     # TreeRoot above it never makes one. Without this query the bars keep the range of the
     # previous layout (and stay hidden) until something resizes the window.
@@ -872,7 +1200,7 @@ func rebuild():
     # We create the headings of the eras (the strip on the top). We do this BEFORE the columns,
     # so that the headings end up under them in the z-order (the arrows are drawn
     # by the last layer over everything).
-    _create_era_labels(layout["era_groups"])
+    _create_era_labels(era_groups)
 
     # We place the columns manually inside _inner (and NOT through HBoxContainer),
     # so that the positions are predictable for the drawing of the arrows.
@@ -884,7 +1212,7 @@ func rebuild():
         )
         col_container.size = Vector2(BUTTON_WIDTH, max(col_height, BUTTON_HEIGHT))
         col_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
-        _inner.add_child(col_container)
+        _content.add_child(col_container)
         _columns.append(col_container)
 
         var techs_in_col: Array = columns.get(c, [])
@@ -918,7 +1246,7 @@ func rebuild():
     _arrows_layer = Control.new()
     _arrows_layer.set_anchors_preset(Control.PRESET_FULL_RECT)
     _arrows_layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
-    _inner.add_child(_arrows_layer)
+    _content.add_child(_arrows_layer)
     _arrows_layer.draw.connect(_on_arrows_draw)
 
     # The states (the colours, the progress, the tooltips) — over the freshly created buttons.
@@ -944,17 +1272,17 @@ func _create_tech_button(tech_data: Dictionary) -> Button:
     # The MarginContainer around the contents — for the indents from the border of the button.
     var margin := MarginContainer.new()
     margin.set_anchors_preset(Control.PRESET_FULL_RECT)
-    margin.add_theme_constant_override("margin_left", 8)
-    margin.add_theme_constant_override("margin_right", 8)
-    margin.add_theme_constant_override("margin_top", 6)
-    margin.add_theme_constant_override("margin_bottom", 6)
+    margin.add_theme_constant_override("margin_left", int(round(BUTTON_PADDING_H * _zoom)))
+    margin.add_theme_constant_override("margin_right", int(round(BUTTON_PADDING_H * _zoom)))
+    margin.add_theme_constant_override("margin_top", int(round(BUTTON_PADDING_V * _zoom)))
+    margin.add_theme_constant_override("margin_bottom", int(round(BUTTON_PADDING_V * _zoom)))
     margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
     btn.add_child(margin)
 
     # HBox: the icon + the text
     var hbox := HBoxContainer.new()
     hbox.set_anchors_preset(Control.PRESET_FULL_RECT)
-    hbox.add_theme_constant_override("separation", 8)
+    hbox.add_theme_constant_override("separation", int(round(BUTTON_CONTENT_GAP * _zoom)))
     hbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
     margin.add_child(hbox)
 
@@ -983,7 +1311,9 @@ func _create_tech_button(tech_data: Dictionary) -> Button:
     # The base size of the font. The final one is selected in _adjust_fonts() on
     # the next frame, when Godot has already computed the layout and knows
     # the actual get_line_count() / get_minimum_size().
-    label.add_theme_font_size_override("font_size", 12)
+    label.add_theme_font_size_override("font_size", int(round(12.0 * _zoom)))
+    if _msdf_font != null:
+        label.add_theme_font_override("font", _msdf_font)
     label.mouse_filter = Control.MOUSE_FILTER_IGNORE
     hbox.add_child(label)
 
@@ -995,7 +1325,7 @@ func _create_tech_button(tech_data: Dictionary) -> Button:
     progress.anchor_right = 1.0
     progress.anchor_top = 1.0
     progress.anchor_bottom = 1.0
-    progress.offset_top = -6
+    progress.offset_top = -round(PROGRESS_HEIGHT * _zoom)
     progress.offset_bottom = 0
     progress.show_percentage = false
     progress.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -1039,7 +1369,7 @@ func _add_unlock_icons(btn: Button, tech_id: String):
     strip.anchor_top = 1.0
     strip.anchor_bottom = 1.0
     strip.offset_left = UNLOCK_ICONS_LEFT
-    strip.offset_right = -8
+    strip.offset_right = -round(BUTTON_PADDING_H * _zoom)
     strip.offset_top = -(UNLOCK_ICON_SIZE + UNLOCK_ICONS_MARGIN)
     strip.offset_bottom = -UNLOCK_ICONS_MARGIN
     strip.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_SHOW_NEVER
@@ -1123,7 +1453,7 @@ func _add_unlock_arrows(btn: Button, strip: ScrollContainer, row: HBoxContainer)
             arrow.offset_left = UNLOCK_ICONS_LEFT + slot_padding
             arrow.offset_right = arrow.offset_left + UNLOCK_ARROW_SIZE
         else:
-            arrow.offset_right = -(8 + slot_padding)
+            arrow.offset_right = -(round(BUTTON_PADDING_H * _zoom) + slot_padding)
             arrow.offset_left = arrow.offset_right - UNLOCK_ARROW_SIZE
         # STOP: the arrow scrolls the row, it must not start the research of the technology.
         arrow.mouse_filter = Control.MOUSE_FILTER_STOP
@@ -1246,7 +1576,7 @@ func _refresh_unlock_arrows(btn: Button, strip: ScrollContainer, row: HBoxContai
     # The strip gives up the slots the arrows stand in, so the icons scroll past a free
     # gutter instead of sliding under a button.
     strip.offset_left = UNLOCK_ICONS_LEFT + (UNLOCK_ROW_SLOT if arrows[0] else 0)
-    strip.offset_right = -(8 + (UNLOCK_ROW_SLOT if arrows[1] else 0))
+    strip.offset_right = -(round(BUTTON_PADDING_H * _zoom) + (UNLOCK_ROW_SLOT if arrows[1] else 0.0))
     var left_arrow := btn.get_node_or_null("UnlockArrowLeft")
     var right_arrow := btn.get_node_or_null("UnlockArrowRight")
     if left_arrow != null:
@@ -1373,7 +1703,9 @@ func _adjust_fonts() -> void:
     await get_tree().process_frame
     if not is_inside_tree():
         return
-    var font := get_theme_font("font", "Label")
+    var font: Font = _msdf_font
+    if font == null:
+        font = get_theme_font("font", "Label")
     if font == null:
         font = ThemeDB.fallback_font
     for tech_id in _tech_nodes:
@@ -1388,8 +1720,10 @@ func _adjust_fonts() -> void:
             continue
         # The usable text width is the label width minus the autowrap padding.
         var text_width: float = maxf(label.size.x - 2.0, 1.0)
-        var picked := 10
-        for fs in [10, 11, 12, 13, 14]:
+        # The sizes are the sizes at zoom = 1, scaled by the zoom of the tree.
+        var picked := int(round(10.0 * _zoom))
+        for base_fs in [10, 11, 12, 13, 14]:
+            var fs := int(round(float(base_fs) * _zoom))
             var lines: int = _wrapped_line_count(font, fs, label.text, text_width)
             if lines <= 2:
                 picked = fs
@@ -1698,7 +2032,7 @@ func _on_arrows_draw():
         var group = _era_groups[i]
         var x: float = group["x_boundary"]
         var y_top: float = 0.0
-        var y_bottom: float = _inner.size.y
+        var y_bottom: float = _content.size.y
         _arrows_layer.draw_line(
             Vector2(x, y_top),
             Vector2(x, y_bottom),
@@ -1716,7 +2050,7 @@ func _on_arrows_draw():
     # reused on every redraw; invalidated when the static tech data changes.
     _ensure_relations_maps()
 
-    var line_width := 2.0
+    var line_width := 2.0 * _zoom
     for parent_id in _children_map:
         if not _tech_nodes.has(parent_id):
             continue
@@ -1762,7 +2096,7 @@ func _on_arrows_draw():
 
 func _draw_arrow_head(pos: Vector2, dir: Vector2, color: Color, _line_width: float):
     # A small triangle-arrow at the end of the line.
-    var head_size := 8.0
+    var head_size := 8.0 * _zoom
     var perp := Vector2(-dir.y, dir.x) * head_size * 0.5
     var base: Vector2 = pos + dir * head_size
     var p1: Vector2 = base + perp
@@ -1806,7 +2140,7 @@ func _find_free_y_between(parent_col: int, child_col: int, target_y: float) -> f
 
     # The margin for the thickness of the line (2px) + a small indent, so that the line does not
     # touch the buttons closely.
-    var margin: float = 4.0
+    var margin: float = 4.0 * _zoom
     var best_y: float = -1.0
     var best_dist: float = INF
     var cursor: float = 0.0 # the beginning of the current free gap
@@ -1824,8 +2158,8 @@ func _find_free_y_between(parent_col: int, child_col: int, target_y: float) -> f
         cursor = max(cursor, y_end)
 
     # The gap after the last occupied interval — to the end of the tree.
-    if _inner.size.y - cursor > margin * 2.0:
-        var free_y: float = (cursor + _inner.size.y) * 0.5
+    if _content.size.y - cursor > margin * 2.0:
+        var free_y: float = (cursor + _content.size.y) * 0.5
         var dist: float = absf(free_y - target_y)
         if dist < best_dist:
             best_y = free_y
@@ -1879,6 +2213,9 @@ func _build_arrow_path(parent_right: Vector2, child_left: Vector2, parent_col: i
     ])
 
 func _process(_delta: float) -> void:
+    # The zoom of the tree approaches its target smoothly, as the zoom of the map does.
+    _process_zoom(_delta)
+
     # The per-frame update of the progress bar on the button of the current technology:
     # research_progress grows continuously (tick_research_science_continuous),
     # and _update_states is called only on the ticks/events — without this the bar

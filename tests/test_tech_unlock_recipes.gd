@@ -66,6 +66,11 @@ func _run() -> void:
         await process_frame
     var tree = city_ui.tech_tree
     _const = tree.get_script().get_script_constant_map()
+    # The metrics of the layout are variables of the tree (they are multiplied by its zoom),
+    # therefore they are taken from the live tree and not from the constants of the script.
+    for key in ["BUTTON_WIDTH", "BUTTON_HEIGHT", "UNLOCK_ICON_SIZE",
+            "UNLOCK_ROW_PLAIN_WIDTH", "UNLOCK_ROW_SLOT"]:
+        _const[key] = tree.get(key)
 
     _check_items(tree, state)
     _check_button(tree, state)
