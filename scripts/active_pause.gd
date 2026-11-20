@@ -42,7 +42,7 @@ static func border_color() -> Color:
 # touches the state of the world — their per-frame methods only redraw the
 # tooltips and the progress bars.
 const UI_NODES := [
-    "ControlPanel", "CityUI", "TownUI", "HUD", "InputHandler", "TopRightLayer",
+    "ControlPanelLayer/ControlPanel", "CityUI", "TownUI", "HUD", "InputHandler", "TopRightLayer",
 ]
 
 var main_map: Node = null
@@ -232,7 +232,7 @@ func _notify_queue_changed() -> void:
         return
     if main_map.has_method("_redraw_progress_layer"):
         main_map._redraw_progress_layer()
-    var panel = main_map.get_node_or_null("ControlPanel")
+    var panel = main_map.get_node_or_null("ControlPanelLayer/ControlPanel")
     if panel != null and panel.has_method("refresh"):
         panel.refresh()
 

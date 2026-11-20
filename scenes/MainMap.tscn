@@ -217,19 +217,21 @@ layout_mode = 3
 anchors_preset = 0
 script = ExtResource("13_dbgmgr")
 
-[node name="ControlPanel" type="Panel" parent="." unique_id=2061907302]
-anchors_preset = 15
+[node name="ControlPanelLayer" type="CanvasLayer" parent="."]
+layer = 0
+
+[node name="ControlPanel" type="Panel" parent="ControlPanelLayer" unique_id=2061907302]
+anchors_preset = 12
+anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = 592.0
-offset_right = 1373.0
-offset_bottom = 768.0
+offset_top = -176.0
 grow_horizontal = 2
-grow_vertical = 2
+grow_vertical = 0
 theme_type_variation = &"SurfaceVeil"
 script = ExtResource("15_ctrlpanel")
 
-[node name="SepInfoPreview" type="ColorRect" parent="ControlPanel" unique_id=736594410]
+[node name="SepInfoPreview" type="ColorRect" parent="ControlPanelLayer/ControlPanel" unique_id=736594410]
 layout_mode = 0
 offset_left = 397.0
 offset_top = 6.0
@@ -237,42 +239,48 @@ offset_right = 399.0
 offset_bottom = 170.0
 color = Color(0.54902, 0.54902, 0.54902, 1)
 
-[node name="SepPreviewActions" type="ColorRect" parent="ControlPanel" unique_id=1909537324]
-layout_mode = 0
-offset_left = 956.0
+[node name="SepPreviewActions" type="ColorRect" parent="ControlPanelLayer/ControlPanel" unique_id=1909537324]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -417.0
 offset_top = 6.0
-offset_right = 958.0
+offset_right = -415.0
 offset_bottom = 170.0
 color = Color(0.54902, 0.54902, 0.54902, 1)
 
-[node name="PreviewContainer" type="VBoxContainer" parent="ControlPanel" unique_id=2061907310]
+[node name="PreviewContainer" type="VBoxContainer" parent="ControlPanelLayer/ControlPanel" unique_id=2061907310]
 layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
 offset_left = 405.0
 offset_top = 6.0
-offset_right = 948.0
+offset_right = -425.0
 offset_bottom = 176.0
+grow_horizontal = 2
 theme_override_constants/separation = 4
 
-[node name="PreviewHeader" type="VBoxContainer" parent="ControlPanel/PreviewContainer" unique_id=2061907311]
+[node name="PreviewHeader" type="VBoxContainer" parent="ControlPanelLayer/ControlPanel/PreviewContainer" unique_id=2061907311]
 layout_mode = 2
 theme_override_constants/separation = 4
 
-[node name="PreviewScroll" type="ScrollContainer" parent="ControlPanel/PreviewContainer" unique_id=390631621]
+[node name="PreviewScroll" type="ScrollContainer" parent="ControlPanelLayer/ControlPanel/PreviewContainer" unique_id=390631621]
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
 
-[node name="PreviewMargin" type="MarginContainer" parent="ControlPanel/PreviewContainer/PreviewScroll"]
+[node name="PreviewMargin" type="MarginContainer" parent="ControlPanelLayer/ControlPanel/PreviewContainer/PreviewScroll"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/margin_left = 8
 
-[node name="PreviewContent" type="VBoxContainer" parent="ControlPanel/PreviewContainer/PreviewScroll/PreviewMargin" unique_id=1071817127]
+[node name="PreviewContent" type="VBoxContainer" parent="ControlPanelLayer/ControlPanel/PreviewContainer/PreviewScroll/PreviewMargin" unique_id=1071817127]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 4
 
-[node name="InfoVBox" type="VBoxContainer" parent="ControlPanel" unique_id=2061907305]
+[node name="InfoVBox" type="VBoxContainer" parent="ControlPanelLayer/ControlPanel" unique_id=2061907305]
 layout_mode = 0
 offset_left = 8.0
 offset_top = 6.0
@@ -280,44 +288,47 @@ offset_right = 393.0
 offset_bottom = 170.0
 size_flags_horizontal = 3
 
-[node name="InfoScroll" type="ScrollContainer" parent="ControlPanel/InfoVBox" unique_id=463549985]
+[node name="InfoScroll" type="ScrollContainer" parent="ControlPanelLayer/ControlPanel/InfoVBox" unique_id=463549985]
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
 
-[node name="InfoContent" type="VBoxContainer" parent="ControlPanel/InfoVBox/InfoScroll" unique_id=47367785]
+[node name="InfoContent" type="VBoxContainer" parent="ControlPanelLayer/ControlPanel/InfoVBox/InfoScroll" unique_id=47367785]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="InfoLabel" type="RichTextLabel" parent="ControlPanel/InfoVBox/InfoScroll/InfoContent" unique_id=2061907306]
+[node name="InfoLabel" type="RichTextLabel" parent="ControlPanelLayer/ControlPanel/InfoVBox/InfoScroll/InfoContent" unique_id=2061907306]
 layout_mode = 2
 bbcode_enabled = true
 text = "Select a hex on the map (LMB) to see information and available actions."
 fit_content = true
 scroll_active = false
 
-[node name="ProductsContainer" type="VBoxContainer" parent="ControlPanel/InfoVBox/InfoScroll/InfoContent" unique_id=2061907307]
+[node name="ProductsContainer" type="VBoxContainer" parent="ControlPanelLayer/ControlPanel/InfoVBox/InfoScroll/InfoContent" unique_id=2061907307]
 layout_mode = 2
 
-[node name="ActionsVBox" type="VBoxContainer" parent="ControlPanel" unique_id=2061907308]
+[node name="ActionsVBox" type="VBoxContainer" parent="ControlPanelLayer/ControlPanel" unique_id=2061907308]
 custom_minimum_size = Vector2(260, 0)
-layout_mode = 0
-offset_left = 966.0
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -407.0
 offset_top = 6.0
-offset_right = 1372.0
+offset_right = -1.0
 offset_bottom = 170.0
 size_flags_horizontal = 0
 
-[node name="ActionsScroll" type="ScrollContainer" parent="ControlPanel/ActionsVBox" unique_id=1488545637]
+[node name="ActionsScroll" type="ScrollContainer" parent="ControlPanelLayer/ControlPanel/ActionsVBox" unique_id=1488545637]
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
 
-[node name="ActionsContent" type="VBoxContainer" parent="ControlPanel/ActionsVBox/ActionsScroll" unique_id=453821295]
+[node name="ActionsContent" type="VBoxContainer" parent="ControlPanelLayer/ControlPanel/ActionsVBox/ActionsScroll" unique_id=453821295]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="ActionsContainer" type="FlowContainer" parent="ControlPanel/ActionsVBox/ActionsScroll/ActionsContent" unique_id=2061907309]
+[node name="ActionsContainer" type="FlowContainer" parent="ControlPanelLayer/ControlPanel/ActionsVBox/ActionsScroll/ActionsContent" unique_id=2061907309]
 layout_mode = 2
 theme_override_constants/h_separation = 4
 theme_override_constants/v_separation = 4

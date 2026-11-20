@@ -35,6 +35,12 @@ func _run() -> void:
     get_root().add_child(main_map)
     for _i in range(SETTLE_FRAMES):
         await process_frame
+    # A headless window is square, and with "expand" the viewport inherits its aspect:
+    # the tree panel would become taller than the tree and would need no vertical bar.
+    # The project canvas is 16:9, so give the run that aspect before the city UI settles.
+    get_root().size = Vector2i(1280, 720)
+    for _i in range(SETTLE_FRAMES):
+        await process_frame
     main_map.open_city()
     for _i in range(SETTLE_FRAMES):
         await process_frame

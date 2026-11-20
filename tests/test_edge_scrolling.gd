@@ -37,15 +37,6 @@ func _run() -> void:
     var panel = main_map.control_panel
     var vp_size: Vector2 = get_root().get_visible_rect().size
 
-    # The panel is anchored to the BOTTOM edge of the screen; the offsets in the scene
-    # are authored for the 1152x768 window of the project. The viewport of a headless
-    # run is square (the 64x64 window of the run against the "expand" stretch), so the
-    # panel is put back onto the bottom edge by hand — otherwise it would hang in the
-    # middle of the screen and the case below would not reproduce the layout of the game.
-    panel.offset_top = vp_size.y - panel.size.y
-    panel.offset_bottom = vp_size.y
-    await process_frame
-
     if WATCHDOG.wants_case("bottom_edge"):
         await _test_bottom_edge(state, main_map, ih, panel, vp_size)
     if WATCHDOG.wants_case("top_edge"):
@@ -153,8 +144,8 @@ func _test_setting_off(state: Dictionary, main_map, ih, vp_size: Vector2) -> voi
 
 # The cursor of a headless run does not move by itself, so it is fed through the input
 # system. The position of an InputEvent is in WINDOW coordinates, and the window of a
-# headless run is a scaled-down copy of the viewport (64x64 against 1152x1152), hence
-# the conversion by the final transform of the root.
+# headless run is a scaled-down copy of the viewport, hence the conversion by the final
+# transform of the root.
 func _set_cursor(pos: Vector2) -> void:
     var ev = InputEventMouseMotion.new()
     ev.position = pos * get_root().get_final_transform().get_scale()

@@ -86,7 +86,7 @@ func _test_mode_and_process_mode(state: Dictionary, main_map, ap) -> void:
     check(ap.is_active(), "the mode must be on", state)
     check(paused, "the tree must be paused while the mode is on", state)
 
-    for path in ["ControlPanel", "CityUI", "TownUI", "HUD", "InputHandler", "TopRightLayer"]:
+    for path in ["ControlPanelLayer/ControlPanel", "CityUI", "TownUI", "HUD", "InputHandler", "TopRightLayer"]:
         var node = main_map.get_node_or_null(path)
         check(node != null, "the node %s must exist" % path, state)
         if node != null:
@@ -112,7 +112,7 @@ func _test_mode_and_process_mode(state: Dictionary, main_map, ap) -> void:
     check(not ap.is_processing(),
             "the cursor tick must stop with the mode", state)
     check(not paused, "the tree must be resumed with the mode off", state)
-    check(main_map.get_node_or_null("ControlPanel").process_mode == Node.PROCESS_MODE_INHERIT,
+    check(main_map.get_node_or_null("ControlPanelLayer/ControlPanel").process_mode == Node.PROCESS_MODE_INHERIT,
             "the process mode of the interface must be restored", state)
 
 # -------------------------------------------------------

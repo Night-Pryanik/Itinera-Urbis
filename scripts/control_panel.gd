@@ -86,7 +86,8 @@ const _COLLAPSED_HEIGHT := 28.0
 
 var _toggle_btn: Button
 var _collapsed := false
-var _saved_offset_top := -1.0
+var _saved_offset_top := 0.0
+var _has_saved_offset_top := false
 
     # The anchors: the top right corner of the panel with a small indent.
 func _setup_collapse_button():
@@ -120,16 +121,17 @@ func _set_collapsed(collapsed: bool):
     if _collapsed:
         # We remember the current height and raise the top edge of the panel so,
         # that a strip of the height of the button remains.
-        # IMPORTANT: the panel is stretched vertically (anchor_top=0, anchor_bottom=1),
+        # IMPORTANT: both vertical anchors sit on the bottom edge of the screen,
         # therefore the height is set by the difference offset_bottom - offset_top,
         # and not by the absolute coordinates size.y.
         _saved_offset_top = offset_top
+        _has_saved_offset_top = true
         offset_top = offset_bottom - _COLLAPSED_HEIGHT
         _set_content_visible(false)
         _toggle_btn.text = "▲"
         _toggle_btn.tooltip_text = tr("Expand panel")
     else:
-        if _saved_offset_top >= 0.0:
+        if _has_saved_offset_top:
             offset_top = _saved_offset_top
         _set_content_visible(true)
         _toggle_btn.text = "▼"

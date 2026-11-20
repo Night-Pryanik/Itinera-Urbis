@@ -311,7 +311,7 @@ const MAP_TOOLTIP_LEAVE_GRACE: float = 0.35
 @onready var settings_menu = preload("res://scenes/settings_menu.tscn").instantiate()
 @onready var input_handler = $InputHandler
 @onready var debug_manager = $DebugManager
-@onready var control_panel = $ControlPanel
+@onready var control_panel = $ControlPanelLayer/ControlPanel
 var map_tooltip: MapTooltip
 # The logistics of the goods on the way to the city (see delivery_manager.gd). Created
 # in _ready, before any production can be queued.
