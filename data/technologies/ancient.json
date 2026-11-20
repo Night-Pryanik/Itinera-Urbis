@@ -75,8 +75,7 @@
       "science_cost": 3.0,
       "icon": "pottery_tech.png",
       "description": "Allows you to build the clay pit and the pottery workshop.",
-      "flavor": "Fired clay became humanity's first artificial material, letting people store grain and water.",
-      "unlock_effects": [ { "icon": "mineral_water.png", "name": "Unlocks mineral water bottling." } ]
+      "flavor": "Fired clay became humanity's first artificial material, letting people store grain and water."
     },
     {
       "id": "beekeeping",

@@ -6,8 +6,8 @@
       "name": "Mineral Water",
       "type": "product",
       "category": "drinks",
-      "unlock_tech": "pottery",
-      "icon": "mineral_water.png"
+      "unlock_tech": "masonry",
+      "icon": "mineral_water.svg"
     },
     {
       "id": "beer",

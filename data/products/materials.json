@@ -1,14 +1,5 @@
 {
   "resources": [
-    {
-      "id": "spring_water",
-      "price": 4,
-      "name": "Unbottled Spring Water",
-      "type": "product",
-      "category": "material",
-      "unlock_tech": "masonry",
-      "icon": "spring_water.svg"
-    },
     { "id": "hide", "price": 5, "name": "Hide", "type": "product", "category": "material", "icon": "hide.png" },
     { "id": "tallow", "price": 5, "name": "Tallow", "type": "product", "category": "material", "icon": "tallow.png" },
     {

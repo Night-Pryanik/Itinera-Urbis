@@ -9353,17 +9353,7 @@ msgctxt "resources.name"
 msgid "Obsidian"
 msgstr ""
 
-#: data/resources/minerals.json
-msgctxt "resources.name"
-msgid "Mineral Spring"
-msgstr ""
-
-#: data/products/materials.json
-msgctxt "resources.name"
-msgid "Unbottled Spring Water"
-msgstr ""
-
-#: data/products/drinks.json
+#: data/products/drinks.json data/resources/minerals.json
 msgctxt "resources.name"
 msgid "Mineral Water"
 msgstr ""
@@ -9381,21 +9371,6 @@ msgstr ""
 #: data/professions.json
 msgctxt "professions.description"
 msgid "Collects mineral water at a spring catchment."
-msgstr ""
-
-#: data/crafts/food_drinks.json
-msgctxt "crafts.name"
-msgid "Bottling Mineral Water"
-msgstr ""
-
-#: data/crafts/food_drinks.json
-msgctxt "crafts.description"
-msgid "Fills and seals amphoras with mineral spring water for storage and trade."
-msgstr ""
-
-#: data/technologies/ancient.json
-msgctxt "technologies.unlock_effects.name"
-msgid "Unlocks mineral water bottling."
 msgstr ""
 
 #: data/technologies/ancient.json

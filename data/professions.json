@@ -126,7 +126,7 @@
     {
       "id": "water_drawer",
       "name": "Water Drawer",
-      "icon": "spring_water.svg",
+      "icon": "mineral_water.svg",
       "description": "Collects mineral water at a spring catchment."
     },
     {

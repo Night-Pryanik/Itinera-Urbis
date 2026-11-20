@@ -9372,17 +9372,7 @@ msgctxt "resources.name"
 msgid "Obsidian"
 msgstr "Обсидиан"
 
-#: data/resources/minerals.json
-msgctxt "resources.name"
-msgid "Mineral Spring"
-msgstr "Минеральный источник"
-
-#: data/products/materials.json
-msgctxt "resources.name"
-msgid "Unbottled Spring Water"
-msgstr "Неразлитая родниковая вода"
-
-#: data/products/drinks.json
+#: data/products/drinks.json data/resources/minerals.json
 msgctxt "resources.name"
 msgid "Mineral Water"
 msgstr "Минеральная вода"
@@ -9401,21 +9391,6 @@ msgstr "Водонос"
 msgctxt "professions.description"
 msgid "Collects mineral water at a spring catchment."
 msgstr "Набирает минеральную воду из каптажа."
-
-#: data/crafts/food_drinks.json
-msgctxt "crafts.name"
-msgid "Bottling Mineral Water"
-msgstr "Розлив минеральной воды"
-
-#: data/crafts/food_drinks.json
-msgctxt "crafts.description"
-msgid "Fills and seals amphoras with mineral spring water for storage and trade."
-msgstr "Наполняет амфоры минеральной водой и запечатывает их для хранения и торговли."
-
-#: data/technologies/ancient.json
-msgctxt "technologies.unlock_effects.name"
-msgid "Unlocks mineral water bottling."
-msgstr "Открывает розлив минеральной воды."
 
 #: data/technologies/ancient.json
 msgctxt "technologies.unlock_effects.name"

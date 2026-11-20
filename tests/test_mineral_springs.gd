@@ -90,36 +90,29 @@ func _test_mineral_water(game_data: Node, generator: Node, registry: Node) -> vo
             "every free mineral spring must supply water")
     _check(tiles[0][2].get("resource") == null and tiles[0][3].get("resource") == "existing",
             "the source must not spawn off the cover or overwrite other resources")
-    _check(source.get("improved_by") == catchment_id
-            and int(source.get("produces", {}).get("spring_water", 0)) > 0,
-            "the catchment must produce unbottled spring water")
-
-    var craft: Dictionary = game_data.get_craft("bottle_mineral_water")
-    var ingredients: Dictionary = craft.get("resources", {})
-    _check("pottery_workshop" in craft.get("produced_in", [])
-            and int(ingredients.get("spring_water", 0)) > 0 and int(ingredients.get("amphora", 0)) > 0
-            and int(craft.get("result", {}).get("mineral_water", 0)) > 0,
-            "the pottery workshop must bottle mineral water in amphoras")
+    var outputs: Dictionary = source.get("produces", {})
+    _check(source.get("improved_by") == catchment_id and outputs.size() == 1
+            and int(outputs.get("mineral_water", 0)) > 0,
+            "the catchment must produce finished mineral water directly")
+    for craft in game_data.crafts:
+        _check(not craft.get("result", {}).has("mineral_water"),
+                "mineral water must not require a workshop recipe")
     var drinks: Array = game_data.product_groups.get("non_alcoholic_beverages", [])
-    _check("mineral_water" in drinks and "spring_water" not in drinks,
-            "only the bottled product belongs to the city's beverage group")
-    for record in [game_data.improvements.get(catchment_id, {}),
-            game_data.products.get("mineral_water", {}), game_data.products.get("spring_water", {})]:
+    _check("mineral_water" in drinks, "mineral water belongs to the city's beverage group")
+    var product: Dictionary = game_data.products.get("mineral_water", {})
+    var catchment: Dictionary = game_data.improvements.get(catchment_id, {})
+    for record in [source, product, catchment]:
         _check(registry.get_texture(str(record.get("icon", ""))) != null,
-                "the catchment and both goods must have loadable icons")
+                "the source, product and catchment must have loadable icons")
 
     var city = get_root().get_node("CityData")
-    _check(not city.is_improvement_unlocked(catchment_id) and not city.is_craft_available(craft),
-            "the catchment and bottling must both be locked at the start")
     city.unlocked_technologies.append("pottery")
-    _check(not city.is_improvement_unlocked(catchment_id) and not city.is_product_available("spring_water")
-            and city.is_craft_available(craft) and city.is_product_available("mineral_water"),
-            "Ceramics must unlock bottling, not collecting spring water")
+    _check(not city.is_improvement_unlocked(catchment_id) and not city.is_product_available("mineral_water"),
+            "Ceramics must not unlock the catchment or mineral water")
     city.unlocked_technologies.erase("pottery")
     city.unlocked_technologies.append("masonry")
-    _check(city.is_improvement_unlocked(catchment_id) and city.is_product_available("spring_water")
-            and not city.is_craft_available(craft) and not city.is_product_available("mineral_water"),
-            "Masonry must unlock the catchment and its output, not bottling")
+    _check(city.is_improvement_unlocked(catchment_id) and city.is_product_available("mineral_water"),
+            "Masonry alone must unlock the catchment and mineral water")
 
 func _test_salt_spring(game_data: Node, generator: Node, helpers) -> void:
     var source_id := "salt_spring_brine"
