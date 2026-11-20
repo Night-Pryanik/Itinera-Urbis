@@ -182,8 +182,8 @@
       "icons": [ "coral_reef_1.png", "coral_reef_2.png", "coral_reef_3.png" ]
     },
 
-    // A rare geological overlay is rolled after the regional vegetation pool; spawn_chance is a
-    // percentage of eligible mountain hexes, so the climate cannot turn volcanoes into a biome.
+    // Rare geological covers are rolled after the regional vegetation pool. Their spawn_chance
+    // is a percentage of eligible relief hexes, independent of the climate's vegetation weights.
     {
       "id": "volcano",
       "name": "Volcano",
@@ -192,6 +192,25 @@
       "icons": [ "volcano.png" ],
       "terrain_families": [ "mountain" ],
       "spawn_chance": 1.2
+    },
+    {
+      "id": "mineral_spring",
+      "name": "Mineral Spring",
+      "color": [ 63, 148, 145 ],
+      "move_cost_bonus": 0,
+      "icons": [ "mineral_spring.png" ],
+      "terrain_families": [ "hill", "mountain" ],
+      "spawn_chance": 0.5
+    },
+
+    {
+      "id": "salt_spring",
+      "name": "Salt Spring",
+      "color": [ 198, 168, 180 ],
+      "move_cost_bonus": 0,
+      "icons": [ "salt_spring.png" ],
+      "terrain_families": [ "hill", "mountain" ],
+      "spawn_chance": 0.35
     },
 
     // The revealed mountain spring. It is NOT part of any climate's cover_chance

@@ -170,6 +170,15 @@
       "unlock_tech": "salt_extraction"
     },
     {
+      "id": "spring_catchment",
+      "name": "Spring Catchment",
+      "icon": "spring_catchment.png",
+      "color": [ 63, 148, 145 ],
+      "work_cost": 22,
+      "unlock_tech": "masonry",
+      "profession": "water_drawer"
+    },
+    {
       // The harbor — the "key" to the water resources of a specific body of water.
       // It is built on an EMPTY coastal hex (land next to lake/sea) via the
       // control panel. After the build, all resources of that body of water

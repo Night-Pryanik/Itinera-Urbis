@@ -143,7 +143,8 @@
       "icon": "masonry.png",
       "prerequisites": [ [ "mining" ] ],
       "description": "Allows you to build the quarry and the mason's workshop.",
-      "flavor": "The skill of laying stone made it possible to build sturdy buildings that outlived centuries."
+      "flavor": "The skill of laying stone made it possible to build sturdy buildings that outlived centuries.",
+      "unlock_effects": [ { "icon": "spring_catchment.png", "name": "Unlocks spring catchments for collecting mineral spring water." } ]
     },
     {
       "id": "cheese_making",
@@ -331,7 +332,7 @@
       "science_cost": 3.0,
       "icon": "salt_extraction.png",
       "prerequisites": [ [ "mining" ] ],
-      "description": "Unlocks salt extraction in salt deposits (on the surface of salt lakes and in salt mines) and the salt pond.",
+      "description": "Unlocks salt extraction from mines and salt lakes, and salt ponds that evaporate brine from seawater or salt springs.",
       "flavor": "Salt became an important product for preserving food."
     },
     {
