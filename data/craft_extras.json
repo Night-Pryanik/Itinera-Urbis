@@ -36,6 +36,7 @@
     { "id": "malachite_ore", "name": "Malachite", "kind": "gemstone", "amount": 10, "unlock_tech": "jewelry" },
     { "id": "nephrite", "kind": "gemstone", "amount": 10, "unlock_tech": "jewelry" },
     { "id": "porphyry", "kind": "gemstone", "amount": 10, "unlock_tech": "jewelry" },
+    { "id": "obsidian", "kind": "gemstone", "amount": 10, "unlock_tech": "jewelry" },
     { "id": "pearl", "kind": "gemstone", "amount": 10, "unlock_tech": "jewelry" },
     { "id": "coral", "kind": "gemstone", "amount": 10, "unlock_tech": "jewelry" },
 

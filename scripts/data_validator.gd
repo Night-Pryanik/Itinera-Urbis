@@ -320,7 +320,7 @@ const RESOURCE_FIELDS := {
     "strategic": LEAF,
     "breedable": LEAF,
     "breeding": {"array": {"array": {"terrain": LEAF, "cover": LEAF}}},
-    "spawn_conditions": {"array": {"array": {"type": LEAF, "chance": LEAF, "terrain_id": LEAF}}},
+    "spawn_conditions": {"array": {"array": {"type": LEAF, "chance": LEAF, "terrain_id": LEAF, "cover_id": LEAF}}},
     "spawn_count": LEAF,
     "feed_consumption": LEAF,
     "time_to_mature": LEAF,
@@ -495,6 +495,8 @@ const COVER_FIELDS := {
     # true — the smoothing pass gathers the hexes of this cover into patches instead of leaving a
     # scatter of single cells (a coral reef, not a lone bush).
     "clusters": LEAF,
+    "terrain_families": LEAF,
+    "spawn_chance": LEAF,
 }
 
 # A climate zone is a pair of the climate axes plus what the relief of its region becomes. The two

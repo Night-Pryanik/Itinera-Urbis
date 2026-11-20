@@ -182,6 +182,18 @@
       "icons": [ "coral_reef_1.png", "coral_reef_2.png", "coral_reef_3.png" ]
     },
 
+    // A rare geological overlay is rolled after the regional vegetation pool; spawn_chance is a
+    // percentage of eligible mountain hexes, so the climate cannot turn volcanoes into a biome.
+    {
+      "id": "volcano",
+      "name": "Volcano",
+      "color": [ 104, 54, 42 ],
+      "move_cost_bonus": 0,
+      "icons": [ "volcano.png" ],
+      "terrain_families": [ "mountain" ],
+      "spawn_chance": 1.2
+    },
+
     // The revealed mountain spring. It is NOT part of any climate's cover_chance
     // pool, so it never spawns naturally: the game puts it on the designated
     // resource-less mountain only when "Concrete" is researched. It carries no

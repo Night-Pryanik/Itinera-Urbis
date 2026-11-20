@@ -1267,13 +1267,25 @@ func _roll_cover(tile: Dictionary) -> String:
         return "none"
     var roll = randf() * total
     var accum := 0.0
+    var rolled_cover := "none"
     for cid in chances.keys():
         if not _cover_allowed_in_belt(str(cid), temperature):
             continue
         accum += float(chances[cid])
         if roll < accum:
-            return str(cid)
-    return "none"
+            rolled_cover = str(cid)
+            break
+
+    var terrain_family := GameData.terrain_family(str(tile.get("terrain", "")))
+    for cover_id in GameData.covers:
+        var cover: Dictionary = GameData.covers[cover_id]
+        var families: Array = cover.get("terrain_families", [])
+        var spawn_chance := float(cover.get("spawn_chance", 0.0))
+        if spawn_chance <= 0.0 or not families.has(terrain_family):
+            continue
+        if randf() * 100.0 < spawn_chance:
+            return str(cover_id)
+    return rolled_cover
 
 # Whether a cover may grow in the temperature belt of a hex. A cover without "temperature_belts"
 # is not restricted by the latitude; a cover that names them belongs to those belts only.

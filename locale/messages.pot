@@ -9339,3 +9339,11 @@ msgstr ""
 #: data/crafts/metalworking.json data/products/metalworking.json
 msgid "Tools of <city_name> Steel"
 msgstr ""
+
+msgctxt "covers.name"
+msgid "Volcano"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Obsidian"
+msgstr ""
