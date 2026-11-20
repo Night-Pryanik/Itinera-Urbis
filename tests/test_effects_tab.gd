@@ -127,12 +127,12 @@ func _run() -> void:
 
     var original_locale := TranslationServer.get_locale()
     TranslationServer.set_locale("ru")
-    check(tr("Mine, quarry, bloomery, smelter, forge: +25% production only where fresh water is available", "modifiers.tech_modifiers.name")
-            == "Шахта, каменоломня, сыродутная печь, плавильня, кузница: +25% к производству только при наличии пресной воды",
+    check(tr("Mine, quarry, bloomery, smelter: +25% production only where fresh water is available", "modifiers.tech_modifiers.name")
+            == "Шахта, каменоломня, сыродутная печь, плавильня: +25% к производству только при наличии пресной воды",
         "the Russian water wheel caption names all five distinct recipients and the water condition", state)
     TranslationServer.set_locale(original_locale)
 
-    var production_buildings := {"water_power": "forge", "cogwheel": "animal_mill"}
+    var production_buildings := {"water_power": "smelter", "cogwheel": "animal_mill"}
     for tech_id in production_buildings:
         var building_id: String = production_buildings[tech_id]
         city.unlocked_technologies.clear()

@@ -116,6 +116,21 @@
       "profession": "blacksmith",
       "production_slots": 1.0,
       "unlock_tech": "native_metals",
+      "upgrades_into": "smithing_workshop",
+      "default_recipes": [  ]
+    },
+    {
+      "id": "smithing_workshop",
+      "name": "Smithing Workshop",
+      "description": "A water wheel drives the workshop hammer.",
+      "work_cost": 75,
+      "additional_cost": [ { "planks": 200 }, { "@processed_construction_materials": 200 } ],
+      "icon": "smithing_workshop.png",
+      "profession": "blacksmith",
+      "production_slots": 2.0,
+      "unlock_tech": "water_power",
+      "requires_tech": "native_metals",
+      "additional_req": "running_water",
       "default_recipes": [  ]
     },
     {
@@ -425,6 +440,21 @@
       "profession": "paper_maker",
       "production_slots": 1.0,
       "unlock_tech": "paper",
+      "upgrades_into": "paper_mill",
+      "default_recipes": [  ]
+    },
+    {
+      "id": "paper_mill",
+      "name": "Paper Mill",
+      "description": "Water-driven stampers beat plant fibres into pulp for paper.",
+      "work_cost": 50,
+      "additional_cost": [ { "planks": 150 }, { "@processed_construction_materials": 100 } ],
+      "icon": "paper_mill.png",
+      "profession": "paper_maker",
+      "production_slots": 2.0,
+      "unlock_tech": "water_power",
+      "requires_tech": "paper",
+      "additional_req": "running_water",
       "default_recipes": [  ]
     },
     {
