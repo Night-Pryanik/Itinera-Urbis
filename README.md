@@ -124,36 +124,6 @@ The game also has one-time natural resources — an analogue of the foraging mec
 
 ---
 
-## ⚒️ Metallurgy
-
-Metals form a separate production branch.
-
-Early technologies allow the use of native metals and meteoritic iron.
-
-The next stage is full-fledged metallurgy:
-
-~~~text
-Ore deposit
-        ↓
-   Smelting furnace
-        ↓
-       metal
-        ↓
-      forge
-        ↓
-     product
-~~~
-
-This allows two fundamentally different operations to be separated:
-
-**smelting** — obtaining metal from ore;
-
-**forge production** — processing metal and making products.
-
-Subsequently, this system develops into separate branches for different metals and materials.
-
----
-
 ## 🎨 Production and quality
 
 The City uses a data-driven approach.
