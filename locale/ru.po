@@ -290,6 +290,9 @@ msgstr "%d / %d сек"
 msgid "%d / sec"
 msgstr "%d / сек"
 
+msgid "%d FPS"
+msgstr "%d FPS"
+
 msgid "%d of %d on the way"
 msgstr "%d из %d в пути"
 
@@ -550,6 +553,9 @@ msgstr "Факт ниже плана: покупатели хотят больш
 
 msgid "Actual over the window: %s units/sec — that is what was really bought"
 msgstr "Факт за окно: %s ед./сек — столько реально купили"
+
+msgid "Adaptive"
+msgstr "Адаптивная"
 
 msgid "Add to storage"
 msgstr "Добавить на склад"
@@ -1187,6 +1193,9 @@ msgstr "Доставка: %s"
 msgid "Descending"
 msgstr "По убыванию"
 
+msgid "Disabled"
+msgstr "Отключена"
+
 msgid "Disallowed characters in an identifier"
 msgstr "Недопустимые символы в идентификаторе"
 
@@ -1243,6 +1252,9 @@ msgstr "Изменить контракт"
 
 msgid "Effects"
 msgstr "Эффекты"
+
+msgid "Enabled"
+msgstr "Включена"
 
 msgid "Encyclopedia"
 msgstr "Энциклопедия"
@@ -1349,6 +1361,9 @@ msgstr "Найдено проблем: %d. Часть рецептов, ресу
 msgid "Founding towns..."
 msgstr "Основание городов..."
 
+msgid "Frame rate limit"
+msgstr "Ограничение частоты кадров"
+
 msgid "Fresh water"
 msgstr "Пресная вода"
 
@@ -1360,6 +1375,12 @@ msgstr "Доступ к пресной воде: по цепочке"
 
 msgid "Fullwidth Latin"
 msgstr "полноширинная латинская"
+
+msgid "Fullscreen (borderless)"
+msgstr "Полный экран (без рамки)"
+
+msgid "Fullscreen without a border uses the whole monitor. Windowed mode uses the resolution above."
+msgstr "Полный экран без рамки занимает весь монитор. Оконный режим использует разрешение выше."
 
 msgid "Game"
 msgstr "Игра"
@@ -1598,6 +1619,9 @@ msgstr "Загрузка игры..."
 msgid "Low"
 msgstr "Низкая"
 
+msgid "Mailbox"
+msgstr "Mailbox"
+
 msgid "Main rivers"
 msgstr "Главные реки"
 
@@ -1628,6 +1652,12 @@ msgstr "Пометить как прочитанное"
 msgid "Market ("
 msgstr "Рынок ("
 
+msgid "Matches the frames to the refresh rate of the monitor. Adaptive and mailbox modes depend on the driver and fall back when unsupported."
+msgstr "Синхронизирует кадры с частотой обновления монитора. Адаптивный режим и mailbox зависят от драйвера и откатываются, если он их не поддерживает."
+
+msgid "Maximized"
+msgstr "Развёрнутое окно"
+
 msgid "Maximum sea depth"
 msgstr "Максимальная глубина моря"
 
@@ -1657,6 +1687,9 @@ msgstr "Модификации"
 
 msgid "Mods: %s"
 msgstr "Модификации: %s"
+
+msgid "Monitor native"
+msgstr "Как монитор"
 
 msgid "Move the mod down"
 msgstr "Переместить модификацию вниз"
@@ -1720,6 +1753,12 @@ msgstr "Нет свободных рабочих!"
 
 msgid "No icon sets found: the tilesets folder is empty, so every type keeps the original pictures. A set put in that folder appears in these lists."
 msgstr "Наборы иконок не найдены: папка tilesets пуста, поэтому все типы сохраняют исходные рисунки. Набор, положенный в эту папку, появится в этих списках."
+
+msgid "No limit"
+msgstr "Без ограничения"
+
+msgid "No limit lets the game run as fast as it can. Vertical synchronization can cap the frame rate as well."
+msgstr "Без ограничения игра работает как можно быстрее. Вертикальная синхронизация тоже может ограничивать частоту кадров."
 
 msgid "No messages yet."
 msgstr "Сообщений пока нет."
@@ -2146,6 +2185,9 @@ msgstr "Изучается: %s (наука: %.0f/%d)"
 
 msgid "Researching: ???"
 msgstr "Изучается: ???"
+
+msgid "Resolution"
+msgstr "Разрешение"
 
 msgid "Resource"
 msgstr "Ресурс"
@@ -2711,6 +2753,9 @@ msgstr "Симуляция продолжена."
 msgid "The simulation resumed. Starting: %s"
 msgstr "Симуляция продолжена. Запуск: %s"
 
+msgid "The size applies to windowed mode. Fullscreen and maximized windows use the monitor resolution."
+msgstr "Размер применяется в оконном режиме. Полный экран и развёрнутое окно используют разрешение монитора."
+
 msgid "The smallest and the largest island, in hexes."
 msgstr "Самый маленький и самый большой остров, в гексах."
 
@@ -2957,6 +3002,9 @@ msgstr "Улучшение дороги до города: %d участков"
 msgid "Upgrading to \"%s\""
 msgstr "Идёт улучшение до «%s»"
 
+msgid "Vertical synchronization"
+msgstr "Вертикальная синхронизация"
+
 msgid "Very high"
 msgstr "Очень высокая"
 
@@ -2974,6 +3022,12 @@ msgstr "Максимальная ширина берега"
 
 msgid "Will produce:"
 msgstr "Будет производить:"
+
+msgid "Window mode"
+msgstr "Режим окна"
+
+msgid "Windowed"
+msgstr "Оконный"
 
 msgid "Withdraw the un-shipped part of the deal"
 msgstr "Отозвать неотправленную часть сделки"

@@ -1,6 +1,8 @@
 # scripts/settings_menu.gd
 extends Control
 
+const DisplaySettings = preload("res://scripts/display_settings.gd")
+
 @onready var hex_borders_checkbox: CheckBox = find_child("HexBordersCheckBox", true, false)
 @onready var edge_scrolling_checkbox: CheckBox = find_child("EdgeScrollingCheckBox", true, false)
 @onready var edge_scroll_speed_slider: HSlider = find_child("EdgeScrollSpeedSlider", true, false)
@@ -31,6 +33,13 @@ extends Control
     "HudMessageDurationValueLabel", true, false)
 @onready var clock_checkbox: CheckBox = find_child("ClockCheckBox", true, false)
 @onready var fps_checkbox: CheckBox = find_child("FpsCheckBox", true, false)
+@onready var resolution_option_button: OptionButton = find_child(
+    "ResolutionOptionButton", true, false)
+@onready var window_mode_option_button: OptionButton = find_child(
+    "WindowModeOptionButton", true, false)
+@onready var vsync_option_button: OptionButton = find_child("VsyncOptionButton", true, false)
+@onready var fps_limit_option_button: OptionButton = find_child(
+    "FpsLimitOptionButton", true, false)
 
 var config = ConfigFile.new()
 
@@ -61,6 +70,10 @@ func _ready():
             or not hud_message_duration_value_label \
             or not clock_checkbox \
             or not fps_checkbox \
+            or not resolution_option_button \
+            or not window_mode_option_button \
+            or not vsync_option_button \
+            or not fps_limit_option_button \
             or not language_option_button \
             or not font_option_button \
             or not theme_option_button \
@@ -72,6 +85,10 @@ func _ready():
 
     _apply_tab_titles()
     load_settings()
+    _setup_resolution_option()
+    _setup_window_mode_option()
+    _setup_vsync_option()
+    _setup_fps_limit_option()
     _setup_language_option()
     _setup_font_option()
     _setup_theme_option()
@@ -90,6 +107,10 @@ func _ready():
     hud_message_duration_slider.value_changed.connect(_on_hud_message_duration_changed)
     clock_checkbox.toggled.connect(_on_clock_toggled)
     fps_checkbox.toggled.connect(_on_fps_toggled)
+    resolution_option_button.item_selected.connect(_on_resolution_selected)
+    window_mode_option_button.item_selected.connect(_on_window_mode_selected)
+    vsync_option_button.item_selected.connect(_on_vsync_selected)
+    fps_limit_option_button.item_selected.connect(_on_fps_limit_selected)
     language_option_button.item_selected.connect(_on_language_selected)
     font_option_button.item_selected.connect(_on_font_selected)
     theme_option_button.item_selected.connect(_on_theme_selected)
@@ -111,6 +132,117 @@ func _apply_tab_titles():
     ]
     for i in min(titles.size(), tab_container.get_tab_count()):
         tab_container.set_tab_title(i, titles[i])
+
+# Fills the resolution dropdown with the presets that fit the monitor. The first item keeps
+# the monitor's own resolution; its metadata is empty, which is also how it is saved.
+func _setup_resolution_option():
+    if resolution_option_button == null:
+        return
+    var saved := str(config.get_value(DisplaySettings.SECTION, DisplaySettings.KEY_RESOLUTION, ""))
+    resolution_option_button.clear()
+    resolution_option_button.add_item(tr("Monitor native"), 0)
+    resolution_option_button.set_item_metadata(0, "")
+    var selected := 0
+    for size in DisplaySettings.available_resolutions():
+        var text := DisplaySettings.resolution_to_text(size)
+        var index := resolution_option_button.item_count
+        resolution_option_button.add_item(text, index)
+        resolution_option_button.set_item_metadata(index, text)
+        if text == saved:
+            selected = index
+    if not saved.is_empty() and selected == 0:
+        # A saved resolution the current monitor does not offer stays selectable: the
+        # player can still see the choice the settings file holds.
+        var index := resolution_option_button.item_count
+        resolution_option_button.add_item(saved, index)
+        resolution_option_button.set_item_metadata(index, saved)
+        selected = index
+    resolution_option_button.select(selected)
+
+# Fills the window mode dropdown. The value of an item is the string saved in settings.cfg.
+func _setup_window_mode_option():
+    if window_mode_option_button == null:
+        return
+    var saved := str(config.get_value(DisplaySettings.SECTION, DisplaySettings.KEY_WINDOW_MODE,
+        DisplaySettings.DEFAULT_MODE))
+    window_mode_option_button.clear()
+    var modes := [
+        [tr("Fullscreen (borderless)"), DisplaySettings.MODE_FULLSCREEN],
+        [tr("Maximized"), DisplaySettings.MODE_MAXIMIZED],
+        [tr("Windowed"), DisplaySettings.MODE_WINDOWED],
+    ]
+    var selected := 0
+    for i in modes.size():
+        window_mode_option_button.add_item(str(modes[i][0]), i)
+        window_mode_option_button.set_item_metadata(i, str(modes[i][1]))
+        if str(modes[i][1]) == saved:
+            selected = i
+    window_mode_option_button.select(selected)
+
+func _on_resolution_selected(_index: int):
+    save_settings()
+    _apply_display_settings()
+
+func _on_window_mode_selected(_index: int):
+    save_settings()
+    _apply_display_settings()
+
+# Fills the VSync dropdown. The value of an item is the string saved in settings.cfg.
+func _setup_vsync_option():
+    if vsync_option_button == null:
+        return
+    var saved := str(config.get_value(DisplaySettings.SECTION, DisplaySettings.KEY_VSYNC,
+        DisplaySettings.DEFAULT_VSYNC))
+    vsync_option_button.clear()
+    var labels := [tr("Disabled"), tr("Enabled"), tr("Adaptive"), tr("Mailbox")]
+    var selected := 0
+    for i in DisplaySettings.VSYNC_MODES.size():
+        var id := str(DisplaySettings.VSYNC_MODES[i][0])
+        vsync_option_button.add_item(labels[i], i)
+        vsync_option_button.set_item_metadata(i, id)
+        if id == saved:
+            selected = i
+    vsync_option_button.select(selected)
+
+# Fills the frame rate dropdown. The metadata is the limit passed to Engine.max_fps.
+func _setup_fps_limit_option():
+    if fps_limit_option_button == null:
+        return
+    var saved := int(config.get_value(DisplaySettings.SECTION, DisplaySettings.KEY_FPS_LIMIT,
+        DisplaySettings.DEFAULT_FPS_LIMIT))
+    fps_limit_option_button.clear()
+    var selected := 0
+    for i in DisplaySettings.FPS_LIMITS.size():
+        var limit: int = DisplaySettings.FPS_LIMITS[i]
+        var label := tr("No limit") if limit == 0 else tr("%d FPS") % limit
+        fps_limit_option_button.add_item(label, i)
+        fps_limit_option_button.set_item_metadata(i, limit)
+        if limit == saved:
+            selected = i
+    fps_limit_option_button.select(selected)
+
+func _on_vsync_selected(_index: int):
+    save_settings()
+    _apply_display_settings()
+
+func _on_fps_limit_selected(_index: int):
+    save_settings()
+    _apply_display_settings()
+
+func _apply_display_settings():
+    if resolution_option_button == null or window_mode_option_button == null:
+        return
+    var mode := str(window_mode_option_button.get_item_metadata(
+        window_mode_option_button.selected))
+    var resolution := str(resolution_option_button.get_item_metadata(
+        resolution_option_button.selected))
+    DisplaySettings.apply(mode, DisplaySettings.text_to_resolution(resolution))
+    if vsync_option_button != null:
+        DisplaySettings.apply_vsync(str(vsync_option_button.get_item_metadata(
+            vsync_option_button.selected)))
+    if fps_limit_option_button != null:
+        DisplaySettings.apply_fps_limit(int(fps_limit_option_button.get_item_metadata(
+            fps_limit_option_button.selected)))
 
 # Fills in the language dropdown and sets the saved choice in it.
 # The value of an item is a language code; the "system language" item is stored as "system".
@@ -144,6 +276,11 @@ func _on_language_selected(index: int):
         # The names of the themes are catalog strings too, so the list is rebuilt
         # for the new language.
         _setup_theme_option()
+        # The labels of the Video dropdowns are catalog strings as well.
+        _setup_resolution_option()
+        _setup_window_mode_option()
+        _setup_vsync_option()
+        _setup_fps_limit_option()
         # The names of the types of icons and the "Original icons" item are catalog
         # strings: the rows of the tilesets are rebuilt in the new language as well.
         _setup_tileset_options()
@@ -358,6 +495,17 @@ func save_settings():
     config.set_value("interface", "hud_message_duration", hud_message_duration_slider.value)
     config.set_value("interface", "show_clock", clock_checkbox.button_pressed)
     config.set_value("interface", "show_fps", fps_checkbox.button_pressed)
+    if resolution_option_button != null and window_mode_option_button != null:
+        config.set_value(DisplaySettings.SECTION, DisplaySettings.KEY_RESOLUTION,
+            str(resolution_option_button.get_item_metadata(resolution_option_button.selected)))
+        config.set_value(DisplaySettings.SECTION, DisplaySettings.KEY_WINDOW_MODE,
+            str(window_mode_option_button.get_item_metadata(window_mode_option_button.selected)))
+    if vsync_option_button != null:
+        config.set_value(DisplaySettings.SECTION, DisplaySettings.KEY_VSYNC,
+            str(vsync_option_button.get_item_metadata(vsync_option_button.selected)))
+    if fps_limit_option_button != null:
+        config.set_value(DisplaySettings.SECTION, DisplaySettings.KEY_FPS_LIMIT,
+            int(fps_limit_option_button.get_item_metadata(fps_limit_option_button.selected)))
     config.save("user://settings.cfg")
 
 func _apply_to_game():

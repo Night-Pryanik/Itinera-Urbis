@@ -27,8 +27,8 @@ const SETTINGS_SCENE := "res://scenes/settings_menu.tscn"
 # Short enough for both populated pages to overflow, wide enough for the sliders:
 # a window this short is what a small screen gives.
 const FRAME_SIZE := Vector2(900, 230)
-# Every page that holds settings. The empty pages (Video, Audio) have nothing to scroll.
-const POPULATED_PAGES := ["Игра", "Интерфейс", "Внешний вид"]
+# Every page that holds settings. The empty page (Audio) has nothing to scroll.
+const POPULATED_PAGES := ["Игра", "Видео", "Интерфейс", "Внешний вид"]
 
 func _initialize():
     WATCHDOG.arm(self)

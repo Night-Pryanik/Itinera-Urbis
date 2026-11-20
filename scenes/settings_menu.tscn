@@ -96,6 +96,77 @@ visible = false
 layout_mode = 2
 metadata/_tab_index = 1
 
+[node name="Scroll" type="ScrollContainer" parent="TabContainer/Видео"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+horizontal_scroll_mode = 0
+follow_focus = true
+
+[node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/Видео/Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="ResolutionLabel" type="Label" parent="TabContainer/Видео/Scroll/VBoxContainer"]
+layout_mode = 2
+theme_type_variation = &"SectionHeading"
+text = "Resolution"
+
+[node name="ResolutionHint" type="Label" parent="TabContainer/Видео/Scroll/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "The size applies to windowed mode. Fullscreen and maximized windows use the monitor resolution."
+autowrap_mode = 3
+
+[node name="ResolutionOptionButton" type="OptionButton" parent="TabContainer/Видео/Scroll/VBoxContainer"]
+layout_mode = 2
+
+[node name="WindowModeLabel" type="Label" parent="TabContainer/Видео/Scroll/VBoxContainer"]
+layout_mode = 2
+theme_type_variation = &"SectionHeading"
+text = "Window mode"
+
+[node name="WindowModeHint" type="Label" parent="TabContainer/Видео/Scroll/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Fullscreen without a border uses the whole monitor. Windowed mode uses the resolution above."
+autowrap_mode = 3
+
+[node name="WindowModeOptionButton" type="OptionButton" parent="TabContainer/Видео/Scroll/VBoxContainer"]
+layout_mode = 2
+
+[node name="VsyncLabel" type="Label" parent="TabContainer/Видео/Scroll/VBoxContainer"]
+layout_mode = 2
+theme_type_variation = &"SectionHeading"
+text = "Vertical synchronization"
+
+[node name="VsyncHint" type="Label" parent="TabContainer/Видео/Scroll/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Matches the frames to the refresh rate of the monitor. Adaptive and mailbox modes depend on the driver and fall back when unsupported."
+autowrap_mode = 3
+
+[node name="VsyncOptionButton" type="OptionButton" parent="TabContainer/Видео/Scroll/VBoxContainer"]
+layout_mode = 2
+
+[node name="FpsLimitLabel" type="Label" parent="TabContainer/Видео/Scroll/VBoxContainer"]
+layout_mode = 2
+theme_type_variation = &"SectionHeading"
+text = "Frame rate limit"
+
+[node name="FpsLimitHint" type="Label" parent="TabContainer/Видео/Scroll/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "No limit lets the game run as fast as it can. Vertical synchronization can cap the frame rate as well."
+autowrap_mode = 3
+
+[node name="FpsLimitOptionButton" type="OptionButton" parent="TabContainer/Видео/Scroll/VBoxContainer"]
+layout_mode = 2
+
 [node name="Аудио" type="Control" parent="TabContainer" unique_id=240359690]
 visible = false
 layout_mode = 2

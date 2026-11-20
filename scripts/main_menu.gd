@@ -11,6 +11,7 @@ const UiHelpers = preload("res://scripts/ui_helpers.gd")
 const UI_THEME = preload("res://scripts/ui_theme.gd")
 const ModListScene = preload("res://scenes/mod_list.tscn")
 const WorldPreview = preload("res://scripts/world_preview.gd")
+const DisplaySettings = preload("res://scripts/display_settings.gd")
 
 # The width of the city name field. It does not follow anything else: the name column is
 # sized to it.
@@ -150,6 +151,9 @@ var _preview_timer: Timer = null
 var _preview_build: Dictionary = {}
 
 func _ready():
+    # The saved window is applied before the menu is shown, so a player who chose a
+    # resolution or a window mode does not see the project default first.
+    DisplaySettings.apply_saved()
     # The data comes first: the tooltip of "Continue game" names the era of the save,
     # and on a cold start the menu is the first scene — GameData is not loaded yet.
     _check_game_data()
