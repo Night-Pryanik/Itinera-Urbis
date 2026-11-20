@@ -236,6 +236,19 @@
       "profession": "oilmaker",
       "production_slots": 1.0,
       "unlock_tech": "oil_making",
+      "upgrades_into": "oil_mill",
+      "default_recipes": [ "vegetable_oil" ]
+    },
+    {
+      "id": "oil_mill",
+      "name": "Oil Mill",
+      "description": "Wedge presses squeeze oil from batches of oil crops.",
+      "work_cost": 35,
+      "additional_cost": [ { "planks": 80 } ],
+      "icon": "oil_mill.png",
+      "profession": "oilmaker",
+      "production_slots": 2.0,
+      "unlock_tech": "wedge_oil_press",
       "default_recipes": [ "vegetable_oil" ]
     },
     {

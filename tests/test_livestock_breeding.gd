@@ -97,6 +97,10 @@ func _run() -> void:
             "the first domestication must grant exactly the cost of one herd (%d, got %d)"
                     % [cost, _cdata.get_storage_amount("live_cows")], state)
 
+    # A random first herd can already be perfect. Give it room to improve
+    # before the second herd inherits its quality.
+    tile_a["quality"] = "common"
+
     # The second build of the same species grants nothing.
     main_map._apply_improvement(int(spot_b.row), int(spot_b.col), "pasture", "cows")
     check(_cdata.get_storage_amount("live_cows") == cost,
