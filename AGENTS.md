@@ -198,6 +198,12 @@ A concise, readable implementation with no comment is preferable to an implement
 
 The purpose of comments is to preserve **non-obvious knowledge**, not to increase the amount of text in the repository.
 
+## Indentation: 4 Spaces, Never Tabs
+
+GDScript files and data files are indented with **4 spaces** per level, never with tabs — the rule `.editorconfig` states for the repository. Tabs are the canonical GDScript style and the Godot editor default, so a tool that reformats by its own defaults — an editor, a formatter, an assistant resolving a conflict — introduces them instead. A file that mixes the two does not parse: GDScript fails with "Used space character for indentation instead of tab as used before in the file".
+
+After an automatic reformat, check the files it touched. When the change is whitespace alone, `git diff -w` is empty and the files can be restored from the index as they are — nothing needs repairing by hand.
+
 ## Local-only Files and the Working-Tree `.gitignore`
 
 `.gitignore` and `project.godot` carry the `skip-worktree` bit, so git ignores local edits to them. The working-tree `.gitignore` therefore holds ignore rules that are not part of the repository, while the committed version stays minimal. A rule added to the working tree never shows up in `git status` and is never pushed.
