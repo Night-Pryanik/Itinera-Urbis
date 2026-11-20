@@ -68,19 +68,7 @@ next production
 
 Buildings have production slots and recipes.
 
-As the city develops, buildings can be upgraded, yielding more advanced versions with additional capabilities.
-
-For example:
-
-~~~text
-Hand mill
-      ↓
-Animal-driven mill
-      ↓
-...
-~~~
-
-Upgrading a building is an ordinary construction task and uses the same shared labour mechanism as construction.
+As the city develops, buildings can be upgraded, yielding more advanced versions with additional capabilities. Upgrading a building is an ordinary construction task and uses the same shared labour mechanism as construction.
 
 ---
 
@@ -118,25 +106,9 @@ Technologies unlock new opportunities for the city:
 
 The technology tree consists of eras and dependency chains.
 
-Some technologies have several mandatory predecessors.
+Some technologies have several mandatory predecessors, and parallel branches can develop independently.
 
-For example, the development of writing materials gradually leads from early information carriers to more advanced ones:
-
-~~~text
-Clay tablets
-       ↓
-    Papyrus
-       ↓
-Wax tablets
-       ↓
-   Parchment
-       ↓
-     Silk
-       ↓
-     Paper
-~~~
-
-This is not necessarily a linear chain: different technologies and resources can exist in parallel.
+What the city actually uses depends first of all on the resources available on the map: many technologies exist as alternative ways to solve the same problem, and which of them the player takes is decided by what the region offers — or does not offer.
 
 ---
 
@@ -144,31 +116,11 @@ This is not necessarily a linear chain: different technologies and resources can
 
 The City's economy is built around interconnected resource chains.
 
-A single raw material can have several uses.
-
-For example, malachite can be used in several directions at once:
-
-~~~text
-                    ┌→ pigment
-Malachite ──────────┼→ jewellery
-                    └→ copper
-~~~
-
-This approach creates real economic decisions:
+A single raw material can have several uses at once, which creates real economic decisions:
 
 > use a rare resource now, or save it for more valuable production?
 
-The game also has one-time natural resources — an analogue of the foraging mechanic.
-
-For example:
-
-- wild plants;
-- native copper;
-- native gold;
-- native silver;
-- meteoritic iron.
-
-After being gathered, such finds disappear.
+The game also has one-time natural resources — an analogue of the foraging mechanic: wild plants, native metals and other one-off finds that disappear after being gathered.
 
 ---
 
@@ -198,7 +150,7 @@ This allows two fundamentally different operations to be separated:
 
 **forge production** — processing metal and making products.
 
-Subsequently, this system develops into separate branches of iron, bronze, precious metals and other materials.
+Subsequently, this system develops into separate branches for different metals and materials.
 
 ---
 
@@ -220,30 +172,7 @@ One of the project's planned systems is procedurally generated production result
 
 Instead of creating a separate recipe for every combination of ingredients, a recipe defines a base product, and additional ingredients modify it.
 
-For example:
-
-~~~text
-Woollen clothing
-        +
-      indigo
-        +
-   fur trim
-        ↓
-"Woollen clothing dyed with indigo,
-with fur trim"
-~~~
-
-Similarly, a piece of jewellery will be able to receive several additional materials:
-
-~~~text
-Gold ornament
-       +
-     onyx
-       +
-     agate
-       ↓
-Gold ornament with onyx and agate
-~~~
+A base product — clothing, an ornament, any other item — can receive several additional materials: a dye, a trim, an inset stone. Each addition changes the description and the properties of the result.
 
 This makes it possible to create a large number of product variants without a combinatorial explosion in the number of recipes and individual items.
 
@@ -259,7 +188,7 @@ Scouts can be sent to any point on the map that the screen can be scrolled to �
 
 Both scouting and claiming work **only from the border of the known world**: a chunk must border the Ring of Influence or already explored hexes. Scouts do not jump over unexplored land — the border of the known world expands forward chunk by chunk, and "pockets" in the fog of war cannot be scouted. For a chunk that does not adjoin, the action button is greyed out and explains the reason. A hex in the fog of war reveals no information: neither the tooltip on hover nor the left column of the panel shows terrain and resources until the hex is explored.
 
-Scouting and claiming are paid for with **coins from the city treasury**: the price is calculated per hex of the chunk and grows with distance from the city (base values are in `data/game_balance.json`, see docs.md, "Cost of scouting (coins from the treasury)"). Claiming additionally requires labour: it accumulates over time, as in construction.
+Scouting and claiming are paid for with **coins from the city treasury**: the price is calculated per hex of the chunk and grows with distance from the city. Claiming additionally requires labour: it accumulates over time, as in construction.
 
 Exploring and claiming territory make it possible to discover new resources and opportunities.
 
@@ -280,22 +209,7 @@ They have:
 
 The names of cities and towns are procedurally chosen from a large set of invented toponyms.
 
-The world is deliberately not tied to a single historical culture.
-
-You can encounter:
-
-- conventionally Northern European names;
-- Mesopotamian;
-- Egyptian;
-- Indian;
-- Chinese;
-- Japanese;
-- African;
-- Middle Eastern;
-- South American;
-- Polynesian;
-
-as well as deliberate cultural hybrids.
+The world is deliberately not tied to a single historical culture: toponyms may evoke the naming traditions of very different real-world cultures, as well as deliberate cultural hybrids.
 
 This is part of the world's artistic design.
 
@@ -323,6 +237,10 @@ Resources, buildings, recipes, technologies and other game elements should be de
 
 This simplifies the project's development and opens up the possibility of mods.
 
+### Availability decides
+
+The player works with what the map provides. The set of resources available in a region determines which production paths and technologies make sense there — the same building or craft can remain relevant through all eras if its resource stays available.
+
 ### Minimum micromanagement
 
 The player should manage the city's economy, not constantly press buttons to keep it running.
@@ -333,85 +251,11 @@ A new resource or building should create an interesting connection with the exis
 
 ---
 
-## 🛠️ Technologies
+## 🛠️ Tech stack
 
-The project is developed in **Godot**.
+The project is developed in **Godot** (GDScript).
 
-The main game data is stored in JSON.
-
-Approximate structure:
-
-~~~text
-data/
-├── buildings.json
-├── crafts/
-├── products/
-├── resources/
-├── technologies/
-├── terrains/
-└── ...
-
-scripts/
-├── map_generator.gd
-├── CityData.gd
-├── BuildManager.gd
-└── ...
-
-city_ui/
-└── ...
-~~~
-
-The exact project structure continues to evolve with development.
-
----
-
-## 🚧 Project status
-
-The City is in active development.
-
-Already implemented and being tested:
-
-- procedural hexagonal map;
-- the city and towns;
-- area of influence;
-- fog of war;
-- resources and deposits;
-- terrain improvements;
-- production;
-- workforce;
-- construction;
-- building upgrades;
-- production slots;
-- technologies;
-- several historical eras;
-- roads with levels and routes from improvements to the city;
-- one-time natural resources;
-- native metals;
-- the metallurgy chain;
-- writing materials;
-- paper;
-- dyes;
-- jewellery production;
-- names of cities and towns.
-
-Many systems are in the stage of active balancing and polishing.
-
----
-
-## 🧪 Testing
-
-The project is at the stage of active testing.
-
-Particular attention is paid to:
-
-- economic balance;
-- production chains;
-- UI clarity;
-- technology progression;
-- procedural generation;
-- how the economy behaves on different maps;
-- the absence of dead-end resource chains;
-- performance on large maps.
+All game data — resources, buildings, technologies, recipes, terrains — lives in JSON files, which keeps the game data-driven and moddable.
 
 ---
 
@@ -437,7 +281,7 @@ If it only adds micromanagement or creates a useless resource, it can be dropped
 
 ## 📖 Documentation
 
-The main principles and the current structure of the project are described in:
+The design principles, the worldview of the game and the intended structure of its systems are described in:
 
 `design_doc.md`
 
