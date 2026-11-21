@@ -215,6 +215,19 @@
       "profession": "weaver",
       "production_slots": 1.0,
       "unlock_tech": "weaving",
+      "upgrades_into": "weaver_workshop",
+      "default_recipes": [  ]
+    },
+    {
+      "id": "weaver_workshop",
+      "name": "Weaver's Workshop",
+      "description": "Horizontal foot-treadle looms weave different batches in parallel.",
+      "work_cost": 50,
+      "additional_cost": [ { "planks": 150 }, { "@processed_construction_materials": 100 } ],
+      "icon": "weaver_workshop.png",
+      "profession": "weaver",
+      "production_slots": 2.0,
+      "unlock_tech": "treadle_loom",
       "default_recipes": [  ]
     },
     {
@@ -294,12 +307,24 @@
     {
       "id": "ropemaker_house",
       "name": "Ropemaker's House",
-      "description": "A long shed for twisting ropes and cables.",
+      "description": "A workshop for twisting ropes and cables.",
       "work_cost": 25,
       "additional_cost": [ { "planks": 120 } ],
       "icon": "ropemaker_house.png",
       "production_slots": 1.0,
       "unlock_tech": "rope_making",
+      "upgrades_into": "ropewalk",
+      "default_recipes": [ "ropes" ]
+    },
+    {
+      "id": "ropewalk",
+      "name": "Ropewalk",
+      "description": "Strands laid along a long covered lane are twisted into full-length ropes and cables.",
+      "work_cost": 50,
+      "additional_cost": [ { "planks": 180 }, { "@processed_construction_materials": 100 } ],
+      "icon": "ropewalk.png",
+      "production_slots": 2.0,
+      "unlock_tech": "rope_twisting",
       "default_recipes": [ "ropes" ]
     },
     {

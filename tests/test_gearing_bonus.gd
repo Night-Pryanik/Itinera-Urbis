@@ -105,7 +105,7 @@ func _test_data(gdata: Node, state: Dictionary) -> void:
                 state)
     var bld: Dictionary = gear.get("building_production_multiplier", {})
     for building_id in ["animal_mill", "oilmaker_house", "weaver_house",
-            "silk_maker_house", "mason_workshop", "jeweler_house", "carpenter_workshop"]:
+            "weaver_workshop", "silk_maker_house", "mason_workshop", "jeweler_house", "carpenter_workshop"]:
         check(bld.has(building_id),
                 "\"%s\" must get the gear bonus" % building_id, state)
     check(not bld.has("hand_mill"),
