@@ -9,6 +9,8 @@
 #   2. A staffed Mint raises the tax by 5% (CityData.mint_tax_share), and the treasury row
 #      shows the share; an unstaffed one does nothing.
 #   3. Several staffed Mints add their shares; removing a worker removes his share.
+#   4. The Assaying technology multiplies the staffed Mint's share, and the precision
+#      instruments consumed by the mint master scale it further.
 extends SceneTree
 
 const WATCHDOG = preload("res://tests/watchdog.gd")
@@ -99,6 +101,42 @@ func _run() -> void:
             "two staffed Mints must add 10%%, got %f" % city.mint_tax_share, state)
     check(city.get_tax_income_per_tick() == 44,
             "with 20 citizens and two Mints the tax must be 44, got %d"
+                    % city.get_tax_income_per_tick(), state)
+
+    # --- 4. The Assaying multiplier on the staffed Mint ---
+    city.total_population = 100
+    city.idle_population = 4
+    tm.assigned_buildings.clear()
+    city.city_built_buildings = [
+        {"id": "mint", "slots": ["coin_collection"], "quality_priority": "best"}
+    ]
+    check(tm.assign_townsfolk(0), "the Mint must get a worker for the multiplier case", state)
+    city.do_tick()
+    check(absf(city.mint_tax_share - 0.05) < 0.0001,
+            "without the technology the share must stay at 5%%, got %f" % city.mint_tax_share, state)
+    check(city.get_tax_income_per_tick() == 210,
+            "with 100 citizens and one Mint the tax must be 210, got %d"
+                    % city.get_tax_income_per_tick(), state)
+
+    city.unlocked_technologies.append("assaying")
+    city.do_tick()
+    check(is_equal_approx(city.get_building_production_multiplier("mint", false), 1.5),
+            "assaying must give the Mint a 1.5 building multiplier", state)
+    check(absf(city.mint_tax_share - 0.075) < 0.0001,
+            "the multiplier must raise the share to 7.5%%, got %f" % city.mint_tax_share, state)
+    check(city.get_tax_income_per_tick() == 215,
+            "with the multiplier the tax must be 215, got %d"
+                    % city.get_tax_income_per_tick(), state)
+
+    # The worker also consumes precision instruments; steel ones add another 25%.
+    city.total_population = 100
+    city.add_to_storage("steel_precision_instruments", 20, "common")
+    city.do_tick()
+    check(absf(city.mint_tax_share - 0.09375) < 0.0001,
+            "steel instruments must add 25%% on top of the multiplier, got %f"
+                    % city.mint_tax_share, state)
+    check(city.get_tax_income_per_tick() == 219,
+            "with instruments the tax must be 219, got %d"
                     % city.get_tax_income_per_tick(), state)
 
     _finish(main_map, state)

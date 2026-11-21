@@ -73,7 +73,6 @@
       "profession": [ "fisherman" ],
       "amount": 10,
       "interval": 30,
-      "production_bonus": 0.2,
       "members": {
         "reed_boat": { "interval": 20, "production_bonus": 0.1 },
         "wooden_boat": { "interval": 40, "production_bonus": 0.2 }
@@ -142,7 +141,6 @@
       ],
       "amount": 10,
       "interval": 10,
-      "production_bonus": 0.25,
       "members": {
         "copper_tools": { "production_bonus": 0.10 },
         "cast_iron_tools": { "production_bonus": 0.20 },
@@ -317,7 +315,24 @@
       "profession": [ "scientist", "alchemist", "jeweler" ],
       "amount": 10,
       "interval": 20,
-      "production_bonus": 0.25,
+      "members": {
+        "copper_precision_instruments": { "production_bonus": 0.10 },
+        "bronze_precision_instruments": { "production_bonus": 0.15 },
+        "brass_precision_instruments": { "production_bonus": 0.15 },
+        "iron_precision_instruments": { "production_bonus": 0.20 },
+        "steel_precision_instruments": { "production_bonus": 0.25 },
+        "damascus_precision_instruments": { "production_bonus": 0.30 }
+      }
+    },
+    {
+      // The fine tools of the mint master's craft: the metal sets the precision of a balance
+      // the same way it sets it for the scholar's instruments. Only the Mint uses this rule,
+      // so the base share of the Mint without instruments stays unchanged.
+      "resource": "@precision_instruments",
+      "profession": [ "mint_worker" ],
+      "buildings": [ "mint" ],
+      "amount": 10,
+      "interval": 20,
       "members": {
         "copper_precision_instruments": { "production_bonus": 0.10 },
         "bronze_precision_instruments": { "production_bonus": 0.15 },

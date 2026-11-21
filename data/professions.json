@@ -199,7 +199,7 @@
       "id": "mint_worker",
       "name": "Mint Worker",
       "icon": "coin_stack.png",
-      "description": "Strikes coins and keeps the tally in the mint, adding to the tax collected from the citizens."
+      "description": "Strikes coins and checks the metal at the mint. One master does the work of both minter and assayer, so more of the poll tax reaches the treasury."
     },
     {
       "id": "winemaker",

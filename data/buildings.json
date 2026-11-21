@@ -492,7 +492,7 @@
     {
       "id": "mint",
       "name": "Mint",
-      "description": "Strikes coins and keeps the tally of the citizens, adding to the tax collected.",
+      "description": "Strikes coins and assays the metal, adding to the tax collected.",
       "work_cost": 80,
       "maintenance_cost": 2.0,
       "additional_cost": [ { "planks": 150 }, { "@processed_construction_materials": 80 } ],

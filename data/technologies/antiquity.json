@@ -242,6 +242,17 @@
       "description": "Allows you to build the Mint.\nA Mint worker adds +5% to the poll tax.",
       "flavor": "A weighed piece of metal bearing a ruler's mark turned a bargain into a debt that could be counted. Stamped ingots appeared in Lydia and in the Zhou lands; the stamp made the coin a promise the next town would accept.",
       "unlock_effects": [ { "icon": "coin_stack.png", "name": "Mint: +5% to the poll tax per worker" } ]
+    },
+    {
+      "id": "assaying",
+      "name": "Assaying",
+      "era": "antiquity",
+      "science_cost": 8.0,
+      "icon": "assaying.png",
+      "prerequisites": [ [ "coinage", "precision_instruments" ] ],
+      "description": "The master of the Mint now tests the metal as well as strikes it: +50% to his share of the poll tax.\nConsumes precision instruments.",
+      "flavor": "Weighing is only the first answer. Before the die falls, the metal must be cupelled with lead, parted and read for fineness. In the assay houses of Serica, in the Hellenistic mints and in the workshops where al-Khazini set his balances true, this craft taught men to promise a coin a stranger could trust. The Mint takes the assayer's bench into its own hall.",
+      "unlock_effects": [ { "icon": "coin_stack.png", "name": "Assaying: +50% to the Mint's coinage share" } ]
     }
   ]
 }

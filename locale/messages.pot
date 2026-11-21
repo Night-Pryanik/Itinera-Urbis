@@ -5578,6 +5578,10 @@ msgctxt "modifiers.tech_modifiers.name"
 msgid "Woodcutter's camp: +10% production"
 msgstr ""
 
+msgctxt "modifiers.tech_modifiers.name"
+msgid "Assaying: +50% to the Mint's coinage share"
+msgstr ""
+
 msgctxt "priority_names"
 msgid "Best quality"
 msgstr ""
@@ -9443,7 +9447,7 @@ msgid "Collects mineral water at a spring catchment."
 msgstr ""
 
 msgctxt "professions.description"
-msgid "Strikes coins and keeps the tally in the mint, adding to the tax collected from the citizens."
+msgid "Strikes coins and checks the metal at the mint. One master does the work of both minter and assayer, so more of the poll tax reaches the treasury."
 msgstr ""
 
 #: data/technologies/ancient.json
@@ -9453,6 +9457,10 @@ msgstr ""
 
 msgctxt "technologies.unlock_effects.name"
 msgid "Mint: +5% to the poll tax per worker"
+msgstr ""
+
+msgctxt "technologies.unlock_effects.name"
+msgid "Assaying: +50% to the Mint's coinage share"
 msgstr ""
 
 #: data/covers.json
@@ -9542,7 +9550,7 @@ msgid "Strands laid along a long covered lane are twisted into full-length ropes
 msgstr ""
 
 msgctxt "buildings.description"
-msgid "Strikes coins and keeps the tally of the citizens, adding to the tax collected."
+msgid "Strikes coins and assays the metal, adding to the tax collected."
 msgstr ""
 
 msgctxt "technologies.name"
@@ -9553,6 +9561,10 @@ msgctxt "technologies.name"
 msgid "Coinage"
 msgstr ""
 
+msgctxt "technologies.name"
+msgid "Assaying"
+msgstr ""
+
 msgctxt "technologies.description"
 msgid "Unlocks the ropewalk."
 msgstr ""
@@ -9561,10 +9573,18 @@ msgctxt "technologies.description"
 msgid "Allows you to build the Mint.\nA Mint worker adds +5% to the poll tax."
 msgstr ""
 
+msgctxt "technologies.description"
+msgid "The master of the Mint now tests the metal as well as strikes it: +50% to his share of the poll tax.\nConsumes precision instruments."
+msgstr ""
+
 msgctxt "technologies.flavor"
 msgid "Yarns were spun up into strands and then laid together with a counter-twist. A long covered lane let a ropery stretch the strands from end to end and walk back as they combined, making ropes far longer and thicker than a household shed could twist. Ropewalks became a familiar part of medieval shipbuilding and dockyard work."
 msgstr ""
 
 msgctxt "technologies.flavor"
 msgid "A weighed piece of metal bearing a ruler's mark turned a bargain into a debt that could be counted. Stamped ingots appeared in Lydia and in the Zhou lands; the stamp made the coin a promise the next town would accept."
+msgstr ""
+
+msgctxt "technologies.flavor"
+msgid "Weighing is only the first answer. Before the die falls, the metal must be cupelled with lead, parted and read for fineness. In the assay houses of Serica, in the Hellenistic mints and in the workshops where al-Khazini set his balances true, this craft taught men to promise a coin a stranger could trust. The Mint takes the assayer's bench into its own hall."
 msgstr ""

@@ -1890,11 +1890,13 @@ func do_tick():
 
             # --- THE RECIPE "COIN COLLECTION": a staffed Mint raises the poll tax ---
             # The yield "coinage" is virtual: one unit is +1% of the tax, not a good in storage.
-            # The profession's consumption bonus scales it exactly like the scholar's science.
+            # It is scaled by the building's whole output multiplier: the worker's consumption
+            # bonus (precision instruments), the building production specialization and the
+            # technology bonuses all act on the share as they act on the goods of the building.
             # The share is counted per slot, so a Mint keeps exactly one coin collection slot.
             if recipe_id == "coin_collection":
                 var coinage_units := float(GameData.get_building_additional_yield(bld.get("id", "")).get("coinage", 0))
-                mint_tax_share += coinage_units * 0.01 * prof_multiplier
+                mint_tax_share += coinage_units * 0.01 * output_multiplier
 
             # --- THE GRADUAL RELEASE OF THE RESULT (every tick) ---
             # Each "portion" of the release has the quality, calculated by

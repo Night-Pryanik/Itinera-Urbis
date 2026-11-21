@@ -5653,6 +5653,10 @@ msgctxt "modifiers.tech_modifiers.name"
 msgid "Woodcutter's camp: +10% production"
 msgstr "Лесная делянка: +10% к производству"
 
+msgctxt "modifiers.tech_modifiers.name"
+msgid "Assaying: +50% to the Mint's coinage share"
+msgstr "Пробирное дело: +50% к доле чеканки"
+
 msgctxt "priority_names"
 msgid "Best quality"
 msgstr "Лучшее качество"
@@ -9517,8 +9521,8 @@ msgid "Collects mineral water at a spring catchment."
 msgstr "Набирает минеральную воду из каптажа."
 
 msgctxt "professions.description"
-msgid "Strikes coins and keeps the tally in the mint, adding to the tax collected from the citizens."
-msgstr "Чеканит монеты и ведёт счёт в монетном дворе, увеличивая подушную подать."
+msgid "Strikes coins and checks the metal at the mint. One master does the work of both minter and assayer, so more of the poll tax reaches the treasury."
+msgstr "Чеканит монеты и проверяет металл в монетном дворе. Один мастер совмещает работу чеканщика и пробирера, поэтому в казну поступает больше подушной подати."
 
 #: data/technologies/ancient.json
 msgctxt "technologies.unlock_effects.name"
@@ -9528,6 +9532,10 @@ msgstr "Открывает строительство каптажей для с
 msgctxt "technologies.unlock_effects.name"
 msgid "Mint: +5% to the poll tax per worker"
 msgstr "Монетный двор: +5% к подушной подати за работника"
+
+msgctxt "technologies.unlock_effects.name"
+msgid "Assaying: +50% to the Mint's coinage share"
+msgstr "Пробирное дело: +50% к доле чеканки"
 
 #: data/covers.json
 msgctxt "covers.name"
@@ -9616,8 +9624,8 @@ msgid "Strands laid along a long covered lane are twisted into full-length ropes
 msgstr "Пряди, уложенные вдоль длинного крытого двора, скручивают на всю длину каната или троса."
 
 msgctxt "buildings.description"
-msgid "Strikes coins and keeps the tally of the citizens, adding to the tax collected."
-msgstr "Чеканит монеты и ведёт счёт жителей, увеличивая собранную подать."
+msgid "Strikes coins and assays the metal, adding to the tax collected."
+msgstr "Чеканит монеты и проверяет пробу металла, увеличивая собранную подать."
 
 msgctxt "technologies.name"
 msgid "Rope Twisting"
@@ -9627,6 +9635,10 @@ msgctxt "technologies.name"
 msgid "Coinage"
 msgstr "Чеканка монет"
 
+msgctxt "technologies.name"
+msgid "Assaying"
+msgstr "Пробирное дело"
+
 msgctxt "technologies.description"
 msgid "Unlocks the ropewalk."
 msgstr "Открывает канатный двор."
@@ -9635,6 +9647,10 @@ msgctxt "technologies.description"
 msgid "Allows you to build the Mint.\nA Mint worker adds +5% to the poll tax."
 msgstr "Позволяет строить монетный двор.\nРаботник монетного двора добавляет +5% к подушной подати."
 
+msgctxt "technologies.description"
+msgid "The master of the Mint now tests the metal as well as strikes it: +50% to his share of the poll tax.\nConsumes precision instruments."
+msgstr "Мастер монетного двора теперь не только чеканит монеты, но и проверяет металл: +50% к его доле подушной подати.\nПотребляет точные инструменты."
+
 msgctxt "technologies.flavor"
 msgid "Yarns were spun up into strands and then laid together with a counter-twist. A long covered lane let a ropery stretch the strands from end to end and walk back as they combined, making ropes far longer and thicker than a household shed could twist. Ropewalks became a familiar part of medieval shipbuilding and dockyard work."
 msgstr "Сначала пряжу скручивали в пряди, затем их свивали встречной круткой в канат. Длинный крытый двор позволял растянуть пряди от конца до конца и пройти по нему, постепенно свивая их, и делать канаты гораздо длиннее и толще, чем в домашней мастерской. В Средние века канатные дворы стали привычной частью судостроения и портовых работ."
@@ -9642,3 +9658,7 @@ msgstr "Сначала пряжу скручивали в пряди, затем
 msgctxt "technologies.flavor"
 msgid "A weighed piece of metal bearing a ruler's mark turned a bargain into a debt that could be counted. Stamped ingots appeared in Lydia and in the Zhou lands; the stamp made the coin a promise the next town would accept."
 msgstr "Взвешенный кусок металла с меткой правителя превращал сделку в долг, который можно сосчитать. Штемпельные слитки появились в Лидии и в землях Чжоу; клеймо делало монету обещанием, которое примет соседний город."
+
+msgctxt "technologies.flavor"
+msgid "Weighing is only the first answer. Before the die falls, the metal must be cupelled with lead, parted and read for fineness. In the assay houses of Serica, in the Hellenistic mints and in the workshops where al-Khazini set his balances true, this craft taught men to promise a coin a stranger could trust. The Mint takes the assayer's bench into its own hall."
+msgstr "Взвешивание — лишь первый ответ. Прежде чем на монету ляжет штемпель, металл сплавляют со свинцом, разделяют и определяют его пробу. В пробирных палатах Серы, в эллинистических монетных дворах и в мастерских, где аль-Хазини выверял свои весы, это ремесло научило людей обещать монету, которой поверит чужой город. Монетный двор переносит пробирный стол к себе."

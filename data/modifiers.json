@@ -145,6 +145,14 @@
         // while the ink of the first one dries.
         "tech_id": "printing",
         "building_production_slots": { "bookbinder_workshop": 1 }
+      },
+      {
+        // The virtual coinage of the Mint is scaled by the building's output multiplier,
+        // so a staffed assayer with the craft of assaying adds more to the poll tax.
+        "tech_id": "assaying",
+        "icon": "coin_stack.png",
+        "name": "Assaying: +50% to the Mint's coinage share",
+        "building_production_multiplier": { "mint": 1.5 }
       }
     ],
     "terrain_modifiers": [
