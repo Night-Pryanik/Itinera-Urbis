@@ -222,6 +222,18 @@ func _run() -> void:
     check(theme.get_color("font_color", "Button").is_equal_approx(manager.color("text")),
         "the button label takes the text colour", state)
 
+    # The buttons of the main menu lie on the picture of the city: nothing is drawn
+    # around the label there, and the word carries a frame of its own.
+    var picture_normal := theme.get_stylebox("normal", "PictureButton") as StyleBoxFlat
+    check(picture_normal != null, "PictureButton/normal is styled by the palette", state)
+    if picture_normal != null:
+        check(picture_normal.bg_color.a == 0.0,
+            "the plate of a menu button draws nothing (got: %f)" % picture_normal.bg_color.a, state)
+        check(picture_normal.border_width_left == 0 and picture_normal.border_width_top == 0,
+            "the frame of a menu button is gone", state)
+    check(theme.get_constant("outline_size", "PictureButton") > 0,
+        "the label of a menu button has a frame of its own", state)
+
     var field := theme.get_stylebox("normal", "LineEdit") as StyleBoxFlat
     check(field != null, "LineEdit/normal is styled by the palette", state)
     if field != null:

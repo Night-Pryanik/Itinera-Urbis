@@ -55,6 +55,13 @@ const DATA_TOKENS: Array[String] = [
     "price", "price_amount", "quality", "income", "expense", "warning"]
 const METRIC_TOKENS: Array[String] = ["panel_radius", "control_radius"]
 
+# The buttons of the main menu lie on the picture of the city: only the word is
+# drawn there, with a frame of its own, so that it is read on any part of the picture.
+const MENU_BUTTON_OUTLINE := Color(0.05, 0.04, 0.03, 0.85)
+const MENU_BUTTON_OUTLINE_SIZE := 5
+# The plate under the item the pointer is on.
+const MENU_BUTTON_HOVER_ALPHA := 0.32
+
 # Emitted after the palette is replaced. The signals carries no data: the listeners ask
 # the manager for the tokens themselves, so a listener cannot end up with a stale copy.
 signal theme_applied
@@ -307,6 +314,23 @@ func _style_buttons(theme: Theme) -> void:
         theme.set_color("font_pressed_color", type, color("text"))
         theme.set_color("font_focus_color", type, color("text"))
         theme.set_color("font_disabled_color", type, color("text_muted"))
+    # The buttons of the main menu lie on the picture of the city, so nothing is drawn
+    # around the label there: the picture is seen through the item, and the word is
+    # the whole of the button. The label carries a frame of its own, for the words to
+    # be read on any part of the picture.
+    theme.set_type_variation("PictureButton", "Button")
+    theme.set_stylebox("normal", "PictureButton", _bare_plate())
+    theme.set_stylebox("hover", "PictureButton", _faint_plate(UI_THEME.control_hover()))
+    theme.set_stylebox("pressed", "PictureButton", _faint_plate(UI_THEME.control_pressed()))
+    theme.set_stylebox("disabled", "PictureButton", _bare_plate())
+    theme.set_stylebox("focus", "PictureButton", _focus_frame())
+    theme.set_color("font_color", "PictureButton", color("text"))
+    theme.set_color("font_hover_color", "PictureButton", color("text"))
+    theme.set_color("font_pressed_color", "PictureButton", color("text"))
+    theme.set_color("font_focus_color", "PictureButton", color("text"))
+    theme.set_color("font_disabled_color", "PictureButton", color("text_muted"))
+    theme.set_color("font_outline_color", "PictureButton", MENU_BUTTON_OUTLINE)
+    theme.set_constant("outline_size", "PictureButton", MENU_BUTTON_OUTLINE_SIZE)
     # A checkbox draws its glyph on a transparent background: only the label follows the
     # palette, a frame around the whole row would read as a pressed button.
     for type in ["CheckBox", "CheckButton"]:
@@ -530,6 +554,26 @@ func _style_surfaces(theme: Theme) -> void:
 func _add_surface(theme: Theme, name: String, style: StyleBox) -> void:
     theme.set_type_variation(name, "Panel")
     theme.set_stylebox("panel", name, style)
+
+# The plate of an item that lies on the picture: nothing is drawn, only the space
+# around the label is kept, so that the word is the whole of the button.
+func _bare_plate() -> StyleBoxFlat:
+    var style := StyleBoxFlat.new()
+    style.bg_color = Color(0, 0, 0, 0)
+    style.set_border_width_all(0)
+    style.set_corner_radius_all(int(metric("control_radius")))
+    style.content_margin_left = 8.0
+    style.content_margin_right = 8.0
+    style.content_margin_top = 4.0
+    style.content_margin_bottom = 4.0
+    return style
+
+# The faint plate under the item the pointer is on. It is faint on purpose: the word
+# stays the main thing on the picture.
+func _faint_plate(style: StyleBoxFlat) -> StyleBoxFlat:
+    style.bg_color.a *= MENU_BUTTON_HOVER_ALPHA
+    style.set_border_width_all(0)
+    return style
 
 # The focus frame is drawn OVER the normal box, so it has no fill of its own: an opaque
 # box would repaint the control in a second colour as soon as it takes the focus.

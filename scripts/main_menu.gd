@@ -94,6 +94,7 @@ const SEA_CHECK := "check"
 const RIVER_COUNT_KEYS: Array[String] = ["num_main_rivers", "num_tributaries"]
 const RIVER_COUNT_SPREAD := 0.3
 
+@onready var title_label = $TitleLabel
 @onready var continue_button = $VBoxContainer/ContinueButton
 @onready var new_game_button = $VBoxContainer/NewGameButton
 @onready var load_game_button = $VBoxContainer/LoadGameButton
@@ -154,6 +155,8 @@ func _ready():
     # The saved window is applied before the menu is shown, so a player who chose a
     # resolution or a window mode does not see the project default first.
     DisplaySettings.apply_saved()
+    # The name of the game is the name of the game: it is not translated.
+    title_label.text = "Itinera Urbis:\nHearth to Horizon"
     # The data comes first: the tooltip of "Continue game" names the era of the save,
     # and on a cold start the menu is the first scene — GameData is not loaded yet.
     _check_game_data()

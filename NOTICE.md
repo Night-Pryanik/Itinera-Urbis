@@ -48,7 +48,7 @@ distributed build unless its own license allows redistribution.
 
 ## Artwork
 
-The artwork in `icons/`, `tilesets/` and `icon.svg` was produced with the help of an
+The artwork in `icons/`, `tilesets/`, `backgrounds/` and `icon.svg` was produced with the help of an
 image-generation model. The author claims the copyright over the result and licenses
 it under CC BY 4.0 (see [`LICENSE-ASSETS.md`](LICENSE-ASSETS.md)).
 

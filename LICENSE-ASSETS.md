@@ -12,7 +12,7 @@ International** license (CC BY 4.0).
 | Material | Where it lives | License |
 |---|---|---|
 | Code, scenes, tests, tools | `scripts/`, `scenes/`, `tests/`, `tools/`, `*.gd`, `*.tscn`, `*.tres` | CC BY-NC-SA 4.0 ([`LICENSE`](LICENSE)) |
-| Artwork | `icons/`, `tilesets/`, `icon.svg` | CC BY 4.0 (this file) |
+| Artwork | `icons/`, `tilesets/`, `backgrounds/`, `icon.svg` | CC BY 4.0 (this file) |
 | Game data | `data/` | CC BY 4.0 (this file) |
 | Texts and localization | `locale/`, `README.md`, `design_doc.md` | CC BY 4.0 (this file) |
 

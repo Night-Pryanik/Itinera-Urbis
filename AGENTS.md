@@ -240,6 +240,10 @@ Keep hand-drawn text on a layer of its own with the default filter, and reserve 
 
 Check it in the real window, not in a screenshot of the viewport: a viewport rendered at its own size shows no scaling and therefore no artefact at all. `DisplayServer.screen_get_image()` captures what the player sees.
 
+## The Logical Size of the Interface
+
+The window is 1920×1080, but the interface is laid out in 1365×768: `window/stretch/scale = 1.40625` divides the base size, and the canvas is then magnified into the window. Every offset and every position in a scene is therefore counted in the logical pixels, and a screenshot of the window shows them ×1.40625. A layout drawn against the pixels of the screen lands 40% lower than intended.
+
 ---
 
 ## The Active Pause and the Ticks of the Interface
