@@ -109,7 +109,7 @@
     {
       "id": "fabric_clothes",
       "name": "Cloth Clothes",
-      "produced_in": [ "weaver_house" ],
+      "produced_in": [ "weaver_house", "weaver_workshop" ],
       "resources": { "@textile_crops": 20 },
       "result": { "fabric_clothes": 10 },
       "extra_kinds": ["dye"],
@@ -120,7 +120,7 @@
     {
       "id": "wool_clothes",
       "name": "Wool Clothes",
-      "produced_in": [ "weaver_house" ],
+      "produced_in": [ "weaver_house", "weaver_workshop" ],
       "resources": { "wool": 20 },
       "result": { "wool_clothes": 10 },
       "extra_kinds": ["dye"],
@@ -131,7 +131,7 @@
     {
       "id": "carpet",
       "name": "Carpet",
-      "produced_in": [ "weaver_house" ],
+      "produced_in": [ "weaver_house", "weaver_workshop" ],
       "resources": [ [ { "wool": 20 }, { "@textile_crops": 20 } ] ],
       "result": { "carpet": 10 },
       "time": 8.0,
@@ -141,7 +141,7 @@
     {
       "id": "canvas_loom",
       "name": "Canvas",
-      "produced_in": [ "weaver_house" ],
+      "produced_in": [ "weaver_house", "weaver_workshop" ],
       "resources": { "@textile_crops": 20 },
       "result": { "canvas": 10 },
       "time": 8.0,
@@ -163,7 +163,7 @@
       // data/products/food.json).
       "id": "cashmere",
       "name": "Cashmere",
-      "produced_in": [ "weaver_house" ],
+      "produced_in": [ "weaver_house", "weaver_workshop" ],
       "resources": { "wool": 20 },
       "result": { "cashmere": 10 },
       "time": 12,
@@ -173,7 +173,7 @@
     {
       "id": "silk_clothes",
       "name": "Silk Clothes",
-      "produced_in": [ "weaver_house" ],
+      "produced_in": [ "weaver_house", "weaver_workshop" ],
       "resources": { "silk": 20 },
       "result": { "silk_clothes": 10 },
       "extra_kinds": ["dye"],
@@ -268,7 +268,7 @@
     {
       "id": "ropes",
       "name": "Ropes and Cables",
-      "produced_in": [ "ropemaker_house" ],
+      "produced_in": [ "ropemaker_house", "ropewalk" ],
       "resources": { "@rope_fibers": 20 },
       "result": { "ropes": 10 },
       "time": 5.0,
