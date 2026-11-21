@@ -1,4 +1,4 @@
-# The City — Design document
+# Itinera Urbis: Hearth to Horizon — Design document
 
 **Version:** 2026-11-20  
 **Repository:** https://github.com/Night-Pryanik/The-City  
@@ -9,7 +9,7 @@
 
 ## 1. High concept
 
-**The City** is an economic-resource simulator of the development of **a single city** on a hex map across several historical eras.
+**Itinera Urbis: Hearth to Horizon** is an economic-resource simulator of the development of **a single city** on a hex map across several historical eras.
 
 The player does not micromanage individual residents and does not draw a street grid in the spirit of Cities: Skylines. **The city is the main character:** it extracts, processes, researches, expands and trades. Residents are "cogs" (workers/slots), not characters.
 
@@ -28,13 +28,13 @@ The author's old notes (2014–2019) described a more "urban-planning" variant (
 
 ## Worldview and Historical Context
 
-### 1. The World of The City
+### 1. The World of Itinera Urbis: Hearth to Horizon
 
-The City is an economic strategy game about the development of human civilization as a whole. Its world is built around an intentionally alternate geography, an alternate historical context, and a flexible cultural identity.
+Itinera Urbis: Hearth to Horizon is an economic strategy game about the development of human civilization as a whole. Its world is built around an intentionally alternate geography, an alternate historical context, and a flexible cultural identity.
 
 The game does not represent any particular real-world geographical region or civilization. It is neither a simulation of Europe nor a reconstruction of the Mediterranean, the Middle East, or any other specific part of the world. There are no direct equivalents of real-world historical or geographical regions on the game map.
 
-Most importantly, **Europe is not the historical, geographical, or cultural center of The City**. European history is one source of historical knowledge among many, but it does not provide the universal framework through which the game's world is understood.
+Most importantly, **Europe is not the historical, geographical, or cultural center of Itinera Urbis: Hearth to Horizon**. European history is one source of historical knowledge among many, but it does not provide the universal framework through which the game's world is understood.
 
 The project does not depict the story of European civilization gradually discovering, adopting, and incorporating the achievements of other peoples. Instead, it explores the development of human society through a broader perspective in which different parts of the world, their knowledge, resources, and practices have equal historical significance.
 
@@ -42,7 +42,7 @@ This principle influences the game's geography, chronology, technology progressi
 
 ### 2. Alternate Geography
 
-The geographical setting of The City is deliberately independent of the actual arrangement of continents, ecosystems, and biogeographical regions on Earth.
+The geographical setting of Itinera Urbis: Hearth to Horizon is deliberately independent of the actual arrangement of continents, ecosystems, and biogeographical regions on Earth.
 
 Plants, animals, and natural resources originating in different parts of the real world may coexist within a single game map. For example, South American llamas may share their surroundings with Chinese ramie and tropical coconut palms.
 
@@ -54,7 +54,7 @@ The game's geography is therefore best understood as a functional and ecological
 
 ### 3. Alternate History and the Development of Humanity
 
-The historical context of The City is similarly alternate.
+The historical context of Itinera Urbis: Hearth to Horizon is similarly alternate.
 
 The game does not reproduce the actual chronological development of any particular civilization. It draws inspiration from the technological achievements, material culture, agricultural practices, and production methods of humanity across different periods and geographical regions.
 
@@ -68,7 +68,7 @@ The resulting setting is not intended to be a precise historical simulation. It 
 
 ### 4. Game Eras as a Technological Framework
 
-The eras in The City are abstract stages of technological development. Their names are primarily chosen for familiarity and ease of recognition, rather than for strict correspondence with real-world historical periodization.
+The eras in Itinera Urbis: Hearth to Horizon are abstract stages of technological development. Their names are primarily chosen for familiarity and ease of recognition, rather than for strict correspondence with real-world historical periodization.
 
 The boundaries and duration of game eras correlate only approximately with the actual historical eras whose names they use. In particular, the game's Ancient Era should not be interpreted as a direct representation of European Antiquity, nor should the game's Medieval Era be understood as a reconstruction of the European Middle Ages.
 
@@ -82,7 +82,7 @@ An item that was already used by people in one part of the world may therefore b
 
 ### 5. Historical Origins, Adoption, and Technological Feasibility
 
-An important distinction in the historical approach of The City is the difference between the origin of something, its earliest known use, its spread between regions, and its eventual adoption by European societies.
+An important distinction in the historical approach of Itinera Urbis: Hearth to Horizon is the difference between the origin of something, its earliest known use, its spread between regions, and its eventual adoption by European societies.
 
 These events are not interchangeable and often occurred at very different times.
 
@@ -98,7 +98,7 @@ Its historical spread and the emergence of established coffee-drinking tradition
 
 The existence of later historical records of coffee consumption does not automatically establish that its use was technologically impossible in earlier periods.
 
-In the context of The City, the relevant question is not simply when coffee became a familiar beverage in a particular region, but when humanity possessed the practical means to process and consume it.
+In the context of Itinera Urbis: Hearth to Horizon, the relevant question is not simply when coffee became a familiar beverage in a particular region, but when humanity possessed the practical means to process and consume it.
 
 #### Tobacco
 
@@ -128,7 +128,7 @@ This approach allows the game to maintain technological coherence without mistak
 
 ### 6. Cultural Identity and Toponymy
 
-The cultural identity of The City is not tied to any single historical civilization, language family, or geographical region.
+The cultural identity of Itinera Urbis: Hearth to Horizon is not tied to any single historical civilization, language family, or geographical region.
 
 Names of cities, regions, products, and other elements of the game world may draw inspiration from different cultural and linguistic traditions. Elements from otherwise unrelated traditions may appear together within the same name.
 
@@ -165,7 +165,7 @@ The objective is not to reproduce every historical detail, but to create a coher
 
 ### 8. Design Implications
 
-The historical and geographical philosophy described above has several direct consequences for the design of The City.
+The historical and geographical philosophy described above has several direct consequences for the design of Itinera Urbis: Hearth to Horizon.
 
 **Resource availability** is not restricted by the real-world geographical distribution of plants, animals, and materials. Their placement is determined by the fictional geography and the game's ecological and economic systems.
 
@@ -177,15 +177,15 @@ The historical and geographical philosophy described above has several direct co
 
 **Cultural and geographical references** are not required to conform to a single historical or regional identity. The world has its own alternate cultural and geographical context.
 
-These principles allow The City to combine historical inspiration with creative freedom while maintaining a consistent view of technological and economic development.
+These principles allow Itinera Urbis: Hearth to Horizon to combine historical inspiration with creative freedom while maintaining a consistent view of technological and economic development.
 
 ### Conclusion
 
-The City presents an alternate world in which human civilization develops as a whole, rather than through the historical perspective of any single region.
+Itinera Urbis: Hearth to Horizon presents an alternate world in which human civilization develops as a whole, rather than through the historical perspective of any single region.
 
 Its geography is fictional, its chronology is an approximate technological framework, and its cultural identity is deliberately eclectic. Real-world history provides the knowledge and inspiration behind its resources, technologies, and production systems, but no single civilization or regional chronology defines the entire world.
 
-**The City is not a story of Europe discovering the rest of the world. It is a story of humanity developing its knowledge, industries, and societies in an alternate world.**
+**Itinera Urbis: Hearth to Horizon is not a story of Europe discovering the rest of the world. It is a story of humanity developing its knowledge, industries, and societies in an alternate world.**
 
 ---
 

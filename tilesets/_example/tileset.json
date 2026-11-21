@@ -14,7 +14,7 @@
 
   "name": "Placeholder Set",
   "description": "A flat placeholder set for every type of icon. Shows how a tileset replaces the vanilla art of the types it declares.",
-  "author": "The City",
+  "author": "Itinera Urbis",
   "version": "1.0.0",
 
   // A single type may be written as a string: "type": "buildings".

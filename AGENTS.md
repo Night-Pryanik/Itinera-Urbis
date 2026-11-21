@@ -252,21 +252,21 @@ A tooltip of the HUD belongs to the interface of the map and must not outlive it
 
 ---
 
-## The City: Historical, Geographical, and Cultural Context
+## Itinera Urbis: Historical, Geographical, and Cultural Context
 
 ### The Fundamental Principle
 
-**Europe is not the center of the world in The City.**
+**Europe is not the center of the world in Itinera Urbis.**
 
 European history is not the foundation of the game's chronology. European geography does not define the structure of the game world, and European historical events and achievements are not a universal measure of humanity's technological or cultural development.
 
-The City is not a simulation of European civilization gradually discovering the rest of the world. It is an economic strategy game depicting the development of humanity as a whole in an alternate historical and geographical context.
+Itinera Urbis is not a simulation of European civilization gradually discovering the rest of the world. It is an economic strategy game depicting the development of humanity as a whole in an alternate historical and geographical context.
 
 When designing mechanics, resources, technologies, production chains, names, descriptions, or any other aspect of the game, always keep this principle in mind.
 
 ### 1. Alternate Geography and History
 
-The geography of The City is deliberately alternate. On a single game map, it is perfectly normal to find:
+The geography of Itinera Urbis is deliberately alternate. On a single game map, it is perfectly normal to find:
 
 - South American llamas;
 - Chinese ramie;
@@ -276,7 +276,7 @@ These are not map-generation errors, nor an attempt to recreate real-world bioge
 
 History works in much the same way: the game does not reproduce the real-world sequence of historical events, the spread of cultures, or interactions between civilizations. Real historical processes can serve as sources of inspiration, but they do not impose mandatory constraints on the game world.
 
-**Do not attempt to reconstruct the real Earth or its historical geography through the game's mechanics.** The City has no real-world historical or geographical regions. It is not Europe, the Mediterranean, the Middle East, or any other specific geographical region.
+**Do not attempt to reconstruct the real Earth or its historical geography through the game's mechanics.** Itinera Urbis has no real-world historical or geographical regions. It is not Europe, the Mediterranean, the Middle East, or any other specific geographical region.
 
 ### 2. Game Eras Are Approximate Labels for Technological Development
 
@@ -360,7 +360,7 @@ Of course, this does not mean that every product can be unconditionally moved in
 
 ### 6. Alternate Toponymy and Cultural Blending
 
-The City does not require names to conform to specific real-world historical languages, cultures, or regions.
+Itinera Urbis does not require names to conform to specific real-world historical languages, cultures, or regions.
 
 Names of cities, regions, products, and other objects may combine elements from different linguistic and cultural traditions.
 
@@ -403,7 +403,7 @@ Always remember that game eras are an approximate scale of overall technological
 - European periodization is not a universal chronology of humanity.
 - The date a product appeared in Europe is not the same as the date it originated or first came into use.
 - The histories of other peoples and regions have their own value and must not be treated as appendices to European history.
-- The geography, history, and toponymy of The City are deliberately alternate.
+- The geography, history, and toponymy of Itinera Urbis are deliberately alternate.
 - Historical plausibility should be determined by origins, technological prerequisites, and actual production capabilities, not by familiar European dates.
 
-**Do not turn The City into a game about Europe gradually discovering the rest of the world. That is not the game we are making.**
+**Do not turn Itinera Urbis into a game about Europe gradually discovering the rest of the world. That is not the game we are making.**

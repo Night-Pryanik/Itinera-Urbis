@@ -90,7 +90,7 @@ func _build_ui() -> void:
     column.add_child(_title_label)
 
     var game_name := Label.new()
-    game_name.text = "The City"
+    game_name.text = "Itinera Urbis"
     game_name.add_theme_font_size_override("font_size", 18)
     game_name.add_theme_color_override("font_color", UI_THEME.color("accent"))
     column.add_child(game_name)
@@ -144,7 +144,7 @@ func _fill_content() -> void:
         tr("Anyone may read, change and share the code. It may not be used to make money, and a changed version must stay under the same license."),
         CODE_LICENSE_URL, tr("Open the license text"))
     _add_license(tr("Artwork and game data"), "CC BY 4.0",
-        tr("Anyone may reuse the artwork and the data, including commercially, as long as The City is credited."),
+        tr("Anyone may reuse the artwork and the data, including commercially, as long as Itinera Urbis is credited."),
         ASSETS_LICENSE_URL, tr("Open the license text"))
 
     _add_heading(tr("Third-party components"))

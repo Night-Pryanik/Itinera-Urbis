@@ -1,4 +1,4 @@
-# Tilesets — how to re-draw the icons of The City
+# Tilesets — how to re-draw the icons of Itinera Urbis
 
 This guide describes how a tileset works and how to assemble one. A ready-made specimen
 lives next to this file:

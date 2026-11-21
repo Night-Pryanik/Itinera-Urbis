@@ -1,6 +1,6 @@
-# The City — localization catalog.
-# Copyright (C) 2026 the authors of The City.
-# This file is distributed under the same license as the The City project.
+# Itinera Urbis — localization catalog.
+# Copyright (C) 2026 the authors of Itinera Urbis.
+# This file is distributed under the same license as the Itinera Urbis project.
 #
 # Source language: en. Every target language has its own file in locale/,
 # built from the same msgids.
@@ -8,7 +8,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: The City\n"
+"Project-Id-Version: Itinera Urbis\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -627,8 +627,8 @@ msgstr "Любой товар из группы"
 msgid "Anyone may read, change and share the code. It may not be used to make money, and a changed version must stay under the same license."
 msgstr "Любой может читать, изменять и распространять код. Его нельзя использовать для заработка, а изменённая версия должна оставаться под той же лицензией."
 
-msgid "Anyone may reuse the artwork and the data, including commercially, as long as The City is credited."
-msgstr "Любой может использовать графику и данные, в том числе за деньги, если указать авторство The City."
+msgid "Anyone may reuse the artwork and the data, including commercially, as long as Itinera Urbis is credited."
+msgstr "Любой может использовать графику и данные, в том числе за деньги, если указать авторство Itinera Urbis."
 
 msgid "Appearance"
 msgstr "Внешний вид"

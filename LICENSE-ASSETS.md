@@ -1,6 +1,6 @@
 # License for the artwork and the data
 
-The **code** of The City is licensed separately, under CC BY-NC-SA 4.0 — see
+The **code** of Itinera Urbis is licensed separately, under CC BY-NC-SA 4.0 — see
 [`LICENSE`](LICENSE).
 
 This file covers everything that is *not* code: the artwork, the game data and the
@@ -18,7 +18,7 @@ International** license (CC BY 4.0).
 
 Third-party components keep their own licenses and are listed in [`NOTICE.md`](NOTICE.md).
 
-The name **The City**, the logo and any other trademark of the project are **not**
+The name **Itinera Urbis**, the logo and any other trademark of the project are **not**
 covered by this license. The license grants permission to use the material; it
 does not grant permission to use the project's name or branding to present a
 modified or derived work as the original game.
@@ -35,7 +35,7 @@ The only condition is **attribution**: if you share the material (modified or
 not), you must give appropriate credit, link to the license, and indicate
 whether you made changes.
 
-A mod that reuses vanilla icons or vanilla data therefore has to credit The City.
+A mod that reuses vanilla icons or vanilla data therefore has to credit Itinera Urbis.
 A mod that only ships its own pictures and its own data does not.
 
 ### Why the code is under a stricter license
@@ -43,7 +43,7 @@ A mod that only ships its own pictures and its own data does not.
 The code carries an extra condition: it may not be used to make money. That is what
 keeps a paid copy of the game from being sold by someone else. The artwork and the
 data do not carry that condition, so a mod may be sold — including a mod that
-reuses vanilla icons and vanilla data, as long as it credits The City.
+reuses vanilla icons and vanilla data, as long as it credits Itinera Urbis.
 
 The code also stays open: whoever changes it and shares their version must share
 that version under the same license, so it remains readable, editable and free.
@@ -53,7 +53,7 @@ that version under the same license, so it remains readable, editable and free.
 If you reuse the artwork or the data, a notice like this one is enough:
 
 ```
-Artwork and game data from "The City" by Anton Burmistrov,
+Artwork and game data from "Itinera Urbis" by Anton Burmistrov,
 licensed under CC BY 4.0 — https://creativecommons.org/licenses/by/4.0/
 ```
 

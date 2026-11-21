@@ -1,6 +1,6 @@
-# Contributing to The City
+# Contributing to Itinera Urbis
 
-The City is a game in active development. Everything is welcome: a bug report, a
+Itinera Urbis is a game in active development. Everything is welcome: a bug report, a
 fix, a new resource in the economy, a translation, a mod.
 
 ## The short version

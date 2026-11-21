@@ -139,7 +139,7 @@ func _check_reading(state: Dictionary) -> void:
     check(str(record["name"]) == "Placeholder Set",
         "the name of the example is wrong: %s" % str(record["name"]), state)
     check(not str(record["description"]).is_empty(), "the description of the example is empty", state)
-    check((record["authors"] as Array) == ["The City"],
+    check((record["authors"] as Array) == ["Itinera Urbis"],
         "the author of the example is wrong: %s" % str(record["authors"]), state)
     check(str(record["version"]) == "1.0.0",
         "the version of the example is wrong: %s" % str(record["version"]), state)

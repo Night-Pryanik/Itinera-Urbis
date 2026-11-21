@@ -90,7 +90,7 @@ func _test_registry(state: Dictionary) -> void:
         return
     check(str(manifest["name"]) == "Test Mod", "the manifest name is read", state)
     check(str(manifest["version"]) == "1.0.0", "the manifest version is read", state)
-    check(manifest["authors"] == ["The City team"], "the manifest authors are read", state)
+    check(manifest["authors"] == ["Itinera Urbis team"], "the manifest authors are read", state)
     check(not str(manifest["description"]).is_empty(), "the manifest description is read", state)
     check((manifest["dependencies"] as Array).is_empty(), "no dependencies", state)
     check((manifest["conflicts"] as Array).is_empty(), "no conflicts", state)

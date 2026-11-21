@@ -1,6 +1,6 @@
 cff-version: 1.2.0
-message: "If you refer to The City in your work, please cite it as below."
-title: "The City"
+message: "If you refer to Itinera Urbis in your work, please cite it as below."
+title: "Itinera Urbis"
 abstract: "An economic simulator of a single city's development through historical eras, on a procedurally generated hexagonal map."
 authors:
   - family-names: "Burmistrov"

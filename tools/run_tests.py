@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Headless test runner for The City.
+"""Headless test runner for Itinera Urbis.
 
 Every test is an independent SceneTree script run as its own process:
 
@@ -65,10 +65,10 @@ LOG_DIR = PROJECT_ROOT / "tools" / "test_logs"
 # Match Godot's platform-specific user data root and directory casing.
 if sys.platform.startswith("linux"):
     USER_DATA_ENV = "XDG_DATA_HOME"
-    USER_DATA_RELATIVE = Path("godot") / "app_userdata" / "The City"
+    USER_DATA_RELATIVE = Path("godot") / "app_userdata" / "Itinera Urbis"
 else:
     USER_DATA_ENV = "APPDATA"
-    USER_DATA_RELATIVE = Path("Godot") / "app_userdata" / "The City"
+    USER_DATA_RELATIVE = Path("Godot") / "app_userdata" / "Itinera Urbis"
 
 # A test that prints no verdict line and is not in MARKERLESS is treated as
 # broken, not as passing. Every test currently prints a standard "<NAME> TEST OK"

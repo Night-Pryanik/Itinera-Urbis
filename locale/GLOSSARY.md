@@ -1,4 +1,4 @@
-# The City — glossary for translators
+# Itinera Urbis — glossary for translators
 
 ## What this is
 

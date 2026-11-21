@@ -2,7 +2,7 @@
 
 ## The game and the security of it
 
-The City is a desktop game. It runs entirely on the computer of the player: it
+Itinera Urbis is a desktop game. It runs entirely on the computer of the player: it
 does not connect to a server, it asks for no account, it collects no telemetry,
 and it reads no data of the system except the files of the game and the saves of
 the player.

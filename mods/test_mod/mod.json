@@ -15,7 +15,7 @@
   // tests/test_mods.gd.
   "id": "test_mod",
   "name": "Test Mod",
-  "authors": [ "The City team" ],
+  "authors": [ "Itinera Urbis team" ],
   "description": "A reference mod: adds glazed tiles and their workshop, changes the price of flour and the cost of a hand mill, and removes papyrus, glass bottles and the alchemist's vitriol from the game.",
   "version": "1.0.0",
   "dependencies": [],

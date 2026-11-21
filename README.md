@@ -1,8 +1,8 @@
-# The City
+# Itinera Urbis: Hearth to Horizon
 
 > An economic simulator of a single city's development through historical eras.
 
-**The City** is a game about how a small settlement gradually turns into a complex city, developing production, technology and infrastructure on a procedurally generated hexagonal map.
+**Itinera Urbis: Hearth to Horizon** is a game about how a small settlement gradually turns into a complex city, developing production, technology and infrastructure on a procedurally generated hexagonal map.
 
 There is no army of thousands of units, no manual control over every citizen, and no need to build every house tile by tile.
 
@@ -12,7 +12,7 @@ The main character is the **city**.
 
 ## 🎮 About the project
 
-The City combines elements of:
+Itinera Urbis: Hearth to Horizon combines elements of:
 
 - an economic simulator;
 - resource management;
@@ -114,7 +114,7 @@ What the city actually uses depends first of all on the resources available on t
 
 ## ⛏️ Resources
 
-The City's economy is built around interconnected resource chains.
+Itinera Urbis: Hearth to Horizon's economy is built around interconnected resource chains.
 
 A single raw material can have several uses at once, which creates real economic decisions:
 
@@ -126,7 +126,7 @@ The game also has one-time natural resources — an analogue of the foraging mec
 
 ## 🎨 Production and quality
 
-The City uses a data-driven approach.
+Itinera Urbis: Hearth to Horizon uses a data-driven approach.
 
 Resources, buildings, technologies, recipes and terrain types are described by data, rather than by hard-coded logic for individual objects.
 
@@ -187,7 +187,7 @@ This is part of the world's artistic design.
 
 ## 🧠 Design principles
 
-The City follows several important principles.
+Itinera Urbis: Hearth to Horizon follows several important principles.
 
 ### 95/5
 
@@ -231,7 +231,7 @@ All game data — resources, buildings, technologies, recipes, terrains — live
 
 ## 📌 Development philosophy
 
-The City does not try to be a maximally realistic historical reconstruction.
+Itinera Urbis: Hearth to Horizon does not try to be a maximally realistic historical reconstruction.
 
 History is used as a source of:
 
@@ -279,10 +279,10 @@ The project is licensed in two parts:
 In plain words:
 
 - **the code** may be read, changed and shared by anyone; it may not be used to make
-  money, so nobody may sell The City or a paid game built on this code; a changed
+  money, so nobody may sell Itinera Urbis: Hearth to Horizon or a paid game built on this code; a changed
   version must stay under the same license, so it remains open;
 - **the artwork and the data** may be reused by anyone, including for money, as long
-  as The City is credited — which is what a mod that reuses vanilla icons or vanilla
+  as Itinera Urbis: Hearth to Horizon is credited — which is what a mod that reuses vanilla icons or vanilla
   data has to do.
 
 Third-party components — the bundled font and the engine — keep their own licenses
@@ -292,6 +292,6 @@ Mods are third-party content: a mod carries its own license, stated by its autho
 The two mods that ship with the game are part of the project and follow the licenses
 above.
 
-The name **The City**, the logo and the branding are not covered by the license.
+The name **Itinera Urbis: Hearth to Horizon**, the logo and the branding are not covered by the license.
 The license grants permission to use the material, not to present a modified or
 derived work as the original game.

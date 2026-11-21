@@ -10,7 +10,7 @@ config_version=5
 
 [application]
 
-config/name="The City"
+config/name="Itinera Urbis"
 run/main_scene="uid://byond26oht575"
 config/features=PackedStringArray("4.7", "Forward Plus")
 config/icon="res://icon.svg"
@@ -38,7 +38,7 @@ window/stretch/scale=1.40625
 
 [dotnet]
 
-project/assembly_name="The City"
+project/assembly_name="Itinera Urbis"
 
 [gui]
 

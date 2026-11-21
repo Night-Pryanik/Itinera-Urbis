@@ -1,6 +1,6 @@
 # Third-party notices
 
-**What this file is.** The City uses a few things that other people made — a font
+**What this file is.** Itinera Urbis uses a few things that other people made — a font
 and the game engine. Each of them comes with its own conditions, and this file
 names them. It is a list and nothing more: it does not limit what you may do with
 the game itself.
@@ -15,7 +15,7 @@ the game itself.
 In plain words: the code may be read, changed and shared by anyone, may not be
 used to make money, and a changed version must stay under the same license. The
 artwork and the data may be reused by anyone, including commercially, as long as
-The City is credited.
+Itinera Urbis is credited.
 
 ## Fonts
 
@@ -65,7 +65,7 @@ Both licenses require the credit and the license notice to travel with the copy 
 leaves your hands. A build that you give away must therefore carry:
 
 - the license of the code and the license of the artwork and the data;
-- the credit — "The City by Anton Burmistrov";
+- the credit — "Itinera Urbis by Anton Burmistrov";
 - this file with the list of third-party components.
 
 Two ways to do that: ship `LICENSE`, `LICENSE-ASSETS.md` and `NOTICE.md` next to the

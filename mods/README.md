@@ -1,4 +1,4 @@
-# Mods — how to create a mod for The City
+# Mods — how to create a mod for Itinera Urbis
 
 This guide describes how mods work in the game and how to assemble them correctly.
 Two ready-made examples live next to this file:
@@ -31,7 +31,7 @@ Where mods live:
 
 - `mods/` in the game folder (`res://mods`) — the mods shipped with the game;
 - `mods/` in the user folder (`user://mods`; on Windows that is
-  `%APPDATA%\The City\mods`) — the mods installed by the player.
+  `%APPDATA%\Itinera Urbis\mods`) — the mods installed by the player.
 
 A mod in `user://mods` with the same `id` as a shipped one **replaces** it — that is how
 a shipped mod is patched without touching the game files.
@@ -283,7 +283,7 @@ The rules:
 - The `icon` field of the data names the file **exactly, extension included**:
   `"icon": "rye.png"` for `icons/resources/rye.png`, `"icon": "rye.svg"` for a drawing in
   SVG. There is no "find by bare name" here: the extension is a part of the name.
-- PNG, SVG, WEBP, JPG, BMP and TGA are read. A mod in `%APPDATA%\The City\mods` is a set of
+- PNG, SVG, WEBP, JPG, BMP and TGA are read. A mod in `%APPDATA%\Itinera Urbis\mods` is a set of
   **raw files** the engine has never imported, so the game decodes them itself: the picture
   is taken as it lies on disk, with no import step and no `.import` file of any kind. An
   SVG is rasterised at the size it declares.
@@ -379,7 +379,7 @@ identifiers.
 
 ## 7. A short checklist
 
-- [ ] The mod is a folder inside `mods/` (in the game root or in `%APPDATA%\The City\mods`).
+- [ ] The mod is a folder inside `mods/` (in the game root or in `%APPDATA%\Itinera Urbis\mods`).
 - [ ] The mod folder root holds a file named **exactly** `mod.json`.
 - [ ] `mod.json` has `id`, `name`, `version`, `authors` (or `author`) filled in.
 - [ ] `id` — `a-z`, `0-9`, `_` only.

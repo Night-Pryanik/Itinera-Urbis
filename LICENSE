@@ -2,7 +2,7 @@
 
 Copyright (c) 2026 Anton Burmistrov
 
-The code of **The City** is licensed under the **Creative Commons
+The code of **Itinera Urbis** is licensed under the **Creative Commons
 Attribution-NonCommercial-ShareAlike 4.0 International** license
 (CC BY-NC-SA 4.0).
 
@@ -13,7 +13,7 @@ see [`LICENSE-ASSETS.md`](LICENSE-ASSETS.md).
 
 - **Anyone may read, copy and edit the code**, and build their own version of the
   game on top of it.
-- **Attribution.** Whoever shares the code must say that it comes from The City by
+- **Attribution.** Whoever shares the code must say that it comes from Itinera Urbis by
   Anton Burmistrov, and must point at this license.
 - **NonCommercial.** The code may not be used to make money: nobody may sell The
   City, a paid edition of it, or a commercial game built on this code. The author
@@ -25,7 +25,7 @@ see [`LICENSE-ASSETS.md`](LICENSE-ASSETS.md).
 ## A notice to copy
 
 ```
-"The City" by Anton Burmistrov — code licensed under CC BY-NC-SA 4.0
+"Itinera Urbis" by Anton Burmistrov — code licensed under CC BY-NC-SA 4.0
 https://creativecommons.org/licenses/by-nc-sa/4.0/
 ```
 
