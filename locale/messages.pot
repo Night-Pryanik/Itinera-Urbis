@@ -15,6 +15,9 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+msgid "Mint"
+msgstr ""
+
 msgctxt ""
 msgid "Delta chance"
 msgstr ""
@@ -4483,6 +4486,10 @@ msgctxt "crafts.description"
 msgid "Weaves heavy sailcloth from plant fibers on a hand loom."
 msgstr ""
 
+msgctxt "crafts.description"
+msgid "The tally of the citizens turns into coins in the treasury."
+msgstr ""
+
 msgctxt "crafts.name"
 msgid "Aged Cheese"
 msgstr ""
@@ -5333,6 +5340,10 @@ msgstr ""
 
 msgctxt "crafts.name"
 msgid "Damascus Precision Instruments"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Coin Collection"
 msgstr ""
 
 msgctxt "eras.name"
@@ -9422,14 +9433,26 @@ msgctxt "professions.name"
 msgid "Water Drawer"
 msgstr ""
 
+msgctxt "professions.name"
+msgid "Mint Worker"
+msgstr ""
+
 #: data/professions.json
 msgctxt "professions.description"
 msgid "Collects mineral water at a spring catchment."
 msgstr ""
 
+msgctxt "professions.description"
+msgid "Strikes coins and keeps the tally in the mint, adding to the tax collected from the citizens."
+msgstr ""
+
 #: data/technologies/ancient.json
 msgctxt "technologies.unlock_effects.name"
 msgid "Unlocks spring catchments for collecting mineral spring water."
+msgstr ""
+
+msgctxt "technologies.unlock_effects.name"
+msgid "Mint: +5% to the poll tax per worker"
 msgstr ""
 
 #: data/covers.json
@@ -9440,6 +9463,10 @@ msgstr ""
 #: data/resources/minerals.json
 msgctxt "resources.name"
 msgid "Salt Spring"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Coinage"
 msgstr ""
 
 msgid "Oil Mill"
@@ -9506,18 +9533,38 @@ msgctxt "buildings.name"
 msgid "Ropewalk"
 msgstr ""
 
+msgctxt "buildings.name"
+msgid "Mint"
+msgstr ""
+
 msgctxt "buildings.description"
 msgid "Strands laid along a long covered lane are twisted into full-length ropes and cables."
+msgstr ""
+
+msgctxt "buildings.description"
+msgid "Strikes coins and keeps the tally of the citizens, adding to the tax collected."
 msgstr ""
 
 msgctxt "technologies.name"
 msgid "Rope Twisting"
 msgstr ""
 
+msgctxt "technologies.name"
+msgid "Coinage"
+msgstr ""
+
 msgctxt "technologies.description"
 msgid "Unlocks the ropewalk."
 msgstr ""
 
+msgctxt "technologies.description"
+msgid "Allows you to build the Mint.\nA Mint worker adds +5% to the poll tax."
+msgstr ""
+
 msgctxt "technologies.flavor"
 msgid "Yarns were spun up into strands and then laid together with a counter-twist. A long covered lane let a ropery stretch the strands from end to end and walk back as they combined, making ropes far longer and thicker than a household shed could twist. Ropewalks became a familiar part of medieval shipbuilding and dockyard work."
+msgstr ""
+
+msgctxt "technologies.flavor"
+msgid "A weighed piece of metal bearing a ruler's mark turned a bargain into a debt that could be counted. Stamped ingots appeared in Lydia and in the Zhou lands; the stamp made the coin a promise the next town would accept."
 msgstr ""

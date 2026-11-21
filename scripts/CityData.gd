@@ -371,6 +371,12 @@ var science_buildings_rate_per_sec: float = 0.0
 # Before the first tick — an empty dictionary (the tooltip shows only the base).
 var science_breakdown: Dictionary = {}
 
+# The share of the poll tax added by staffed Mints. One virtual unit of "coinage" from a
+# building's additional_yield is +1% of the tax. It is recalculated from scratch in do_tick()
+# before the taxes are collected, so the collection and the tooltip of the treasury use the
+# same value. The bonus belongs to the staffed building, not to the technology that unlocked it.
+var mint_tax_share: float = 0.0
+
 # --- THE LABOUR ---
 # The labour = the rate of the work of the city. 1 citizen = 1 labour/sec.
 # It is NOT accumulated, it is a rate, and not a stock.
@@ -420,6 +426,7 @@ func setup():
     research_science_accumulated = 0.0
     science_buildings_rate_per_sec = 0.0
     science_breakdown = {}
+    mint_tax_share = 0.0
     current_era_index = 0
     last_research_messages = []
     city_name = ""
@@ -547,11 +554,13 @@ const POPULATION_INCOME_TYPE: String = "Population consumption"
 func get_base_tax_per_citizen() -> int:
     return int(GameData.game_balance.get("base_tax_per_citizen", 2))
 
-# The tax income for one tick of the simulation: the base tax × the population.
+# The tax income for one tick: the base tax × the population, scaled by the share of the
+# staffed Mints. Rounded to whole coins because the treasury is always an integer.
 # The single source of truth for the collection (collect_taxes) and for the row "Taxes" in the
 # tooltip of the treasury (worker_manager._fill_tax_income).
 func get_tax_income_per_tick() -> int:
-    return get_base_tax_per_citizen() * total_population
+    var base: int = get_base_tax_per_citizen() * total_population
+    return int(round(float(base) * (1.0 + mint_tax_share)))
 
 # The collection of the taxes for the tick: every citizen pays the base tax into the treasury.
 # It returns the actually collected amount (0 — there is no one to pay).
@@ -1712,6 +1721,7 @@ func do_tick():
     # science_breakdown.
     science_buildings_rate_per_sec = 0.0
     var science_breakdown_buildings: Array = []
+    mint_tax_share = 0.0
 
     # The goods a taken branch speeds the making of, and by how much. The map is built once per tick
     # because the loop of the buildings reads it for every slot; it is empty for a city whose branches
@@ -1877,6 +1887,14 @@ func do_tick():
                     "bonus_names": bonus_names
                 }
                 science_breakdown_buildings.append(science_bld_entry)
+
+            # --- THE RECIPE "COIN COLLECTION": a staffed Mint raises the poll tax ---
+            # The yield "coinage" is virtual: one unit is +1% of the tax, not a good in storage.
+            # The profession's consumption bonus scales it exactly like the scholar's science.
+            # The share is counted per slot, so a Mint keeps exactly one coin collection slot.
+            if recipe_id == "coin_collection":
+                var coinage_units := float(GameData.get_building_additional_yield(bld.get("id", "")).get("coinage", 0))
+                mint_tax_share += coinage_units * 0.01 * prof_multiplier
 
             # --- THE GRADUAL RELEASE OF THE RESULT (every tick) ---
             # Each "portion" of the release has the quality, calculated by

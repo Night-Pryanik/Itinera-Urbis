@@ -9,6 +9,15 @@
       "category": "other",
       "unlock_tech": "writing",
       "icon": "science.png"
+    },
+    {
+      // Coinage — a virtual yield of the Mint. It is not a good: one unit means +1% of the poll tax.
+      "id": "coinage",
+      "name": "Coinage",
+      "type": "product",
+      "category": "other",
+      "unlock_tech": "coinage",
+      "icon": "coin_stack.png"
     }
   ]
 }

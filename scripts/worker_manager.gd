@@ -1133,18 +1133,23 @@ func get_actual_treasury_income_map() -> Dictionary:
 # The format of the record is a "flat" type (CityData.TREASURY_FLAT_TYPE_KEY): the tax is so far
 # the only one, there is nothing to lay it out by the sources/products, therefore the tooltip
 # draws it by one row "• Taxes: 2 × 3 persons = 6 / sec". "label" is the right
-# part before the sign "=" (the rate × the number of the payers), the rate is formatted and
-# added by the renderer itself (ui_helpers.show_treasury_tooltip).
+# part before the sign "=" (the rate × the number of the payers, plus the share of the working
+# Mints), the rate is formatted and added by the renderer itself (ui_helpers.show_treasury_tooltip).
 func _fill_tax_income(result: Dictionary) -> void:
     var per_tick: int = CityData.get_tax_income_per_tick()
     if per_tick <= 0:
         return
+    var label: String = tr("%d × %d people") % [
+        CityData.get_base_tax_per_citizen(), CityData.total_population
+    ]
+    if CityData.mint_tax_share > 0.0:
+        var pct: float = snappedf(CityData.mint_tax_share * 100.0, 0.1)
+        var pct_text: String = str(int(pct)) if is_equal_approx(pct, floorf(pct)) else "%.1f" % pct
+        label += " + %s%% %s" % [pct_text, tr("Mint")]
     result[CityData.TAX_INCOME_TYPE] = {
         CityData.TREASURY_FLAT_TYPE_KEY: {
             "rate": float(per_tick) / CityData.SIMULATION_TICK,
-            "label": tr("%d × %d people") % [
-                CityData.get_base_tax_per_citizen(), CityData.total_population
-            ]
+            "label": label
         }
     }
 

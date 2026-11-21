@@ -196,6 +196,12 @@
       "description": "Copies and studies texts in the library and scriptorium, adding to the city's science."
     },
     {
+      "id": "mint_worker",
+      "name": "Mint Worker",
+      "icon": "coin_stack.png",
+      "description": "Strikes coins and keeps the tally in the mint, adding to the tax collected from the citizens."
+    },
+    {
       "id": "winemaker",
       "name": "Winemaker",
       "icon": "profession_winemaker.png",

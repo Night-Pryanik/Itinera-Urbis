@@ -15,6 +15,9 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+msgid "Mint"
+msgstr "Монетный двор"
+
 msgctxt ""
 msgid "Delta chance"
 msgstr "Шанс дельты"
@@ -4558,6 +4561,10 @@ msgctxt "crafts.description"
 msgid "Weaves heavy sailcloth from plant fibers on a hand loom."
 msgstr "Ткёт плотную парусину из растительных волокон на ручном станке."
 
+msgctxt "crafts.description"
+msgid "The tally of the citizens turns into coins in the treasury."
+msgstr "Счёт жителей превращается в монеты в казне."
+
 msgctxt "crafts.name"
 msgid "Aged Cheese"
 msgstr "Выдержанный сыр"
@@ -5409,6 +5416,10 @@ msgstr "Стальные точные инструменты"
 msgctxt "crafts.name"
 msgid "Damascus Precision Instruments"
 msgstr "Дамасские точные инструменты"
+
+msgctxt "crafts.name"
+msgid "Coin Collection"
+msgstr "Сбор подати"
 
 msgctxt "eras.name"
 msgid "Ancient"
@@ -9496,15 +9507,27 @@ msgctxt "professions.name"
 msgid "Water Drawer"
 msgstr "Водонос"
 
+msgctxt "professions.name"
+msgid "Mint Worker"
+msgstr "Монетчик"
+
 #: data/professions.json
 msgctxt "professions.description"
 msgid "Collects mineral water at a spring catchment."
 msgstr "Набирает минеральную воду из каптажа."
 
+msgctxt "professions.description"
+msgid "Strikes coins and keeps the tally in the mint, adding to the tax collected from the citizens."
+msgstr "Чеканит монеты и ведёт счёт в монетном дворе, увеличивая подушную подать."
+
 #: data/technologies/ancient.json
 msgctxt "technologies.unlock_effects.name"
 msgid "Unlocks spring catchments for collecting mineral spring water."
 msgstr "Открывает строительство каптажей для сбора минеральной воды."
+
+msgctxt "technologies.unlock_effects.name"
+msgid "Mint: +5% to the poll tax per worker"
+msgstr "Монетный двор: +5% к подушной подати за работника"
 
 #: data/covers.json
 msgctxt "covers.name"
@@ -9515,6 +9538,10 @@ msgstr "Солёный источник"
 msgctxt "resources.name"
 msgid "Salt Spring"
 msgstr "Солёный источник"
+
+msgctxt "resources.name"
+msgid "Coinage"
+msgstr "Чеканка монет"
 
 msgid "Oil Mill"
 msgstr "Маслобойня"
@@ -9580,18 +9607,38 @@ msgctxt "buildings.name"
 msgid "Ropewalk"
 msgstr "Канатный двор"
 
+msgctxt "buildings.name"
+msgid "Mint"
+msgstr "Монетный двор"
+
 msgctxt "buildings.description"
 msgid "Strands laid along a long covered lane are twisted into full-length ropes and cables."
 msgstr "Пряди, уложенные вдоль длинного крытого двора, скручивают на всю длину каната или троса."
+
+msgctxt "buildings.description"
+msgid "Strikes coins and keeps the tally of the citizens, adding to the tax collected."
+msgstr "Чеканит монеты и ведёт счёт жителей, увеличивая собранную подать."
 
 msgctxt "technologies.name"
 msgid "Rope Twisting"
 msgstr "Витьё канатов"
 
+msgctxt "technologies.name"
+msgid "Coinage"
+msgstr "Чеканка монет"
+
 msgctxt "technologies.description"
 msgid "Unlocks the ropewalk."
 msgstr "Открывает канатный двор."
 
+msgctxt "technologies.description"
+msgid "Allows you to build the Mint.\nA Mint worker adds +5% to the poll tax."
+msgstr "Позволяет строить монетный двор.\nРаботник монетного двора добавляет +5% к подушной подати."
+
 msgctxt "technologies.flavor"
 msgid "Yarns were spun up into strands and then laid together with a counter-twist. A long covered lane let a ropery stretch the strands from end to end and walk back as they combined, making ropes far longer and thicker than a household shed could twist. Ropewalks became a familiar part of medieval shipbuilding and dockyard work."
 msgstr "Сначала пряжу скручивали в пряди, затем их свивали встречной круткой в канат. Длинный крытый двор позволял растянуть пряди от конца до конца и пройти по нему, постепенно свивая их, и делать канаты гораздо длиннее и толще, чем в домашней мастерской. В Средние века канатные дворы стали привычной частью судостроения и портовых работ."
+
+msgctxt "technologies.flavor"
+msgid "A weighed piece of metal bearing a ruler's mark turned a bargain into a debt that could be counted. Stamped ingots appeared in Lydia and in the Zhou lands; the stamp made the coin a promise the next town would accept."
+msgstr "Взвешенный кусок металла с меткой правителя превращал сделку в долг, который можно сосчитать. Штемпельные слитки появились в Лидии и в землях Чжоу; клеймо делало монету обещанием, которое примет соседний город."

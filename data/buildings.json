@@ -490,6 +490,20 @@
       "unlock_tech": "currency"
     },
     {
+      "id": "mint",
+      "name": "Mint",
+      "description": "Strikes coins and keeps the tally of the citizens, adding to the tax collected.",
+      "work_cost": 80,
+      "maintenance_cost": 2.0,
+      "additional_cost": [ { "planks": 150 }, { "@processed_construction_materials": 80 } ],
+      "icon": "mint.png",
+      "profession": "mint_worker",
+      "production_slots": 1.0,
+      "unlock_tech": "coinage",
+      "default_recipes": [ "coin_collection" ],
+      "additional_yield": { "coinage": 5 }
+    },
+    {
       "id": "paper_workshop",
       "name": "Paper Workshop",
       "description": "Makes paper.",

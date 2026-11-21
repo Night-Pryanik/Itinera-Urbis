@@ -231,6 +231,17 @@
       "prerequisites": [ [ "fishing", "wood_processing", "rope_making" ] ],
       "description": "Allows you to build the sailmaker's workshop and the boatyard.\nUnlocks fast sailcloth production and wooden boats rigged with cloth sails.",
       "flavor": "A bundle of reeds floats only until it swells with water; a planked hull keeps the water outside. Sawn boards joined edge to edge over curved ribs, stayed with twisted cordage and driven by a square of heavy canvas let boatmen leave the shallows behind, work deeper fishing grounds in rough weather and carry timber and grain along every river and coast."
+    },
+    {
+      "id": "coinage",
+      "name": "Coinage",
+      "era": "antiquity",
+      "science_cost": 5.0,
+      "icon": "coinage.png",
+      "prerequisites": [ [ "currency", "metallurgy" ] ],
+      "description": "Allows you to build the Mint.\nA Mint worker adds +5% to the poll tax.",
+      "flavor": "A weighed piece of metal bearing a ruler's mark turned a bargain into a debt that could be counted. Stamped ingots appeared in Lydia and in the Zhou lands; the stamp made the coin a promise the next town would accept.",
+      "unlock_effects": [ { "icon": "coin_stack.png", "name": "Mint: +5% to the poll tax per worker" } ]
     }
   ]
 }

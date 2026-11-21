@@ -19,6 +19,16 @@
       "time": 5.0,
       "unlock_tech": "writing",
       "description": "Scribes and scholars turn written material into knowledge that speeds up technology research."
+    },
+    {
+      "id": "coin_collection",
+      "name": "Coin Collection",
+      "produced_in": [ "mint" ],
+      "resources": {  },
+      "result": {  },
+      "display_result": { "coinage": 5 },
+      "time": 5.0,
+      "description": "The tally of the citizens turns into coins in the treasury."
     }
   ]
 }
