@@ -306,23 +306,32 @@ func _apply_zoom_scale() -> void:
     if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
         # The player drags the tree — the scroll belongs to him now.
         return
-    # The point of the tree under the cursor stays under the cursor.
-    var wanted_h: float = _zoom_anchor.x * k - _zoom_cursor.x
-    var wanted_v: float = _zoom_anchor.y * k - _zoom_cursor.y
+    # The bars carry the range of the previous frame: ScrollContainer refreshes it in
+    # its own layout pass, after this method. Use the size just published to find the
+    # scroll the tree needs, so the stale range of the bars cannot decide it. Zooming
+    # in near the edge of the tree would otherwise clamp the scroll against the old
+    # range and pull the point under the cursor away by the whole growth of the tree.
+    var hbar := _scroll.get_h_scroll_bar()
+    var vbar := _scroll.get_v_scroll_bar()
+    var limit_h: float = maxf(0.0, _inner.size.x - hbar.page)
+    var limit_v: float = maxf(0.0, _inner.size.y - vbar.page)
+    var wanted_h: float = clampf(_zoom_anchor.x * k - _zoom_cursor.x, 0.0, limit_h)
+    var wanted_v: float = clampf(_zoom_anchor.y * k - _zoom_cursor.y, 0.0, limit_v)
     _scroll.scroll_horizontal = wanted_h
     _scroll.scroll_vertical = wanted_v
     _compensate_scroll(wanted_h, wanted_v)
 
 # The scroll of the ScrollContainer is kept in whole pixels: the remainder is given to
 # the content, so that the point of the tree under the cursor does not drift from the
-# cursor (without this the drift grows with every notch of the wheel).
-# A scroll that was cut off by the range of the bars is not compensated: the tree cannot
-# be placed under the cursor when its edge is already at the edge of the window.
+# cursor (without this the drift grows with every notch of the wheel). The difference
+# can also come from the stale range of the bars — the wanted scroll is already clamped
+# to the new size, so this only carries the part the container could not apply yet.
+# A scroll cut off by the new range is not compensated: the tree cannot be placed under
+# the cursor when its edge is already at the edge of the window.
 func _compensate_scroll(wanted_h: float, wanted_v: float) -> void:
     var dx: float = _scroll.scroll_horizontal - wanted_h
     var dy: float = _scroll.scroll_vertical - wanted_v
-    _content.position = Vector2(dx if absf(dx) < 1.0 else 0.0,
-            dy if absf(dy) < 1.0 else 0.0)
+    _content.position = Vector2(dx, dy)
 
 # The gesture has settled: the tree keeps the scale it has reached.
 #

@@ -11,6 +11,8 @@
 #   3. The zoom is limited by ZOOM_MIN / ZOOM_MAX.
 #   4. The technology under the cursor stays under the cursor — both for a single notch
 #      of the wheel, and for a series of notches.
+#   4c. A zoom in at the right edge, where the scroll is already at its end, stays put —
+#       the range of the bars lags one layout pass behind the growing tree.
 #   5. The wheel over a row of the unlocked content that overflows does not zoom the tree.
 #   6. The wheel outside the tree does not zoom it.
 #   7. The zoom is stored in the settings.
@@ -141,6 +143,38 @@ func _run() -> void:
         check(drift < 1.0,
             "the point of the tree under the cursor stays under it after a series of the notches (%.1f px)"
                 % drift, state)
+
+    # 4c. The right edge of the tree: the scroll is at its end, and zooming in grows the
+    # content faster than the bars refresh their range. The point under the cursor must
+    # not jump while the bars catch up.
+    tree.set_zoom(1.0)
+    await _settle()
+    for _j in range(6):
+        scroll.scroll_horizontal = 100000
+        await process_frame
+        await process_frame
+    var hbar := scroll.get_h_scroll_bar()
+    check(scroll.scroll_horizontal >= hbar.max_value - hbar.page - 2.0,
+        "the tree is scrolled to its right edge (%.0f of %.0f)"
+            % [scroll.scroll_horizontal, hbar.max_value - hbar.page], state)
+    var edge_cursor: Vector2 = scroll.get_global_rect().end + Vector2(-6.0, -scroll.size.y * 0.5)
+    var edge_before: Vector2 = _content_point(tree, edge_cursor)
+    var edge_event := InputEventMouseButton.new()
+    edge_event.button_index = MOUSE_BUTTON_WHEEL_UP
+    edge_event.pressed = true
+    edge_event.position = edge_cursor
+    edge_event.global_position = edge_cursor
+    get_root().push_input(edge_event, true)
+    var edge_drift: float = 0.0
+    for _f in range(400):
+        await process_frame
+        edge_drift = maxf(edge_drift, _content_point(tree, edge_cursor).distance_to(edge_before))
+        if not tree._zoom_animating:
+            break
+    check(tree._zoom_visual > 1.0, "the wheel at the right edge zooms the tree (%.2f)" % tree._zoom_visual, state)
+    check(edge_drift < 2.0,
+        "the tree under the cursor does not jump while the bars catch up (%.1f px)"
+            % edge_drift, state)
 
     # 5. The wheel over a row of the unlocked content that overflows scrolls the row and
     # does not zoom the tree.
