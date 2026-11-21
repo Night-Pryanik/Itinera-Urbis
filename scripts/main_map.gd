@@ -411,6 +411,7 @@ func _ready():
     CityData.research_error.connect(hud.show_message)
     CityData.population_changed.connect(_on_population_changed)
     CityData.famine_death.connect(_on_famine_death)
+    CityData.maintenance_shortfall.connect(_on_maintenance_shortfall)
     # The treasury in the HUD is updated via the tick path (city_updated) with the check of
     # the era of the display of the resources — synchronously with the other resources. The direct
     # signal treasury_changed is not needed here: the income of the internal market changes

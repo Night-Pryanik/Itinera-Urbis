@@ -1617,15 +1617,19 @@ func show_treasury_tooltip(mouse_pos: Vector2, balance: int, planned_income: Dic
 
     # The precalculation of the net expenses: only the sources with amount > 0 (a
     # negative one — is a pure refund without a compensating expense; we do not
-    # show it). We sum by the types at the same time as the grouping for the
-    # render: at the moment there is only the type "Actions on the map", but the
-    # structure of the snapshot is flat — the type is added here, in the render.
-    var expense_by_type: Dictionary = {tr("Map actions"): {}}
+    # show it). The snapshot is flat; the type is assigned here at render time.
+    # The upkeep of the built entities is separated from the one-off map actions —
+    # it is a regular cost, and the player needs to see it as such.
+    var expense_by_type: Dictionary = {tr("Map actions"): {}, tr("Maintenance"): {}}
     for src in expense_snapshot:
         var amt: int = int(expense_snapshot[src])
         if amt <= 0:
             continue
-        expense_by_type[tr("Map actions")][src] = amt
+        var source_id := str(src)
+        var type_key := tr("Map actions")
+        if source_id.begins_with(GameData.SRC_PREFIX_BUILDING) or source_id.begins_with(GameData.SRC_PREFIX_IMPROVEMENT):
+            type_key = tr("Maintenance")
+        expense_by_type[type_key][source_id] = amt
 
     var has_income: bool = not planned_income.is_empty()
     var has_expense: bool = false

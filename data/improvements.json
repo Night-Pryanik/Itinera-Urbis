@@ -22,6 +22,7 @@
       "icon": "farm.png",
       "color": [ 255, 255, 0 ],
       "work_cost": 8,
+      "maintenance_cost": 0.2,
       "unlock_tech": "farming",
       // The farm works the MAIN FOOD PLANTS only — the crops of
       // data/resources/plants/food_plants.json. No animals (they have the
@@ -44,6 +45,7 @@
       "icon": "pasture.png",
       "color": [ 34, 139, 34 ],
       "work_cost": 25,
+      "maintenance_cost": 100.0,
       "unlock_tech": "animal_husbandry",
       "profession": "herder"
     },
@@ -59,6 +61,7 @@
       // the same as on a pasture — neither has production modifiers — so the
       // difference is a cheaper construction and another worker.
       "work_cost": 12,
+      "maintenance_cost": 100.0,
       "unlock_tech": "animal_husbandry",
       "profession": "stockman"
     },
@@ -72,6 +75,7 @@
       // modifiers, so the output of the pigs is unchanged: the difference is the
       // construction and the worker.
       "work_cost": 16,
+      "maintenance_cost": 100.0,
       "unlock_tech": "animal_husbandry",
       "profession": "swineherd"
     },
@@ -81,6 +85,7 @@
       "icon": "mine.png",
       "color": [ 105, 105, 105 ],
       "work_cost": 30,
+      "maintenance_cost": 36.0,
       "unlock_tech": "mining",
       "profession": "miner"
     },
@@ -90,6 +95,7 @@
       "icon": "quarry.png",
       "color": [ 139, 137, 137 ],
       "work_cost": 20,
+      "maintenance_cost": 36.0,
       "unlock_tech": "masonry",
       "profession": "quarryman"
     },
@@ -99,6 +105,7 @@
       "icon": "beehive.png",
       "color": [ 255, 215, 0 ],
       "work_cost": 12,
+      "maintenance_cost": 100.0,
       "unlock_tech": "beekeeping",
       "profession": "beekeeper"
     },
@@ -108,6 +115,7 @@
       "icon": "vineyard.png",
       "color": [ 128, 0, 0 ],
       "work_cost": 35,
+      "maintenance_cost": 54.0,
       "unlock_tech": "winegrowing",
       "profession": "vinedresser"
     },
@@ -117,6 +125,7 @@
       "icon": "clay_pit.png",
       "color": [ 210, 180, 140 ],
       "work_cost": 22,
+      "maintenance_cost": 27.0,
       "unlock_tech": "pottery",
       "profession": "clay_digger"
     },
@@ -126,6 +135,7 @@
       "icon": "peat_pit.png",
       "color": [ 92, 64, 42 ],
       "work_cost": 22,
+      "maintenance_cost": 27.0,
       "unlock_tech": "peat_cutting",
       "profession": "peat_cutter"
     },
@@ -135,6 +145,7 @@
       "icon": "plantation.png",
       "color": [ 34, 139, 34 ],
       "work_cost": 28,
+      "maintenance_cost": 54.0,
       "unlock_tech": "plantations",
       "profession": "planter",
       // A conductor of fresh water: after the technology "Irrigation" is
@@ -149,6 +160,7 @@
       "icon": "tar_pit.png",
       "color": [ 139, 69, 19 ],
       "work_cost": 30,
+      "maintenance_cost": 81.0,
       "unlock_tech": "tar_burning",
       "profession": "tar_collector"
     },
@@ -158,6 +170,7 @@
       "icon": "soda_quarry.png",
       "color": [ 200, 220, 255 ],
       "work_cost": 30,
+      "maintenance_cost": 72.0,
       "unlock_tech": "soda_extraction",
       "profession": "soda_extractor"
     },
@@ -167,6 +180,7 @@
       "icon": "salt_pond.png",
       "color": [ 255, 255, 200 ],
       "work_cost": 30,
+      "maintenance_cost": 32.4,
       "unlock_tech": "salt_extraction"
     },
     {
@@ -175,6 +189,7 @@
       "icon": "spring_catchment.png",
       "color": [ 63, 148, 145 ],
       "work_cost": 22,
+      "maintenance_cost": 46.8,
       "unlock_tech": "masonry",
       "profession": "water_drawer"
     },
@@ -199,6 +214,7 @@
       "icon": "harbor.png",
       "color": [ 139, 90, 43 ],
       "work_cost": 25,
+      "maintenance_cost": 0.4,
       "unlock_tech": "fishing",
       // Infrastructure: it opens the water resources of the body of water by
       // itself, no worker is required (see docs.md, "Professions and
@@ -217,6 +233,7 @@
       "icon": "fishing_boats.png",
       "color": [ 70, 130, 180 ],
       "work_cost": 15,
+      "maintenance_cost": 45.0,
       "unlock_tech": "fishing",
       "profession": "fisherman",
       // Marker: a harbor on this same body of water is required for the build.
@@ -234,6 +251,7 @@
       "icon": "irrigation_canal.png",
       "color": [ 0, 191, 255 ],
       "work_cost": 20,
+      "maintenance_cost": 0.4,
       "unlock_tech": "canals",
       "conducts_water": true,
       "is_canal": true,
@@ -266,6 +284,7 @@
       "icon": "lumberjack_hut.png",
       "color": [ 101, 67, 33 ],
       "work_cost": 18,
+      "maintenance_cost": 90.0,
       "unlock_tech": "wood_processing",
       "profession": "lumberjack"
     }

@@ -337,6 +337,7 @@ const BUILDING_FIELDS := {
     "description": LEAF,
     "icon": LEAF,
     "work_cost": LEAF,
+    "maintenance_cost": LEAF,
     "additional_cost": {"any": [COST_MAP, {"array": COST_MAP}]},
     "additional_req": LEAF,
     "additional_yield": RESOURCE_MAP,
@@ -353,6 +354,7 @@ const IMPROVEMENT_FIELDS := {
     "icon": LEAF,
     "color": LEAF,
     "work_cost": LEAF,
+    "maintenance_cost": LEAF,
     "unlock_tech": LEAF,
     "profession": LEAF,
     "no_worker": LEAF,
@@ -613,6 +615,7 @@ const MAP_CONFIG_FIELDS := {
 const GAME_BALANCE_BLOCKS := {
     "city": {
         "base_tax_per_citizen": LEAF,
+        "maintenance_warning_interval_sec": LEAF,
         "food_per_citizen": LEAF,
         "food_for_new_settler": LEAF,
         "initial_treasury": LEAF,

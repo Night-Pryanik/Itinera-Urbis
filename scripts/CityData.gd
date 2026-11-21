@@ -72,6 +72,11 @@ var domesticated_resources: Array = []
 # resources on the internal market (see add_treasury / get_internal_market_price and
 # docs.md, "The treasury of the city and the internal market").
 var treasury: int = 0
+# The fractional part of the upkeep due by each source. The charge is made in whole coins,
+# so a cheap improvement (0.2 coins/sec) is paid once every several ticks. Saved with the city.
+var maintenance_source_accum: Dictionary = {}
+# The pause between the warnings about an unpaid upkeep, in seconds (runtime only).
+var maintenance_warning_cooldown: float = 0.0
 
 # The construction of the buildings: the key -> the data
 var building_construction: Dictionary = {}
@@ -380,6 +385,8 @@ signal population_changed(new_population: int)
 signal famine_death(new_population: int)
 # The treasury has changed: new_total is the current whole number of the coins.
 signal treasury_changed(new_total: int)
+# Some of the upkeep could not be paid this tick (no debt is created).
+signal maintenance_shortfall(missed: int)
 signal building_construction_started(building_id: String, build_key: String)
 # The upgrade of a built building has been started: idx is the index of the building in
 # city_built_buildings, upgrade_to is the id of the improved version.
@@ -419,6 +426,8 @@ func setup():
 
     # The starting treasury is from data/game_balance.json (the field initial_treasury).
     treasury = int(GameData.game_balance.get("initial_treasury", 10))
+    maintenance_source_accum.clear()
+    maintenance_warning_cooldown = 0.0
     # The tracking of the incomes/expenses for the tooltip "Treasury": a one-off transaction at the
     # start of the game is impossible, but the snapshots of the previous window could have remained from
     # the previous session/save — we clear them.
@@ -554,6 +563,68 @@ func collect_taxes() -> int:
     record_treasury_income(TAX_INCOME_SOURCE, amount)
     return amount
 
+# --- THE UPKEEP OF THE BUILT ENTITIES ---
+# Every built building and improvement has a FIXED upkeep in its data record (maintenance_cost,
+# coins per second). It does not depend on the recipe or the resource on the entity: a saffron
+# plantation costs exactly the same to run as an apple one. The values are set just below the
+# minimum potential market value of what the entity can produce, so the upkeep is always
+# meaningful and never exceeds what a working entity can bring in. The farm is the founding
+# exception: its staple is not sold on the market, and it stays at 0.2/sec for the first citizen.
+
+# The upkeep by source: "@bld:<id>" and "@imp:<id>" → coins per second. These are the same keys
+# the production plans use, so the treasury breakdown names the entity that is being paid for.
+func get_maintenance_sources() -> Dictionary:
+    var sources: Dictionary = {}
+    for bld in city_built_buildings:
+        var building_id := str(bld.get("id", ""))
+        var cost := GameData.get_building_maintenance_cost(building_id)
+        if cost > 0.0:
+            var source := GameData.building_source_id(building_id)
+            sources[source] = float(sources.get(source, 0.0)) + cost
+    var map_node = get_tree().root.find_child("MainMap", true, false)
+    if map_node != null and map_node.has_method("get_built_improvement_ids"):
+        for imp_id in map_node.get_built_improvement_ids():
+            var improvement_id := str(imp_id)
+            var cost := GameData.get_improvement_maintenance_cost(improvement_id)
+            if cost > 0.0:
+                var source := GameData.improvement_source_id(improvement_id)
+                sources[source] = float(sources.get(source, 0.0)) + cost
+    return sources
+
+func get_maintenance_per_sec() -> float:
+    var sources := get_maintenance_sources()
+    var total := 0.0
+    for source in sources:
+        total += float(sources[source])
+    return total
+
+# The charge of one tick, after the taxes have been collected. Each entity keeps its own
+# fractional remainder, so two farms of the same kind pay independently and the expense is
+# recorded under the exact source that owes it.
+func tick_maintenance() -> void:
+    maintenance_warning_cooldown = maxf(0.0, maintenance_warning_cooldown - SIMULATION_TICK)
+    var sources := get_maintenance_sources()
+    var remainders: Dictionary = {}
+    var missed_total := 0
+    for source in sources:
+        var owed: float = float(maintenance_source_accum.get(source, 0.0)) \
+                + float(sources[source]) * SIMULATION_TICK
+        var due := int(floor(owed))
+        # The whole amount that came due leaves the remainder even when it cannot be paid:
+        # an unpaid upkeep is not a debt, so the following ticks do not dig a deeper hole.
+        remainders[source] = owed - float(due)
+        if due <= 0:
+            continue
+        var paid := mini(due, treasury)
+        if paid > 0:
+            spend_treasury(paid)
+            record_treasury_expense(str(source), paid)
+        missed_total += due - paid
+    maintenance_source_accum = remainders
+    if missed_total > 0 and maintenance_warning_cooldown <= 0.0:
+        maintenance_warning_cooldown = float(GameData.game_balance.get("maintenance_warning_interval_sec", 15))
+        maintenance_shortfall.emit(missed_total)
+
 # --- THE BREAKDOWN OF THE TREASURY BY THE SOURCES (for the tooltip) ---
 # The sources of the profit/expense of the treasury are assembled in the tooltip on hover over
 # "Treasury: N" in the HUD of the map and in the top bar of the interface of the city
@@ -563,11 +634,12 @@ func collect_taxes() -> int:
 #     (worker_manager.get_planned_treasury_income_map): it is counted from
 #     planned_consumption_map × internal_market_price. An analogue of "Production
 #     (planned)" on the tab "Resources" — evenly and without flickering.
-#   * The expenses — the event-based transactions of the player (the scouting, the claiming of a chunk, the return
-#     on the refusal of a build). The automatic expense into the treasury has no planned
-#     rate — these are the one-off amounts per click, therefore the tooltip shows
+#   * The expenses — the upkeep of the built entities and the event-based transactions
+#     of the player (the scouting, the claiming of a chunk, the return on the refusal
+#     of a build). The charges are recorded in whole coins, so the tooltip shows
 #     the fact over the LATEST display window (by default 3 seconds), and not
-#     "/sec". The window is reset once per `treasury_window_length_sec` next to
+#     "/sec"; the planned rate of the upkeep is get_maintenance_per_sec().
+#     The window is reset once per `treasury_window_length_sec` next to
 #     the resource era (see tick_resource_display), so that the tooltip is stable,
 # and it did not flicker on every tick.
 #
@@ -1881,6 +1953,7 @@ func do_tick():
     # the breakdown of the treasury are inside collect_taxes() (see "The treasury of the city and the internal
     # market" in docs.md, the section "Taxes").
     collect_taxes()
+    tick_maintenance()
     _check_population_change()
     emit_signal("city_updated")
 

@@ -1520,6 +1520,17 @@ func get_building_data(building_id: String) -> Dictionary:
             return b
     return {}
 
+# Coins per simulation tick charged for a built entity, regardless of its worker, recipe or
+# resource: the value is the upkeep of the structure itself, from the data record.
+# A modded entity without the field is free to maintain.
+func get_building_maintenance_cost(building_id: String) -> float:
+    return maxf(0.0, float(get_building_data(building_id).get("maintenance_cost", 0.0)))
+
+func get_improvement_maintenance_cost(imp_id: String) -> float:
+    if imp_id.is_empty():
+        return 0.0
+    return maxf(0.0, float(improvements.get(imp_id, {}).get("maintenance_cost", 0.0)))
+
 # Returns the profession of the citizen working in the building (the "profession" field in
 # data/buildings.json). Empty — the building has no profession: it works by the general
 # slot model, without the expense of supplies and without a bonus (see docs.md,

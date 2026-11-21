@@ -279,6 +279,7 @@ func _collect_data(main_map: Node) -> Dictionary:
         "food_for_new_settler": CityData.food_for_new_settler,
         "food_per_citizen": CityData.food_per_citizen,
         "treasury": CityData.treasury,
+        "maintenance_source_accum": CityData.maintenance_source_accum,
         "tile_data": _serialize_tile_data(main_map),
         "worker_assignments": main_map.worker_manager.serialize_assignments(),
         # The occupational consumption timers: for each worker with
@@ -391,6 +392,9 @@ func apply_loaded_data():
     # The city treasury. If the field is absent, the starting
     # amount is restored from game_balance.json (initial_treasury), just as on a new game.
     CityData.treasury = int(saved_data.get("treasury", int(GameData.game_balance.get("initial_treasury", 10))))
+    var saved_remainders = saved_data.get("maintenance_source_accum", {})
+    CityData.maintenance_source_accum = saved_remainders if saved_remainders is Dictionary else {}
+    CityData.maintenance_warning_cooldown = 0.0
     # The specialization of the city. The branches are restored as they are: a branch the data no
     # longer declares simply gives nothing (CityData looks the bonuses up by the data), and the city
     # does not lose the picks it has spent.

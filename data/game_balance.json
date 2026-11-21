@@ -33,6 +33,12 @@
       //                        internal market", "Taxes").
       "base_tax_per_citizen": 2,
 
+      // maintenance_warning_interval_sec — the minimum pause between the HUD warnings
+      //                        that the treasury cannot pay the upkeep of the built
+      //                        buildings and improvements. The unpaid part is not carried
+      //                        over: there is no debt, only this warning.
+      "maintenance_warning_interval_sec": 15,
+
       // internal_market_price_multiplier — the share of the base price of a good
       //                        (price from data/products/*.json) at which the internal
       //                        market buys the good from the city. The treasury profit

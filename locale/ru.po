@@ -20,6 +20,22 @@ msgid "Delta chance"
 msgstr "Шанс дельты"
 
 msgctxt ""
+msgid "Maintenance"
+msgstr "Содержание"
+
+msgctxt ""
+msgid "Maintenance: %g coins/sec"
+msgstr "Содержание: %g монет/сек"
+
+msgctxt ""
+msgid "Maintenance: from %g coins/sec (+ share of sales)"
+msgstr "Содержание: от %g монет/сек (+ доля от продаж)"
+
+msgctxt ""
+msgid "Not enough coins for the upkeep (%d unpaid)! Grow the population or demolish a building/improvement."
+msgstr "Не хватает монет на содержание (%d не оплачено)! Увеличьте население или снесите здание/улучшение."
+
+msgctxt ""
 msgid "The chance that a main river reaching a lake or the sea splits into distributaries at its mouth."
 msgstr "Шанс того, что главная река, впадающая в озеро или море, разделится на рукава у устья."
 

@@ -27,6 +27,19 @@ func _rebuild_improvement_index() -> void:
                 _improved_cols.append(col)
     _improved_hexes_dirty = false
 
+# The ids of the player's improvements, one per hex (a second farm costs twice as much to
+# maintain). The decorative improvements of the towns are not the player's property and are
+# excluded. The index is shared with the production tick, so the count does not scan the map.
+func get_built_improvement_ids() -> Array:
+    if _improved_hexes_dirty or map_rows * map_cols <= IMPROVEMENT_INDEX_HEX_LIMIT:
+        _rebuild_improvement_index()
+    var ids: Array = []
+    for i in range(_improved_rows.size()):
+        var tile = tile_data[_improved_rows[i]][_improved_cols[i]]
+        if tile != null and tile.improvement != null and not bool(tile.get("decorative", false)):
+            ids.append(str(tile.improvement))
+    return ids
+
 # The tick of the simulation of the city: the production of every improvement on the map, the
 # standing contracts with the towns, the shipping of the goods, the consumption of the city and
 # the tick of CityData itself. It runs from _process once per CityData.SIMULATION_TICK.

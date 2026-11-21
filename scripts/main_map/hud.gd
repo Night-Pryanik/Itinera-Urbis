@@ -332,6 +332,10 @@ func _on_famine_death(new_pop: int) -> void:
     if hud != null:
         hud.show_message(tr("A citizen has died of starvation. Population: %d") % new_pop, GameData.HUD_MESSAGE_IMPORTANT)
 
+func _on_maintenance_shortfall(missed: int) -> void:
+    if hud != null:
+        hud.show_message(tr("Not enough coins for the upkeep (%d unpaid)! Grow the population or demolish a building/improvement.") % missed, GameData.HUD_MESSAGE_IMPORTANT)
+
 func _update_population_hud():
     var pop_label = hud.get_node_or_null("VBoxContainer/PopulationLabel")
     if pop_label:
