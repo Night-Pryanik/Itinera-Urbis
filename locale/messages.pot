@@ -9588,3 +9588,25 @@ msgstr ""
 msgctxt "technologies.flavor"
 msgid "Weighing is only the first answer. Before the die falls, the metal must be cupelled with lead, parted and read for fineness. In the assay houses of Serica, in the Hellenistic mints and in the workshops where al-Khazini set his balances true, this craft taught men to promise a coin a stranger could trust. The Mint takes the assayer's bench into its own hall."
 msgstr ""
+
+msgid " (outpost outside the Region, supplied by sea)"
+msgstr ""
+
+msgid "outposts on the coast"
+msgstr ""
+
+msgctxt "technologies.name"
+msgid "Navigation"
+msgstr ""
+
+msgctxt "technologies.description"
+msgid "Allows outposts on scouted coastal and island resource hexes without a road to the city. The water beside the hex must have a harbour.\nSea outposts deliver their produce straight to the city."
+msgstr ""
+
+msgctxt "technologies.unlock_effects.name"
+msgid "Allows outposts on coasts and islands without a road"
+msgstr ""
+
+msgctxt "technologies.flavor"
+msgid "A road stops at the shore; a hull does not. The pilot reads the swell, the stars and the flight of shorebirds, and the island that no highway can reach takes its place in the same ledger as the inland farm. The monsoon sailors of the Indian Ocean, the island navigators of the Pacific and the coastwise skippers of the northern seas kept no single school: each taught the harbour master the same lesson — the sea is a road that needs no paving."
+msgstr ""

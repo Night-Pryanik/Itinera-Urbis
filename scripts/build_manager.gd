@@ -208,9 +208,10 @@ func start_build(row: int, col: int, imp_id: String, target_res_id = null,
 
     # --- An outpost: an improvement on a scouted resource hex outside the Region ---
     # The technology "Emporia" opens this placement; the improvement must match the resource
-    # (improved_by), and a one-time fee in coins is paid on top of the labour. The road to the
-    # hex is mandatory: without it the improvement would stand idle (see main_map, the
-    # production tick). The special actions are not outposts — they leave no improvement.
+    # (improved_by), and a one-time fee in coins is paid on top of the labour. A route to the
+    # city is mandatory: either a road, or — after "Navigation" — a harbour on the water
+    # beside the hex. Without one the improvement would stand idle (see the production tick).
+    # The special actions are not outposts — they leave no improvement.
     var is_outpost := false
     var outpost_fee := 0
     if main_map_check != null and not is_road_action \
@@ -351,10 +352,12 @@ func start_build(row: int, col: int, imp_id: String, target_res_id = null,
         if bool(road_bd.get("ok", false)):
             return main_map.start_improvement_road_project(row, col, imp_id, imp_name,
                     target_res_id, effective_road_level, outpost_fee)
-        # An outpost cannot exist without a road: if there is neither a route to the hex nor
-        # a plan to lay one, the ordinary build would leave an idle improvement behind the
-        # Region, so it is refused with the reason of the plan.
-        if is_outpost and not main_map.has_road_route(row, col):
+        # An outpost cannot exist without a route: if there is neither a road to the hex
+        # nor a plan to lay one, the ordinary build would leave an idle improvement behind
+        # the Region. Navigation supplies the coast and the islands by sea instead —
+        # those hexes go through the ordinary build, without a road project.
+        if is_outpost and not main_map.has_road_route(row, col) \
+                and not main_map.is_sea_supplied_hex(row, col):
             if bool(road_bd.get("pending", false)):
                 emit_signal("build_message", tr("A road to this hex is already under construction"), 1)
                 return false

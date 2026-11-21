@@ -27,6 +27,15 @@ func is_emporia_researched() -> bool:
 func get_emporia_tech_name() -> String:
     return CityData.get_tech_name(EMPORIA_TECH_ID)
 
+# Is the technology "Navigation" learned. It lets an outpost stand on the coast
+# instead of the end of a road; the water beside the hex must have a harbour.
+func is_navigation_researched() -> bool:
+    return CityData.is_tech_unlocked(NAVIGATION_TECH_ID)
+
+# The name of the technology "Navigation" for the messages to the player.
+func get_navigation_tech_name() -> String:
+    return CityData.get_tech_name(NAVIGATION_TECH_ID)
+
 # Is the hex a place where an outpost improvement can be built: a scouted hex
 # outside the Region with a revealed resource that has an ordinary improvement
 # (the "improved_by" field) and no foreign or already built structure. The
@@ -52,6 +61,33 @@ func is_outpost_build_target(row: int, col: int) -> bool:
     if improved_by == null:
         return false
     return MapHelpers.improvement_needs_road(str(improved_by))
+
+# Is the hex supplied by sea instead of by a road. The water of the SAME body
+# (sea and shallow sea count as one; a lake is separate) must have a harbour
+# built by the player — the reach is the one MapHelpers.has_harbor_access
+# already computes for the marine resources. An island is supplied by the same
+# rule as any other coast: only the water around it has to be checked.
+#
+# The predicate is about the hex, not about the built improvement: it is used
+# both by the construction gate and by the production tick (is_sea_outpost).
+func is_sea_supplied_hex(row: int, col: int) -> bool:
+    if not is_navigation_researched() or not is_hex_on_map(row, col):
+        return false
+    for n in HexUtils.get_neighbors_odd_r(row, col, map_rows, map_cols):
+        var nt = tile_data[n.row][n.col]
+        if nt == null:
+            continue
+        if not MapHelpers.is_water_terrain(str(nt.get("terrain", ""))):
+            continue
+        if MapHelpers.has_harbor_access(tile_data, n.row, n.col, map_rows, map_cols):
+            return true
+    return false
+
+# Is the improvement on the hex an outpost served by the sea rather than by a
+# road. The technology is required for the sea to count at all, and the hex must
+# lie outside the Region: ordinary city improvements still need their roads.
+func is_sea_outpost(row: int, col: int) -> bool:
+    return is_outpost_improvement(row, col) and is_sea_supplied_hex(row, col)
 
 # A built improvement outside the Region — an outpost. The status is derived from
 # the tile, so no separate save field is needed.

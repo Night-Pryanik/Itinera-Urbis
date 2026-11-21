@@ -9662,3 +9662,25 @@ msgstr "Взвешенный кусок металла с меткой прав�
 msgctxt "technologies.flavor"
 msgid "Weighing is only the first answer. Before the die falls, the metal must be cupelled with lead, parted and read for fineness. In the assay houses of Serica, in the Hellenistic mints and in the workshops where al-Khazini set his balances true, this craft taught men to promise a coin a stranger could trust. The Mint takes the assayer's bench into its own hall."
 msgstr "Взвешивание — лишь первый ответ. Прежде чем на монету ляжет штемпель, металл сплавляют со свинцом, разделяют и определяют его пробу. В пробирных палатах Серы, в эллинистических монетных дворах и в мастерских, где аль-Хазини выверял свои весы, это ремесло научило людей обещать монету, которой поверит чужой город. Монетный двор переносит пробирный стол к себе."
+
+msgid " (outpost outside the Region, supplied by sea)"
+msgstr " (фактория вне Региона, снабжается морем)"
+
+msgid "outposts on the coast"
+msgstr "факторий на побережье"
+
+msgctxt "technologies.name"
+msgid "Navigation"
+msgstr "Навигация"
+
+msgctxt "technologies.description"
+msgid "Allows outposts on scouted coastal and island resource hexes without a road to the city. The water beside the hex must have a harbour.\nSea outposts deliver their produce straight to the city."
+msgstr "Позволяет строить фактории на разведанных береговых и островных гексах с ресурсами без дороги до города. Вода рядом с гексом должна иметь гавань.\nМорские фактории поставляют продукцию прямо в город."
+
+msgctxt "technologies.unlock_effects.name"
+msgid "Allows outposts on coasts and islands without a road"
+msgstr "Позволяет строить фактории на берегах и островах без дороги"
+
+msgctxt "technologies.flavor"
+msgid "A road stops at the shore; a hull does not. The pilot reads the swell, the stars and the flight of shorebirds, and the island that no highway can reach takes its place in the same ledger as the inland farm. The monsoon sailors of the Indian Ocean, the island navigators of the Pacific and the coastwise skippers of the northern seas kept no single school: each taught the harbour master the same lesson — the sea is a road that needs no paving."
+msgstr "Дорога обрывается у берега, а корпус судна — нет. Лоцман читает зыбь, звёзды и полёт береговых птиц, и остров, куда не дотянулась ни одна трасса, попадает в ту же книгу счетов, что и поле в глубине страны. Мореходы муссонных морей Индийского океана, островные навигаторы Тихого океана и прибрежные мореплаватели северных морей не учились по одному учебнику: каждый объяснял гаванному мастеру одно и то же — море тоже дорога, только её не мостят."

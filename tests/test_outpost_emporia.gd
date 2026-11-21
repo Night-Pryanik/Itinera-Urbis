@@ -19,6 +19,12 @@
 #      "Emporia", with the study button of the next missing technology), never the
 #      scouting or the claiming; the price preview names the coin fee; a built outpost
 #      is operated as an ordinary improvement.
+#   7. "Navigation": a coastal hex without a road is refused until the technology is
+#      learned and a harbour stands on the adjacent water; after that the build goes
+#      through the ordinary path, without a road project. An island is not special —
+#      it is the water around it that is checked.
+#   8. A sea outpost produces without a road and is not flagged road_missing.
+#   9. The panel asks for "Navigation" when the only missing route is the sea.
 extends SceneTree
 
 # A hang watchdog: without it, a broken _run() coroutine looks like eternal silence.
@@ -27,6 +33,7 @@ const WATCHDOG = preload("res://tests/watchdog.gd")
 var _cdata = null
 var _gdata = null
 var _maph = null
+var _hexutils = null
 var _cases_planned := 0
 var _cases_done := 0
 
@@ -47,6 +54,7 @@ func _run() -> void:
     _cdata = get_root().get_node("CityData")
     _gdata = get_root().get_node("GameData")
     _maph = load("res://scripts/map_helpers.gd")
+    _hexutils = load("res://scripts/HexUtils.gd")
 
     if WATCHDOG.wants_case("target_derivation"):
         _cases_planned += 1
@@ -71,6 +79,18 @@ func _run() -> void:
     if WATCHDOG.wants_case("panel_and_preview"):
         _cases_planned += 1
         await _test_panel_and_preview(state)
+        _cases_done += 1
+    if WATCHDOG.wants_case("sea_route_gate"):
+        _cases_planned += 1
+        await _test_sea_route_gate(state)
+        _cases_done += 1
+    if WATCHDOG.wants_case("sea_route_gated_production"):
+        _cases_planned += 1
+        await _test_sea_route_gated_production(state)
+        _cases_done += 1
+    if WATCHDOG.wants_case("sea_panel"):
+        _cases_planned += 1
+        await _test_sea_panel(state)
         _cases_done += 1
 
     # A case that broke in the middle would otherwise print a verdict over the
@@ -421,6 +441,144 @@ func _test_panel_and_preview(state: Dictionary) -> void:
     _free(main_map)
 
 # -------------------------------------------------------
+# 7. The sea route: a coast is not enough, and a harbour alone is not enough
+# -------------------------------------------------------
+
+func _test_sea_route_gate(state: Dictionary) -> void:
+    var main_map = await _new_map()
+    _explore_all(main_map)
+    var hex = _make_coastal_target_hex(main_map)
+    check(not hex.is_empty(), "no coastal outpost target found on the live map", state)
+    if hex.is_empty():
+        _free(main_map)
+        return
+    var row := int(hex.row)
+    var col := int(hex.col)
+    var water: Dictionary = hex.water
+
+    _cdata.total_population = 50
+    _cdata.add_treasury(1000)
+    var before := int(_cdata.treasury)
+    var fee := int(main_map.get_outpost_fee(row, col))
+    var bm = main_map.build_manager
+    var messages: Array = []
+    bm.build_message.connect(func(msg, _level): messages.append(msg))
+
+    _cdata.unlocked_technologies.append("emporia")
+    check(not main_map.is_navigation_researched(),
+            "Navigation must not be researched at the start of this case", state)
+    check(not main_map.is_sea_supplied_hex(row, col),
+            "a coast without a harbour must not be sea-supplied", state)
+    messages.clear()
+    check(not bm.start_build(row, col, "farm"),
+            "a coastal outpost without a harbour must be refused", state)
+    check(int(_cdata.treasury) == before, "a refused build must not touch the treasury", state)
+
+    check(_place_harbor(main_map, water, row, col),
+            "no land hex next to the water was available for the test harbour", state)
+    check(not main_map.is_sea_supplied_hex(row, col),
+            "a harbour alone must not supply the coast before Navigation", state)
+    check(not bm.start_build(row, col, "farm"),
+            "a harbour without Navigation must not open the build", state)
+    check(int(_cdata.treasury) == before, "a refused build must not touch the treasury", state)
+
+    _cdata.unlocked_technologies.append("shipbuilding")
+    _cdata.unlocked_technologies.append("navigation")
+    check(main_map.is_sea_supplied_hex(row, col),
+            "Navigation plus a harbour must supply the coast", state)
+    check(bm.start_build(row, col, "farm"),
+            "a sea outpost without a road must start the build", state)
+    check(int(_cdata.treasury) == before - fee,
+            "the sea outpost must pay the same one-time fee (got %d, expected %d)"
+                    % [int(_cdata.treasury), before - fee], state)
+    check(not main_map.project_manager.has_project_at(row, col),
+            "a sea outpost must not start a staged road project", state)
+    check(bm.is_building(row, col), "the sea outpost must be under construction", state)
+
+    _free(main_map)
+
+# -------------------------------------------------------
+# 8. A sea outpost produces without a road
+# -------------------------------------------------------
+
+func _test_sea_route_gated_production(state: Dictionary) -> void:
+    var main_map = await _new_map()
+    _explore_all(main_map)
+    var hex = _make_coastal_target_hex(main_map)
+    check(not hex.is_empty(), "no coastal outpost target found on the live map", state)
+    if hex.is_empty():
+        _free(main_map)
+        return
+    var row := int(hex.row)
+    var col := int(hex.col)
+    var tile: Dictionary = main_map.tile_data[row][col]
+
+    check(_place_harbor(main_map, hex.water, row, col),
+            "no land hex next to the water was available for the test harbour", state)
+    _cdata.unlocked_technologies.append("navigation")
+    check(main_map.is_sea_supplied_hex(row, col), "the coast must be supplied by sea", state)
+
+    tile["improvement"] = "farm"
+    _cdata.idle_population = maxi(_cdata.idle_population, 5)
+    check(main_map.worker_manager.assign_worker(row, col),
+            "a worker must be assigned to the sea outpost", state)
+    check(main_map.is_sea_outpost(row, col), "the improvement must be a sea outpost", state)
+    check(not main_map.has_road_route(row, col), "the sea outpost must have no road route", state)
+
+    _cdata.city_storage["clay"] = 0
+    main_map.delivery_manager.clear()
+    main_map._process(1.0)
+    check(not bool(tile.get("road_missing", false)),
+            "a sea outpost must not be flagged road_missing", state)
+    check(int(_cdata.city_storage.get("clay", 0)) > 0,
+            "a sea outpost must deliver straight into the storage (got %d)"
+                    % int(_cdata.city_storage.get("clay", 0)), state)
+
+    main_map.worker_manager.remove_worker(row, col)
+    _free(main_map)
+
+# -------------------------------------------------------
+# 9. The panel asks for Navigation
+# -------------------------------------------------------
+
+func _test_sea_panel(state: Dictionary) -> void:
+    var main_map = await _new_map()
+    _explore_all(main_map)
+    var hex = _make_coastal_target_hex(main_map)
+    check(not hex.is_empty(), "no coastal outpost target found on the live map", state)
+    if hex.is_empty():
+        _free(main_map)
+        return
+    var row := int(hex.row)
+    var col := int(hex.col)
+    var tile: Dictionary = main_map.tile_data[row][col]
+
+    check(_place_harbor(main_map, hex.water, row, col),
+            "no land hex next to the water was available for the test harbour", state)
+    _cdata.total_population = 50
+    _cdata.add_treasury(1000)
+    _cdata.unlocked_technologies.append("emporia")
+    var panel = main_map.control_panel
+
+    var actions: Array = panel._collect_actions(row, col, tile)
+    var build = _find_action(actions, "build_improvement")
+    check(build != null, "a coastal outpost target must offer the construction", state)
+    if build == null:
+        _free(main_map)
+        return
+    check(not bool(build["enabled"]), "without Navigation the construction must be disabled", state)
+    check(str(build["tooltip"]).contains(main_map.get_navigation_tech_name()),
+            "the tooltip must name Navigation (got %s)" % str(build["tooltip"]), state)
+
+    _cdata.unlocked_technologies.append("navigation")
+    actions = panel._collect_actions(row, col, tile)
+    build = _find_action(actions, "build_improvement")
+    check(build != null and bool(build["enabled"]),
+            "with Navigation the coastal construction must be enabled", state)
+
+    _free(main_map)
+
+# -------------------------------------------------------
 # Helpers
 # -------------------------------------------------------
 
@@ -583,6 +741,75 @@ func _node_text_contains(node: Node, needle: String) -> bool:
         if _node_text_contains(child, needle):
             return true
     return false
+
+# An outpost target on dry land with water next to it. The water hex is returned so
+# that the case can put a harbour on its shore. No island-specific rule exists: any
+# coast — of the mainland or of an island — is handled by the same water neighbour.
+func _make_coastal_target_hex(main_map):
+    for row in range(main_map.map_rows):
+        for col in range(main_map.map_cols):
+            if main_map.is_valid_hex(row, col):
+                continue
+            var tile = main_map.tile_data[row][col]
+            if tile == null or tile.get("improvement", null) != null:
+                continue
+            if bool(tile.get("in_influence", false)) or bool(tile.get("in_town_influence", false)) \
+                    or bool(tile.get("has_town", false)) or bool(tile.get("decorative", false)):
+                continue
+            if _maph.is_water_terrain(str(tile.get("terrain", ""))):
+                continue
+            var water_neighbours: Array = []
+            for n in _hexutils.get_neighbors_odd_r(row, col, main_map.map_rows, main_map.map_cols):
+                var nt = main_map.tile_data[n.row][n.col]
+                if nt == null or not _maph.is_water_terrain(str(nt.get("terrain", ""))):
+                    continue
+                # The water must have a dry shore of its own where the test can put
+                # the harbour — a lone islet in open water would have none.
+                if _harbor_shore(main_map, n.row, n.col, row, col).is_empty():
+                    continue
+                water_neighbours.append({"row": n.row, "col": n.col})
+            if water_neighbours.is_empty():
+                continue
+            tile["resource"] = "test_outpost_clay"
+            if not main_map.is_outpost_build_target(row, col):
+                continue
+            # The case is about the sea replacing a road: the hex must be beyond
+            # the reach of any road plan, otherwise the ordinary road project wins.
+            if main_map.has_road_route(row, col):
+                continue
+            var bd: Dictionary = main_map.get_road_cost_breakdown_for_improvement(
+                    row, col, _gdata.get_max_unlocked_road_level())
+            if bool(bd.get("ok", false)):
+                continue
+            return {"row": row, "col": col, "water": water_neighbours[0]}
+    return {}
+
+# Puts the player's harbour on a dry shore of the given water body, away from the
+# target hex. MapHelpers.has_harbor_access then sees the whole connected water body
+# as supplied — the sea and the shallow sea are one body, a lake is its own.
+func _place_harbor(main_map, water: Dictionary, target_row: int, target_col: int) -> bool:
+    var shore := _harbor_shore(main_map, int(water.row), int(water.col),
+            target_row, target_col)
+    if shore.is_empty():
+        return false
+    var tile = main_map.tile_data[int(shore.row)][int(shore.col)]
+    tile["improvement"] = "harbor"
+    tile["decorative"] = false
+    return true
+
+# A dry shore of the water body, other than the target hex, where the player's
+# harbour can stand.
+func _harbor_shore(main_map, water_row: int, water_col: int,
+        target_row: int, target_col: int) -> Dictionary:
+    for n in _hexutils.get_neighbors_odd_r(water_row, water_col,
+            main_map.map_rows, main_map.map_cols):
+        if n.row == target_row and n.col == target_col:
+            continue
+        var tile = main_map.tile_data[n.row][n.col]
+        if tile == null or _maph.is_water_terrain(str(tile.get("terrain", ""))):
+            continue
+        return {"row": n.row, "col": n.col}
+    return {}
 
 func check(cond: bool, msg: String, state: Dictionary):
     if not cond:

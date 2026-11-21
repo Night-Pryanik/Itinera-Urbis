@@ -82,10 +82,13 @@ func _simulation_tick(delta: float) -> void:
             # A road is what carries the goods to the city: an improvement that needs one
             # and has no route to the city stands idle. The improvements that are never
             # reached by a road (no_road, no_worker) keep delivering straight into the
-            # storage — see _deliver_production.
+            # storage — see _deliver_production. An outpost on a coast or an island is the
+            # third case: Navigation supplies it by sea, so it delivers straight into the
+            # storage as well and must not be flagged as cut off.
             var route_avg_speed := _route_avg_speed(row, col)
             var road_missing := route_avg_speed < 0.0 \
-                    and MapHelpers.improvement_needs_road(str(tile.improvement))
+                    and MapHelpers.improvement_needs_road(str(tile.improvement)) \
+                    and not is_sea_outpost(row, col)
             if bool(tile.get("road_missing", false)) != road_missing:
                 tile["road_missing"] = road_missing
                 overlay_flag_changed = true
@@ -477,8 +480,9 @@ func _emit_continuous_production(tile: Dictionary, produces: Dictionary, product
 # A road that does not exist cannot limit anything, so the absence of a route
 # (route_avg_speed < 0) means "deliver at once". The improvements that are due a road never
 # reach this case: the production tick skips them while they have no route (see
-# MapHelpers.improvement_needs_road), so what is delivered at once is only the produce of the
-# water improvements behind a harbour and of the other no_road/no_worker infrastructure.
+# MapHelpers.improvement_needs_road). What is delivered at once is the produce of the water
+# improvements behind a harbour, of the other no_road/no_worker infrastructure and of the
+# outposts that Navigation supplies by sea.
 #
 # The amounts are whole units: the caller keeps the sub-unit remainder of the
 # production, so the delivery never has to deal with fractions.

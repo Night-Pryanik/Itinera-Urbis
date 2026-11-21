@@ -35,6 +35,8 @@ const AQUEDUCT_ACTION_ID := "build_aqueduct"
 # The technology that opens the construction of improvements outside the Region (an
 # outpost). The same id as main_map.EMPORIA_TECH_ID; the panel needs it to offer its study.
 const EMPORIA_TECH_ID := "emporia"
+# The technology that supplies an outpost on the coast or on an island by sea.
+const NAVIGATION_TECH_ID := "navigation"
 
 # The references to the nodes (filled in from main_map.gd through initialize()).
 const UPGRADE_ROAD_TYPE := "upgrade_road"
@@ -1063,9 +1065,10 @@ func _collect_region_actions(row: int, col: int) -> Array:
 
 # The actions on a scouted resource hex outside the Region: the construction of an OUTPOST.
 # An outpost repeats the improvement of the same resource inside the Region and adds two
-# requirements — the technology "Emporia" and a road to the hex (without a route the building
-# stands idle). The one-time coin fee of the outpost is counted by main_map.get_outpost_fee and
-# shown in the preview of the price.
+# requirements — the technology "Emporia" and a route to the city. The route is a road or,
+# after "Navigation", a harbour on the water beside the hex; without either the building
+# stands idle. The one-time coin fee is counted by main_map.get_outpost_fee and shown in the
+# preview of the price.
 func _append_outpost_build_action(actions: Array, row: int, col: int, tile: Dictionary) -> void:
     # A build, a project or an action waiting in the queue of the active pause is closed by the
     # interruption button; offering the construction again here would only be refused by
@@ -1115,10 +1118,25 @@ func _append_outpost_build_action(actions: Array, row: int, col: int, tile: Dict
         return
 
     # A road is a part of the construction, not an option: when neither a route exists nor a
-    # new one can be planned, the outpost would be built for nothing.
+    # new one can be planned, the outpost would be built for nothing. Navigation replaces
+    # the road with a harbour on the adjacent water, so the same hex may become buildable
+    # after the research without any change to the terrain.
     var road_bd: Dictionary = main_map.get_road_cost_breakdown_for_improvement(
             row, col, GameData.get_max_unlocked_road_level())
-    if not bool(road_bd.get("ok", false)) and not main_map.has_road_route(row, col):
+    var has_land_route: bool = bool(road_bd.get("ok", false)) or main_map.has_road_route(row, col)
+    var sea_supplied: bool = main_map.is_sea_supplied_hex(row, col)
+    if not has_land_route and not sea_supplied and not main_map.is_navigation_researched():
+        action["enabled"] = false
+        action["tooltip"] = tr("%s outside the Region — requires technology: %s") % [
+                imp_name, main_map.get_navigation_tech_name()]
+        var navigation_chain: Array = CityData.get_tech_study_chain(NAVIGATION_TECH_ID)
+        if not navigation_chain.is_empty() \
+                and CityData.get_tech_hops(NAVIGATION_TECH_ID) <= CityData.TECH_HOPS_MAX:
+            actions.append(_make_research_action(str(navigation_chain[0]),
+                    tr("outposts on the coast")))
+        actions.append(action)
+        return
+    if not has_land_route and not sea_supplied:
         action["enabled"] = false
         action["tooltip"] = tr("%s — no land route to the city") % imp_name
     elif not CityData.ignore_build_requirements \

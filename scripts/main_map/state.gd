@@ -137,6 +137,9 @@ const CARTOGRAPHY_TECH_ID := "cartography"
 # outside the Region (outposts). The data of the technology —
 # data/technologies/antiquity.json, id "emporia".
 const EMPORIA_TECH_ID := "emporia"
+# The technology that lets outposts stand on a coast or an island instead of a road.
+# The data of the technology — data/technologies/antiquity.json, id "navigation".
+const NAVIGATION_TECH_ID := "navigation"
 # The technology that reveals the mountain spring and allows aqueducts.
 # The data of the technology — data/technologies/antiquity.json, id "concrete".
 const CONCRETE_TECH_ID := "concrete"
