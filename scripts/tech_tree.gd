@@ -532,6 +532,12 @@ func _rebuild_science_tooltip():
             var bonus_str := "+%d%%" % int(round((bonus - 1.0) * 100.0))
             var bonus_names_str := _join_unique_names(bld_entry.get("bonus_names", []))
             science_tooltip_vbox.add_child(_make_bullet_sub_row(tr("Consumption bonus: %s%s") % [bonus_str, bonus_names_str]))
+        var tech_bonus: float = float(bld_entry.get("tech_bonus", 1.0))
+        if abs(tech_bonus - 1.0) > 0.001:
+            # The astronomy bonus is a separate line: folding it into the
+            # consumption bonus would name the writing set as its source.
+            science_tooltip_vbox.add_child(_make_bullet_sub_row(
+                    tr("Technology bonus: %s") % CityData.format_signed_percent(tech_bonus - 1.0)))
     # The specialization of the city multiplies the whole rate, so it stands as a line of its own
     # between the sources and the total.
     var spec_mult: float = float(bd.get("specialization", 1.0))

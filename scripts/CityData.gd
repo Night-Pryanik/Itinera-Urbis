@@ -361,13 +361,14 @@ var science_buildings_rate_per_sec: float = 0.0
 #         "fixed": 3.0,             # additional_yield.science, WITHOUT the bonus
 #         "mediums": 2.0,           # the weighted average of the special_yield of the mixture, WITHOUT the bonus
 #         "bonus": 1.25,            # the multiplier of the profession (the writing set)
+#         "tech_bonus": 1.15,       # the multiplier of Astronomy, kept separate from the consumption
 #         "mediums_names": ["Papyrus"],        # what is actually consumed
 #         "bonus_names": ["Writing Set"],            # what gives the bonus of the consumption
 #       }, ...
 #     ],
 #     "total": 7.5,                 # = get_science_rate_per_sec()
 #   }
-# The total of a building = (fixed + mediums) × bonus — it is assembled in the tooltip.
+# The total of a building = (fixed + mediums) × bonus × tech_bonus — it is assembled in the tooltip.
 # Before the first tick — an empty dictionary (the tooltip shows only the base).
 var science_breakdown: Dictionary = {}
 
@@ -1863,7 +1864,8 @@ func do_tick():
                             mediums_names.append(GameData.format_resource_name(str(consumed_pid)))
                         if qty_sum > 0:
                             building_mediums += yield_sum / float(qty_sum)
-                var science_instant := (building_fixed + building_mediums) * prof_multiplier
+                var scholar_mult := get_scholar_production_mult()
+                var science_instant := (building_fixed + building_mediums) * prof_multiplier * scholar_mult
                 science_buildings_rate_per_sec += science_instant
                 # The breakdown for the tooltip: fixed/mediums are written WITHOUT the bonus —
                 # the multiplier is applied to the sum at the output. bonus_names are the
@@ -1883,6 +1885,7 @@ func do_tick():
                     "fixed": building_fixed,
                     "mediums": building_mediums,
                     "bonus": prof_multiplier,
+                    "tech_bonus": scholar_mult,
                     "mediums_names": mediums_names,
                     "bonus_names": bonus_names
                 }
@@ -3496,6 +3499,22 @@ func get_building_production_multiplier(building_id: String, has_fresh_water: bo
     var multiplier := 1.0
     for mod in get_building_production_modifiers(building_id, has_fresh_water):
         multiplier *= float(mod.get("multiplier", 1.0))
+    return multiplier
+
+# The technology bonus to the work of the scholars. Their output is not a good
+# of the city, so the ordinary building_production_multiplier does not reach
+# the science rate: Astronomy carries its own modifier target. The base income
+# of science is deliberately left alone — the bonus belongs to the scholars.
+func get_scholar_production_mult() -> float:
+    var multiplier := 1.0
+    for tm in GameData.modifiers.get("tech_modifiers", []):
+        var tech_id = str(tm.get("tech_id", ""))
+        if tech_id == "" or not is_tech_unlocked(tech_id):
+            continue
+        for mod in tm.get("modifiers", []):
+            if str(mod.get("target", "")) != "scholar_production":
+                continue
+            multiplier *= 1.0 + float(mod.get("value", 0)) / 100.0
     return multiplier
 
 # --- THE SPECIALIZATIONS OF THE CITY ---

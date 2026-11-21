@@ -267,6 +267,33 @@
       "description": "Allows outposts on scouted coastal and island resource hexes without a road to the city. The water beside the hex must have a harbour.\nSea outposts deliver their produce straight to the city.",
       "flavor": "A road stops at the shore; a hull does not. The pilot reads the swell, the stars and the flight of shorebirds, and the island that no highway can reach takes its place in the same ledger as the inland farm. The monsoon sailors of the Indian Ocean, the island navigators of the Pacific and the coastwise skippers of the northern seas kept no single school: each taught the harbour master the same lesson — the sea is a road that needs no paving.",
       "unlock_effects": [ { "icon": "outpost_flag.svg", "name": "Allows outposts on coasts and islands without a road" } ]
+    },
+    {
+      // The applied craft of finding a bearing by the sky. The compass and the
+      // astrolabe already exist as precision instruments; this is the knowledge
+      // that makes them useful far from a landmark, on land as well as at sea.
+      "id": "astronomy",
+      "name": "Astronomy",
+      "era": "antiquity",
+      "science_cost": 5.0,
+      "icon": "science.png",
+      "prerequisites": [ [ "mathematics", "precision_instruments" ] ],
+      "description": "Orientation by the stars lets scholars work 15% faster.",
+      "flavor": "The ploughman reads the seasons and the sailor reads the swell, but the traveller beyond both needs a sky that does not change. Star paths were measured in the camps of the steppe, on the reefs of the Pacific, in the caravans of the desert and in the observatories of Serica and Alexandria; the same fixed points led a caravan across the sand and a hull across dark water. With the astrolabe at his belt the scholar could teach the angle of a star to an apprentice and give the distant road a name.",
+      "unlock_effects": [ { "icon": "science.png", "name": "Astronomy: +15% scholar output" } ]
+    },
+    {
+      // The second stage of trade: partners that are not towns on the map at all.
+      // The OR groups keep a landlocked map from having to study Navigation, and
+      // a coastal map from repeating the Emporia that Navigation already needs.
+      "id": "long_distance_trade",
+      "name": "Foreign Trade",
+      "era": "antiquity",
+      "science_cost": 8.0,
+      "icon": "market.png",
+      "prerequisites": [ [ "astronomy", "coinage" ], [ "navigation", "coinage" ] ],
+      "description": "The knowledge that opens the way to markets beyond the known world.",
+      "flavor": "A market at the edge of the known world is not the end of trade. Merchants who knew the stars and the carry of a hull sent their wares past the last road, to ports and courts no map of the region showed: the bargain was written in the ledger of the city, not on its fields. The caravanserai of the steppe and the counting houses of the monsoon coast kept the same book."
     }
   ]
 }

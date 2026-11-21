@@ -9610,3 +9610,38 @@ msgstr ""
 msgctxt "technologies.flavor"
 msgid "A road stops at the shore; a hull does not. The pilot reads the swell, the stars and the flight of shorebirds, and the island that no highway can reach takes its place in the same ledger as the inland farm. The monsoon sailors of the Indian Ocean, the island navigators of the Pacific and the coastwise skippers of the northern seas kept no single school: each taught the harbour master the same lesson — the sea is a road that needs no paving."
 msgstr ""
+
+msgid "Technology bonus: %s"
+msgstr ""
+
+msgctxt "modifiers.tech_modifiers.name"
+msgid "Astronomy: +15% scholar output"
+msgstr ""
+
+msgctxt "technologies.name"
+msgid "Astronomy"
+msgstr ""
+
+msgctxt "technologies.description"
+msgid "Orientation by the stars lets scholars work 15% faster."
+msgstr ""
+
+msgctxt "technologies.unlock_effects.name"
+msgid "Astronomy: +15% scholar output"
+msgstr ""
+
+msgctxt "technologies.flavor"
+msgid "The ploughman reads the seasons and the sailor reads the swell, but the traveller beyond both needs a sky that does not change. Star paths were measured in the camps of the steppe, on the reefs of the Pacific, in the caravans of the desert and in the observatories of Serica and Alexandria; the same fixed points led a caravan across the sand and a hull across dark water. With the astrolabe at his belt the scholar could teach the angle of a star to an apprentice and give the distant road a name."
+msgstr ""
+
+msgctxt "technologies.name"
+msgid "Foreign Trade"
+msgstr ""
+
+msgctxt "technologies.description"
+msgid "The knowledge that opens the way to markets beyond the known world."
+msgstr ""
+
+msgctxt "technologies.flavor"
+msgid "A market at the edge of the known world is not the end of trade. Merchants who knew the stars and the carry of a hull sent their wares past the last road, to ports and courts no map of the region showed: the bargain was written in the ledger of the city, not on its fields. The caravanserai of the steppe and the counting houses of the monsoon coast kept the same book."
+msgstr ""

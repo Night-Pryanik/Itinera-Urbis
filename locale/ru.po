@@ -9684,3 +9684,38 @@ msgstr "Позволяет строить фактории на берегах �
 msgctxt "technologies.flavor"
 msgid "A road stops at the shore; a hull does not. The pilot reads the swell, the stars and the flight of shorebirds, and the island that no highway can reach takes its place in the same ledger as the inland farm. The monsoon sailors of the Indian Ocean, the island navigators of the Pacific and the coastwise skippers of the northern seas kept no single school: each taught the harbour master the same lesson — the sea is a road that needs no paving."
 msgstr "Дорога обрывается у берега, а корпус судна — нет. Лоцман читает зыбь, звёзды и полёт береговых птиц, и остров, куда не дотянулась ни одна трасса, попадает в ту же книгу счетов, что и поле в глубине страны. Мореходы муссонных морей Индийского океана, островные навигаторы Тихого океана и прибрежные мореплаватели северных морей не учились по одному учебнику: каждый объяснял гаванному мастеру одно и то же — море тоже дорога, только её не мостят."
+
+msgid "Technology bonus: %s"
+msgstr "Бонус технологии: %s"
+
+msgctxt "modifiers.tech_modifiers.name"
+msgid "Astronomy: +15% scholar output"
+msgstr "Астрономия: +15% к выработке учёных"
+
+msgctxt "technologies.name"
+msgid "Astronomy"
+msgstr "Астрономия"
+
+msgctxt "technologies.description"
+msgid "Orientation by the stars lets scholars work 15% faster."
+msgstr "Ориентирование по звёздам позволяет учёным работать на 15% быстрее."
+
+msgctxt "technologies.unlock_effects.name"
+msgid "Astronomy: +15% scholar output"
+msgstr "Астрономия: +15% к выработке учёных"
+
+msgctxt "technologies.flavor"
+msgid "The ploughman reads the seasons and the sailor reads the swell, but the traveller beyond both needs a sky that does not change. Star paths were measured in the camps of the steppe, on the reefs of the Pacific, in the caravans of the desert and in the observatories of Serica and Alexandria; the same fixed points led a caravan across the sand and a hull across dark water. With the astrolabe at his belt the scholar could teach the angle of a star to an apprentice and give the distant road a name."
+msgstr "Пахарь читает времена года, мореход — зыбь, но путнику, который отправляется дальше обоих, нужно небо, которое не меняется. Пути звёзд измеряли в лагерях степи, на рифах Тихого океана, в караванах пустыни и в обсерваториях Серы и Александрии; одни и те же неподвижные точки вели караван через песок и судно через тёмную воду. С астролябией у пояса учёный мог передать ученику угол звезды и дать далёкой дороге имя."
+
+msgctxt "technologies.name"
+msgid "Foreign Trade"
+msgstr "Внешняя торговля"
+
+msgctxt "technologies.description"
+msgid "The knowledge that opens the way to markets beyond the known world."
+msgstr "Знание, открывающее путь к рынкам за пределами известного мира."
+
+msgctxt "technologies.flavor"
+msgid "A market at the edge of the known world is not the end of trade. Merchants who knew the stars and the carry of a hull sent their wares past the last road, to ports and courts no map of the region showed: the bargain was written in the ledger of the city, not on its fields. The caravanserai of the steppe and the counting houses of the monsoon coast kept the same book."
+msgstr "Рынок на краю известного мира — ещё не конец торговли. Купцы, знавшие звёзды и груз судна, отправляли товары дальше последней дороги, в порты и дворы, которых не было ни на одной карте региона: сделка записывалась в книгу города, а не на его полях. Караван-сарай степи и счётные конторы муссонного побережья вели одну и ту же книгу."

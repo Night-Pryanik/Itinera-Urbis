@@ -153,6 +153,16 @@
         "icon": "coin_stack.png",
         "name": "Assaying: +50% to the Mint's coinage share",
         "building_production_multiplier": { "mint": 1.5 }
+      },
+      {
+        // The output of the scholars is not a good of the city: the ordinary
+        // building_production_multiplier never reaches the science rate. The
+        // astronomy bonus therefore has a target of its own, applied to the
+        // work of the scholars and not to the base science of the city.
+        "tech_id": "astronomy",
+        "icon": "science.png",
+        "name": "Astronomy: +15% scholar output",
+        "modifiers": [ { "target": "scholar_production", "type": "percent", "value": 15 } ]
       }
     ],
     "terrain_modifiers": [
