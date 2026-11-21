@@ -3164,7 +3164,7 @@ msgid "A collection of written works, where scholars produce science."
 msgstr ""
 
 msgctxt "buildings.description"
-msgid "A long shed for twisting ropes and cables."
+msgid "A workshop for twisting ropes and cables."
 msgstr ""
 
 msgctxt "buildings.description"
@@ -5544,7 +5544,7 @@ msgid "Mine, quarry, animal mill, oilmaker's house, weaver's and silkmaker's hou
 msgstr ""
 
 msgctxt "modifiers.tech_modifiers.name"
-msgid "Mine, quarry, bloomery, smelter, forge: +25% production only where fresh water is available"
+msgid "Mine, quarry, bloomery, smelter: +25% production only where fresh water is available"
 msgstr ""
 
 msgctxt "modifiers.tech_modifiers.name"
@@ -7976,7 +7976,7 @@ msgid "+25% to resource production on farms and plantations."
 msgstr ""
 
 msgctxt "technologies.description"
-msgid "+25% to the production of mines, quarries, the bloomery, the smelter and the forge only where fresh water is available: without water the drive gives no bonus, for the water washes the ore, works the bellows and lifts the hammers."
+msgid "Enables water-powered upgrades for the paper workshop and forge. +25% production for mines, quarries, bloomeries and smelters only where fresh water is available."
 msgstr ""
 
 msgctxt "technologies.description"
@@ -8228,7 +8228,7 @@ msgid "Unlocks the recipe for hopped beer."
 msgstr ""
 
 msgctxt "technologies.description"
-msgid "Unlocks the toothed wheel: the gears that pass a rotation on to the working tool.\n+25% to the production of mines, quarries, animal mills, oilmaker's houses, weaver's and silkmaker's houses, and of the mason's, carpenter's and jeweler's workshops."
+msgid "Unlocks the toothed wheel: the gears that pass a rotation on to the working tool.\n+25% to the production of mines, quarries, animal mills, oil mills, oilmaker's, weaver's and silkmaker's houses and weaver's, mason's, carpenter's and jeweler's workshops."
 msgstr ""
 
 msgctxt "technologies.description"
@@ -9452,4 +9452,72 @@ msgid "Wedge Oil Press"
 msgstr ""
 
 msgid "Unlocks the oil mill."
+msgstr ""
+
+msgid "Vat Fermentation"
+msgstr ""
+
+msgid "Fermentation Workshop"
+msgstr ""
+
+msgid "Unlocks the fermentation workshop."
+msgstr ""
+
+msgid "Large wooden vats hold separate batches of fermenting drink or vinegar."
+msgstr ""
+
+msgctxt "buildings.name"
+msgid "Paper Mill"
+msgstr ""
+
+msgctxt "buildings.description"
+msgid "Water-driven stampers beat plant fibres into pulp for paper."
+msgstr ""
+
+msgctxt "buildings.name"
+msgid "Smithing Workshop"
+msgstr ""
+
+msgctxt "buildings.description"
+msgid "A water wheel drives the workshop hammer."
+msgstr ""
+
+msgctxt "buildings.name"
+msgid "Weaver's Workshop"
+msgstr ""
+
+msgctxt "buildings.description"
+msgid "Horizontal foot-treadle looms weave different batches in parallel."
+msgstr ""
+
+msgctxt "technologies.name"
+msgid "Treadle Loom"
+msgstr ""
+
+msgctxt "technologies.description"
+msgid "Unlocks the weaver's workshop."
+msgstr ""
+
+msgctxt "technologies.flavor"
+msgid "The weaver works the shuttle with both hands while the feet raise and lower the heddles. Treadle looms were long established in East Asia and reached Europe in the eleventh to thirteenth centuries, probably through the Islamic world."
+msgstr ""
+
+msgctxt "buildings.name"
+msgid "Ropewalk"
+msgstr ""
+
+msgctxt "buildings.description"
+msgid "Strands laid along a long covered lane are twisted into full-length ropes and cables."
+msgstr ""
+
+msgctxt "technologies.name"
+msgid "Rope Twisting"
+msgstr ""
+
+msgctxt "technologies.description"
+msgid "Unlocks the ropewalk."
+msgstr ""
+
+msgctxt "technologies.flavor"
+msgid "Yarns were spun up into strands and then laid together with a counter-twist. A long covered lane let a ropery stretch the strands from end to end and walk back as they combined, making ropes far longer and thicker than a household shed could twist. Ropewalks became a familiar part of medieval shipbuilding and dockyard work."
 msgstr ""

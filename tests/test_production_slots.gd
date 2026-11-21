@@ -3,7 +3,7 @@ extends SceneTree
 const WATCHDOG = preload("res://tests/watchdog.gd")
 
 const TECH := "screw_press"
-const GRANTED := ["winemaker_house", "oilmaker_house", "oil_mill", "dairy", "paper_workshop", "jeweler_house"]
+const GRANTED := ["winemaker_house", "oilmaker_house", "oil_mill", "dairy", "paper_workshop", "paper_mill", "jeweler_house"]
 
 func _initialize():
     WATCHDOG.arm(self)
@@ -78,7 +78,7 @@ func _test_data(gdata: Node, state: Dictionary) -> void:
 
 # --- 2. The gate ---------------------------------------------------------------
 func _base_slots(id: String) -> int:
-    return 2 if id == "oil_mill" else 1
+    return 2 if id in ["oil_mill", "paper_mill"] else 1
 
 func _test_gate(cdata: Node, state: Dictionary) -> void:
     for building_id in GRANTED:

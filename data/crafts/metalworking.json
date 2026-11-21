@@ -23,7 +23,7 @@
     {
       "id": "copper_tools",
       "name": "Copper Tools",
-      "produced_in": [ "forge" ],
+      "produced_in": [ "forge", "smithing_workshop" ],
       "resources": { "copper": 20, "@smelting_fuel": 10 },
       "result": { "copper_tools": 10 },
       "time": 5.0,
@@ -33,7 +33,7 @@
     {
       "id": "copper_weapons",
       "name": "Copper Weapons",
-      "produced_in": [ "forge" ],
+      "produced_in": [ "forge", "smithing_workshop" ],
       "resources": { "copper": 30, "@smelting_fuel": 10 },
       "result": { "copper_weapons": 10 },
       "time": 6.0,
@@ -73,7 +73,7 @@
     {
       "id": "bronze_tools",
       "name": "Bronze Tools",
-      "produced_in": [ "forge" ],
+      "produced_in": [ "forge", "smithing_workshop" ],
       "resources": { "bronze": 20, "@smelting_fuel": 10 },
       "result": { "bronze_tools": 10 },
       "time": 5.0,
@@ -85,7 +85,7 @@
       // data/products/food.json).
       "id": "damascus_steel",
       "name": "Damascus Steel",
-      "produced_in": [ "forge" ],
+      "produced_in": [ "forge", "smithing_workshop" ],
       "resources": { "steel": 20, "@smelting_fuel": 10 },
       "result": { "damascus_steel": 10 },
       "time": 15,
@@ -95,7 +95,7 @@
     {
       "id": "bronze_weapons",
       "name": "Bronze Weapons",
-      "produced_in": [ "forge" ],
+      "produced_in": [ "forge", "smithing_workshop" ],
       "resources": { "bronze": 30, "@smelting_fuel": 10 },
       "result": { "bronze_weapons": 10 },
       "time": 6.0,
@@ -117,7 +117,7 @@
       // the forge with charcoal, and the smith takes the carbon up into it.
       "id": "steel",
       "name": "Steel",
-      "produced_in": [ "forge" ],
+      "produced_in": [ "forge", "smithing_workshop" ],
       "resources": [ [ { "iron": 20 }, { "meteorite_iron": 20 } ], { "@smelting_fuel": 20 } ],
       "result": { "steel": 10 },
       "time": 8.0,
@@ -127,7 +127,7 @@
     {
       "id": "iron_tools",
       "name": "Iron Tools",
-      "produced_in": [ "forge" ],
+      "produced_in": [ "forge", "smithing_workshop" ],
       "resources": [ [ { "iron": 20 }, { "meteorite_iron": 20 } ], { "@smelting_fuel": 20 } ],
       "result": { "iron_tools": 10 },
       "time": 5.0,
@@ -137,7 +137,7 @@
     {
       "id": "steel_tools",
       "name": "Steel Tools",
-      "produced_in": [ "forge" ],
+      "produced_in": [ "forge", "smithing_workshop" ],
       "resources": { "steel": 20, "@smelting_fuel": 20 },
       "result": { "steel_tools": 10 },
       "time": 5.0,
@@ -147,7 +147,7 @@
     {
       "id": "damascus_tools",
       "name": "Tools of <city_name> Steel",
-      "produced_in": [ "forge" ],
+      "produced_in": [ "forge", "smithing_workshop" ],
       "resources": { "damascus_steel": 20, "@smelting_fuel": 20 },
       "result": { "damascus_tools": 10 },
       "time": 5.0,
@@ -157,7 +157,7 @@
     {
       "id": "iron_weapons",
       "name": "Iron Weapons",
-      "produced_in": [ "forge" ],
+      "produced_in": [ "forge", "smithing_workshop" ],
       "resources": [ [ { "iron": 30 }, { "meteorite_iron": 30 } ], { "@smelting_fuel": 20 } ],
       "result": { "iron_weapons": 10 },
       "time": 6.0,
@@ -167,7 +167,7 @@
     {
       "id": "steel_weapons",
       "name": "Steel Weapons",
-      "produced_in": [ "forge" ],
+      "produced_in": [ "forge", "smithing_workshop" ],
       "resources": { "steel": 30, "@smelting_fuel": 20 },
       "result": { "steel_weapons": 10 },
       "time": 6.0,
@@ -179,7 +179,7 @@
       // the fame as the bar itself, so the city that earned the brand can work it at once.
       "id": "damascus_weapons",
       "name": "Damascus Weapons",
-      "produced_in": [ "forge" ],
+      "produced_in": [ "forge", "smithing_workshop" ],
       "resources": { "damascus_steel": 20, "@smelting_fuel": 20 },
       "result": { "damascus_weapons": 10 },
       "time": 8.0,
@@ -252,7 +252,7 @@
     {
       "id": "brass_tools",
       "name": "Brass Tools",
-      "produced_in": [ "forge" ],
+      "produced_in": [ "forge", "smithing_workshop" ],
       "resources": { "brass": 20, "@smelting_fuel": 10 },
       "result": { "brass_tools": 10 },
       "time": 5.0,
@@ -262,7 +262,7 @@
     {
       "id": "copper_precision_instruments",
       "name": "Copper Precision Instruments",
-      "produced_in": [ "forge", "jeweler_house" ],
+      "produced_in": [ "forge", "smithing_workshop", "jeweler_house" ],
       "resources": { "copper": 20, "@smelting_fuel": 10 },
       "result": { "copper_precision_instruments": 10 },
       "time": 10.0,
@@ -272,7 +272,7 @@
     {
       "id": "bronze_precision_instruments",
       "name": "Bronze Precision Instruments",
-      "produced_in": [ "forge", "jeweler_house" ],
+      "produced_in": [ "forge", "smithing_workshop", "jeweler_house" ],
       "resources": { "bronze": 20, "@smelting_fuel": 10 },
       "result": { "bronze_precision_instruments": 10 },
       "time": 10.0,
@@ -282,7 +282,7 @@
     {
       "id": "brass_precision_instruments",
       "name": "Brass Precision Instruments",
-      "produced_in": [ "forge", "jeweler_house" ],
+      "produced_in": [ "forge", "smithing_workshop", "jeweler_house" ],
       "resources": { "brass": 20, "@smelting_fuel": 10 },
       "result": { "brass_precision_instruments": 10 },
       "time": 10.0,
@@ -292,7 +292,7 @@
     {
       "id": "iron_precision_instruments",
       "name": "Iron Precision Instruments",
-      "produced_in": [ "forge", "jeweler_house" ],
+      "produced_in": [ "forge", "smithing_workshop", "jeweler_house" ],
       "resources": [ [ { "iron": 20 }, { "meteorite_iron": 20 } ], { "@smelting_fuel": 20 } ],
       "result": { "iron_precision_instruments": 10 },
       "time": 10.0,
@@ -302,7 +302,7 @@
     {
       "id": "steel_precision_instruments",
       "name": "Steel Precision Instruments",
-      "produced_in": [ "forge", "jeweler_house" ],
+      "produced_in": [ "forge", "smithing_workshop", "jeweler_house" ],
       "resources": { "steel": 20, "@smelting_fuel": 20 },
       "result": { "steel_precision_instruments": 10 },
       "time": 10.0,
@@ -314,7 +314,7 @@
       // once both Precision Instruments is researched and the steel line's brand rung is earned.
       "id": "damascus_precision_instruments",
       "name": "Damascus Precision Instruments",
-      "produced_in": [ "forge", "jeweler_house" ],
+      "produced_in": [ "forge", "smithing_workshop", "jeweler_house" ],
       "resources": { "damascus_steel": 20, "@smelting_fuel": 20 },
       "result": { "damascus_precision_instruments": 10 },
       "time": 12.0,
@@ -355,7 +355,7 @@
     {
       "id": "metal_tableware",
       "name": "Metal Tableware",
-      "produced_in": [ "forge" ],
+      "produced_in": [ "forge", "smithing_workshop" ],
       "resources": [ [ { "copper": 10 }, { "bronze": 10 }, { "brass": 10 }, { "pewter": 10 } ], { "@smelting_fuel": 10 } ],
       "result": { "metal_tableware": 10 },
       "time": 6.0,
@@ -389,7 +389,7 @@
       // Finery conversion turns blast-furnace pig iron into wrought bar iron in bulk.
       "id": "iron_from_cast_iron",
       "name": "Iron (from cast iron)",
-      "produced_in": [ "forge" ],
+      "produced_in": [ "forge", "smithing_workshop" ],
       "resources": { "cast_iron": 20, "@smelting_fuel": 10 },
       "result": { "iron": 20 },
       "time": 6.0,
@@ -400,7 +400,7 @@
       // Controlled partial decarburization yields steel directly without first forging iron bars.
       "id": "steel_from_cast_iron",
       "name": "Steel (from cast iron)",
-      "produced_in": [ "forge" ],
+      "produced_in": [ "forge", "smithing_workshop" ],
       "resources": { "cast_iron": 20, "@smelting_fuel": 10 },
       "result": { "steel": 10 },
       "time": 6.0,
@@ -411,7 +411,7 @@
       // Mould-casting turns out a larger batch of work tools than forging each piece by hand.
       "id": "cast_iron_tools",
       "name": "Cast-Iron Tools",
-      "produced_in": [ "blast_furnace", "forge" ],
+      "produced_in": [ "blast_furnace", "forge", "smithing_workshop" ],
       "resources": { "cast_iron": 30, "@smelting_fuel": 10 },
       "result": { "cast_iron_tools": 20 },
       "time": 6.0,
@@ -421,7 +421,7 @@
     {
       "id": "cast_iron_cookware",
       "name": "Cast-Iron Cookware",
-      "produced_in": [ "blast_furnace", "forge" ],
+      "produced_in": [ "blast_furnace", "forge", "smithing_workshop" ],
       "resources": { "cast_iron": 10, "@smelting_fuel": 10 },
       "result": { "cast_iron_cookware": 10 },
       "time": 5.0,

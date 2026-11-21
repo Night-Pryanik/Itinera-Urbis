@@ -346,6 +346,7 @@ const BUILDING_FIELDS := {
     "profession": LEAF,
     "unlock_tech": LEAF,
     "upgrades_into": LEAF,
+    "requires_tech": LEAF,
 }
 
 const IMPROVEMENT_FIELDS := {
@@ -1972,6 +1973,8 @@ func _validate_buildings(buildings, technologies: Dictionary, professions: Dicti
         var building_id := str(building.get("id", ""))
         var building_name := _entity_name(building, building_id)
 
+        _check_tech_ref(building.get("requires_tech", ""), technologies, problems,
+                "building", building_name, building_id, "requires_tech")
         _check_tech_ref(building.get("unlock_tech", ""), technologies, problems,
                 "building", building_name, building_id, "unlock_tech")
         _check_profession_ref(building.get("profession", ""), professions, problems,

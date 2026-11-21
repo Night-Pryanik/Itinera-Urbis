@@ -121,6 +121,35 @@
       "prerequisites": [ [ "oil_making", "screw_press" ] ],
       "icon": "wedge_oil_press.png",
       "description": "Unlocks the oil mill."
+    },
+    {
+      "id": "vat_fermentation",
+      "name": "Vat Fermentation",
+      "era": "medieval",
+      "science_cost": 5.0,
+      "prerequisites": [ [ "fermentation" ] ],
+      "icon": "vat_fermentation.png",
+      "description": "Unlocks the fermentation workshop."
+    },
+    {
+      "id": "treadle_loom",
+      "name": "Treadle Loom",
+      "era": "medieval",
+      "science_cost": 5.0,
+      "prerequisites": [ [ "weaving" ] ],
+      "icon": "treadle_loom.png",
+      "description": "Unlocks the weaver's workshop.",
+      "flavor": "The weaver works the shuttle with both hands while the feet raise and lower the heddles. Treadle looms were long established in East Asia and reached Europe in the eleventh to thirteenth centuries, probably through the Islamic world."
+    },
+    {
+      "id": "rope_twisting",
+      "name": "Rope Twisting",
+      "era": "medieval",
+      "science_cost": 5.0,
+      "prerequisites": [ [ "rope_making" ] ],
+      "icon": "rope_twisting.png",
+      "description": "Unlocks the ropewalk.",
+      "flavor": "Yarns were spun up into strands and then laid together with a counter-twist. A long covered lane let a ropery stretch the strands from end to end and walk back as they combined, making ropes far longer and thicker than a household shed could twist. Ropewalks became a familiar part of medieval shipbuilding and dockyard work."
     }
   ]
 }

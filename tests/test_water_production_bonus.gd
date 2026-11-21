@@ -56,6 +56,15 @@ func _run() -> void:
     cdata.unlocked_technologies.clear()
     await process_frame
 
+    cdata.unlocked_technologies.append(WATER_TECH)
+    for pair in [["paper_mill", "paper"], ["smithing_workshop", "native_metals"]]:
+        check(not cdata.is_building_unlocked(pair[0]),
+                "water power cannot bypass the base craft", state)
+        cdata.unlocked_technologies.append(pair[1])
+        check(cdata.is_building_unlocked(pair[0]),
+                "water power and the base craft unlock the upgrade", state)
+        cdata.unlocked_technologies.erase(pair[1])
+    cdata.unlocked_technologies.erase(WATER_TECH)
     _test_data(gdata, state)
     _test_improvements(gdata, cdata, state)
     _test_water_wheel(gdata, cdata, state)
@@ -128,7 +137,9 @@ func _test_data(gdata: Node, state: Dictionary) -> void:
     var ww_bld: Dictionary = ww.get("building_production_multiplier", {})
     check(fw_bld.has("leatherworker_house"),
             "the tanner must get the fresh-water bonus", state)
-    for building_id in ["bloomery", "smelter", "forge"]:
+    check(not ww_bld.has("forge") and not ww_bld.has("smithing_workshop"),
+            "the water-driven forge gains capacity instead of a speed bonus", state)
+    for building_id in ["bloomery", "smelter"]:
         check(ww_bld.has(building_id),
                 "\"%s\" must get the water-driven bellows bonus" % building_id, state)
     check(not fw_bld.has("water_mill") and not ww_bld.has("water_mill"),
