@@ -67,7 +67,7 @@ func _run() -> void:
         "2: the window names the engine", state)
     check(text.contains("creativecommons.org/licenses/by-nc-sa/4.0/"),
         "2: the window links the license of the code", state)
-    check(text.contains("github.com/Night-Pryanik/The-City"),
+    check(text.contains("github.com/Night-Pryanik/Itinera-Urbis"),
         "2: the window links the repository", state)
 
     # --- 3. ESC closes the window ---

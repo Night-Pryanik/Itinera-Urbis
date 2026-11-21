@@ -1,7 +1,7 @@
 # Itinera Urbis: Hearth to Horizon — Design document
 
 **Version:** 2026-11-20  
-**Repository:** https://github.com/Night-Pryanik/The-City  
+**Repository:** https://github.com/Night-Pryanik/Itinera-Urbis  
 **Engine:** Godot (GDScript)  
 **Purpose of the document:** a canonical description of the game for continuing development (including by a new assistant) without reading the whole chat history. The code and JSON in the repository are the source of truth for the implementation; this file is the source of truth for the *intent*.
 

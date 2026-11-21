@@ -21,7 +21,7 @@ const UI_THEME = preload("res://scripts/ui_theme.gd")
 # The author of the game. The name is not a translatable string: it is a name.
 const AUTHOR_NAME := "Anton Burmistrov"
 
-const REPOSITORY_URL := "https://github.com/Night-Pryanik/The-City"
+const REPOSITORY_URL := "https://github.com/Night-Pryanik/Itinera-Urbis"
 const CODE_LICENSE_URL := "https://creativecommons.org/licenses/by-nc-sa/4.0/"
 const ASSETS_LICENSE_URL := "https://creativecommons.org/licenses/by/4.0/"
 
