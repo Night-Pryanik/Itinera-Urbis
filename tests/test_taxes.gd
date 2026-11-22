@@ -313,7 +313,9 @@ func _run() -> void:
     # the autoloads this cannot be checked: a live MainMap is needed).
     # The HUD redraws on the display interval and not on every tick, so it is refreshed here
     # explicitly: the check is about the text the player sees, not about the timing of the timer.
-    main_map.hud._update_treasury_hud()
+    # The method belongs to MainMap (scripts/main_map/hud.gd in its inheritance chain, next to
+    # the panel of the HUD), not to the panel node itself.
+    main_map._update_treasury_hud()
     var flow: Dictionary = city.get_treasury_flow_per_sec()
     var flow_text: String = city.get_treasury_flow_text()
     check(flow_text.contains("[+") and flow_text.contains("≈]"),
