@@ -155,6 +155,24 @@
         "building_production_multiplier": { "mint": 1.5 }
       },
       {
+        "tech_id": "banking",
+        "icon": "banking.png",
+        "name": "Tax income: +10%",
+        "modifiers": [ { "target": "tax_income", "type": "percent", "value": 10 } ]
+      },
+      {
+        "tech_id": "banking",
+        "icon": "banking.png",
+        "name": "Internal-market trade income: +10%",
+        "modifiers": [ { "target": "internal_market_trade_income", "type": "percent", "value": 10 } ]
+      },
+      {
+        "tech_id": "banking",
+        "icon": "banking.png",
+        "name": "External-market trade income: +10%",
+        "modifiers": [ { "target": "external_market_trade_income", "type": "percent", "value": 10 } ]
+      },
+      {
         // The output of the scholars is not a good of the city: the ordinary
         // building_production_multiplier never reaches the science rate. The
         // astronomy bonus therefore has a target of its own, applied to the
