@@ -9723,3 +9723,30 @@ msgstr ""
 msgctxt "modifiers.tech_modifiers.name"
 msgid "Assaying: +50% to the Mint's seigniorage"
 msgstr ""
+
+msgctxt "technologies.name"
+msgid "Banking"
+msgstr ""
+
+msgctxt "technologies.description"
+msgid "Tax income: +10%.\nInternal-market trade income: +10%.\nExternal-market trade income: +10%."
+msgstr ""
+
+msgctxt "technologies.flavor"
+msgid "Banking-like practices took different forms across history. In the ancient Near East, Mesopotamian temples made interest-bearing loans from their treasuries; Greek trapezitai at money-changing tables handled exchange and credit, while Roman argentarii managed payments, credit and exchange. Indian inscriptions record interest-bearing endowments entrusted to śreṇi guilds. In Tang China, guifang offered safekeeping services and feiqian certificates facilitated transfers. These were not modern banks, but their distinct services helped people manage wealth and move value farther than coin alone."
+msgstr ""
+
+msgctxt "modifiers.tech_modifiers.name"
+msgid "Tax income: +10%"
+msgstr ""
+
+msgctxt "modifiers.tech_modifiers.name"
+msgid "Internal-market trade income: +10%"
+msgstr ""
+
+msgctxt "modifiers.tech_modifiers.name"
+msgid "External-market trade income: +10%"
+msgstr ""
+
+msgid " × %.2f from researched technologies"
+msgstr ""

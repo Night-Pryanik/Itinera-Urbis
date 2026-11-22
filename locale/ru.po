@@ -9837,3 +9837,30 @@ msgstr " + %s%% с податного двора"
 msgctxt "modifiers.tech_modifiers.name"
 msgid "Assaying: +50% to the Mint's seigniorage"
 msgstr "Пробирное дело: +50% к сеньоражу монетного двора"
+
+msgctxt "technologies.name"
+msgid "Banking"
+msgstr "Банковское дело"
+
+msgctxt "technologies.description"
+msgid "Tax income: +10%.\nInternal-market trade income: +10%.\nExternal-market trade income: +10%."
+msgstr "Налоговый доход: +10%.\nДоход от торговли на внутреннем рынке: +10%.\nДоход от торговли на внешнем рынке: +10%."
+
+msgctxt "technologies.flavor"
+msgid "Banking-like practices took different forms across history. In the ancient Near East, Mesopotamian temples made interest-bearing loans from their treasuries; Greek trapezitai at money-changing tables handled exchange and credit, while Roman argentarii managed payments, credit and exchange. Indian inscriptions record interest-bearing endowments entrusted to śreṇi guilds. In Tang China, guifang offered safekeeping services and feiqian certificates facilitated transfers. These were not modern banks, but their distinct services helped people manage wealth and move value farther than coin alone."
+msgstr "Практики, напоминавшие банковское дело, принимали разные формы. На древнем Ближнем Востоке месопотамские храмы выдавали процентные ссуды из своих сокровищниц; греческие трапезиты за меняльными столами занимались обменом и кредитом, а римские аргентарии — платежами, кредитом и обменом. Индийские надписи свидетельствуют о том, что гильдиям шрени доверяли вклады, приносившие проценты. В Китае эпохи Тан гуифаны предоставляли услуги по хранению денег, а сертификаты «фэйцянь» облегчали переводы. Это не были банки в современном смысле, но их различные услуги помогали управлять богатством и перемещать ценности дальше, чем позволяла одна лишь монета."
+
+msgctxt "modifiers.tech_modifiers.name"
+msgid "Tax income: +10%"
+msgstr "Налоговый доход: +10%"
+
+msgctxt "modifiers.tech_modifiers.name"
+msgid "Internal-market trade income: +10%"
+msgstr "Доход от торговли на внутреннем рынке: +10%"
+
+msgctxt "modifiers.tech_modifiers.name"
+msgid "External-market trade income: +10%"
+msgstr "Доход от торговли на внешнем рынке: +10%"
+
+msgid " × %.2f from researched technologies"
+msgstr " × %.2f от изученных технологий"
