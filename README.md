@@ -30,6 +30,8 @@ At the same time, most of the economy runs automatically. The player mostly make
 
 Every new game starts with a procedurally created map.
 
+**The setting is a fictional world, not an alternate Earth.** Its geography, ecology, and geology follow their own design; cultures, species, and resources from different parts of Earth may coexist. History and science inspire the game without constraining it: **Earth's history is a reference, not a specification.**
+
 The map consists of hexagons and contains:
 
 - various terrain types;
