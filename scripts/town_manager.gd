@@ -710,11 +710,22 @@ func find_town_at(row: int, col: int):
 # this function; everything that asks about the trade asks exactly it.
 const TOWN_TRADE_REQUIRES_ROAD := true
 
-# Is the trade with this town available.
-func is_trade_available(town: Dictionary) -> bool:
+# Whether trade with this town is available: either the town is linked by a land
+# road, or "Compass" is researched and both the town and the player have harbors
+# on the same connected sea body.
+func is_trade_available(
+    town: Dictionary,
+    tile_data: Array = [],
+    rows: int = 0,
+    cols: int = 0
+) -> bool:
     if not TOWN_TRADE_REQUIRES_ROAD:
         return true
-    return bool(town.get("road_linked", false))
+    if bool(town.get("road_linked", false)):
+        return true
+    if not tile_data.is_empty() and rows > 0 and cols > 0:
+        return bool(MapHelpers.find_sea_trade_route(tile_data, town, rows, cols).get("ok", false))
+    return false
 
 
 # Restores the list of the hexes of the ring from the format [[row, col], ...].
@@ -1246,12 +1257,57 @@ func _is_better_harbor_hex(row: int, col: int, dist: int, best_hex: Dictionary) 
 #
 # The pass is idempotent: a body which already has a harbour of THIS town in the ring
 # is skipped, so the load of a save does not add a second one.
+# Returns the set of keys (row * cols + col) of candidate hexes reachable from
+# (town_row, town_col) over non-water terrain so town harbors never land on a
+# disconnected island where town roads cannot reach them.
+func _town_land_reachable_keys(
+    tile_data: Array,
+    rows: int,
+    cols: int,
+    town_row: int,
+    town_col: int,
+    candidates: Array
+) -> Dictionary:
+    var target_keys: Dictionary = {}
+    for candidate in candidates:
+        target_keys[int(candidate.row) * cols + int(candidate.col)] = true
+    var reachable: Dictionary = {}
+    if target_keys.is_empty() or town_row < 0 or town_row >= rows \
+            or town_col < 0 or town_col >= cols:
+        return reachable
+    var visited: Dictionary = {}
+    var start_key := town_row * cols + town_col
+    visited[start_key] = true
+    var queue: Array = [{"row": town_row, "col": town_col}]
+    while not queue.is_empty() and reachable.size() < target_keys.size():
+        var cur: Dictionary = queue.pop_front()
+        var cur_key := int(cur.row) * cols + int(cur.col)
+        if target_keys.has(cur_key):
+            reachable[cur_key] = true
+        for n in HexUtils.get_neighbors_odd_r(int(cur.row), int(cur.col), rows, cols):
+            var n_key: int = n.row * cols + n.col
+            if visited.has(n_key):
+                continue
+            var nt = tile_data[n.row][n.col]
+            if nt == null or MapHelpers.is_water_terrain(str(nt.get("terrain", "plain"))):
+                continue
+            visited[n_key] = true
+            queue.push_back(n)
+    return reachable
+
 func _place_town_sea_harbors(tile_data: Array, rows: int, cols: int, town: Dictionary,
         candidates: Array, body_cache: Dictionary) -> void:
     if not GameData.improvements.has("harbor"):
         return
 
-    # The bodies of water which hold a marine resource of the ring.
+    var town_row := int(town.get("row", -1))
+    var town_col := int(town.get("col", -1))
+    var land_reachable := _town_land_reachable_keys(
+            tile_data, rows, cols, town_row, town_col, candidates)
+
+    # Sea bodies touching the town's land-reachable influence ring (coastal towns
+    # build a harbor on adjacent sea even without marine resources in the ring)
+    # as well as any sea body holding a marine resource of the ring.
     var wanted: Dictionary = {}
     for h in town.get("influence_hexes", []):
         var row := int(h.get("row", -1))
@@ -1259,13 +1315,24 @@ func _place_town_sea_harbors(tile_data: Array, rows: int, cols: int, town: Dicti
         if row < 0 or row >= rows or col < 0 or col >= cols:
             continue
         var tile = tile_data[row][col]
-        if tile == null or tile.get("resource", null) == null:
+        if tile == null:
             continue
-        if not _is_sea_terrain(str(tile.get("terrain", ""))):
+        if _is_sea_terrain(str(tile.get("terrain", ""))):
+            if tile.get("resource", null) != null:
+                var res_body_id := _sea_body_id(tile_data, rows, cols, row, col, body_cache)
+                if res_body_id >= 0:
+                    wanted[res_body_id] = true
             continue
-        var body_id := _sea_body_id(tile_data, rows, cols, row, col, body_cache)
-        if body_id >= 0:
-            wanted[body_id] = true
+        var h_key := row * cols + col
+        if (row != town_row or col != town_col) and not land_reachable.has(h_key):
+            continue
+        for n in HexUtils.get_neighbors_odd_r(row, col, rows, cols):
+            var nt = tile_data[n.row][n.col]
+            if nt == null or not _is_sea_terrain(str(nt.get("terrain", ""))):
+                continue
+            var body_id := _sea_body_id(tile_data, rows, cols, n.row, n.col, body_cache)
+            if body_id >= 0:
+                wanted[body_id] = true
     if wanted.is_empty():
         return
 
@@ -1286,11 +1353,11 @@ func _place_town_sea_harbors(tile_data: Array, rows: int, cols: int, town: Dicti
     if wanted.is_empty():
         return
 
-    # The best free coastal hex of the ring for every body still waiting for a harbour.
+    # The best free land-reachable coastal hex of the ring for every body still waiting for a harbour.
     var best: Dictionary = {}
-    var town_row := int(town.get("row", -1))
-    var town_col := int(town.get("col", -1))
     for candidate in candidates:
+        if not land_reachable.has(int(candidate.row) * cols + int(candidate.col)):
+            continue
         var tile: Dictionary = candidate.tile
         if tile.get("improvement", null) != null or tile.get("resource", null) != null \
                 or tile.get("crop_bred", null) != null:

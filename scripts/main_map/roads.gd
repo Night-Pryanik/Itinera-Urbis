@@ -46,7 +46,7 @@ func _rebuild_town_roads() -> void:
 # Only those segments of the route which are below the target level are improved: a segment
 # of a higher level is left as is (a road cannot be lowered).
 func get_road_upgrade_breakdown(row: int, col: int, road_level: int) -> Dictionary:
-    var route: Dictionary = get_route_to_city(row, col)
+    var route: Dictionary = get_land_route_to_city(row, col)
     if not route.get("ok", false):
         return {"ok": false, "reason": route.get("reason", ""), "cost": 0, "steps": []}
     var segments: Array = route.get("segments", [])
@@ -124,12 +124,55 @@ func _split_segment_key(key: String) -> Array:
 # "Route to the city") and by the renderer (the highlighting of the route on the map). The hex of the town
 # is routed by ITS OWN road network, therefore the town is passed to the manager
 # separately (see road_manager.find_route_to_city).
-func get_route_to_city(row: int, col: int) -> Dictionary:
+# Land-only route over the built road network. Used by road upgrades and road
+# highlight overlays so a faster sea route never masks an existing land road.
+func get_land_route_to_city(row: int, col: int) -> Dictionary:
     var town = find_town_at(row, col)
     if town != null:
         return road_manager.find_route_to_city(row, col,
                 int(town.get("row", -1)), int(town.get("col", -1)))
     return road_manager.find_route_to_city(row, col)
+
+# Compares a town's land road route and sea harbor route and returns whichever
+# offers higher average throughput (avg_speed); ties break toward fewer hexes
+# (smaller transit delay).
+func _pick_better_town_route(land_route: Dictionary, sea_route: Dictionary) -> Dictionary:
+    var land_ok := bool(land_route.get("ok", false))
+    var sea_ok := bool(sea_route.get("ok", false))
+    if not sea_ok:
+        return land_route
+    if not land_ok:
+        return sea_route
+    var sea_speed := float(sea_route.get("avg_speed", 0.0))
+    var land_speed := float(land_route.get("avg_speed", 0.0))
+    if not is_equal_approx(sea_speed, land_speed):
+        return sea_route if sea_speed > land_speed else land_route
+    return sea_route if int(sea_route.get("length", 0)) < int(land_route.get("length", 0)) else land_route
+
+# Best cargo route from (row, col) to the city. For towns, compares any land road
+# route with any sea harbor route unlocked by "Compass" and automatically selects
+# the one with higher average throughput.
+func get_route_to_city(row: int, col: int) -> Dictionary:
+    var land_route := get_land_route_to_city(row, col)
+    var town = find_town_at(row, col)
+    if town != null:
+        var sea_route := MapHelpers.find_sea_trade_route(tile_data, town, map_rows, map_cols)
+        return _pick_better_town_route(land_route, sea_route)
+    return land_route
+
+# Syncs the open TownUI window (if any) after any route change — road construction,
+# road segment upgrade, harbor build/demolish, or researching Compass — so trade
+# availability and route throughput warnings update immediately without reopening.
+func refresh_open_town_trade_state() -> void:
+    if town_ui == null or not town_ui.visible or not town_ui.has_town:
+        return
+    if town_manager == null or not town_ui.has_method("refresh_trade_route"):
+        return
+    var open_town_rec = town_ui.get("_town")
+    if not (open_town_rec is Dictionary) or open_town_rec.is_empty():
+        return
+    town_ui.refresh_trade_route(
+            town_manager.is_trade_available(open_town_rec, tile_data, map_rows, map_cols))
 
 # The average speed of the route from the hex to the city, or -1.0 when there is no route.
 # -1.0 (and not 0.0) marks "no route": the road does not limit the transport then, and the
@@ -392,4 +435,4 @@ func _road_hex_allowed() -> Callable:
 
 # Is the hex connected to the city by an already built road network.
 func has_road_route(row: int, col: int) -> bool:
-    return bool(get_route_to_city(row, col).get("ok", false))
+    return bool(get_land_route_to_city(row, col).get("ok", false))

@@ -59,14 +59,12 @@ func get_scout_cost_per_hex() -> int:
 func get_expansion_cost_per_hex() -> int:
     return int(GameData.game_balance.get("expansion_cost_per_hex", 5))
 
-# The price of SCOUTING one hex: the base × the universal distance modifier
-# (MapHelpers.get_distance_mult — the value from game_balance.json). By analogy
-# with building improvements (MapHelpers.get_improvement_work_cost) the distant
-# hexes are more expensive, but WITHOUT the tech modifiers: "Wheel" is about
-# transporting cargo, while the scouts go on foot or ride horses.
+# The price of SCOUTING one hex: the base × the scouting distance multiplier
+# (MapHelpers.get_scouting_distance_mult — base distance_cost_modifier_per_hex
+# scaled by scouting_distance_cost tech modifiers such as "Compass").
 func get_hex_scout_cost(row: int, col: int) -> int:
     var distance := HexUtils.hex_distance(row, col, main_map.city_row, main_map.city_col)
-    return int(ceil(float(get_scout_cost_per_hex()) * MapHelpers.get_distance_mult(distance)))
+    return int(ceil(float(get_scout_cost_per_hex()) * MapHelpers.get_scouting_distance_mult(distance)))
 
 # The price of CLAIMING one hex in coins: the base × the universal distance
 # modifier. It is written off immediately at the start of the claim (the labour — separately, see get_hex_cost).
@@ -121,6 +119,13 @@ func get_chunk_hexes(start_row: int, start_col: int) -> Array:
     elif not main_map.is_valid_hex(start_row, start_col) \
             and not main_map.is_cartography_researched():
         return chunk
+    # Hovering or selecting a hex that already belongs to a running scouting
+    # expedition highlights that expedition's exact area instead of assembling a
+    # fresh overlapping chunk around it.
+    if not start_explored and main_map.has_method("get_scouting_expedition_containing_hex"):
+        var active_exp: Dictionary = main_map.get_scouting_expedition_containing_hex(start_row, start_col)
+        if not active_exp.is_empty():
+            return active_exp.get("chunk", []).duplicate()
     var visited = {}
     var queue = [ {"row": start_row, "col": start_col}]
     var key = str(start_row) + "," + str(start_col)
@@ -137,7 +142,8 @@ func get_chunk_hexes(start_row: int, start_col: int) -> Array:
         else:
             scout_reach = main_map.get_region_bounds()
 
-    while queue.size() > 0 and chunk.size() < 5:
+    var max_chunk_size := 5 if start_explored else MapHelpers.get_scouting_chunk_size()
+    while queue.size() > 0 and chunk.size() < max_chunk_size:
         var current = queue.pop_front()
         chunk.append(current)
         var neighbors = _get_neighbors(current.row, current.col)
@@ -154,6 +160,9 @@ func get_chunk_hexes(start_row: int, start_col: int) -> Array:
                 # reachable by scrolling the map (with Cartography).
                 if n.row < scout_reach.row_start or n.row > scout_reach.row_end \
                         or n.col < scout_reach.col_start or n.col > scout_reach.col_end:
+                    continue
+                if main_map.has_method("is_hex_being_scouted") \
+                        and main_map.is_hex_being_scouted(n.row, n.col):
                     continue
             var tile = main_map.tile_data[n.row][n.col]
             if tile == null:

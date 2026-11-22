@@ -9719,3 +9719,43 @@ msgstr "Знание, открывающее путь к рынкам за пр�
 msgctxt "technologies.flavor"
 msgid "A market at the edge of the known world is not the end of trade. Merchants who knew the stars and the carry of a hull sent their wares past the last road, to ports and courts no map of the region showed: the bargain was written in the ledger of the city, not on its fields. The caravanserai of the steppe and the counting houses of the monsoon coast kept the same book."
 msgstr "Рынок на краю известного мира — ещё не конец торговли. Купцы, знавшие звёзды и груз судна, отправляли товары дальше последней дороги, в порты и дворы, которых не было ни на одной карте региона: сделка записывалась в книгу города, а не на его полях. Караван-сарай степи и счётные конторы муссонного побережья вели одну и ту же книгу."
+
+msgctxt "technologies.name"
+msgid "Compass"
+msgstr "Компас"
+
+msgctxt "technologies.description"
+msgid "Fishing boats: +25% production.\nScouting: up to 7 tiles per area, up to 2 simultaneous expeditions, -30% distance surcharge on scouting cost, and +25% maximum map scroll distance from the city.\nAllows sea trade with coastal towns through harbors without a road."
+msgstr "Рыбацкие лодки: +25% к производству.\nРазведка: до 7 гексов в области, до 2 одновременных экспедиций, −30% к надбавке за дальность в стоимости разведки и +25% к максимальной дальности прокрутки карты от города.\nПозволяет вести морскую торговлю с прибрежными городками через пристани без сухопутной дороги."
+
+msgctxt "technologies.flavor"
+msgid "A magnetized steel needle balanced in a graduated bowl keeps a steady bearing under fog, clouds, and forest canopy alike. Described in Song-dynasty Chinese manuals for both land surveyors and mariners and carried across the Indian Ocean and Mediterranean, the magnetic compass turned open water and trackless wilderness into charted routes."
+msgstr "Намагниченная стальная стрелка в чаше с делениями удерживает верный курс в тумане, под сплошной облачностью и под пологом леса. Описанный в трактатах эпохи Сун для землемеров и мореходов и распространившийся по Индийскому океану и Средиземноморью, магнитный компас превратил открытую воду и бездорожную глушь в размеченные маршруты."
+
+msgctxt "technologies.unlock_effects.name"
+msgid "Allows sea trade with coastal towns through harbors without a road"
+msgstr "Позволяет торговать по морю с прибрежными городками через пристани без дороги"
+
+msgctxt "modifiers.tech_modifiers.name"
+msgid "Fishing boats: +25% production"
+msgstr "Рыбацкие лодки: +25% к производству"
+
+msgctxt "modifiers.tech_modifiers.name"
+msgid "Reduces the effect of distance from the city on scouting cost by 30%"
+msgstr "Снижает влияние расстояния от города на стоимость разведки на 30%"
+
+msgctxt "modifiers.tech_modifiers.name"
+msgid "Scouting: up to 7 tiles per area, up to 2 simultaneous expeditions, +25% map scroll range"
+msgstr "Разведка: до 7 гексов в области, до 2 одновременных экспедиций, +25% к дальности прокрутки карты"
+
+msgid "Sea route to the city: %d water hexes, %.1f units/sec"
+msgstr "Морской маршрут до города: %d водных гексов, %.1f ед./сек"
+
+msgid " (trade unavailable: no road or sea harbor route to the town)"
+msgstr " (торговля недоступна: нет дороги или морского пути через пристани к городку)"
+
+msgid "Build a land road from the city to the town%s"
+msgstr "Проложить сухопутную дорогу от города к городку%s"
+
+msgid "Trade unavailable: there is no road or sea harbor route from the city to this town"
+msgstr "Торговля недоступна: от города к этому городку нет дороги или морского маршрута через пристани"

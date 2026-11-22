@@ -640,6 +640,7 @@ const GAME_BALANCE_BLOCKS := {
     },
     "logistics": {
         "transit_time_per_hex": LEAF,
+        "sea_trade_flow_rate": LEAF,
     },
     "towns": {
         "town_storage_limit": LEAF,

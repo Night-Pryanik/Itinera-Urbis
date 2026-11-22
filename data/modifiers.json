@@ -163,6 +163,28 @@
         "icon": "science.png",
         "name": "Astronomy: +15% scholar output",
         "modifiers": [ { "target": "scholar_production", "type": "percent", "value": 15 } ]
+      },
+      {
+        "tech_id": "compass",
+        "icon": "production_bonus.png",
+        "name": "Fishing boats: +25% production",
+        "production_multiplier": { "fishing_boats": 1.25 }
+      },
+      {
+        "tech_id": "compass",
+        "icon": "coin_stack.png",
+        "name": "Reduces the effect of distance from the city on scouting cost by 30%",
+        "modifiers": [ { "target": "scouting_distance_cost", "type": "percent", "value": -30 } ]
+      },
+      {
+        "tech_id": "compass",
+        "icon": "visibility.png",
+        "name": "Scouting: up to 7 tiles per area, up to 2 simultaneous expeditions, +25% map scroll range",
+        "modifiers": [
+          { "target": "scouting_chunk_size", "value": 7 },
+          { "target": "max_scouting_expeditions", "value": 2 },
+          { "target": "max_scroll_distance", "type": "percent", "value": 25 }
+        ]
       }
     ],
     "terrain_modifiers": [

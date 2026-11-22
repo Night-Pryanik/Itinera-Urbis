@@ -8,14 +8,17 @@ func _get_scouting_time(hex_count: int) -> float:
     return hex_count * SCOUTING_TIME_PER_HEX
 
 func start_scouting(chunk: Array):
-    if is_scouting or (active_pause != null and active_pause.has_pending_key("scouting")):
-        hud.show_message(tr("Scouting already in progress!"), GameData.HUD_MESSAGE_IMPORTANT)
-        return
-    # An empty chunk — there is nothing to scout. A control check for the public
-    # entry point: otherwise the treasury would be "written off" for 0 coins, and is_scouting
-    # would hang on an empty chunk (the bar of the scouting without hexes).
+    # An empty chunk — there is nothing to scout. Checked before expedition capacity so
+    # an empty array is always a silent no-op.
     if chunk.is_empty():
         return
+    if not can_start_scouting():
+        hud.show_message(tr("Scouting already in progress!"), GameData.HUD_MESSAGE_IMPORTANT)
+        return
+    for hex in chunk:
+        if is_hex_being_scouted(int(hex.row), int(hex.col)):
+            hud.show_message(tr("Scouting already in progress!"), GameData.HUD_MESSAGE_IMPORTANT)
+            return
     # A safety repetition of the rule: before the learning of the Cartography the scouting
     # is limited by the unexplored part of the Region. The chunk comes from
     # expansion_manager.get_chunk_hexes (it already observes this), but
@@ -35,14 +38,16 @@ func start_scouting(chunk: Array):
         hud.show_message(tr("The chunk does not border explored territory — scout the neighbouring hexes first"), GameData.HUD_MESSAGE_IMPORTANT)
         return
     # The expedition waits for the resume of the simulation while the active pause is
-    # on. The intercept is placed BEFORE the write-off of the coins. The key is not
-    # the hex: there is one expedition at a time in the whole world, so a second
-    # "send the scouts" while the first one waits must be refused.
+    # on. Keyed by the anchor hex so technologies allowing concurrent expeditions can
+    # queue multiple distinct scouting areas up to get_max_scouting_expeditions().
+    var anchor_row := int(chunk[0].row)
+    var anchor_col := int(chunk[0].col)
     if active_pause != null and active_pause.intercept({
-            "key": "scouting",
+            "key": "scouting:%d,%d" % [anchor_row, anchor_col],
             "label": tr("Send the scouts"),
-            "row": chunk[0].row,
-            "col": chunk[0].col,
+            "row": anchor_row,
+            "col": anchor_col,
+            "chunk": chunk.duplicate(true),
             "bar_color": UI_THEME.color("info").darkened(0.2),
             "bar_offset": 16,
             "execute": func(): start_scouting(chunk),
@@ -54,7 +59,7 @@ func start_scouting(chunk: Array):
     # diverge. The payment is by the coins of the treasury of the city, at once.
     # Debug: with "Ignore building requirements" enabled the scouting
     # is free and instant — the coins are not written off, the timer is not started,
-    # the chunk is opened by the same _complete_scouting() as at an ordinary finish.
+    # the chunk is opened immediately.
     var expedition_cost: int = expansion_manager.get_chunk_scout_cost(chunk)
     if not CityData.ignore_build_requirements:
         if not CityData.spend_treasury(expedition_cost):
@@ -66,32 +71,36 @@ func start_scouting(chunk: Array):
         # of the expenses shows the fact over the last display window.
         if expedition_cost > 0:
             CityData.record_treasury_expense(GameData.SRC_SCOUTING, expedition_cost)
-    scouting_chunk = chunk
-    scouting_timer = 0.0
     if CityData.ignore_build_requirements:
-        # The instant finish: we do not even turn on is_scouting, otherwise for one frame
-        # the progress bar of the scouting would flash, which the player does not have time to see.
-        _complete_scouting()
+        _apply_completed_scouting_chunk(chunk)
         return
-    is_scouting = true
+    scouting_expeditions.append({
+        "chunk": chunk.duplicate(true),
+        "timer": 0.0,
+        "cost": expedition_cost,
+    })
     _redraw_progress_layer()
+    control_panel.refresh()
     hud.show_message(tr("Scouts sent... (%d coins paid from the treasury)") % expedition_cost, GameData.HUD_MESSAGE_NORMAL)
 
-func _complete_scouting():
-    for hex in scouting_chunk:
+func _apply_completed_scouting_chunk(chunk: Array) -> void:
+    for hex in chunk:
         tile_data[hex.row][hex.col]["is_explored"] = true
-    # The scouting has opened the new hexes — the plans of the roads could have changed (the route to the
-    # town goes only over the scouted land), therefore the cache of the plans is reset.
     road_manager.bump_map_knowledge()
-    var info = _get_chunk_info(scouting_chunk)
+    var info = _get_chunk_info(chunk)
     hud.show_message(tr("Scouting complete! %s") % info, GameData.HUD_MESSAGE_NORMAL)
-    is_scouting = false
-    scouting_chunk = []
-    # The scouting removes the fog of war from the hexes, therefore the fill of the rings of the towns
-    # on the opened territory must appear — the cache of the renderer is rebuilt.
     map_renderer.invalidate_town_influence_cache()
     map_renderer.queue_redraw()
     _redraw_progress_layer()
+    control_panel.refresh()
+
+func _complete_scouting(index: int = 0):
+    if index < 0 or index >= scouting_expeditions.size():
+        return
+    var exp_data: Dictionary = scouting_expeditions[index]
+    var chunk: Array = exp_data.get("chunk", [])
+    scouting_expeditions.remove_at(index)
+    _apply_completed_scouting_chunk(chunk)
 
 # The common part of the dialogs of the cancellation: the pause for the time of the question, the localized button
 # of the confirmation and the obligatory unpause, if the window was closed by the cross
@@ -139,38 +148,46 @@ func confirm_cancel_expansion(row: int, col: int):
         if build_manager.cancel_expansion_at_hex(row, col):
             _after_cancel_long_action())
 
-# The cancellation of the scouting. The expedition in the game is one for the whole time (main_map.is_scouting),
-# therefore the button appears on the hex of its chunk, and the timer itself is reset.
-# As with the claiming: the money for the start is returned, the time of the expedition — no.
+# Cancels the scouting expedition anchored at (row, col), where its progress bar is drawn.
+# Paid coins are refunded; elapsed scouting time is lost.
 func confirm_cancel_scouting(row: int, col: int):
-    if not is_scouting or scouting_chunk.is_empty():
+    var exp_data: Dictionary = get_scouting_progress_for_hex(row, col)
+    if exp_data.is_empty():
         return
-    var first = scouting_chunk[0]
-    if first == null or int(first.row) != row or int(first.col) != col:
-        return
-    var chunk: Array = scouting_chunk
+    var chunk: Array = exp_data.get("chunk", [])
+    var refund := int(exp_data.get("cost", expansion_manager.get_chunk_scout_cost(chunk)))
     var dialog = AcceptDialog.new()
     dialog.title = tr("Cancel scouting")
     var text := tr("Recall the scouts?\n\nNone of the %d tiles will be surveyed.") % chunk.size()
     if not CityData.ignore_build_requirements:
-        text += tr("\n\nThe %d coins paid will be returned to the treasury.") % expansion_manager.get_chunk_scout_cost(chunk)
+        text += tr("\n\nThe %d coins paid will be returned to the treasury.") % refund
     dialog.dialog_text = text
     dialog.get_ok_button().text = tr("Yes")
     _show_cancel_dialog(dialog, func():
-        cancel_scouting())
+        cancel_scouting(row, col))
 
-# Interrupts the scouting: the timer is zeroed, the chunk is forgotten, the money for the start
-# is returned. The fog is NOT removed from the chunk — the scouting is applied entirely in
-# _complete_scouting, it has no intermediate state.
-func cancel_scouting() -> bool:
-    if not is_scouting or scouting_chunk.is_empty():
+# Interrupts a scouting expedition: when (row, col) is negative, cancels the first
+# active expedition; otherwise cancels the expedition anchored at (row, col).
+func cancel_scouting(row: int = -1, col: int = -1) -> bool:
+    if scouting_expeditions.is_empty():
         return false
-    var chunk: Array = scouting_chunk.duplicate()
-    is_scouting = false
-    scouting_chunk = []
-    scouting_timer = 0.0
+    var target_idx := -1
+    if row < 0 or col < 0:
+        target_idx = 0
+    else:
+        for i in range(scouting_expeditions.size()):
+            var c: Array = scouting_expeditions[i].get("chunk", [])
+            if not c.is_empty() and int(c[0].row) == row and int(c[0].col) == col:
+                target_idx = i
+                break
+    if target_idx < 0:
+        return false
+    var exp_data: Dictionary = scouting_expeditions[target_idx]
+    var chunk: Array = exp_data.get("chunk", []).duplicate()
+    var saved_cost := int(exp_data.get("cost", 0))
+    scouting_expeditions.remove_at(target_idx)
     if not CityData.ignore_build_requirements:
-        var cost: int = expansion_manager.get_chunk_scout_cost(chunk)
+        var cost: int = saved_cost if saved_cost > 0 else expansion_manager.get_chunk_scout_cost(chunk)
         if cost > 0:
             CityData.add_treasury(cost)
             CityData.record_treasury_expense(GameData.SRC_SCOUTING, -cost)

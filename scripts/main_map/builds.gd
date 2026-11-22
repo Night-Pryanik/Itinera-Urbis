@@ -99,6 +99,7 @@ func _on_build_completed(row: int, col: int, imp_id: String, target_res_id = nul
         build_manager.remove_build(row, col)
         map_renderer.queue_redraw()
         _redraw_progress_layer()
+        refresh_open_town_trade_state()
         return
 
     # The improvement is the only thing that has remained after the branch of the special actions. The
@@ -172,6 +173,7 @@ func _apply_improvement(row: int, col: int, imp_id: String, target_res_id = null
         pass
     map_renderer.queue_redraw()
     _redraw_progress_layer()
+    refresh_open_town_trade_state()
 
 # === THE PHASED CONSTRUCTION OF THE ROAD (the special action build_road) ===
 #
@@ -664,6 +666,11 @@ func _on_project_step_completed(_project_id: String, kind: String, step: Diction
         if t_row < tile_data.size() and t_col < tile_data[t_row].size() \
                 and tile_data[t_row][t_col] != null:
             tile_data[t_row][t_col]["road_level"] = road_level
+        _refresh_project_ghost()
+        map_renderer.queue_redraw()
+        _redraw_progress_layer()
+        control_panel.refresh()
+        refresh_open_town_trade_state()
         return
     road_manager.build_road_step(f_row, f_col, t_row, t_col,
             bool(data.get("is_town", false)), road_level)
@@ -677,6 +684,7 @@ func _on_project_step_completed(_project_id: String, kind: String, step: Diction
     map_renderer.queue_redraw()
     _redraw_progress_layer()
     control_panel.refresh()
+    refresh_open_town_trade_state()
 
 # The road is completed entirely: we mark the target with the input data for the save and
 # open the trade, if the road was going to a town.
@@ -705,6 +713,7 @@ func _on_project_completed(_project_id: String, kind: String, meta: Dictionary) 
     map_renderer.queue_redraw()
     _redraw_progress_layer()
     control_panel.refresh()
+    refresh_open_town_trade_state()
 
 func _on_project_cancelled(_project_id: String, _kind: String, _meta: Dictionary) -> void:
     # The laid segments remain (the cancellation does not roll back the road), only
