@@ -148,6 +148,10 @@ func is_empty() -> bool:
     return _queue.is_empty()
 
 
+func get_pending_actions() -> Array:
+    return _queue.duplicate()
+
+
 func has_pending_key(key: String) -> bool:
     if key.is_empty():
         return false

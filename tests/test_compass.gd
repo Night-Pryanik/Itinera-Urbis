@@ -91,21 +91,24 @@ func _test_data_and_fishing(state: Dictionary) -> void:
             "Compass must raise max scroll distance multiplier to 1.25", state)
 
     var effects: Array = _cdata.get_city_effects()
-    var compass_effects := 0
+    var compass_effects: int = 0
+    var compass_tech_name: String = str(_cdata.get_tech_name("compass"))
     for eff in effects:
-        if str(eff.get("source_name", "")) != "":
+        if str(eff.get("source", "")) == compass_tech_name:
             compass_effects += 1
-    check(compass_effects >= 3,
-            "Compass modifiers must appear in CityData.get_city_effects()", state)
+    check(compass_effects == 3,
+            "Compass modifiers must appear in CityData.get_city_effects() (got %d)" % compass_effects, state)
     _cdata.unlocked_technologies.clear()
 
 func _test_scouting_and_scroll(state: Dictionary) -> void:
     get_root().get_node("SaveManager").new_game()
-    _cdata.unlocked_technologies = ["cartography"]
     var main_map = load("res://scenes/MainMap.tscn").instantiate()
     get_root().add_child(main_map)
     for _i in range(4):
         await process_frame
+    while bool(main_map.world_generating):
+        await process_frame
+    _cdata.unlocked_technologies = ["cartography"]
 
     var scroll_before: Vector2 = main_map.get_max_scroll()
     var em = main_map.expansion_manager
@@ -191,7 +194,8 @@ func _test_scouting_and_scroll(state: Dictionary) -> void:
             t["is_explored"] = true
             for n in HexUtils.get_neighbors_odd_r(r, c, main_map.map_rows, main_map.map_cols):
                 if main_map.is_valid_hex(n.row, n.col) \
-                        and not bool(main_map.tile_data[n.row][n.col].get("in_influence", false)):
+                        and not bool(main_map.tile_data[n.row][n.col].get("in_influence", false)) \
+                        and not bool(main_map.tile_data[n.row][n.col].get("in_town_influence", false)):
                     main_map.tile_data[n.row][n.col]["is_explored"] = true
             var claim_chunk: Array = em.get_chunk_hexes(r, c)
             check(claim_chunk.size() <= 5,
@@ -206,11 +210,13 @@ func _test_scouting_and_scroll(state: Dictionary) -> void:
 
 func _test_sea_trade(state: Dictionary) -> void:
     get_root().get_node("SaveManager").new_game()
-    _cdata.unlocked_technologies.clear()
     var main_map = load("res://scenes/MainMap.tscn").instantiate()
     get_root().add_child(main_map)
     for _i in range(4):
         await process_frame
+    while bool(main_map.world_generating):
+        await process_frame
+    _cdata.unlocked_technologies.clear()
 
     var rows: int = main_map.map_rows
     var cols: int = main_map.map_cols
@@ -222,15 +228,16 @@ func _test_sea_trade(state: Dictionary) -> void:
     var p_row: int = main_map.city_row
     var p_col: int = main_map.influence_end_col
     var sea_start_col: int = p_col + 1
-    var sea_end_col: int = mini(cols - 4, p_col + 5)
+    var sea_end_col: int = mini(cols - 5, p_col + 5)
     var t_row: int = p_row
     var t_col: int = sea_end_col + 1
 
-    for r in range(maxi(0, p_row - 2), mini(rows, p_row + 3)):
-        for c in range(main_map.city_col, mini(cols, t_col + 3)):
+    for r in range(maxi(0, p_row - 4), mini(rows, p_row + 5)):
+        for c in range(main_map.city_col, mini(cols, t_col + 5)):
             if r == main_map.city_row and c == main_map.city_col:
                 continue
-            td[r][c]["terrain"] = "plain"
+            td[r][c]["terrain"] = "steppe_plain"
+            td[r][c]["climate"] = "steppe"
             td[r][c]["cover"] = "none"
             td[r][c]["resource"] = null
             td[r][c]["crop_bred"] = null
@@ -239,10 +246,14 @@ func _test_sea_trade(state: Dictionary) -> void:
             td[r][c]["has_town"] = false
             td[r][c]["in_town_influence"] = false
             td[r][c]["is_explored"] = true
-    main_map.road_manager.bump_map_knowledge()
+            td[r][c]["road_built"] = false
+            td[r][c]["road_level"] = 1
 
     for c in range(sea_start_col, sea_end_col + 1):
         td[p_row][c]["terrain"] = "shallow_sea" if (c == sea_start_col or c == sea_end_col) else "sea"
+
+    main_map.road_manager.initialize(main_map.city_row, main_map.city_col)
+    main_map.road_manager.bump_map_knowledge()
 
     var coastal_town: Dictionary = tm._make_town_record(99, t_row, t_col, false)
     coastal_town["road_linked"] = false
@@ -294,12 +305,13 @@ func _test_sea_trade(state: Dictionary) -> void:
 
     # 4) Execute an actual purchase through town_trade_manager -> delivery_manager over the sea route.
     _cdata.treasury = 5000
-    var before_wood := int(_cdata.city_storage.get("wood", 0))
-    var unit_price := int(round(_gdata.get_price_for_quality("wood", "common")))
+    _cdata.city_storage["wood"] = 0
+    var before_wood: int = int(_cdata.city_storage.get("wood", 0))
+    var unit_price: int = int(round(_gdata.get_price_for_quality("wood", "common")))
     var order_res: Dictionary = main_map.town_trade_manager.submit_order({
         "town_id": str(coastal_town.get("id", "")),
         "side": "sell",
-        "resource_id": "wood",
+        "product_id": "wood",
         "amount": 10,
         "permanent": false,
         "unit_price": unit_price,
@@ -310,7 +322,7 @@ func _test_sea_trade(state: Dictionary) -> void:
             "purchased goods must enter sea transit rather than appearing instantly", state)
 
     main_map.delivery_manager.ship()
-    var delay := float(water_len) * float(main_map.delivery_manager.get_transit_time_per_hex())
+    var delay: float = float(water_len) * float(main_map.delivery_manager.get_transit_time_per_hex())
     main_map.delivery_manager.advance(delay + 0.5)
     check(int(_cdata.city_storage.get("wood", 0)) == before_wood + 10,
             "sea-shipped goods must arrive in city storage after water transit delay", state)
@@ -322,7 +334,7 @@ func _test_sea_trade(state: Dictionary) -> void:
     check(bool(plan.get("ok", false)),
             "a land bypass road plan around the bay to the coastal town must exist", state)
     if bool(plan.get("ok", false)):
-        main_map.road_manager.build_player_road_to(
+        main_map.road_manager.build_road_to(
                 t_row, t_col, td, rows, cols, -1, Callable(), 1)
         coastal_town["road_linked"] = true
         check(main_map.has_road_route(t_row, t_col),

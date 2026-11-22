@@ -634,10 +634,10 @@ func _process(delta):
     input_handler.handle_process(delta)
 
     if not scouting_expeditions.is_empty():
-        var exp_idx := 0
+        var exp_idx: int = 0
         while exp_idx < scouting_expeditions.size():
             var exp_data: Dictionary = scouting_expeditions[exp_idx]
-            var next_timer := float(exp_data.get("timer", 0.0)) + delta
+            var next_timer: float = float(exp_data.get("timer", 0.0)) + float(delta)
             exp_data["timer"] = next_timer
             var exp_chunk: Array = exp_data.get("chunk", [])
             if next_timer >= _get_scouting_time(exp_chunk.size()):
