@@ -257,15 +257,17 @@ func _test_sea_trade(state: Dictionary) -> void:
 
     var coastal_town: Dictionary = tm._make_town_record(99, t_row, t_col, false)
     coastal_town["road_linked"] = false
-    coastal_town["sell_pool"] = ["wood"]
-    coastal_town["storage"] = {"wood": 100}
-    coastal_town["quality"] = {"wood": "common"}
-    coastal_town["treasury"] = 500
     td[t_row][t_col]["has_town"] = true
     tm.towns = [coastal_town]
     tm.town_hexes = [{"row": t_row, "col": t_col}]
     tm.compute_all_town_influences(td, rows, cols)
     tm._place_decorative_town_improvements(td, rows, cols)
+    # Populate the town warehouse after compute_all_town_influences(), which
+    # refreshes sell_pool from ring resources and prunes storage to match.
+    coastal_town["sell_pool"] = ["wood"]
+    coastal_town["storage"] = {"wood": 100}
+    coastal_town["quality"] = {"wood": "common"}
+    coastal_town["treasury"] = 500
     main_map._rebuild_town_roads()
 
     # 1) Coastal town gets a decorative harbor even with zero marine resources in its ring.
