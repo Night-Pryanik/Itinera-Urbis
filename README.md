@@ -2,7 +2,7 @@
 
 > An economic simulator of a single city's development through historical eras.
 
-**Itinera Urbis: Hearth to Horizon** is a game about how a small settlement gradually turns into a complex city, developing production, technology and infrastructure on a procedurally generated hexagonal map.
+*Itinera Urbis: Hearth to Horizon* is a game about how a small settlement gradually turns into a complex city, developing production, technology and infrastructure on a procedurally generated hexagonal map.
 
 There is no army of thousands of units, no manual control over every citizen, and no need to build every house tile by tile.
 
@@ -12,7 +12,7 @@ The main character is the **city**.
 
 ## 🎮 About the project
 
-Itinera Urbis: Hearth to Horizon combines elements of:
+*Itinera Urbis* combines elements of:
 
 - an economic simulator;
 - resource management;
@@ -116,7 +116,7 @@ What the city actually uses depends first of all on the resources available on t
 
 ## ⛏️ Resources
 
-Itinera Urbis: Hearth to Horizon's economy is built around interconnected resource chains.
+*Itinera Urbis* economy is built around interconnected resource chains.
 
 A single raw material can have several uses at once, which creates real economic decisions:
 
@@ -128,7 +128,7 @@ The game also has one-time natural resources — an analogue of the foraging mec
 
 ## 🎨 Production and quality
 
-Itinera Urbis: Hearth to Horizon uses a data-driven approach.
+*Itinera Urbis* uses a data-driven approach.
 
 Resources, buildings, technologies, recipes and terrain types are described by data, rather than by hard-coded logic for individual objects.
 
@@ -139,8 +139,6 @@ The game also develops a system of resource and product quality.
 ---
 
 ## ✨ Procedural products
-
-One of the project's planned systems is procedurally generated production results.
 
 Instead of creating a separate recipe for every combination of ingredients, a recipe defines a base product, and additional ingredients modify it.
 
@@ -189,7 +187,7 @@ This is part of the world's artistic design.
 
 ## 🧠 Design principles
 
-Itinera Urbis: Hearth to Horizon follows several important principles.
+*Itinera Urbis* follows several important principles.
 
 ### 95/5
 
@@ -233,7 +231,7 @@ All game data — resources, buildings, technologies, recipes, terrains — live
 
 ## 📌 Development philosophy
 
-Itinera Urbis: Hearth to Horizon does not try to be a maximally realistic historical reconstruction.
+*Itinera Urbis* does not try to be a maximally realistic historical reconstruction.
 
 History is used as a source of:
 
