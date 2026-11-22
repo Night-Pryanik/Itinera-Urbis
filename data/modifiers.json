@@ -147,11 +147,11 @@
         "building_production_slots": { "bookbinder_workshop": 1 }
       },
       {
-        // The virtual coinage of the Mint is scaled by the building's output multiplier,
-        // so a staffed assayer with the craft of assaying adds more to the poll tax.
+        // The seigniorage of the Mint is scaled by the building's output multiplier, so a
+        // staffed assayer with the craft of assaying takes more coin out of every strike.
         "tech_id": "assaying",
         "icon": "coin_stack.png",
-        "name": "Assaying: +50% to the Mint's coinage share",
+        "name": "Assaying: +50% to the Mint's seigniorage",
         "building_production_multiplier": { "mint": 1.5 }
       },
       {

@@ -1714,7 +1714,9 @@ func show_treasury_tooltip(mouse_pos: Vector2, balance: int, planned_income: Dic
             # the products.
             if type_row.has("flat_label"):
                 # The key of the type comes from CityData as a constant and holds the English
-                # text (tr() cannot be called in a constant) — we translate it here.
+                # text (tr() cannot be called in a constant) — we translate it here. A flat
+                # row without a label (the seigniorage of the Mint) has no rate × payers part
+                # and reads as a plain total.
                 var flat_text: String = tr(str(type_row.name))
                 var flat_label: String = str(type_row.get("flat_label", ""))
                 if not flat_label.is_empty():

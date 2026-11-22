@@ -430,6 +430,13 @@ func format_resource_name(key: String) -> String:
 func get_special_yield(product_id: String) -> Dictionary:
     return products.get(product_id, {}).get("special_yield", {})
 
+# The products the city counts per craft cycle rather than per stockpile: the virtual yields
+# the goods panel does not read (science, the share of the collected tax, the seigniorage of
+# the struck coin). They are declared by the "virtual" field of data/products/pseudo.json and
+# are drawn as an amount of the recipe instead of an icon of the storage.
+func is_virtual_product(product_id: String) -> bool:
+    return bool(products.get(product_id, {}).get("virtual", false))
+
 # --- THE PRICES OF THE RESOURCES ---
 # The base price is set in the JSON (the "price" field of the resource/product). The final price
 # can change dynamically through the multipliers: for example, the famine raises the prices

@@ -496,7 +496,7 @@
     {
       "id": "mint",
       "name": "Mint",
-      "description": "Strikes coins and assays the metal, adding to the tax collected.",
+      "description": "Strikes the city's coins out of copper, silver or gold, and takes a seigniorage on every batch.",
       "work_cost": 80,
       "maintenance_cost": 2.0,
       "additional_cost": [ { "planks": 150 }, { "@processed_construction_materials": 80 } ],
@@ -504,8 +504,20 @@
       "profession": "mint_worker",
       "production_slots": 1.0,
       "unlock_tech": "coinage",
-      "default_recipes": [ "coin_collection" ],
-      "additional_yield": { "coinage": 5 }
+      "default_recipes": [ "strike_copper_coins" ]
+    },
+    {
+      "id": "tax_yard",
+      "name": "Tax Yard",
+      "description": "The yard where the dues of the citizens are tallied, weighed and carried into the treasury.",
+      "work_cost": 40,
+      "maintenance_cost": 2.4,
+      "additional_cost": [ { "planks": 100 }, { "@processed_construction_materials": 40 } ],
+      "icon": "tax_yard.png",
+      "profession": "tax_collector",
+      "production_slots": 1.0,
+      "unlock_tech": "taxation",
+      "default_recipes": [ "tax_collection" ]
     },
     {
       "id": "paper_workshop",
