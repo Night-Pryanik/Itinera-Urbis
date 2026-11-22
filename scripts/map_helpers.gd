@@ -62,6 +62,90 @@ static func get_distance_tech_mult() -> float:
 static func get_distance_mult(distance: int) -> float:
     return 1.0 + float(distance) * get_distance_cost_modifier()
 
+## Tech multipliers affecting the distance surcharge of SCOUTING cost in treasury
+## coins: reads data/modifiers.json, target = "scouting_distance_cost" (for
+## example, "Compass" reduces the distance surcharge by 30%, -30 -> 0.7).
+static func get_scouting_distance_tech_mult() -> float:
+    var mult := 1.0
+    for tm in GameData.modifiers.get("tech_modifiers", []):
+        var tech_id = tm.get("tech_id", "")
+        if tech_id == "" or not CityData.is_tech_unlocked(tech_id):
+            continue
+        for mod in tm.get("modifiers", []):
+            if mod.get("target", "") != "scouting_distance_cost":
+                continue
+            var value = float(mod.get("value", 0))
+            mult *= 1.0 + value / 100.0
+    return mult
+
+## Distance multiplier for scouting one hex: 1 + distance × modifier × tech_mult.
+static func get_scouting_distance_mult(distance: int) -> float:
+    return 1.0 + float(distance) * get_distance_cost_modifier() * get_scouting_distance_tech_mult()
+
+## Maximum number of hexes in a single scouting area (base 5; raised by
+## tech_modifiers with target = "scouting_chunk_size").
+static func get_scouting_chunk_size() -> int:
+    var best := 5
+    for tm in GameData.modifiers.get("tech_modifiers", []):
+        if not (tm is Dictionary):
+            continue
+        var tech_id = tm.get("tech_id", "")
+        if tech_id == "" or not CityData.is_tech_unlocked(tech_id):
+            continue
+        for mod in tm.get("modifiers", []):
+            if not (mod is Dictionary):
+                continue
+            if mod.get("target", "") != "scouting_chunk_size":
+                continue
+            var v := int(mod.get("value", 0))
+            if v > best:
+                best = v
+    return best
+
+## Maximum number of simultaneous scouting expeditions (base 1; raised by
+## tech_modifiers with target = "max_scouting_expeditions").
+static func get_max_scouting_expeditions() -> int:
+    var best := 1
+    for tm in GameData.modifiers.get("tech_modifiers", []):
+        if not (tm is Dictionary):
+            continue
+        var tech_id = tm.get("tech_id", "")
+        if tech_id == "" or not CityData.is_tech_unlocked(tech_id):
+            continue
+        for mod in tm.get("modifiers", []):
+            if not (mod is Dictionary):
+                continue
+            if mod.get("target", "") != "max_scouting_expeditions":
+                continue
+            var v := int(mod.get("value", 0))
+            if v > best:
+                best = v
+    return best
+
+## Tech multiplier for maximum camera scroll distance from the city (and thus
+## post-Cartography scouting reach): target = "max_scroll_distance".
+static func get_max_scroll_tech_mult() -> float:
+    var mult := 1.0
+    for tm in GameData.modifiers.get("tech_modifiers", []):
+        if not (tm is Dictionary):
+            continue
+        var tech_id = tm.get("tech_id", "")
+        if tech_id == "" or not CityData.is_tech_unlocked(tech_id):
+            continue
+        for mod in tm.get("modifiers", []):
+            if not (mod is Dictionary):
+                continue
+            if mod.get("target", "") != "max_scroll_distance":
+                continue
+            var value := float(mod.get("value", 0))
+            mult *= 1.0 + value / 100.0
+    return mult
+
+## Cargo throughput (units/sec) of a sea trade route between harbors.
+static func get_sea_trade_flow_rate() -> float:
+    var rate := float(GameData.game_balance.get("sea_trade_flow_rate", 60.0))
+    return rate if rate > 0.0 else 60.0
+
 ## The one-time fee in coins for building an outpost on the hex (row, col): a base
 ## sum plus a per-hex distance charge. It is paid on top of the labour when the
 ## construction starts (build_manager) and returned if the construction is
@@ -1469,3 +1553,79 @@ static func has_harbor_access(tile_data: Array, row: int, col: int, map_rows: in
                         and not bool(nt.get("decorative", false)):
                     return true
     return false
+
+## Finds the shortest sea trade route between any harbor in the town's influence
+## ring and a player-built harbor on the same connected sea body ("sea" /
+## "shallow_sea"). Requires the "Compass" technology. Returns {"ok": false} when
+## unavailable, or {"ok": true, "sea": true, "length": water_hexes,
+## "avg_speed": flow_rate, "segments": [], "levels": []}.
+static func find_sea_trade_route(
+    tile_data: Array,
+    town: Dictionary,
+    map_rows: int,
+    map_cols: int
+) -> Dictionary:
+    if not CityData.is_tech_unlocked("compass"):
+        return {"ok": false}
+    if tile_data.is_empty() or town.is_empty() or map_rows <= 0 or map_cols <= 0:
+        return {"ok": false}
+
+    var visited := {}
+    var queue: Array = []
+    for h in town.get("influence_hexes", []):
+        var hr := int(h.get("row", -1))
+        var hc := int(h.get("col", -1))
+        if hr < 0 or hr >= map_rows or hc < 0 or hc >= map_cols:
+            continue
+        var ht = tile_data[hr][hc]
+        if ht == null:
+            continue
+        var town_imp = ht.get("improvement", null)
+        if town_imp == null or town_imp == "":
+            continue
+        var town_imp_data: Dictionary = GameData.improvements.get(str(town_imp), {})
+        if not bool(town_imp_data.get("water_body_harbor", false)):
+            continue
+        for n in HexUtils.get_neighbors_odd_r(hr, hc, map_rows, map_cols):
+            var key: int = n.row * map_cols + n.col
+            if visited.has(key):
+                continue
+            var nt = tile_data[n.row][n.col]
+            if nt == null:
+                continue
+            if _water_body_type(str(nt.get("terrain", ""))) == "sea":
+                visited[key] = true
+                queue.push_back({"row": n.row, "col": n.col, "dist": 1})
+
+    if queue.is_empty():
+        return {"ok": false}
+
+    while not queue.is_empty():
+        var cur: Dictionary = queue.pop_front()
+        var cur_dist := int(cur.get("dist", 1))
+        for n in HexUtils.get_neighbors_odd_r(int(cur.row), int(cur.col), map_rows, map_cols):
+            var nt = tile_data[n.row][n.col]
+            if nt == null:
+                continue
+            var terrain_id := str(nt.get("terrain", ""))
+            if is_water_terrain(terrain_id):
+                if _water_body_type(terrain_id) == "sea":
+                    var key: int = n.row * map_cols + n.col
+                    if not visited.has(key):
+                        visited[key] = true
+                        queue.push_back({"row": n.row, "col": n.col, "dist": cur_dist + 1})
+                continue
+            var imp_id = nt.get("improvement", null)
+            if imp_id != null and imp_id != "":
+                var imp_data: Dictionary = GameData.improvements.get(str(imp_id), {})
+                if bool(imp_data.get("water_body_harbor", false)) \
+                        and not bool(nt.get("decorative", false)):
+                    return {
+                        "ok": true,
+                        "sea": true,
+                        "length": cur_dist,
+                        "avg_speed": get_sea_trade_flow_rate(),
+                        "segments": [],
+                        "levels": [],
+                    }
+    return {"ok": false}

@@ -150,6 +150,22 @@
       "icon": "rope_twisting.png",
       "description": "Unlocks the ropewalk.",
       "flavor": "Yarns were spun up into strands and then laid together with a counter-twist. A long covered lane let a ropery stretch the strands from end to end and walk back as they combined, making ropes far longer and thicker than a household shed could twist. Ropewalks became a familiar part of medieval shipbuilding and dockyard work."
+    },
+    {
+      "id": "compass",
+      "name": "Compass",
+      "era": "medieval",
+      "science_cost": 6.0,
+      "prerequisites": [ [ "cartography", "precision_instruments", "steel_making" ] ],
+      "icon": "compass.png",
+      "description": "Fishing boats: +25% production.\nScouting: up to 7 tiles per area, up to 2 simultaneous expeditions, -30% distance surcharge on scouting cost, and +25% maximum map scroll distance from the city.\nAllows sea trade with coastal towns through harbors without a road.",
+      "flavor": "A magnetized steel needle balanced in a graduated bowl keeps a steady bearing under fog, clouds, and forest canopy alike. Described in Song-dynasty Chinese manuals for both land surveyors and mariners and carried across the Indian Ocean and Mediterranean, the magnetic compass turned open water and trackless wilderness into charted routes.",
+      "unlock_effects": [
+        {
+          "icon": "harbor.png",
+          "name": "Allows sea trade with coastal towns through harbors without a road"
+        }
+      ]
     }
   ]
 }

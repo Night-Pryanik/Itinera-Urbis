@@ -200,9 +200,10 @@ func _save_zoom_level() -> void:
 # the start. With the growth of the Region (a change of the era) the distance of the scrolling increases
 # together with it.
 func get_max_scroll() -> Vector2:
+    var mult := MapHelpers.get_max_scroll_tech_mult()
     return Vector2(
-        float(region_end_col - region_start_col + 1) * HEX_RADIUS,
-        float(region_end_row - region_start_row + 1) * HEX_RADIUS
+        float(region_end_col - region_start_col + 1) * HEX_RADIUS * mult,
+        float(region_end_row - region_start_row + 1) * HEX_RADIUS * mult
     )
 
 # Returns the inclusive hex-boundaries of the area which the player can see

@@ -370,7 +370,10 @@ func _append_route_info(row: int, col: int) -> void:
     if not route.get("ok", false):
         return
     var route_label := Label.new()
-    route_label.text = tr("Route to the city: %d sections, average %.1f units/sec") % [int(route.get("length", 0)), float(route.get("avg_speed", 0.0))]
+    if bool(route.get("sea", false)):
+        route_label.text = tr("Sea route to the city: %d water hexes, %.1f units/sec") % [int(route.get("length", 0)), float(route.get("avg_speed", 0.0))]
+    else:
+        route_label.text = tr("Route to the city: %d sections, average %.1f units/sec") % [int(route.get("length", 0)), float(route.get("avg_speed", 0.0))]
     route_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
     route_label.add_theme_color_override("font_color", UI_THEME.color("income").lightened(0.35))
     _products_container.add_child(route_label)
@@ -494,14 +497,18 @@ func _collect_actions(row: int, col: int, tile: Dictionary) -> Array:
         # trade itself, and its state is shown in the tooltip.
         var trade_available := true
         if town_rec != null:
-            trade_available = main_map.town_manager.is_trade_available(town_rec)
+            trade_available = main_map.town_manager.is_trade_available(
+                    town_rec, main_map.tile_data, main_map.map_rows, main_map.map_cols)
         var town_action_label = tr("Open town")
         var town_action_tooltip = tr("Open the town interface")
         if town_name != "":
             town_action_label = tr("Open %s") % town_name
             town_action_tooltip = tr("Open the town interface \"%s\"") % town_name
         if not trade_available:
-            town_action_tooltip += tr(" (trade unavailable: no road to the town)")
+            if CityData.is_tech_unlocked("compass"):
+                town_action_tooltip += tr(" (trade unavailable: no road or sea harbor route to the town)")
+            else:
+                town_action_tooltip += tr(" (trade unavailable: no road to the town)")
 
         # The road to the town — the same special action "Build a road" as on an
         # ordinary hex, but with a different text: the road connects the city with the
@@ -515,9 +522,14 @@ func _collect_actions(row: int, col: int, tile: Dictionary) -> Array:
                     and main_map.project_manager.has_project_at(row, col)):
                 var road_sa: Dictionary = GameData.special_actions.get(ROAD_ACTION_ID, {})
                 if not road_sa.is_empty():
-                    _append_special_action(actions, ROAD_ACTION_ID, road_sa,
-                            tr("Build a road from the city to the town%s — unlocks trade")
-                                    % ((" «%s»" % town_name) if town_name != "" else ""))
+                    var road_tip: String
+                    if trade_available:
+                        road_tip = tr("Build a land road from the city to the town%s") \
+                                % ((" «%s»" % town_name) if town_name != "" else "")
+                    else:
+                        road_tip = tr("Build a road from the city to the town%s — unlocks trade") \
+                                % ((" «%s»" % town_name) if town_name != "" else "")
+                    _append_special_action(actions, ROAD_ACTION_ID, road_sa, road_tip)
 
         # The interruption is needed both on the hex of the town itself, and in its influence ring:
         # the road to the town runs through the ring up to its centre, so without
@@ -896,9 +908,9 @@ func _append_long_action_cancel(actions: Array, row: int, col: int) -> void:
                 "tooltip": tr("Stop claiming land (%d tiles). Spent work will be lost, paid coins will be refunded") % chunk.size(),
                 "icon": "cross.svg"
             })
-    if main_map.is_scouting and not main_map.scouting_chunk.is_empty():
-        var first = main_map.scouting_chunk[0]
-        if first != null and int(first.row) == row and int(first.col) == col:
+    if main_map.has_method("get_scouting_progress_for_hex"):
+        var scout_exp: Dictionary = main_map.get_scouting_progress_for_hex(row, col)
+        if not scout_exp.is_empty():
             actions.append({
                 "type": "cancel_scouting",
                 "label": tr("Stop: Scouting"),
@@ -1004,8 +1016,12 @@ func _collect_region_actions(row: int, col: int) -> Array:
         # the rule (the same UX as at the claiming: "The area does not border your
         # holdings" below).
         var known_neighbor: bool = main_map.is_chunk_adjacent_to_known(chunk)
+        var hex_already_scouting: bool = main_map.is_hex_being_scouted(row, col) \
+                if main_map.has_method("is_hex_being_scouted") else false
+        var can_scout_now: bool = not hex_already_scouting and (
+                main_map.can_start_scouting() if main_map.has_method("can_start_scouting") else not main_map.is_scouting)
         var tooltip: String
-        if main_map.is_scouting:
+        if not can_scout_now:
             tooltip = tr("Scouting already in progress")
         elif not known_neighbor:
             tooltip = tr("The area does not border explored territory")
@@ -1022,7 +1038,7 @@ func _collect_region_actions(row: int, col: int) -> Array:
         actions.append({
             "type": "scout_chunk",
             "label": tr("Send scouts"),
-            "enabled": not main_map.is_scouting and known_neighbor,
+            "enabled": can_scout_now and known_neighbor,
             "tooltip": tooltip,
             "chunk": chunk,
             "cost": cost,
@@ -1278,7 +1294,8 @@ func _add_special_actions(actions: Array, row: int, col: int, tile: Dictionary):
 func _append_upgrade_road_action(actions: Array, row: int, col: int) -> void:
     if main_map == null or not main_map.has_method("get_route_to_city"):
         return
-    var route: Dictionary = main_map.get_route_to_city(row, col)
+    var route: Dictionary = main_map.get_land_route_to_city(row, col) \
+            if main_map.has_method("get_land_route_to_city") else main_map.get_route_to_city(row, col)
     if not route.get("ok", false):
         return
     var levels: Array = route.get("levels", [])
@@ -1948,7 +1965,8 @@ func _get_new_road_segments(row: int, col: int) -> Dictionary:
 func _get_route_display_segments(row: int, col: int) -> Dictionary:
     if not main_map.has_method("get_route_to_city"):
         return {}
-    var route: Dictionary = main_map.get_route_to_city(row, col)
+    var route: Dictionary = main_map.get_land_route_to_city(row, col) \
+            if main_map.has_method("get_land_route_to_city") else main_map.get_route_to_city(row, col)
     if not route.get("ok", false):
         return {}
     var segments: Dictionary = {}

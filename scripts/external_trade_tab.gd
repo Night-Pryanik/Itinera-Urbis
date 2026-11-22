@@ -1190,7 +1190,10 @@ func _build_partner_row(partner: Dictionary) -> HBoxContainer:
         road_marker.size_flags_vertical = Control.SIZE_SHRINK_CENTER
         road_marker.modulate = Color(1, 1, 1, 0.45)
         road_marker.mouse_filter = Control.MOUSE_FILTER_STOP
-        road_marker.tooltip_text = tr("Trade unavailable: there is no road from the city to this town")
+        if CityData.is_tech_unlocked("compass"):
+            road_marker.tooltip_text = tr("Trade unavailable: there is no road or sea harbor route from the city to this town")
+        else:
+            road_marker.tooltip_text = tr("Trade unavailable: there is no road from the city to this town")
         row.add_child(road_marker)
 
     var goto_button := Button.new()

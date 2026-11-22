@@ -1246,13 +1246,20 @@ static func draw_road_warning(target: CanvasItem, icon: Dictionary) -> void:
     var pos := icon_pos + drop_offset + Vector2(MARKER_ICON_RADIUS * 2.0 + 4.0, 0)
     draw_warning_triangle_on(target, pos, 13.0)
 
-# Is the city connected to this town by roads. The single source of truth is
-# road_manager: the networks of the city and the town have intersected (see is_town_linked_to_city).
+# Whether trade between the city and the town at (row, col) is connected — either
+# by a land road or by a sea harbor route unlocked by "Compass".
 func _is_town_trade_connected(row: int, col: int) -> bool:
-    if main_map == null or not main_map.has_node("RoadManager"):
+    if main_map == null:
         return false
-    var road_manager = main_map.get_node("RoadManager")
-    return road_manager.is_town_linked_to_city(row, col)
+    if main_map.has_node("RoadManager") \
+            and main_map.get_node("RoadManager").is_town_linked_to_city(row, col):
+        return true
+    if main_map.town_manager != null:
+        var town = main_map.town_manager.find_town_at(row, col)
+        if town != null:
+            return main_map.town_manager.is_trade_available(
+                    town, main_map.tile_data, main_map.map_rows, main_map.map_cols)
+    return false
 
 # The trade badge over the hex of a connected town: two curved arrows,
 # directed towards each other. The size is exactly the same as that of a drop of fresh water
