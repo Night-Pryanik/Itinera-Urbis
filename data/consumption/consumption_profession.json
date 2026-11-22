@@ -327,7 +327,7 @@
     {
       // The fine tools of the mint master's craft: the metal sets the precision of a balance
       // the same way it sets it for the scholar's instruments. Only the Mint uses this rule,
-      // so the base share of the Mint without instruments stays unchanged.
+      // so the base seigniorage of the Mint without instruments stays unchanged.
       "resource": "@precision_instruments",
       "profession": [ "mint_worker" ],
       "buildings": [ "mint" ],

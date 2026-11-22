@@ -1091,6 +1091,7 @@ func get_planned_treasury_income_map() -> Dictionary:
     var result: Dictionary = {}
     _fill_consumption_income(result)
     _fill_tax_income(result)
+    _fill_seigniorage_income(result, false)
     return result
 
 # The actual rate of the income of the treasury by the sources and the products for the last
@@ -1123,18 +1124,20 @@ func get_actual_treasury_income_map() -> Dictionary:
         if not income_by_source.is_empty():
             result[CityData.POPULATION_INCOME_TYPE] = income_by_source
     _fill_tax_income(result)
+    _fill_seigniorage_income(result, true)
     return result
 
 # The taxes are the second type of the income of the treasury ("The consumption of the population" + "Taxes").
-# Each resident pays the base tax every tick, therefore the planned and
+# Each resident pays the base tax every tick once Taxation is learned, therefore the planned and
 # the actual rate coincide and are counted by ONE expression from the current
 # of the population: CityData.get_tax_income_per_tick() (the single source of truth, there
-# is also the rate from data/game_balance.json).
-# The format of the record is a "flat" type (CityData.TREASURY_FLAT_TYPE_KEY): the tax is so far
-# the only one, there is nothing to lay it out by the sources/products, therefore the tooltip
+# is also the rate from data/game_balance.json). A city that has not learned Taxation pays no
+# tax at all, and the type is not shown.
+# The format of the record is a "flat" type (CityData.TREASURY_FLAT_TYPE_KEY): there is
+# nothing to lay the tax out by the sources/products, therefore the tooltip
 # draws it by one row "• Taxes: 2 × 3 persons = 6 / sec". "label" is the right
 # part before the sign "=" (the rate × the number of the payers, plus the share of the working
-# Mints), the rate is formatted and added by the renderer itself (ui_helpers.show_treasury_tooltip).
+# Tax Yards), the rate is formatted and added by the renderer itself (ui_helpers.show_treasury_tooltip).
 func _fill_tax_income(result: Dictionary) -> void:
     var per_tick: int = CityData.get_tax_income_per_tick()
     if per_tick <= 0:
@@ -1142,16 +1145,76 @@ func _fill_tax_income(result: Dictionary) -> void:
     var label: String = tr("%d × %d people") % [
         CityData.get_base_tax_per_citizen(), CityData.total_population
     ]
-    if CityData.mint_tax_share > 0.0:
-        var pct: float = snappedf(CityData.mint_tax_share * 100.0, 0.1)
+    # The share of the working Tax Yards. The whole phrase is one translatable format, so
+    # that every language keeps its own word order around the percent.
+    if CityData.tax_collector_share > 0.0:
+        var pct: float = snappedf(CityData.tax_collector_share * 100.0, 0.1)
         var pct_text: String = str(int(pct)) if is_equal_approx(pct, floorf(pct)) else "%.1f" % pct
-        label += " + %s%% %s" % [pct_text, tr("Mint")]
+        label += tr(" + %s%% from the Tax Yard") % pct_text
     result[CityData.TAX_INCOME_TYPE] = {
         CityData.TREASURY_FLAT_TYPE_KEY: {
             "rate": float(per_tick) / CityData.SIMULATION_TICK,
             "label": label
         }
     }
+
+# The seigniorage of the Mint is the third type of the income of the treasury. Unlike the tax,
+# it is not a rate of its own: the coins arrive with the batches the Mint strikes, so the
+# actual row is read from the accumulator of the window (CityData.record_treasury_income
+# under the same type), and the plan estimates the rate from the working strikes.
+# use_actual — which of the two the caller asks for: the planned map draws the estimate from
+# the working strikes, the actual one draws what the treasury really took over the window.
+func _fill_seigniorage_income(result: Dictionary, use_actual: bool) -> void:
+    var rate: float = 0.0
+    if use_actual:
+        var window: Dictionary = CityData.treasury_income_snapshot
+        if window.is_empty():
+            window = CityData.treasury_income_accum
+        if CityData.treasury_window_length_sec > 0.0:
+            rate = float(window.get(CityData.SEIGNIORAGE_INCOME_TYPE, 0)) \
+                    / CityData.treasury_window_length_sec
+    else:
+        rate = _planned_seigniorage_per_sec()
+    if rate <= 0.0:
+        return
+    result[CityData.SEIGNIORAGE_INCOME_TYPE] = {
+        CityData.TREASURY_FLAT_TYPE_KEY: {
+            "rate": rate
+        }
+    }
+
+# The seigniorage the staffed Mints would bring per second: the yield of every strike recipe in
+# the slots of a working Mint over the craft time of that recipe, with the same output
+# multiplier the production tick applies (the tools of the worker, the specialization of the
+# city, the technology bonuses).
+func _planned_seigniorage_per_sec() -> float:
+    var planned: float = 0.0
+    var tm = CityData._get_townsfolk()
+    if tm == null:
+        return 0.0
+    var city_water := CityData.has_city_fresh_water()
+    var wm = CityData._get_worker_manager()
+    for i in range(CityData.city_built_buildings.size()):
+        var bld: Dictionary = CityData.city_built_buildings[i]
+        if not tm.has_townsfolk(i):
+            continue
+        var prof_multiplier := 1.0
+        if wm != null and not CityData.are_all_slots_empty(i):
+            prof_multiplier = wm.get_building_production_bonus(i)
+        var output_multiplier: float = prof_multiplier \
+                * CityData.get_specialization_multiplier(CityData.SPEC_BUILDING_PRODUCTION) \
+                * CityData.get_building_production_multiplier(str(bld.get("id", "")), city_water)
+        for recipe_id in bld.get("slots", []):
+            var recipe: Dictionary = CityData.get_craft_by_id(str(recipe_id))
+            if recipe.is_empty():
+                continue
+            if not recipe.get("display_result", {}).has(CityData.SEIGNIORAGE_YIELD_KEY):
+                continue
+            var craft_time: float = CityData.get_craft_time(recipe)
+            if craft_time <= 0.0:
+                continue
+            planned += float(CityData.get_seigniorage_per_cycle(recipe, output_multiplier)) / craft_time
+    return planned
 
 # The income from the consumption on the inner market: the professional consumption
 # of the workers + the urban consumption "all". The inputs of the recipes of the buildings and the improvements

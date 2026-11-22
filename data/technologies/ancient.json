@@ -441,6 +441,21 @@
       "flavor": "Not every forest yields a strong lye: resinous pines leave a thin ash, so ash-burners sought out beech, maple, oak, chestnut and walnut, burned great stacks of seasoned timber, leached the ashes through water and calcined the liquor in hot pots into white potash. Costlier and slower to win than the crust of a soda lake, it freed inland workshops from distant natron and gave glassmakers, dyers and nitre-boilers an alkali of their own."
     },
     {
+      // A settled city stands on a surplus it can count. Either livelihood that keeps people
+      // in one place — the field or the herd — teaches the tally, so neither branch of the
+      // early economy is forced first. The tax itself is collected only once the tech is learned
+      // (see "The treasury of the city" in CityData.gd).
+      "id": "taxation",
+      "name": "Taxation",
+      "era": "ancient",
+      "science_cost": 3.0,
+      "icon": "taxation.png",
+      "prerequisites": [ [ "farming" ], [ "animal_husbandry" ] ],
+      "description": "Allows you to collect taxes from the citizens and to build the tax yard.\nA staffed tax yard adds +5% to the poll tax.",
+      "flavor": "A granary means a surplus, and a surplus means an argument about whose it is. The tally of the fields and the herd turned a shared store into a due: a share set aside before the grain is divided, kept by those who count it and defended by those who no longer plough. Every settled people found the same answer — the levy in grain, in heads, in days of work — and with it the first office of the city.",
+      "unlock_effects": [ { "icon": "coin_stack.png", "name": "Tax Yard: +5% to the poll tax per yard" } ]
+    },
+    {
       "id": "peat_cutting",
       "name": "Peat Cutting",
       "era": "ancient",

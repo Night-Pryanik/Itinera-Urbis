@@ -199,7 +199,13 @@
       "id": "mint_worker",
       "name": "Mint Worker",
       "icon": "coin_stack.png",
-      "description": "Strikes coins and checks the metal at the mint. One master does the work of both minter and assayer, so more of the poll tax reaches the treasury."
+      "description": "Strikes the coins of the city and assays the metal at the mint. Every batch of coin leaves a seigniorage in the treasury."
+    },
+    {
+      "id": "tax_collector",
+      "name": "Tax Collector",
+      "icon": "profession_tax_collector.png",
+      "description": "Takes the tally of the citizens in the tax yard, so that the poll tax is gathered in full and a little more reaches the treasury."
     },
     {
       "id": "winemaker",

@@ -1,16 +1,22 @@
-# Headless test of the coinage branch:
+# Headless test of the coinage branch (the seigniorage of the Mint):
 #   godot --headless --path . --script res://tests/test_coinage.gd
 #
-# The technology unlocks the Mint; the bonus belongs to the STAFFED building, not to the
-# technology. One virtual unit of "coinage" from the building's additional_yield is +1% of
-# the poll tax. Checks:
+# The Coinage technology unlocks the Mint, and the Mint is a coiner: it melts copper,
+# silver or gold into coin and keeps the difference between the face value of the coins
+# and the metal spent on them. That difference is the seigniorage — a virtual yield of the
+# recipe (display_result.seigniorage, data/crafts/pseudo.json), paid into the treasury over
+# the cycle of the strike and never put into the storage. Checks:
 #
-#   1. The data: the tech, the pseudo product without a price, the pseudo recipe, the building.
-#   2. A staffed Mint raises the tax by 5% (CityData.mint_tax_share), and the treasury row
-#      shows the share; an unstaffed one does nothing.
-#   3. Several staffed Mints add their shares; removing a worker removes his share.
-#   4. The Assaying technology multiplies the staffed Mint's share, and the precision
-#      instruments consumed by the mint master scale it further.
+#   1. The data: the technology, the building, the strike recipes, the virtual products.
+#   2. The metal: a strike consumes its charge from the storage and pays the seigniorage
+#      into the treasury, under the type CityData.SEIGNIORAGE_INCOME_TYPE; nothing of it
+#      reaches the warehouse.
+#   3. A starving Mint pays nothing: a strike without metal mints no coin.
+#   4. The Assaying technology and the precision instruments of the mint master scale the
+#      seigniorage through the building's output multiplier.
+#   5. The treasury breakdown: the "Seigniorage" row is flat and matches the plan; the tax
+#      is NOT raised by the Mint any more (that bonus belongs to the Tax Collector).
+#   6. A reloaded container neither loses nor repeats a payment (virtual_paid is saved).
 extends SceneTree
 
 const WATCHDOG = preload("res://tests/watchdog.gd")
@@ -35,6 +41,10 @@ func _run() -> void:
     var wm = main_map.get_node("WorkerManager")
     # A famine death would unassign the worker and change the population under the check.
     city.food_consumption_enabled = false
+    # The tests empty the storage and keep a large population, so the food balance is put out
+    # of the way entirely: no food kind in the pool means neither a birth nor a famine, and
+    # the population stays exactly what the checks below set.
+    city.city_food_pool.clear()
 
     # --- 1. The data of the branch ---
     var tech: Dictionary = {}
@@ -51,95 +61,171 @@ func _run() -> void:
     check(not mint_data.is_empty(), "the building \"mint\" must exist", state)
     check(str(mint_data.get("unlock_tech", "")) == "coinage",
             "the Mint must be unlocked by coinage", state)
-    check(int(gdata.get_building_additional_yield("mint").get("coinage", 0)) == 5,
-            "the Mint must give 5 virtual units of coinage", state)
+    check(str(mint_data.get("profession", "")) == "mint_worker",
+            "the Mint must employ the mint worker", state)
     var recipes: Array = mint_data.get("default_recipes", [])
-    check(recipes.has("coin_collection"), "the Mint must start with the coin collection recipe", state)
-    check(gdata.get_price("coinage") <= 0.0,
-            "coinage must be a virtual yield, not a priced good", state)
+    check(recipes.has("strike_copper_coins"), "the Mint must start with a copper strike", state)
+    check(gdata.is_virtual_product("seigniorage"),
+            "seigniorage must be flagged as a virtual product", state)
+    check(gdata.get_price("seigniorage") <= 0.0,
+            "seigniorage must be a virtual yield, not a priced good", state)
+    var strike: Dictionary = gdata.get_craft("strike_copper_coins")
+    check(int(strike.get("display_result", {}).get("seigniorage", 0)) == 6,
+            "a copper strike must pay 6 units of seigniorage", state)
+    check(int(strike.get("resources", {}).get("copper", 0)) == 20,
+            "a copper strike must spend 20 copper", state)
+    # The poll tax bonus has moved to the Tax Collector: the Mint gives no coinage any more.
+    check(gdata.get_building_additional_yield("mint").is_empty(),
+            "the Mint must not carry a poll tax bonus any more", state)
 
-    # --- 2. One staffed Mint ---
+    # --- 2. One strike with metal: the seigniorage reaches the treasury ---
+    # The storage is emptied first: then the internal market has nothing to sell and the only
+    # income of the treasury is the seigniorage (the upkeep of the Mint is an expense and is
+    # checked through the same accumulators at the end of the cycle).
+    city.city_storage.clear()
+    city.city_quality_detail.clear()
     city.total_population = 20
     city.idle_population = 4
     tm.assigned_buildings.clear()
     city.city_built_buildings = [
-        {"id": "mint", "slots": ["coin_collection"], "quality_priority": "best"}
+        {"id": "mint", "slots": ["strike_copper_coins"], "quality_priority": "best"}
     ]
     check(tm.assign_townsfolk(0), "a townsfolk must be assignable to the Mint", state)
-    city.do_tick()
-    check(absf(city.mint_tax_share - 0.05) < 0.0001,
-            "one staffed Mint must add 5%% to the tax, got %f" % city.mint_tax_share, state)
-    check(city.get_tax_income_per_tick() == 42,
-            "with 20 citizens the tax must be 42 (40 + 5%%), got %d"
-                    % city.get_tax_income_per_tick(), state)
-    var row: Dictionary = wm.get_planned_treasury_income_map() \
-            .get(city.TAX_INCOME_TYPE, {}).get(city.TREASURY_FLAT_TYPE_KEY, {})
-    check(str(row.get("label", "")).contains("+ 5%"),
-            "the treasury row must name the Mint's share, got \"%s\"" % str(row.get("label", "")), state)
+    city.treasury = 0
+    city.treasury_income_accum.clear()
+    city.treasury_income_product_accum.clear()
+    city.treasury_expense_accum.clear()
+    city.add_to_storage("copper", 200, "common")
+    city.add_to_storage("charcoal", 200, "common")
 
-    # Without a worker the building stands idle and gives nothing.
-    tm.remove_townsfolk(0)
+    # The first tick has charged a tenth of the metal: floor(6 × 0.1) = 0 coins are due yet.
     city.do_tick()
-    check(absf(city.mint_tax_share) < 0.0001,
-            "an unstaffed Mint must not add to the tax, got %f" % city.mint_tax_share, state)
-    check(city.get_tax_income_per_tick() == 40,
-            "without a worker the tax must be the base 40, got %d"
-                    % city.get_tax_income_per_tick(), state)
+    check(int(city.treasury_income_accum.get(city.SEIGNIORAGE_INCOME_TYPE, 0)) == 0,
+            "on the first tenth of the charge nothing is due yet", state)
+    # After the second tenth the strike owes floor(6 × 0.2) = 1 coin.
+    city.do_tick()
+    check(int(city.treasury_income_accum.get(city.SEIGNIORAGE_INCOME_TYPE, 0)) == 1,
+            "after two tenths the strike must have paid 1 coin, got %d"
+                    % int(city.treasury_income_accum.get(city.SEIGNIORAGE_INCOME_TYPE, 0)), state)
+    check(int(city.city_storage.get("copper", 0)) < 200,
+            "the strike must consume copper from the storage", state)
+    check(not city.city_storage.has("seigniorage"),
+            "the seigniorage must never reach the warehouse", state)
 
-    # --- 3. Two Mints, the shares add up ---
-    city.city_built_buildings.append(
-        {"id": "mint", "slots": ["coin_collection"], "quality_priority": "best"}
-    )
-    city.idle_population = maxi(city.idle_population, 4)
-    check(tm.assign_townsfolk(0), "the first Mint must get a worker again", state)
-    city.do_tick()
-    check(absf(city.mint_tax_share - 0.05) < 0.0001,
-            "one of two staffed Mints must add 5%%, got %f" % city.mint_tax_share, state)
-    check(tm.assign_townsfolk(1), "the second Mint must get a worker", state)
-    city.do_tick()
-    check(absf(city.mint_tax_share - 0.10) < 0.0001,
-            "two staffed Mints must add 10%%, got %f" % city.mint_tax_share, state)
-    check(city.get_tax_income_per_tick() == 44,
-            "with 20 citizens and two Mints the tax must be 44, got %d"
-                    % city.get_tax_income_per_tick(), state)
+    # The rest of the cycle: exactly the yield of the recipe (6 coins), no more and no less.
+    for i in range(8):
+        city.do_tick()
+    var paid_cycle: int = int(city.treasury_income_accum.get(city.SEIGNIORAGE_INCOME_TYPE, 0))
+    check(paid_cycle == 6,
+            "a full cycle must pay exactly 6 coins of seigniorage, got %d" % paid_cycle, state)
+    check(int(city.city_storage.get("copper", 0)) == 180,
+            "a copper strike must spend exactly 20 copper, got %d spent"
+                    % (200 - int(city.city_storage.get("copper", 0))), state)
+    check(int(city.city_storage.get("charcoal", 0)) == 190,
+            "a copper strike must spend exactly 10 fuel, got %d spent"
+                    % (200 - int(city.city_storage.get("charcoal", 0))), state)
+    # The coins really reached the treasury: it grew by the income minus the recorded upkeep.
+    check(city.treasury == _sum_flat(city.treasury_income_accum) - _sum_flat(city.treasury_expense_accum),
+            "the treasury must equal the recorded income minus the upkeep (%d)"
+                    % city.treasury, state)
 
-    # --- 4. The Assaying multiplier on the staffed Mint ---
-    city.total_population = 100
-    city.idle_population = 4
-    tm.assigned_buildings.clear()
-    city.city_built_buildings = [
-        {"id": "mint", "slots": ["coin_collection"], "quality_priority": "best"}
-    ]
-    check(tm.assign_townsfolk(0), "the Mint must get a worker for the multiplier case", state)
-    city.do_tick()
-    check(absf(city.mint_tax_share - 0.05) < 0.0001,
-            "without the technology the share must stay at 5%%, got %f" % city.mint_tax_share, state)
-    check(city.get_tax_income_per_tick() == 210,
-            "with 100 citizens and one Mint the tax must be 210, got %d"
-                    % city.get_tax_income_per_tick(), state)
+    # --- 3. A starving Mint pays nothing ---
+    city.city_storage.clear()
+    city.city_quality_detail.clear()
+    city.treasury = 0
+    city.treasury_income_accum.clear()
+    city.treasury_income_product_accum.clear()
+    for i in range(5):
+        city.do_tick()
+    check(int(city.treasury_income_accum.get(city.SEIGNIORAGE_INCOME_TYPE, 0)) == 0,
+            "a Mint without metal must mint no coin", state)
+    check(city.treasury == 0, "a starving Mint must leave the treasury alone", state)
 
+    # --- 4. The multipliers: Assaying and the precision instruments ---
+    city.city_storage.clear()
+    city.city_quality_detail.clear()
+    city.add_to_storage("copper", 400, "common")
+    city.add_to_storage("charcoal", 400, "common")
+    city.unlocked_technologies.append("coinage")
     city.unlocked_technologies.append("assaying")
     city.do_tick()
     check(is_equal_approx(city.get_building_production_multiplier("mint", false), 1.5),
             "assaying must give the Mint a 1.5 building multiplier", state)
-    check(absf(city.mint_tax_share - 0.075) < 0.0001,
-            "the multiplier must raise the share to 7.5%%, got %f" % city.mint_tax_share, state)
-    check(city.get_tax_income_per_tick() == 215,
-            "with the multiplier the tax must be 215, got %d"
-                    % city.get_tax_income_per_tick(), state)
+    var strike_recipe: Dictionary = gdata.get_craft("strike_copper_coins")
+    check(city.get_seigniorage_per_cycle(strike_recipe, 1.5) == 9,
+            "a copper strike under assaying must plan 9 coins, got %d"
+                    % city.get_seigniorage_per_cycle(strike_recipe, 1.5), state)
 
-    # The worker also consumes precision instruments; steel ones add another 25%.
-    city.total_population = 100
-    city.add_to_storage("steel_precision_instruments", 20, "common")
+    # The tools of the mint master: steel precision instruments add another 25%.
+    city.add_to_storage("steel_precision_instruments", 40, "common")
     city.do_tick()
-    check(absf(city.mint_tax_share - 0.09375) < 0.0001,
-            "steel instruments must add 25%% on top of the multiplier, got %f"
-                    % city.mint_tax_share, state)
-    check(city.get_tax_income_per_tick() == 219,
-            "with instruments the tax must be 219, got %d"
-                    % city.get_tax_income_per_tick(), state)
+    var prof_bonus: float = wm.get_building_production_bonus(0)
+    check(prof_bonus > 1.24 and prof_bonus < 1.26,
+            "steel instruments must give the mint worker a 1.25 bonus, got %f" % prof_bonus, state)
+    var cycle_with_tools: int = city.get_seigniorage_per_cycle(strike_recipe, 1.5 * prof_bonus)
+    check(cycle_with_tools == 11,
+            "with the tools a copper strike must plan 11 coins, got %d" % cycle_with_tools, state)
+
+    # --- 5. The treasury breakdown: a flat "Seigniorage" row ---
+    # The plan is the yield over the craft time: 11 coins per 10 sec = 1.1 / sec. The
+    # accumulators are cleared, so the row carries the plan alone.
+    city.treasury_income_accum.clear()
+    city.treasury_income_product_accum.clear()
+    city.treasury_income_snapshot.clear()
+    city.treasury_income_product_snapshot.clear()
+    var planned: Dictionary = wm.get_planned_treasury_income_map()
+    check(planned.has(city.SEIGNIORAGE_INCOME_TYPE),
+            "the planned breakdown must show the seigniorage", state)
+    var planned_row: Dictionary = planned.get(city.SEIGNIORAGE_INCOME_TYPE, {}) \
+            .get(city.TREASURY_FLAT_TYPE_KEY, {})
+    var planned_rate: float = float(planned_row.get("rate", 0.0))
+    check(absf(planned_rate - 1.1) < 0.01,
+            "the planned seigniorage rate must be 1.1 coins/sec, got %f" % planned_rate, state)
+
+    # And the paid coins show up as the same flat type of the actual breakdown: the actual
+    # row reads the accumulator of the window, so the window is rotated to make the payments
+    # of the past ticks the data of the last complete window.
+    for i in range(10):
+        city.do_tick()
+    city.rotate_treasury_window()
+    var actual: Dictionary = wm.get_actual_treasury_income_map()
+    check(actual.has(city.SEIGNIORAGE_INCOME_TYPE),
+            "the treasury breakdown must contain the type \"%s\"" % city.SEIGNIORAGE_INCOME_TYPE, state)
+    var flat_row: Dictionary = actual.get(city.SEIGNIORAGE_INCOME_TYPE, {}) \
+            .get(city.TREASURY_FLAT_TYPE_KEY, {})
+    check(not flat_row.is_empty(),
+            "the seigniorage must be a flat row (key %s)" % city.TREASURY_FLAT_TYPE_KEY, state)
+    check(float(flat_row.get("rate", 0.0)) > 0.0,
+            "the seigniorage row must carry a rate, got %s" % str(flat_row.get("rate", 0.0)), state)
+    check(str(flat_row.get("label", "")).is_empty(),
+            "the seigniorage row must not carry the tax label, got \"%s\""
+                    % str(flat_row.get("label", "")), state)
+
+    # The Mint no longer raises the poll tax: that bonus belongs to the Tax Collector.
+    check(absf(city.tax_collector_share) < 0.0001,
+            "a staffed Mint must not raise the poll tax any more, got %f" % city.tax_collector_share, state)
+
+    # --- 6. The virtual payout is saved with the container ---
+    var container = load("res://scripts/craft_container.gd").new(strike_recipe)
+    container.add_virtual_paid(city.SEIGNIORAGE_YIELD_KEY, 4)
+    var saved: Dictionary = container.serialize()
+    check(saved.has("virtual_paid"), "the container must serialize its virtual payouts", state)
+    var restored = load("res://scripts/craft_container.gd").new(strike_recipe, saved)
+    check(restored.get_virtual_paid(city.SEIGNIORAGE_YIELD_KEY) == 4,
+            "the restored container must keep the 4 coins already paid, got %d"
+                    % restored.get_virtual_paid(city.SEIGNIORAGE_YIELD_KEY), state)
+    container.reset()
+    check(container.get_virtual_paid(city.SEIGNIORAGE_YIELD_KEY) == 0,
+            "a new cycle must start with nothing paid", state)
 
     _finish(main_map, state)
+
+# The sum of a flat accumulator: { source -> amount }.
+func _sum_flat(accum: Dictionary) -> int:
+    var total := 0
+    for source in accum:
+        total += int(accum[source])
+    return total
 
 func _finish(main_map, state: Dictionary) -> void:
     if main_map != null and is_instance_valid(main_map):
