@@ -300,7 +300,7 @@
       "name": "Foreign Trade",
       "era": "antiquity",
       "science_cost": 8.0,
-      "icon": "market.png",
+      "icon": "long_distance_trade.png",
       "prerequisites": [ [ "astronomy", "coinage" ], [ "navigation", "coinage" ] ],
       "description": "The knowledge that opens the way to markets beyond the known world.",
       "flavor": "A market at the edge of the known world is not the end of trade. Merchants who knew the stars and the carry of a hull sent their wares past the last road, to ports and courts no map of the region showed: the bargain was written in the ledger of the city, not on its fields. The caravanserai of the steppe and the counting houses of the monsoon coast kept the same book."
