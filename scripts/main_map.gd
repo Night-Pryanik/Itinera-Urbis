@@ -383,9 +383,9 @@ func _ready():
     # it, but a map opened on its own has to pick it up as well.
     UiScale.apply_saved()
     # Both a window resize and a change of the interface scale resize the canvas the map is
-    # drawn on. The offsets centre the map on that canvas (see view.gd), so they follow it.
-    if not get_viewport().size_changed.is_connected(_calc_offsets):
-        get_viewport().size_changed.connect(_calc_offsets)
+    # drawn on. The offsets follow it, keeping the zoom they were calibrated with (see view.gd).
+    if not get_viewport().size_changed.is_connected(on_viewport_resized):
+        get_viewport().size_changed.connect(on_viewport_resized)
     _calc_offsets()
     map_renderer.queue_redraw()
 

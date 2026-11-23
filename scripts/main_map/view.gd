@@ -5,7 +5,16 @@ extends "res://scripts/main_map/state.gd"
 # world. The map is drawn in the world coordinates, so a change of the view only moves the
 # transform of the renderer (see apply_view_transform).
 
+# The zoom the offsets were calibrated for. It is the zoom at the start of the map, not the
+# one the player has reached since: a resize has to keep that calibration, otherwise the
+# offsets move the world and the symmetric scroll clamp stops matching what the player sees.
+var _offset_zoom: float = 1.0
+
 func _calc_offsets():
+    _offset_zoom = zoom
+    _calc_offsets_for(_offset_zoom)
+
+func _calc_offsets_for(value: float):
     var viewport_size = Vector2(1152, 768)
     if not Engine.is_editor_hint():
         viewport_size = get_viewport_rect().size
@@ -16,11 +25,16 @@ func _calc_offsets():
     var offsets = MapHelpers.calc_offsets(
         region_start_row, region_end_row,
         region_start_col, region_end_col,
-        HEX_RADIUS, viewport_size / zoom
+        HEX_RADIUS, viewport_size / value
     )
     offset_x = offsets.x
     offset_y = offsets.y
     apply_view_transform()
+
+# A change of the window or of the interface scale resizes the canvas. Recompute the offsets
+# for the zoom they were calibrated with, not for the zoom of the moment.
+func on_viewport_resized() -> void:
+    _calc_offsets_for(_offset_zoom)
 
 # Applies the current camera (the offset and the scroll) to the renderer. The map is drawn in
 # world coordinates, so the transform is the pan and the zoom. When the reachable area is
