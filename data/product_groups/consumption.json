@@ -216,13 +216,15 @@
       "products": [ "tallow_candles", "wax_candles" ]
     },
     {
-      // The oils burned in household lamps. Vegetable oil is the ancient fuel; the mineral ones
-      // join it with distillation. @consumer_goods names this group as a member, so the basket
-      // draws on every kind in stock. Lighting is a need of all citizens, not of a few trades:
-      // there is no production bonus here, only the urban "all" write-off of @consumer_goods.
+      // The oils burned in household lamps. Vegetable oil is the ancient fuel; white naphtha comes
+      // from bitumen and kerosene is distilled from shale oil. The crude shale oil itself is too
+      // smoky for a lamp and goes to the tannery and the refinery instead. @consumer_goods names
+      // this group as a member, so the basket draws on every kind in stock. Lighting is a need of
+      // all citizens, not of a few trades: there is no production bonus here, only the urban
+      // "all" write-off of @consumer_goods.
       "id": "lamp_oils",
       "name": "Lamp Oils",
-      "products": [ "vegetable_oil", "white_naphtha", "shale_oil" ]
+      "products": [ "vegetable_oil", "white_naphtha", "kerosene" ]
     },
     {
       // Household hearth and stove fuel: bog peat and mineral coal. Citizens draw

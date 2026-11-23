@@ -152,10 +152,12 @@
       "products": [ "oak_wood", "beech_wood", "chestnut_wood", "pine_wood", "maple_wood", "walnut_wood" ]
     },
     {
-      // Tanning agents include both plant tannins and mineral salts.
+      // Tanning agents include plant tannins, mineral salts and shale oil, which degreases the
+      // hide before the tannins set. The crude oil is too smoky for lamps: it goes to the tannery
+      // and to the kerosene still, while the refined kerosene burns in households.
       "id": "tannins",
       "name": "Tanning Agents",
-      "products": [ "oak_bark", "chestnut_bark", "walnuts", "galls", "campeche_wood", "sumac_leaves", "quebracho_wood", "alum" ]
+      "products": [ "oak_bark", "chestnut_bark", "walnuts", "galls", "campeche_wood", "sumac_leaves", "quebracho_wood", "alum", "shale_oil" ]
     },
     {
       // Precious hardwoods used for fine furniture: oak, maple, mahogany, rosewood and ebony.

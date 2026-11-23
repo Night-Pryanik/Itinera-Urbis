@@ -4376,6 +4376,10 @@ msgid "Redistils a fermented drink into concentrated rectified spirit."
 msgstr "Повторно перегоняет сброженный напиток в крепкий спирт-ректификат."
 
 msgctxt "crafts.description"
+msgid "Redistils crude shale oil into clean-burning lamp kerosene."
+msgstr "Повторно перегоняет сырое сланцевое масло в чисто горящий ламповый керосин."
+
+msgctxt "crafts.description"
 msgid "Distils pine resin into volatile turpentine and solid rosin."
 msgstr "Перегоняет сосновую живицу в летучий скипидар и твёрдую канифоль."
 
@@ -4906,6 +4910,10 @@ msgstr "Железное оружие"
 msgctxt "crafts.name"
 msgid "Karkadeh"
 msgstr "Каркаде"
+
+msgctxt "crafts.name"
+msgid "Kerosene"
+msgstr "Керосин"
 
 msgctxt "crafts.name"
 msgid "Lazurite Jewelry"
@@ -6902,6 +6910,10 @@ msgstr "Каркаде"
 msgctxt "resources.name"
 msgid "Kenaf"
 msgstr "Кенаф"
+
+msgctxt "resources.name"
+msgid "Kerosene"
+msgstr "Керосин"
 
 msgctxt "resources.name"
 msgid "Lawsonia"

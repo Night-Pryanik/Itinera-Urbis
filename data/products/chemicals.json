@@ -73,7 +73,8 @@
       "icon": "white_naphtha.png"
     },
     {
-      // Crude lamp and tanning oil recovered by heating oil shale without air.
+      // Crude oil recovered by heating oil shale without air. It is too smoky for a lamp: the
+      // refinery turns it into kerosene and the tannery spends it on hides.
       "id": "shale_oil",
       "price": 18,
       "name": "Shale Oil",
@@ -81,6 +82,16 @@
       "category": "chemicals",
       "unlock_tech": "distillation",
       "icon": "shale_oil.png"
+    },
+    {
+      // The clear fraction redistilled from shale oil: a bright, clean-burning lamp fuel.
+      "id": "kerosene",
+      "price": 30,
+      "name": "Kerosene",
+      "type": "product",
+      "category": "chemicals",
+      "unlock_tech": "distillation",
+      "icon": "kerosene.png"
     },
     {
       // Mineral acid (spirit of salt): distilled from salt with vitriol or alum under

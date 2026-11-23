@@ -35,14 +35,30 @@ func _test_real_data(state: Dictionary):
     check(declared.has("@lamp_oils"),
             "consumer_goods must declare the nested lamp_oils group", state)
     var oils: Array = loader.product_groups.get("lamp_oils", [])
-    check(oils.has("vegetable_oil") and oils.has("white_naphtha") and oils.has("shale_oil"),
-            "the lamp oils must include the ancient vegetable fuel and both mineral oils", state)
+    check(oils.has("vegetable_oil") and oils.has("white_naphtha") and oils.has("kerosene"),
+            "the lamp oils must include the ancient fuel and both refined fuels", state)
+    check(not oils.has("shale_oil"),
+            "the crude shale oil must be a feedstock, not a lamp oil", state)
     var members: Array = loader.product_groups.get("consumer_goods", [])
-    check(members.has("vegetable_oil") and members.has("white_naphtha") and members.has("shale_oil"),
+    check(members.has("vegetable_oil") and members.has("white_naphtha") and members.has("kerosene"),
             "all three lamp oils must be in the expanded basket", state)
+    check(not members.has("shale_oil"),
+            "the basket must not draw the crude oil", state)
     check(not members.has("@lamp_oils"),
             "the expanded basket must hold products, not a group key", state)
     check(members.size() == 8, "the basket must still hold all eight goods", state)
+
+    var tannins: Array = loader.product_groups.get("tannins", [])
+    check(tannins.has("shale_oil"), "the crude shale oil must serve the tannery", state)
+    var kerosene_craft: Dictionary = {}
+    for craft in loader.crafts:
+        if craft is Dictionary and str(craft.get("id", "")) == "kerosene":
+            kerosene_craft = craft
+            break
+    check(not kerosene_craft.is_empty(), "the kerosene craft must exist", state)
+    var res = kerosene_craft.get("resources", {})
+    check(res is Dictionary and (res as Dictionary).has("shale_oil"),
+            "the kerosene craft must spend the crude shale oil", state)
 
     var problems: Array = DataValidator.new().validate(loader)
     check(_only(problems, "group_cycle").is_empty(),

@@ -4298,6 +4298,10 @@ msgid "Redistils a fermented drink into concentrated rectified spirit."
 msgstr ""
 
 msgctxt "crafts.description"
+msgid "Redistils crude shale oil into clean-burning lamp kerosene."
+msgstr ""
+
+msgctxt "crafts.description"
 msgid "Distils pine resin into volatile turpentine and solid rosin."
 msgstr ""
 
@@ -4827,6 +4831,10 @@ msgstr ""
 
 msgctxt "crafts.name"
 msgid "Karkadeh"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Kerosene"
 msgstr ""
 
 msgctxt "crafts.name"
@@ -6823,6 +6831,10 @@ msgstr ""
 
 msgctxt "resources.name"
 msgid "Kenaf"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Kerosene"
 msgstr ""
 
 msgctxt "resources.name"

@@ -69,7 +69,7 @@
       "description": "Dissolves rosin in turpentine or rectified spirit into a clear protective varnish."
     },
     {
-      // Heating oil shale without air releases condensable hydrocarbons for lamps and tanning.
+      // Heating oil shale without air releases the crude oil the refinery and the tannery take.
       "id": "shale_oil",
       "produced_in": [ "tar_distillery", "alchemist_house" ],
       "resources": { "oil_shale": 20, "@smelting_fuel": 10 },
@@ -77,6 +77,17 @@
       "time": 10.0,
       "unlock_tech": "distillation",
       "description": "Heats oil shale in a closed retort to recover crude shale oil."
+    },
+    {
+      // A second distillation of the crude oil drives off the light fraction used in lamps.
+      "id": "kerosene",
+      "name": "Kerosene",
+      "produced_in": [ "tar_distillery", "alchemist_house" ],
+      "resources": { "shale_oil": 20, "@smelting_fuel": 10 },
+      "result": { "kerosene": 10 },
+      "time": 8.0,
+      "unlock_tech": "distillation",
+      "description": "Redistils crude shale oil into clean-burning lamp kerosene."
     },
     {
       // Distilling crude bitumen drives off clear white naphtha overhead while leaving
