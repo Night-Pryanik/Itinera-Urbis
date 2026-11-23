@@ -73,6 +73,16 @@
       "icon": "white_naphtha.png"
     },
     {
+      // Crude lamp and tanning oil recovered by heating oil shale without air.
+      "id": "shale_oil",
+      "price": 18,
+      "name": "Shale Oil",
+      "type": "product",
+      "category": "chemicals",
+      "unlock_tech": "distillation",
+      "icon": "shale_oil.png"
+    },
+    {
       // Mineral acid (spirit of salt): distilled from salt with vitriol or alum under
       // Distillation, and displaced with higher yield by sulfuric acid under Chemistry.
       "id": "hydrochloric_acid",

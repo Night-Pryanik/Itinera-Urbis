@@ -214,9 +214,8 @@
       "production_bonus": 0.15
     },
     {
-      // White naphtha feeds hot, soot-free lamps for glassmakers and alchemists and
-      // degreases hides in the tannery.
-      "resource": "white_naphtha",
+      // Lamp oils light glassworks and alchemists' houses; the tannery also uses them to degrease hides.
+      "resource": "@lamp_oils",
       "profession": [ "glassmaker", "alchemist", "tanner" ],
       "amount": 10,
       "interval": 15,

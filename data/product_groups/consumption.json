@@ -153,7 +153,7 @@
       // together with the common goods and compete with the workshops that use them.
       "id": "consumer_goods",
       "name": "Consumer Goods",
-      "products": [ "salt", "soap", "vegetable_oil", "sponge", "pumice", "glue", "white_naphtha" ]
+      "products": [ "salt", "soap", "vegetable_oil", "sponge", "pumice", "glue", "white_naphtha", "shale_oil" ]
     },
     {
       // The empty vessel a good is stored and shipped in. Tare is generic: the winemaker, brewer,
@@ -212,12 +212,17 @@
       "products": [ "tallow_candles", "wax_candles" ]
     },
     {
+      "id": "lamp_oils",
+      "name": "Lamp Oils",
+      "products": [ "white_naphtha", "shale_oil" ]
+    },
+    {
       // Household hearth and stove fuel: bog peat and mineral coal. Citizens draw
       // one fuel per tick (consume_all: false), rotating over those in stock; wood,
       // charcoal and coke stay dedicated workshop and furnace feedstocks.
       "id": "fuel",
       "name": "Fuel",
-      "products": [ "peat", "coal" ]
+      "products": [ "peat", "coal", "oil_shale" ]
     }
   ]
 }

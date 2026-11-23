@@ -69,6 +69,16 @@
       "description": "Dissolves rosin in turpentine or rectified spirit into a clear protective varnish."
     },
     {
+      // Heating oil shale without air releases condensable hydrocarbons for lamps and tanning.
+      "id": "shale_oil",
+      "produced_in": [ "tar_distillery", "alchemist_house" ],
+      "resources": { "oil_shale": 20, "@smelting_fuel": 10 },
+      "result": { "shale_oil": 10 },
+      "time": 10.0,
+      "unlock_tech": "distillation",
+      "description": "Heats oil shale in a closed retort to recover crude shale oil."
+    },
+    {
       // Distilling crude bitumen drives off clear white naphtha overhead while leaving
       // workable pitch tar in the retort.
       "id": "white_naphtha",
