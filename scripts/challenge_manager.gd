@@ -706,4 +706,6 @@ func _restore_fame_prices() -> void:
         for reward in rewards_of(block):
             if str(reward.get("type", "")) != REWARD_TRADE_PRICE:
                 continue
-            _fame_price_share[str(pid)] = float(reward.get("value", 0.0))
+            var key := str(pid)
+            _fame_price_share[key] = float(_fame_price_share.get(key, 0.0)) \
+                    + float(reward.get("value", 0.0))

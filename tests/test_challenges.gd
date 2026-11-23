@@ -83,6 +83,7 @@ func _run() -> void:
     _test_gates(state)
     _test_brand_work(state)
     _test_save(state)
+    _test_save_multiple_trade_rewards(state)
     await _test_era(state)
     await _test_tab(state)
 
@@ -488,6 +489,37 @@ func _test_save(state: Dictionary) -> void:
     _mgr.deserialize({})
     check(_mgr.tier_counter(product, reputation) == 0,
             "a save without the block of the fame earns nothing", state)
+
+# Two trade-price rewards on the same rung must add up, both in live play and when a save is read
+# back. A save rebuilds the share from the rungs, so it must sum the rewards the way apply_reward
+# does rather than keeping only the last one.
+func _test_save_multiple_trade_rewards(state: Dictionary) -> void:
+    _reset_all()
+    var fake := "test_multi_trade_reward"
+    var share_a := 0.10
+    var share_b := 0.05
+    var product := {
+        "id": fake,
+        "reputation": {
+            "threshold": 1,
+            "trigger": "sell",
+            "reward": [
+                {"type": "trade_price", "value": share_a},
+                {"type": "trade_price", "value": share_b},
+            ],
+        },
+    }
+    _gdata.products[fake] = product
+    _mgr.record_sale(fake, {"common": 1})
+    var live: float = _mgr.get_fame_trade_price_share(fake)
+    check(absf(live - (share_a + share_b)) < 0.0001,
+            "both trade-price rewards of a rung are paid live", state)
+    var snapshot: Dictionary = _mgr.serialize()
+    _reset_all()
+    _mgr.deserialize(snapshot)
+    check(absf(_mgr.get_fame_trade_price_share(fake) - live) < 0.0001,
+            "a save restores the sum of the trade-price rewards, not the last of them", state)
+    _gdata.products.erase(fake)
 
 # --- 7. THE TASKS OF THE ERA ---
 
