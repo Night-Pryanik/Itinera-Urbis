@@ -215,11 +215,11 @@ func _test_culling(state: Dictionary, main_map) -> void:
     main_map.set_zoom(1.0)
 
 # -------------------------------------------------------
-# 6. A zoom restored from the settings still centres the Region
+# 6. A zoom set during play still centres the Region
 # -------------------------------------------------------
 # The offsets centre the Region in the LOCAL pixels of the map, so at a zoom other than 1
-# they must be computed for a viewport / zoom window — otherwise a saved zoom opens with
-# the map pressed into the top left corner.
+# they must be computed for a viewport / zoom window — otherwise the map opens with the
+# Region pressed into the top left corner.
 func _test_centering(state: Dictionary, main_map) -> void:
     var viewport_size: Vector2 = main_map.map_renderer._get_viewport_size()
 
@@ -301,9 +301,10 @@ func _test_edge_clamp(state: Dictionary, main_map) -> void:
         "the gesture must still be running in the middle of the check", state)
     var carried: Vector2 = main_map.map_renderer.position / main_map.zoom \
             - Vector2(main_map.offset_x, main_map.offset_y)
-    check(absf(carried.x) <= max_scroll.x + 0.5 and absf(carried.y) <= max_scroll.y + 0.5,
-        "the animation must not carry the map beyond the reachable area (%s, limit %s)"
-            % [str(carried), str(max_scroll)], state)
+    var carried_clamped: Vector2 = main_map.clamp_scroll(carried)
+    check(carried_clamped.distance_to(carried) < 0.5,
+        "the animation must not carry the map beyond the reachable area (%s -> %s)"
+            % [str(carried), str(carried_clamped)], state)
 
     # The settle folds the carried shift into the scroll offset: the map must not move.
     var before: Vector2 = _hex_screen(main_map, row, col)
@@ -316,10 +317,10 @@ func _test_edge_clamp(state: Dictionary, main_map) -> void:
         ih.handle_process(1.0 / 60.0)
     check(is_equal_approx(main_map.zoom, main_map.ZOOM_MIN),
         "the gesture must reach ZOOM_MIN (got %.4f)" % main_map.zoom, state)
-    check(absf(main_map.scroll_offset.x) <= max_scroll.x + 0.5
-            and absf(main_map.scroll_offset.y) <= max_scroll.y + 0.5,
-        "the scroll must stay inside the reachable area (%s, limit %s)"
-            % [str(main_map.scroll_offset), str(max_scroll)], state)
+    var settled_clamped: Vector2 = main_map.clamp_scroll(main_map.scroll_offset)
+    check(settled_clamped.distance_to(main_map.scroll_offset) < 0.5,
+        "the scroll must stay inside the reachable area (%s -> %s)"
+            % [str(main_map.scroll_offset), str(settled_clamped)], state)
 
     main_map.set_zoom(1.0)
     main_map._calc_offsets()

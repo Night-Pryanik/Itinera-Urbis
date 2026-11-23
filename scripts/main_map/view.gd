@@ -20,8 +20,7 @@ func _calc_offsets_for(value: float):
         viewport_size = get_viewport_rect().size
     # The offsets centre the Region in the LOCAL pixels of the map, and the zoom magnifies
     # them: at a zoom other than 1 the same window holds viewport / zoom of them. Without
-    # the division a zoom restored from the settings would push the map into the top left
-    # corner instead of centring it.
+    # the division the Region would be pushed into the top left corner instead of centred.
     var offsets = MapHelpers.calc_offsets(
         region_start_row, region_end_row,
         region_start_col, region_end_col,
@@ -62,19 +61,16 @@ func _on_city_button_gui_input(event: InputEvent):
     if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
         center_on_hex(city_row, city_col)
 
-# Centers the map on a hex. The clamp by get_max_scroll is the same as in the edge scrolling
-# (InputHandler): without it a hex at the border of the Region would ask for a scroll the map
-# cannot make, and the hex would stay off screen. The half of the screen is taken in LOCAL
-# pixels, hence the division by the zoom: the hex has to land in the middle of the SCREEN.
+# Centers the map on a hex. The clamp is the same as in the edge scrolling (InputHandler):
+# without it a hex at the border of the Region would ask for a scroll the map cannot make,
+# and the hex would stay off screen. The half of the screen is taken in LOCAL pixels, hence
+# the division by the zoom: the hex has to land in the middle of the SCREEN.
 func center_on_hex(row: int, col: int) -> void:
     # A running zoom would keep correcting the offset towards its anchor and drag the
     # map away from the hex we are about to centre.
     finish_zoom()
-    var max_scroll = get_max_scroll()
-    scroll_offset = - (HexUtils.hex_center(row, col, HEX_RADIUS) + Vector2(offset_x, offset_y)
-            - get_viewport_rect().size / (2.0 * zoom))
-    scroll_offset.x = clamp(scroll_offset.x, -max_scroll.x, max_scroll.x)
-    scroll_offset.y = clamp(scroll_offset.y, -max_scroll.y, max_scroll.y)
+    scroll_offset = clamp_scroll(- (HexUtils.hex_center(row, col, HEX_RADIUS)
+            + Vector2(offset_x, offset_y) - get_viewport_rect().size / (2.0 * zoom)))
     apply_view_transform()
     if progress_bar_layer:
         progress_bar_layer.queue_redraw()
@@ -89,7 +85,7 @@ func zoom_by(factor: float, anchor: Vector2) -> void:
     _zoom_world = screen_to_local(anchor)
     zoom_target = clampf(zoom_target * factor, ZOOM_MIN, ZOOM_MAX)
 
-# Sets the zoom without an animation. Used when the value comes from the settings.
+# Sets the zoom without an animation, for a value that must take effect at once.
 func set_zoom(value: float) -> void:
     zoom = clampf(value, ZOOM_MIN, ZOOM_MAX)
     zoom_target = zoom
@@ -110,7 +106,6 @@ func zoom_to(value: float, anchor: Vector2) -> void:
 # the shift of the last frame is folded into the scroll offset here.
 func end_pinch() -> void:
     _settle_zoom()
-    _save_zoom_level()
 
 # Snaps a running animation to its target. The drag and the jump of the camera must not
 # fight the animation: both write scroll_offset, and the loser would make the map twitch.
@@ -120,7 +115,6 @@ func finish_zoom() -> void:
     zoom = zoom_target
     _apply_zoom_view()
     _settle_zoom()
-    _save_zoom_level()
 
 # Advances the zoom animation. It lives in the input handler (handle_process), not in
 # _process of the map: the latter is the simulation and stands still while the active
@@ -138,7 +132,6 @@ func process_zoom(delta: float) -> void:
     _apply_zoom_view()
     if zoom == zoom_target:
         _settle_zoom()
-        _save_zoom_level()
 
 # Places the map on the screen for the current zoom without touching the drawing:
 # `screen = position + local * zoom`, and the position is chosen so that the world point of
@@ -163,12 +156,8 @@ func _apply_zoom_view() -> void:
 func _zoom_view_position(value: float) -> Vector2:
     var shift: Vector2 = _zoom_anchor - (_zoom_world + Vector2(offset_x, offset_y)
             + scroll_offset) * value
-    var max_scroll = get_max_scroll()
     var settled: Vector2 = scroll_offset + shift / value
-    var clamped := Vector2(
-            clampf(settled.x, -max_scroll.x, max_scroll.x),
-            clampf(settled.y, -max_scroll.y, max_scroll.y))
-    return _view_position_for(clamped, value)
+    return _view_position_for(clamp_scroll_for(settled, value), value)
 
 # Ends the gesture: the shift accumulated by the animation is folded into the scroll offset,
 # so the map returns to its usual state. The drawing is in the world coordinates, therefore
@@ -176,11 +165,8 @@ func _zoom_view_position(value: float) -> Vector2:
 func _settle_zoom() -> void:
     if map_renderer == null:
         return
-    scroll_offset = map_renderer.position / zoom - Vector2(offset_x, offset_y)
-    var max_scroll = get_max_scroll()
-    scroll_offset = Vector2(
-            clampf(scroll_offset.x, -max_scroll.x, max_scroll.x),
-            clampf(scroll_offset.y, -max_scroll.y, max_scroll.y))
+    scroll_offset = clamp_scroll(
+            map_renderer.position / zoom - Vector2(offset_x, offset_y))
     apply_view_transform()
     _redraw_view_layers()
 
@@ -210,14 +196,29 @@ func _redraw_view_layers() -> void:
     if highlight_layer:
         highlight_layer.queue_redraw()
 
-# The zoom is a view preference, not a part of the game state: it lives in settings.cfg
-# next to the scroll speed. Written when a gesture settles, so a spin of the wheel does
-# not rewrite the file on every frame.
-func _save_zoom_level() -> void:
-    var config := ConfigFile.new()
-    config.load("user://settings.cfg")
-    config.set_value("interface", "zoom", zoom)
-    config.save("user://settings.cfg")
+# The scroll that puts the centre of the Region in the centre of the screen. The offsets are
+# calibrated for _offset_zoom; at another zoom scroll = 0 no longer centres the map, so the
+# symmetric reach has to be measured from this point and not from zero.
+func centered_scroll_for(value: float) -> Vector2:
+    var viewport_size := Vector2(1152, 768)
+    if not Engine.is_editor_hint():
+        viewport_size = get_viewport_rect().size
+    return viewport_size * 0.5 * (1.0 / value - 1.0 / _offset_zoom)
+
+func centered_scroll() -> Vector2:
+    return centered_scroll_for(zoom)
+
+# The one clamp for every way of moving the map: the same reach on both sides of the centred
+# view, whatever the zoom or the size of the interface.
+func clamp_scroll_for(offset: Vector2, value: float) -> Vector2:
+    var centre := centered_scroll_for(value)
+    var limit := get_max_scroll()
+    return Vector2(
+        clampf(offset.x, centre.x - limit.x, centre.x + limit.x),
+        clampf(offset.y, centre.y - limit.y, centre.y + limit.y))
+
+func clamp_scroll(offset: Vector2) -> Vector2:
+    return clamp_scroll_for(offset, zoom)
 
 # The maximum distance of the scrolling of the map by the axes (in pixels). The SINGLE source of
 # truth: the panning in InputHandler is limited by the same value, and
@@ -258,10 +259,11 @@ func get_scout_reach_bounds() -> Dictionary:
     # assumed: the drawing must cover every zoom the game allows, then no change of the
     # zoom ever has to re-record it.
     var visible_size: Vector2 = viewport_size / ZOOM_MIN
-    var world_left = - (offset_x + max_scroll.x)
-    var world_right = - offset_x + max_scroll.x + visible_size.x
-    var world_top = - (offset_y + max_scroll.y)
-    var world_bottom = - offset_y + max_scroll.y + visible_size.y
+    var centre := centered_scroll()
+    var world_left = - (offset_x + centre.x + max_scroll.x)
+    var world_right = - (offset_x + centre.x - max_scroll.x) + visible_size.x
+    var world_top = - (offset_y + centre.y + max_scroll.y)
+    var world_bottom = - (offset_y + centre.y - max_scroll.y) + visible_size.y
     # The margin of 2 hexes: the offset of the odd rows and the partially visible hexes
     # at the edges of the screen (otherwise the extreme reachable hexes would "fall out" of
     # the chunks of the scouting, although one can click on them).

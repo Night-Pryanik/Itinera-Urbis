@@ -21,11 +21,18 @@ func _check(condition: bool, label: String, state: Dictionary) -> void:
 
 func _run() -> void:
     var state := {"failed": false}
+    # Even a stale zoom left in settings.cfg must not follow the player into a new map.
+    var config := ConfigFile.new()
+    config.load("user://settings.cfg")
+    config.set_value("interface", "zoom", 1.4)
+    config.save("user://settings.cfg")
     get_root().get_node("SaveManager").new_game()
     var map = load("res://scenes/MainMap.tscn").instantiate()
     get_root().add_child(map)
     for _i in range(4):
         await process_frame
+    _check(is_equal_approx(map.zoom, 1.0),
+        "a map starts at 100%% zoom (got %.2f)" % map.zoom, state)
 
     # Calibrate at zoom 1, then zoom in the way the player does during the game.
     map.set_zoom(1.0)
@@ -51,8 +58,25 @@ func _run() -> void:
     _check(is_equal_approx(map.zoom, 1.5),
         "the round-trip does not change the zoom", state)
 
+    # At a zoom other than the calibration one, scroll = 0 does not centre the Region. The
+    # reach must still be the same distance to the left and to the right of the centred view.
+    for value in [0.6, 1.5]:
+        map.set_zoom(value)
+        var centre: Vector2 = map.centered_scroll()
+        var lo: float = map.clamp_scroll(Vector2(-100000.0, 0.0)).x
+        var hi: float = map.clamp_scroll(Vector2(100000.0, 0.0)).x
+        var limit: float = map.get_max_scroll().x
+        _check(absf((lo + hi) * 0.5 - centre.x) < 0.01
+                and absf((hi - centre.x) - limit) < 0.01
+                and absf((centre.x - lo) - limit) < 0.01,
+            "at zoom %.2f the scroll reach is centred (%.1f .. %.1f around %.1f)"
+                % [value, lo, hi, centre.x], state)
+
     map.free()
     UiScale.apply(UiScale.DEFAULT)
+    config.load("user://settings.cfg")
+    config.erase_section_key("interface", "zoom")
+    config.save("user://settings.cfg")
     _finish(state)
 
 func _finish(state: Dictionary) -> void:

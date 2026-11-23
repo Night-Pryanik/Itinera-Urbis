@@ -107,7 +107,7 @@ func handle_input(event: InputEvent):
         return
 
     # The touches are tracked before the checks below: a menu may open in the middle of a
-    # pinch, and the release of the fingers must still end it and store the zoom.
+    # pinch, and the release of the fingers must still end it and settle the view.
     if event is InputEventScreenTouch or event is InputEventScreenDrag:
         _handle_touch(event)
         return
@@ -388,15 +388,11 @@ func _process_keyboard_scrolling(delta: float):
     # The diagonal is normalised: otherwise the map would move sqrt(2) times faster.
     _apply_scroll(direction.normalized() * scroll_speed * delta)
 
-# The single place where the position of the map is written. The clamp is
-# main_map.get_max_scroll — the single source of truth for the reachable area: the same
-# value limits the reachability of the hexes (main_map.get_scout_reach_bounds), so no
+# The single place where the position of the map is written. The clamp lives on the map:
+# the same reach limits the hexes a scout can reach (main_map.get_scout_reach_bounds), so no
 # way of moving the map may leave it.
 func _set_scroll_offset(offset: Vector2):
-    var max_scroll = main_map.get_max_scroll()
-    main_map.scroll_offset = Vector2(
-        clamp(offset.x, -max_scroll.x, max_scroll.x),
-        clamp(offset.y, -max_scroll.y, max_scroll.y))
+    main_map.scroll_offset = main_map.clamp_scroll(offset)
     # The map is drawn in world coordinates, so the pan is normally only a transform of the
     # renderer. On a large map the drawing is culled to the view, and apply_view_transform
     # re-records the hexes the transform brings into sight.

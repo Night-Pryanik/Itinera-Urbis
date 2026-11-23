@@ -264,7 +264,6 @@ func _load_settings():
         hud_message_duration = settings_config.get_value("interface", "hud_message_duration", 3.0)
         show_clock = settings_config.get_value("interface", "show_clock", true)
         show_fps = settings_config.get_value("interface", "show_fps", true)
-        set_zoom(settings_config.get_value("interface", "zoom", 1.0))
     else:
         show_hex_borders = true
         use_edge_scrolling = true
@@ -276,7 +275,7 @@ func _load_settings():
         hud_message_duration = 3.0
         show_clock = true
         show_fps = true
-        set_zoom(1.0)
+    # The zoom is not a setting: every map, saved or new, starts at 100%.
     # The flag is baked into the recorded hex commands, and the map is redrawn on demand:
     # without a request the new value would only show up after an unrelated redraw.
     if show_hex_borders != previous_show_hex_borders and map_renderer != null:

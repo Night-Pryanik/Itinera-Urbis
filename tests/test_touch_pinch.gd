@@ -77,10 +77,8 @@ func _test_map(state: Dictionary, main_map) -> void:
     _touch(0, fingers[0], false)
     _touch(1, fingers[1], false)
     check(not ih._pinching, "lifting a finger ends the pinch", state)
-    var config := ConfigFile.new()
-    config.load("user://settings.cfg")
-    check(is_equal_approx(float(config.get_value("interface", "zoom", -1.0)), main_map.zoom),
-        "the zoom reached by the fingers is stored", state)
+    check(is_equal_approx(main_map.zoom, 1.5),
+        "the zoom reached by the fingers stays for this session", state)
 
 func _test_tech_tree(state: Dictionary, main_map) -> void:
     main_map.open_city()
