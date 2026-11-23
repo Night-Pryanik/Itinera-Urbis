@@ -412,17 +412,37 @@ func _collect_icons(folder_path: String, out: Dictionary) -> void:
     var dir := DirAccess.open(folder_path)
     if dir == null:
         return
+    # In an export a pack lists an image only through its sidecar (name.import), never
+    # the source file; the sidecars are therefore resolved into their names second.
+    var images: Array = []
+    var services: Array = []
     dir.list_dir_begin()
     var file_name := dir.get_next()
     while not file_name.is_empty():
         if dir.current_is_dir():
             _collect_icons(folder_path.path_join(file_name), out)
-        elif _is_image(file_name):
-            var bare_name := file_name.get_basename()
-            if not out.has(bare_name):
-                out[bare_name] = folder_path.path_join(file_name)
+        else:
+            var lower := file_name.to_lower()
+            if lower.ends_with(".import"):
+                var base := file_name.substr(0, file_name.length() - 7)
+                if _is_image(base):
+                    services.append(base)
+            elif _is_image(file_name):
+                images.append(file_name)
         file_name = dir.get_next()
     dir.list_dir_end()
+    var seen := {}
+    for name in images:
+        _register_image(name, folder_path, out)
+        seen[name] = true
+    for name in services:
+        if not seen.has(name):
+            _register_image(name, folder_path, out)
+
+func _register_image(name: String, folder_path: String, out: Dictionary) -> void:
+    var bare_name := name.get_basename()
+    if not out.has(bare_name):
+        out[bare_name] = folder_path.path_join(name)
 
 func _is_image(file_name: String) -> bool:
     if file_name.begins_with("."):

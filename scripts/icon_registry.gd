@@ -171,24 +171,45 @@ func _scan_folder(folder_path: String, duplicates: Array) -> void:
     if dir == null:
         return
     var type_name := _folder_type(folder_path)
+    # In the editor the source files are listed directly; in an export a pack lists
+    # an imported image only through its sidecar (name.import), never the source file.
+    # The sidecars are therefore scanned second, only for names no source covered.
+    var names: Array = []
+    var services: Array = []
     dir.list_dir_begin()
     var file_name := dir.get_next()
     while not file_name.is_empty():
         if dir.current_is_dir():
             _scan_folder(folder_path.path_join(file_name), duplicates)
         else:
-            var key := _index_key(file_name)
-            if not key.is_empty():
-                if paths.has(key):
-                    # A duplicate does NOT overwrite the first path: otherwise a picture from
-                    # a nested folder would silently replace the one in the root.
-                    duplicates.append(key)
-                else:
-                    paths[key] = folder_path.path_join(file_name)
-                    if not types.has(_bare_name(key)):
-                        types[_bare_name(key)] = type_name
+            var lower := file_name.to_lower()
+            if lower.begins_with("."):
+                pass
+            elif lower.ends_with(".import"):
+                services.append(file_name.substr(0, file_name.length() - 7))
+            elif lower.ends_with(".remap"):
+                pass
+            else:
+                names.append(file_name)
         file_name = dir.get_next()
     dir.list_dir_end()
+    var seen := {}
+    for name in names:
+        _register_icon(name, folder_path, duplicates, type_name)
+        seen[name] = true
+    for name in services:
+        if not seen.has(name):
+            _register_icon(name, folder_path, duplicates, type_name)
+
+func _register_icon(name: String, folder_path: String, duplicates: Array, type_name: String) -> void:
+    if paths.has(name):
+        # A duplicate does NOT overwrite the first path: otherwise a picture from
+        # a nested folder would silently replace the one in the root.
+        duplicates.append(name)
+    else:
+        paths[name] = folder_path.path_join(name)
+        if not types.has(_bare_name(name)):
+            types[_bare_name(name)] = type_name
 
 # The icons of one mod. Unlike the vanilla ones, a mod icon MAY overwrite: a mod draws the
 # entities it adds, and giving its picture the name of a vanilla icon is how it redraws

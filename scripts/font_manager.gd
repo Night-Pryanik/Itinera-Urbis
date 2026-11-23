@@ -152,9 +152,17 @@ func _scan_dir(dir_path: String, faces: Array) -> void:
     var dir := DirAccess.open(dir_path)
     if dir == null:
         return
+    # In an export a pack lists an imported font only through its sidecar (name.import);
+    # the sidecars are resolved to real names here, so the same list is built in a build.
+    var resolved: Array = []
+    var seen := {}
     for file_name in dir.get_files():
-        if not _is_font_file(file_name):
+        var name := _resolve_font_file(file_name)
+        if name.is_empty() or seen.has(name):
             continue
+        seen[name] = true
+        resolved.append(name)
+    for file_name in resolved:
         var path := dir_path.path_join(file_name)
         var font := _load_font(path)
         if font == null:
@@ -164,6 +172,20 @@ func _scan_dir(dir_path: String, faces: Array) -> void:
     # A family is often unpacked into a subfolder, so the walk is recursive.
     for sub in dir.get_directories():
         _scan_dir(dir_path.path_join(sub), faces)
+
+func _resolve_font_file(file_name: String) -> String:
+    var name := file_name
+    var lower := file_name.to_lower()
+    if lower.begins_with("."):
+        return ""
+    if lower.ends_with(".import"):
+        name = file_name.substr(0, file_name.length() - 7)
+        lower = name.to_lower()
+    elif lower.ends_with(".remap") or lower.ends_with(".uid"):
+        return ""
+    if _is_font_file(name):
+        return name
+    return ""
 
 
 # The families for the dropdown, alphabetically.
