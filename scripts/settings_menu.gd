@@ -2,6 +2,7 @@
 extends Control
 
 const DisplaySettings = preload("res://scripts/display_settings.gd")
+const UiScale = preload("res://scripts/ui_scale.gd")
 
 @onready var hex_borders_checkbox: CheckBox = find_child("HexBordersCheckBox", true, false)
 @onready var edge_scrolling_checkbox: CheckBox = find_child("EdgeScrollingCheckBox", true, false)
@@ -40,6 +41,7 @@ const DisplaySettings = preload("res://scripts/display_settings.gd")
 @onready var vsync_option_button: OptionButton = find_child("VsyncOptionButton", true, false)
 @onready var fps_limit_option_button: OptionButton = find_child(
     "FpsLimitOptionButton", true, false)
+@onready var ui_scale_option_button: OptionButton = find_child("UiScaleOptionButton", true, false)
 
 var config = ConfigFile.new()
 
@@ -74,6 +76,7 @@ func _ready():
             or not window_mode_option_button \
             or not vsync_option_button \
             or not fps_limit_option_button \
+            or not ui_scale_option_button \
             or not language_option_button \
             or not font_option_button \
             or not theme_option_button \
@@ -89,6 +92,7 @@ func _ready():
     _setup_window_mode_option()
     _setup_vsync_option()
     _setup_fps_limit_option()
+    _setup_ui_scale_option()
     _setup_language_option()
     _setup_font_option()
     _setup_theme_option()
@@ -111,6 +115,7 @@ func _ready():
     window_mode_option_button.item_selected.connect(_on_window_mode_selected)
     vsync_option_button.item_selected.connect(_on_vsync_selected)
     fps_limit_option_button.item_selected.connect(_on_fps_limit_selected)
+    ui_scale_option_button.item_selected.connect(_on_ui_scale_selected)
     language_option_button.item_selected.connect(_on_language_selected)
     font_option_button.item_selected.connect(_on_font_selected)
     theme_option_button.item_selected.connect(_on_theme_selected)
@@ -228,6 +233,33 @@ func _on_vsync_selected(_index: int):
 func _on_fps_limit_selected(_index: int):
     save_settings()
     _apply_display_settings()
+
+# Fills the interface size dropdown. The labels are percentages of the size the interface is
+# designed for; the metadata is the multiplier kept in settings.cfg. The numbers need no
+# translation, so they are built here rather than stored in the translated scene.
+func _setup_ui_scale_option():
+    if ui_scale_option_button == null:
+        return
+    ui_scale_option_button.clear()
+    for value in UiScale.STEPS:
+        var index := ui_scale_option_button.item_count
+        ui_scale_option_button.add_item("%d%%" % int(round(value * 100.0)), index)
+        ui_scale_option_button.set_item_metadata(index, value)
+    var saved := UiScale.read_saved()
+    if UiScale.is_step(saved):
+        ui_scale_option_button.select(UiScale.step_index(saved))
+    else:
+        # A hand-edited value stays visible and selectable instead of being silently replaced
+        # by the nearest offered step when the window opens.
+        var index := ui_scale_option_button.item_count
+        ui_scale_option_button.add_item("%d%%" % int(round(saved * 100.0)), index)
+        ui_scale_option_button.set_item_metadata(index, saved)
+        ui_scale_option_button.select(index)
+    # select() does not send item_selected: opening the window shows the applied size
+    # instead of choosing it again.
+
+func _on_ui_scale_selected(index: int):
+    UiScale.save(float(ui_scale_option_button.get_item_metadata(index)))
 
 func _apply_display_settings():
     if resolution_option_button == null or window_mode_option_button == null:

@@ -244,6 +244,8 @@ Check it in the real window, not in a screenshot of the viewport: a viewport ren
 
 The window is 1920×1080, but the interface is laid out in 1365×768: `window/stretch/scale = 1.40625` divides the base size, and the canvas is then magnified into the window. Every offset and every position in a scene is therefore counted in the logical pixels, and a screenshot of the window shows them ×1.40625. A layout drawn against the pixels of the screen lands 40% lower than intended.
 
+The player can multiply this scale in Settings → Interface → Interface size (`scripts/ui_scale.gd`). The multiplier is applied to the root window's `content_scale_factor` at runtime, so the logical canvas becomes smaller and the controls physically larger. A layout must still fit the smallest canvas the offered sizes produce, or live in a scrolling page.
+
 ---
 
 ## The Active Pause and the Ticks of the Interface

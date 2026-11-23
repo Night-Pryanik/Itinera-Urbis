@@ -1524,6 +1524,9 @@ msgstr ""
 msgid "Interface"
 msgstr ""
 
+msgid "Interface size"
+msgstr ""
+
 msgid "Interface theme"
 msgstr ""
 
@@ -1603,6 +1606,9 @@ msgid "Low"
 msgstr ""
 
 msgid "Main rivers"
+msgstr ""
+
+msgid "Makes buttons and text larger on the screen. A larger size shows fewer things at once; the pages that do not fit scroll."
 msgstr ""
 
 msgid "Map"

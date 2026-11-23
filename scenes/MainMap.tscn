@@ -220,44 +220,51 @@ script = ExtResource("13_dbgmgr")
 [node name="ControlPanelLayer" type="CanvasLayer" parent="."]
 layer = 0
 
+; The height is a share of the window (about 23%, the old 176 units of a 768-unit canvas).
+; A fixed number of canvas units grew with the interface scale and covered half the map.
 [node name="ControlPanel" type="Panel" parent="ControlPanelLayer" unique_id=2061907302]
-anchors_preset = 12
-anchor_top = 1.0
+anchor_top = 0.77
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = -176.0
+offset_top = 0.0
 grow_horizontal = 2
 grow_vertical = 0
 theme_type_variation = &"SurfaceVeil"
 script = ExtResource("15_ctrlpanel")
 
+; The three columns of the panel divide it by anchors so that they keep their proportions when
+; a larger interface scale shrinks the logical canvas (see scripts/ui_scale.gd).
 [node name="SepInfoPreview" type="ColorRect" parent="ControlPanelLayer/ControlPanel" unique_id=736594410]
-layout_mode = 0
-offset_left = 397.0
+layout_mode = 1
+anchor_left = 0.3
+anchor_right = 0.3
+anchor_bottom = 1.0
+offset_left = -1.0
 offset_top = 6.0
-offset_right = 399.0
-offset_bottom = 170.0
+offset_right = 1.0
+offset_bottom = -6.0
 color = Color(0.54902, 0.54902, 0.54902, 1)
 
 [node name="SepPreviewActions" type="ColorRect" parent="ControlPanelLayer/ControlPanel" unique_id=1909537324]
 layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -417.0
+anchor_left = 0.7
+anchor_right = 0.7
+anchor_bottom = 1.0
+offset_left = -1.0
 offset_top = 6.0
-offset_right = -415.0
-offset_bottom = 170.0
+offset_right = 1.0
+offset_bottom = -6.0
 color = Color(0.54902, 0.54902, 0.54902, 1)
 
 [node name="PreviewContainer" type="VBoxContainer" parent="ControlPanelLayer/ControlPanel" unique_id=2061907310]
 layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_left = 405.0
+anchor_left = 0.3
+anchor_right = 0.7
+anchor_bottom = 1.0
+offset_left = 10.0
 offset_top = 6.0
-offset_right = -425.0
-offset_bottom = 176.0
+offset_right = -10.0
+offset_bottom = 0.0
 grow_horizontal = 2
 theme_override_constants/separation = 4
 
@@ -281,11 +288,13 @@ size_flags_horizontal = 3
 theme_override_constants/separation = 4
 
 [node name="InfoVBox" type="VBoxContainer" parent="ControlPanelLayer/ControlPanel" unique_id=2061907305]
-layout_mode = 0
+layout_mode = 1
+anchor_right = 0.3
+anchor_bottom = 1.0
 offset_left = 8.0
 offset_top = 6.0
-offset_right = 393.0
-offset_bottom = 170.0
+offset_right = -8.0
+offset_bottom = -6.0
 size_flags_horizontal = 3
 
 [node name="InfoScroll" type="ScrollContainer" parent="ControlPanelLayer/ControlPanel/InfoVBox" unique_id=463549985]
@@ -308,15 +317,14 @@ scroll_active = false
 layout_mode = 2
 
 [node name="ActionsVBox" type="VBoxContainer" parent="ControlPanelLayer/ControlPanel" unique_id=2061907308]
-custom_minimum_size = Vector2(260, 0)
 layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
+anchor_left = 0.7
 anchor_right = 1.0
-offset_left = -407.0
+anchor_bottom = 1.0
+offset_left = 8.0
 offset_top = 6.0
-offset_right = -1.0
-offset_bottom = 170.0
+offset_right = -8.0
+offset_bottom = -6.0
 size_flags_horizontal = 0
 
 [node name="ActionsScroll" type="ScrollContainer" parent="ControlPanelLayer/ControlPanel/ActionsVBox" unique_id=1488545637]

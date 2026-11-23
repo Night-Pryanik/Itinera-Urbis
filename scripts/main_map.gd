@@ -1,6 +1,8 @@
 @tool
 extends "res://scripts/main_map/windows.gd"
 
+const UiScale = preload("res://scripts/ui_scale.gd")
+
 # The map of the game: the node of scenes/MainMap.tscn.
 #
 # The implementation is split by topic over scripts/main_map/; every link extends the previous
@@ -377,6 +379,13 @@ func _ready():
     # there is no need to duplicate the channel.
     _setup_hud_tooltip_layer()
 
+    # The scale of the interface may have been changed in another scene; the root window keeps
+    # it, but a map opened on its own has to pick it up as well.
+    UiScale.apply_saved()
+    # Both a window resize and a change of the interface scale resize the canvas the map is
+    # drawn on. The offsets centre the map on that canvas (see view.gd), so they follow it.
+    if not get_viewport().size_changed.is_connected(_calc_offsets):
+        get_viewport().size_changed.connect(_calc_offsets)
     _calc_offsets()
     map_renderer.queue_redraw()
 

@@ -1566,6 +1566,9 @@ msgstr "Шрифт Inter — SIL Open Font License 1.1"
 msgid "Interface"
 msgstr "Интерфейс"
 
+msgid "Interface size"
+msgstr "Размер интерфейса"
+
 msgid "Interface theme"
 msgstr "Тема оформления"
 
@@ -1649,6 +1652,9 @@ msgstr "Mailbox"
 
 msgid "Main rivers"
 msgstr "Главные реки"
+
+msgid "Makes buttons and text larger on the screen. A larger size shows fewer things at once; the pages that do not fit scroll."
+msgstr "Делает кнопки и текст крупнее на экране. При большом размере одновременно помещается меньше элементов; страницы, которые не помещаются, прокручиваются."
 
 msgid "Map"
 msgstr "Карта"

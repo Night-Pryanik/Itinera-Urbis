@@ -192,6 +192,20 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 8
 
+[node name="UiScaleLabel" type="Label" parent="TabContainer/Интерфейс/Scroll/VBoxContainer"]
+layout_mode = 2
+theme_type_variation = &"SectionHeading"
+text = "Interface size"
+
+[node name="UiScaleHint" type="Label" parent="TabContainer/Интерфейс/Scroll/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Makes buttons and text larger on the screen. A larger size shows fewer things at once; the pages that do not fit scroll."
+autowrap_mode = 3
+
+[node name="UiScaleOptionButton" type="OptionButton" parent="TabContainer/Интерфейс/Scroll/VBoxContainer"]
+layout_mode = 2
+
 [node name="MapHeading" type="Label" parent="TabContainer/Интерфейс/Scroll/VBoxContainer"]
 layout_mode = 2
 theme_type_variation = &"GroupHeading"

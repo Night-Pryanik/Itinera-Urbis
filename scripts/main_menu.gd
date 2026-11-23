@@ -12,6 +12,7 @@ const UI_THEME = preload("res://scripts/ui_theme.gd")
 const ModListScene = preload("res://scenes/mod_list.tscn")
 const WorldPreview = preload("res://scripts/world_preview.gd")
 const DisplaySettings = preload("res://scripts/display_settings.gd")
+const UiScale = preload("res://scripts/ui_scale.gd")
 
 # The width of the city name field. It does not follow anything else: the name column is
 # sized to it.
@@ -155,6 +156,9 @@ func _ready():
     # The saved window is applied before the menu is shown, so a player who chose a
     # resolution or a window mode does not see the project default first.
     DisplaySettings.apply_saved()
+    # The interface scale belongs to the root window and is carried into every scene. Applied
+    # here, before the menu is shown, so a player who enlarged it never sees the old size first.
+    UiScale.apply_saved()
     # The name of the game is the name of the game: it is not translated.
     title_label.text = "Itinera Urbis:\nHearth to Horizon"
     # The data comes first: the tooltip of "Continue game" names the era of the save,
