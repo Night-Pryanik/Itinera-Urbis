@@ -18,7 +18,8 @@ var categories: Array = []
 var technologies: Array = []
 var groups: Array = []
 var eras: Array = []
-var product_groups: Dictionary = {} # id -> products
+var product_groups: Dictionary = {} # id -> products, nested groups already expanded
+var product_group_declarations: Dictionary = {} # id -> products as written, with the "@group" entries
 var product_group_names: Dictionary = {} # id -> human-readable name
 var product_group_icons: Dictionary = {} # id -> icon file name ("" — not set)
 var modifiers: Dictionary = {}
@@ -241,18 +242,20 @@ func load_all_data(mod_dirs: Array = []):
 
     # NEW: we load the product groups
     product_groups = {}
+    product_group_declarations = {}
     product_group_names = {}
     product_group_icons = {}
     for pg in merged_data.get("product_groups", []):
         if pg is Dictionary:
             var group_id = pg.get("id", "")
             if not group_id.is_empty():
-                product_groups[group_id] = pg.get("products", [])
+                product_group_declarations[group_id] = pg.get("products", [])
                 product_group_names[group_id] = pg.get("name", group_id)
                 # The optional "icon" field: the group's own icon. An empty string
                 # — the icon is not set, then GameData takes the icon of the first
                 # member that has an icon (see GameData.get_product_group_icon).
                 product_group_icons[group_id] = str(pg.get("icon", ""))
+    product_groups = _expand_product_groups(product_group_declarations)
 
     # NEW: we load the global modifiers
     modifiers = merged_data.get("modifiers", {})
@@ -349,6 +352,43 @@ func load_all_data(mod_dirs: Array = []):
     for challenge in merged_data.get("challenges", []):
         if challenge is Dictionary and not str(challenge.get("id", "")).is_empty():
             challenges.append(challenge)
+
+# A group may name another group as "@<id>". The registry the game reads holds only concrete
+# products, so the lists are expanded once here and every consumer sees the same flat set. The
+# declarations stay separate: the validator reads them to check the references and the nesting
+# chain before it is flattened. A group reached twice is expanded once, and a repeated good is
+# written once — a group answers "any of these goods", not "draw this good twice".
+func _expand_product_groups(declarations: Dictionary) -> Dictionary:
+    var expanded := {}
+    for gid in declarations:
+        if not expanded.has(gid):
+            _collect_group_products(str(gid), declarations, expanded, [])
+    return expanded
+
+
+func _collect_group_products(gid: String, declarations: Dictionary,
+        expanded: Dictionary, path: Array) -> Array:
+    if expanded.has(gid):
+        return expanded[gid]
+    # A cycle is a data error the validator reports; here it only has to terminate.
+    if gid in path:
+        return []
+    var members: Array = []
+    path.append(gid)
+    for raw_member in declarations.get(gid, []):
+        var member := str(raw_member)
+        if member.begins_with("@"):
+            var nested_id := member.substr(1)
+            if declarations.has(nested_id):
+                for nested_member in _collect_group_products(nested_id, declarations, expanded, path):
+                    if not nested_member in members:
+                        members.append(nested_member)
+        elif not member in members:
+            members.append(member)
+    path.pop_back()
+    expanded[gid] = members
+    return members
+
 
 # Flattens the named blocks of the game balance into one flat dictionary.
 #

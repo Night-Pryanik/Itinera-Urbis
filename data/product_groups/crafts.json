@@ -12,6 +12,9 @@
   // drawn as a resource: the card and tooltip on the "Trade" tab, the group rows and the headers of a
   // composition list. If it is not specified, the icon of the FIRST member of the group that has its
   // own icon is taken; a group needs its own icon where that member does not speak for the group.
+  //
+  // A member of "products" may be "@<id>" of another group instead of a good: the loader replaces it
+  // with that group's members. A group must not nest in itself, directly or through other groups.
   "product_groups": [
     {
       "id": "bovines",

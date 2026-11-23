@@ -12,6 +12,9 @@
   // drawn as a resource: the card and tooltip on the "Trade" tab, the group rows and the headers of a
   // composition list. If it is not specified, the icon of the FIRST member of the group that has its
   // own icon is taken; a group needs its own icon where that member does not speak for the group.
+  //
+  // A member of "products" may be "@<id>" of another group instead of a good: the loader replaces it
+  // with that group's members. A group must not nest in itself, directly or through other groups.
   "product_groups": [
     {
       "id": "boats",
@@ -149,11 +152,11 @@
     },
     {
       // Everyday household supplies, consumed as a basket: the order of the
-      // members does not decide the draw. Glue and white naphtha are taken
+      // members does not decide the draw. Glue and the lamp oils are taken
       // together with the common goods and compete with the workshops that use them.
       "id": "consumer_goods",
       "name": "Consumer Goods",
-      "products": [ "salt", "soap", "vegetable_oil", "sponge", "pumice", "glue", "white_naphtha", "shale_oil" ]
+      "products": [ "salt", "soap", "vegetable_oil", "sponge", "pumice", "glue", "@lamp_oils" ]
     },
     {
       // The empty vessel a good is stored and shipped in. Tare is generic: the winemaker, brewer,
@@ -212,6 +215,8 @@
       "products": [ "tallow_candles", "wax_candles" ]
     },
     {
+      // The oils burned in household lamps. @consumer_goods names this group as a member, so the
+      // household basket draws on both oils without repeating the two ids there.
       "id": "lamp_oils",
       "name": "Lamp Oils",
       "products": [ "white_naphtha", "shale_oil" ]

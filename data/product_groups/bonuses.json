@@ -3,6 +3,9 @@
   // diversity bonuses of data/bonuses.json. A group here is only the list of
   // kinds to count; it is not addressed by a recipe or a consumption rule.
   // The identifier of a group is global, so a group lives in exactly one file.
+  //
+  // A member of "products" may be "@<id>" of another group instead of a good: the loader replaces it
+  // with that group's members. A group must not nest in itself, directly or through other groups.
   "product_groups": [
     {
       // The ready meat of every species, as the citizens eat it. The live

@@ -37,6 +37,7 @@ var technologies: Array = []
 var groups: Array = []
 var eras: Array = []
 var product_groups: Dictionary = {}
+var product_group_declarations: Dictionary = {} # id -> the products as written; the validator reads the nesting from here
 var product_group_names: Dictionary = {}
 var product_group_icons: Dictionary = {} # id -> the icon file name of the group ("" — not set)
 var modifiers: Dictionary = {}
@@ -151,6 +152,7 @@ func _assign_from(loader) -> void:
     groups = loader.groups
     eras = loader.eras
     product_groups = loader.product_groups
+    product_group_declarations = loader.product_group_declarations
     product_group_names = loader.product_group_names
     product_group_icons = loader.product_group_icons
     modifiers = loader.modifiers

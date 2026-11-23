@@ -36,6 +36,8 @@
 #   category           — a product → a non-existent category
 #   product_source     — a product is produced NEITHER by the map, NOR by a recipe
 #   group_member       — a non-existent product in an @-group
+#   group_member_group — a non-existent @group nested in an @-group
+#   group_cycle        — groups nest in a circle, so none of them can be expanded
 #   resource_group     — a recipe refers to a non-existent @-group
 #   resource           — a recipe requires a non-existent resource
 #   consumption_resource— a consumption rule → a non-existent product
@@ -1067,6 +1069,10 @@ static func check_title(kind: String) -> String:
             return TranslationServer.translate("Product has no source (neither the map nor a recipe produces it)")
         "group_member":
             return TranslationServer.translate("Nonexistent product in a goods group")
+        "group_member_group":
+            return TranslationServer.translate("Nonexistent goods group in a goods group")
+        "group_cycle":
+            return TranslationServer.translate("Cyclic nesting of goods groups")
         "resource_group":
             return TranslationServer.translate("Recipe references a nonexistent goods group")
         "resource":
@@ -1192,6 +1198,8 @@ const CHECK_ORDER := [
     "profession",
     "category",
     "group_member",
+    "group_member_group",
+    "group_cycle",
     "resource_group",
     "resource",
     "consumption_resource",
@@ -1242,6 +1250,13 @@ func validate(gd: Object) -> Array:
     var products: Dictionary = gd.products
     var raw_resources: Dictionary = gd.raw_resources
     var product_groups: Dictionary = gd.product_groups
+    # The members the game reads have the nested groups already expanded. The nesting itself is
+    # checked on the declarations: an "@group" is not a product id, and a cycle disappears in the
+    # expansion. Data written by hand for a test has no separate declarations.
+    var declared_groups: Dictionary = product_groups
+    if gd.get("product_group_declarations") is Dictionary \
+            and not (gd.product_group_declarations as Dictionary).is_empty():
+        declared_groups = gd.product_group_declarations
     var group_names: Dictionary = gd.product_group_names
     # These three are already the dictionaries id -> data in GameData (data_loader.gd).
     var terrains: Dictionary = gd.terrains
@@ -1266,7 +1281,7 @@ func validate(gd: Object) -> Array:
     _validate_improvements(improvements, technologies, professions, problems)
     _validate_resources(products, raw_resources, categories, technologies, improvements, problems)
     _validate_product_sources(products, _produced_ids(gd, all_resources), problems)
-    _validate_product_groups(product_groups, group_names, products, problems)
+    _validate_product_groups(declared_groups, group_names, products, problems)
     _validate_consumption(gd.consumption_rules, products, product_groups, professions,
             buildings, blacklisted_buildings, blacklisted_resources, problems)
     _validate_technologies(technologies, problems)
@@ -2181,8 +2196,9 @@ func _lumberjack_produces(improvements: Dictionary, covers: Dictionary) -> bool:
 
 
 # --- THE PRODUCT GROUPS -----------------------------------------------------
-# The members of an @-group → a product. It is exactly this check that catches "@oil_crops" with
-# the non-existent sunflower / rapeseed / peanut.
+# A member of a group is either a product or an "@<id>" of another group. The check of a product
+# is what catches "@oil_crops" with the non-existent sunflower / rapeseed / peanut. The nested
+# group is a reference of its own: a typo in it leaves the whole sublist out of the group.
 func _validate_product_groups(product_groups: Dictionary, group_names: Dictionary,
         products: Dictionary, problems: Array) -> void:
     for group_id in product_groups:
@@ -2192,10 +2208,67 @@ func _validate_product_groups(product_groups: Dictionary, group_names: Dictionar
         var gid := str(group_id)
         var gname := str(group_names.get(gid, gid))
         for member in members:
-            var product_id := str(member)
-            if not products.has(product_id):
-                _add(problems, "group_member", "product", product_id,
+            var member_id := str(member)
+            if member_id.begins_with("@"):
+                if not product_groups.has(member_id.substr(1)):
+                    _add(problems, "group_member_group", "group", member_id,
+                            "group", gname, gid, "products",
+                            _at_sign_hint(member_id, products, product_groups))
+            elif not products.has(member_id):
+                _add(problems, "group_member", "product", member_id,
                         "group", gname, gid, "products")
+    _validate_product_group_cycles(product_groups, group_names, problems)
+
+
+# Groups are expanded when the data is loaded, so a circle of references never reaches a product:
+# the recursion is cut there and the affected groups silently lose part of their goods. One problem
+# is written per circle, whichever group the walk happens to start from.
+func _validate_product_group_cycles(product_groups: Dictionary, group_names: Dictionary,
+        problems: Array) -> void:
+    var finished := {}
+    var reported := {}
+    for gid in product_groups:
+        _walk_product_group(str(gid), product_groups, group_names, problems,
+                finished, reported, [])
+
+
+func _walk_product_group(gid: String, product_groups: Dictionary, group_names: Dictionary,
+        problems: Array, finished: Dictionary, reported: Dictionary, path: Array) -> void:
+    if finished.has(gid):
+        return
+    if gid in path:
+        var chain: Array = path.slice(path.find(gid))
+        chain.append(gid)
+        var circle: Array = chain.duplicate()
+        circle.pop_back()
+        circle.sort()
+        var key := ""
+        for member in circle:
+            key += str(member) + "|"
+        if not reported.has(key):
+            reported[key] = true
+            var chain_text := ""
+            for i in chain.size():
+                if i > 0:
+                    chain_text += " -> "
+                chain_text += str(chain[i])
+            var owner_id := str(chain[chain.size() - 2])
+            _add(problems, "group_cycle", "group", "@" + gid,
+                    "group", str(group_names.get(owner_id, owner_id)), owner_id, "products",
+                    {"chain": chain_text})
+        return
+    var members = product_groups.get(gid, [])
+    if not (members is Array):
+        finished[gid] = true
+        return
+    path.append(gid)
+    for member in members:
+        var member_id := str(member)
+        if member_id.begins_with("@"):
+            _walk_product_group(member_id.substr(1), product_groups, group_names, problems,
+                    finished, reported, path)
+    path.pop_back()
+    finished[gid] = true
 
 
 # --- THE CONSUMPTION RULES (data/consumption.json) ---------------------------
@@ -2733,6 +2806,9 @@ static func build_text(problem: Dictionary) -> void:
         "cover_belt":
             headline = TranslationServer.translate("Terrain cover %s names the temperature belt \"%s\", which does not exist.") % [_quote_owner(str(problem.get("source_name", "")), str(problem.get("source_id", ""))), str(problem.get("ref_id", ""))]
             where = TranslationServer.translate("The belts the generator rolls are: polar, cold, mild, subtropical, tropical. A cover is asked for its belts literally, so a misspelled belt is a belt that never happens and the cover simply does not grow there. If EVERY belt of the list is misspelled, the cover never appears on the map at all. An empty list means no restriction, not \"nowhere\".")
+        "group_cycle":
+            headline = TranslationServer.translate("Goods group \"%s\" contains itself through \"%s\".") % [str(problem.get("source_name", "")), str(problem.get("ref_id", ""))]
+            where = TranslationServer.translate("The nesting chain is %s. Groups are expanded into their members when the data is loaded, so such a chain never ends: break it by listing the goods themselves instead of one of the @references.") % str(problem.get("chain", ""))
         "consumption_member":
             headline = TranslationServer.translate("Consumption rule %s lists \"%s\" in members, which does not belong to \"%s\".") % [_quote_owner(str(problem.get("source_name", "")), str(problem.get("source_id", ""))), str(problem.get("ref_id", "")), str(problem.get("source_id", ""))]
             where = TranslationServer.translate("Per-member interval and bonus overrides apply only to products declared inside the rule's @-group. Add the product to the group or remove the key from members.")
