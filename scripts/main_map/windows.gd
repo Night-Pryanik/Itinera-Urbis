@@ -205,13 +205,12 @@ func _on_research_completed(tech_id: String):
     # Cartography changes which hexes the highlighting may cover.
     highlight_layer.queue_redraw()
     _redraw_progress_layer()
-    # We show the window of the learned technology and pause the game,
-    # so that the player cannot interact with the map and the HUD while the window is open.
+    # The window of the learned technology stops the simulation: the player must not
+    # interact with the map while it is open. The owner recomputes the flag after the
+    # window is shown, so an active pause or a menu already holding the world is kept.
     if tech_popup and tech_popup.has_method("show_tech"):
-        get_tree().paused = true
-        # The window covers the map: the tooltip of the treasury must not stay over it.
-        hide_map_treasury_tooltip()
         tech_popup.show_tech(tech_id, CityData.last_research_messages)
+        apply_pause_state()
     # The messages are passed into the popup — we clear them.
     CityData.last_research_messages = []
 
@@ -288,13 +287,15 @@ func _on_challenge_news_visibility_changed() -> void:
     _show_next_challenge_news.call_deferred()
 
 func _on_tech_popup_go_to_techs():
-    # We unpause and open the interface of the city on the tab "Technologies"
+    # The popup has hidden itself and the city interface is not a pause source, so the
+    # owner resumes the world here. Another source (a menu, the active pause) still wins.
     city_ui.refresh()
     city_ui.show_technologies_tab()
     city_ui.show()
     hud.hide()
     # The control panel of the hex is not needed while the interface of the city is open.
     control_panel.hide()
+    apply_pause_state()
 
 func _on_pause_save():
     # The menu stays open behind the window: the player picks the place and the name,
@@ -317,16 +318,18 @@ func _on_pause_menu_visibility_changed():
     if active_pause != null and settings_menu and settings_menu.visible:
         pause_button.visible = false
 
-# THE OWNER of the flag of the pause of the tree. Five independent things stop the
-# simulation: the pause menu, the active pause, the journal window, the choice of a specialization
-# and the news of a task of the era, and any of them may be on while the others are not. The menu
-# therefore must not switch the flag off on its own — closing it over a stopped world has to leave
-# the world stopped.
+# THE OWNER of the flag of the pause of the tree. Seven independent things stop the
+# simulation: the pause menu, the active pause, the journal window, the choice of a specialization,
+# the news of a task of the era, the window of a learned technology and the offer of a new era.
+# Any of them may be on while the others are not, so none of them may switch the flag off on its
+# own — closing one over a world stopped by another has to leave the world stopped.
 func apply_pause_state():
     get_tree().paused = (active_pause != null and active_pause.is_active()) \
             or pause_menu.visible or journal_ui.visible \
             or (specialization_popup != null and specialization_popup.visible) \
-            or (challenge_news_dialog != null and challenge_news_dialog.visible)
+            or (challenge_news_dialog != null and challenge_news_dialog.visible) \
+            or (tech_popup != null and tech_popup.visible) \
+            or (era_dialog != null and era_dialog.visible)
     # The tooltip of the breakdown of the treasury belongs to the interface of the map:
     # it must not hang over a stopped world (the pause, the menu, the journal).
     hide_map_treasury_tooltip()

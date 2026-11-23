@@ -797,18 +797,28 @@ func _on_market_built():
         _show_era_advance_offer()
 
 func _show_era_advance_offer():
-    get_tree().paused = true
     era_dialog.popup_centered()
+    _apply_pause_state(true)
 
 func _on_era_dialog_confirmed():
-    get_tree().paused = false
+    era_dialog.hide()
+    _apply_pause_state(false)
     era_advance_button.visible = false
     advance_to_next_era()
 
 func _on_era_dialog_declined():
-    # The player remains in the current era: we unpause, we leave the button in the HUD.
-    get_tree().paused = false
+    # The player remains in the current era: the offer is gone, the button stays in the HUD.
+    era_dialog.hide()
+    _apply_pause_state(false)
     era_advance_button.visible = (current_era == 0)
+
+# This link is an ancestor of the owner of the flag in the script chain (windows.gd),
+# so the call is resolved on the finished object rather than at compile time here.
+func _apply_pause_state(default_paused: bool) -> void:
+    if has_method("apply_pause_state"):
+        call("apply_pause_state")
+    else:
+        get_tree().paused = default_paused
 
 # The ghost on the map = the segments of the steps of the active projects that are not built yet.
 # It is updated on every event of the project, therefore the built segment disappears

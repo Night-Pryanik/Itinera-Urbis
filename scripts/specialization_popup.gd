@@ -153,8 +153,9 @@ func open() -> void:
     size = get_viewport_rect().size
     position = Vector2.ZERO
     show()
-    # The choice is a decision of the player and the world waits for it.
-    get_tree().paused = true
+    # The choice is a decision of the player and the world waits for it. The owner
+    # recomputes the flag, so a menu or the active pause is not overridden here.
+    _apply_pause_state(true)
 
 # Whether the window holds the simulation stopped. The owner of the pause flag asks this before it
 # resumes the world (see main_map.apply_pause_state).
@@ -270,11 +271,14 @@ func close() -> void:
     _hovered_id = ""
     # The pause flag belongs to the map: it also answers for the active pause, the pause menu and
     # the journal, and resuming on our own would start a world the player had stopped.
+    _apply_pause_state(false)
+
+func _apply_pause_state(default_paused: bool) -> void:
     var main_map = get_tree().root.find_child("MainMap", true, false)
     if main_map != null and main_map.has_method("apply_pause_state"):
         main_map.apply_pause_state()
     else:
-        get_tree().paused = false
+        get_tree().paused = default_paused
 
 func _input(event: InputEvent) -> void:
     # ESC postpones the choice, exactly as the button does, and must not reach the pause menu: the

@@ -178,8 +178,13 @@ func show_tech(tech_id: String, found_resources: Array = []):
 
 func _on_ok_pressed():
     hide()
-    # We resume the game after closing the technology popup.
-    get_tree().paused = false
+    # The flag belongs to the map: a menu, the active pause or an era offer may still
+    # be holding the world stopped when this window closes.
+    var main_map = get_tree().root.find_child("MainMap", true, false)
+    if main_map != null and main_map.has_method("apply_pause_state"):
+        main_map.apply_pause_state()
+    else:
+        get_tree().paused = false
 
 func _on_techs_pressed():
     hide()
