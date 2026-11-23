@@ -4374,8 +4374,8 @@ msgid "Steam-distils deep-blue essential oil from chamomile blossoms."
 msgstr "Перегоняет с паром густо-синее эфирное масло из соцветий ромашки."
 
 msgctxt "crafts.description"
-msgid "Dissolves distilled oils or rare spices in rectified spirit to make a lasting perfume."
-msgstr "Растворяет эфирные масла или редкие пряности в спирте-ректификате, получая стойкую душистую воду."
+msgid "Dissolves distilled oils, fragrant balsams or rare spices in rectified spirit to make a lasting perfume."
+msgstr "Растворяет эфирные масла, душистые бальзамы или редкие пряности в спирте-ректификате, получая стойкую душистую воду."
 
 msgctxt "crafts.description"
 msgid "Redistils a fermented drink into concentrated rectified spirit."
@@ -6454,6 +6454,14 @@ msgid "Campeche Wood"
 msgstr "Древесина кампешевого дерева"
 
 msgctxt "resources.name"
+msgid "Camphor"
+msgstr "Камфора"
+
+msgctxt "resources.name"
+msgid "Camphor Laurel"
+msgstr "Камфорный лавр"
+
+msgctxt "resources.name"
 msgid "Canihua"
 msgstr "Каньива"
 
@@ -6958,6 +6966,10 @@ msgid "Limestone"
 msgstr "Известняк"
 
 msgctxt "resources.name"
+msgid "Liquidambar"
+msgstr "Ликвидамбар"
+
+msgctxt "resources.name"
 msgid "Llama Meat"
 msgstr "Мясо ламы"
 
@@ -7456,6 +7468,10 @@ msgstr "Сталь <city_name>"
 msgctxt "resources.name"
 msgid "Stone Tableware"
 msgstr "Каменная посуда"
+
+msgctxt "resources.name"
+msgid "Storax"
+msgstr "Стиракс"
 
 msgctxt "resources.name"
 msgid "Sugar"
