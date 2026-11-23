@@ -104,7 +104,15 @@
       "icon": "coal.png"
     },
 
-    // Pearl and coral are mineraloids, not minerals, but they are included here for convenience
+    // Amber is fossilized resin, and pearl and coral are mineraloids; all are included here for convenience.
+    {
+      "id": "amber",
+      "price": 20,
+      "name": "Amber",
+      "type": "product",
+      "category": "minerals",
+      "icon": "amber.png"
+    },
     {
       "id": "pearl",
       "price": 20,

@@ -4014,6 +4014,10 @@ msgid "Makes iron out of ore."
 msgstr ""
 
 msgctxt "crafts.description"
+msgid "Makes jewelry out of amber."
+msgstr ""
+
+msgctxt "crafts.description"
 msgid "Makes jewelry out of bronze."
 msgstr ""
 
@@ -4511,6 +4515,10 @@ msgstr ""
 
 msgctxt "crafts.name"
 msgid "Alum"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Amber Jewelry"
 msgstr ""
 
 msgctxt "crafts.name"
@@ -6203,6 +6211,14 @@ msgstr ""
 
 msgctxt "resources.name"
 msgid "Amaranth"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Amber"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Amber Jewelry"
 msgstr ""
 
 msgctxt "resources.name"
