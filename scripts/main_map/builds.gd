@@ -840,8 +840,10 @@ func confirm_cancel_project(project_id: String):
     add_child(dialog)
     dialog.popup_centered()
     dialog.visibility_changed.connect(func():
-        if not dialog.visible and not was_paused:
-            get_tree().paused = false
+        if not dialog.visible:
+            if not was_paused:
+                get_tree().paused = false
+            dialog.queue_free()
     )
 
 func _confirm_cancel_build(row: int, col: int):
@@ -877,8 +879,10 @@ func _confirm_cancel_build(row: int, col: int):
     add_child(dialog)
     dialog.popup_centered()
     # The AcceptDialog has no signal canceled: the closing of the window by the cross simply
-    # hides the dialog. We unpause in this case as well.
+    # hides the dialog. We unpause and free it in this case as well.
     dialog.visibility_changed.connect(func():
-        if not dialog.visible and not was_paused:
-            get_tree().paused = false
+        if not dialog.visible:
+            if not was_paused:
+                get_tree().paused = false
+            dialog.queue_free()
     )

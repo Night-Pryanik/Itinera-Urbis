@@ -104,7 +104,7 @@ func _complete_scouting(index: int = 0):
 
 # The common part of the dialogs of the cancellation: the pause for the time of the question, the localized button
 # of the confirmation and the obligatory unpause, if the window was closed by the cross
-# (an AcceptDialog has no signal canceled).
+# (an AcceptDialog has no signal canceled). The dialog is freed once it closes, on either path.
 func _show_cancel_dialog(dialog: AcceptDialog, on_confirm: Callable) -> void:
     var was_paused = get_tree().paused
     get_tree().paused = true
@@ -117,8 +117,10 @@ func _show_cancel_dialog(dialog: AcceptDialog, on_confirm: Callable) -> void:
     add_child(dialog)
     dialog.popup_centered()
     dialog.visibility_changed.connect(func():
-        if not dialog.visible and not was_paused:
-            get_tree().paused = false
+        if not dialog.visible:
+            if not was_paused:
+                get_tree().paused = false
+            dialog.queue_free()
     )
 
 # The cancellation of the claiming of the territory from the hex (row, col) — exactly that one, where
