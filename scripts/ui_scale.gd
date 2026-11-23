@@ -44,6 +44,12 @@ static func apply(value: float) -> void:
     if tree == null or tree.root == null:
         return
     tree.root.content_scale_factor = base_factor() * clamp_scale(value)
+    # The glyphs on screen were rasterised for the old scale. Re-resolve them on the next
+    # frame: otherwise a dropdown opened immediately after the change can resize the font
+    # atlas while the old text still holds UVs into it, and the letters turn into blocks.
+    var manager := tree.root.get_node_or_null("FontManager")
+    if manager != null and manager.has_method("refresh_text"):
+        manager.call_deferred("refresh_text")
 
 static func apply_saved() -> void:
     apply(read_saved())

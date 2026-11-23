@@ -437,6 +437,13 @@ func _apply_family(family: String) -> bool:
     return true
 
 
+# Forces every Control to re-resolve its font and redraw. A change of the canvas scale
+# invalidates the glyphs cached at the old size; text that is already on screen keeps their
+# atlas UVs until something redraws it, and a popup opened meanwhile can resize the atlas.
+func refresh_text() -> void:
+    _repaint()
+
+
 # Makes the change visible at once, without waiting for the next redraw of anything.
 #
 # A Control does not always re-resolve its font after the theme is rewritten: the theme
