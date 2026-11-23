@@ -3192,6 +3192,9 @@ msgstr "можно улучшить"
 msgid "working"
 msgstr "работает"
 
+msgid "×%.2f (specialization of this good)"
+msgstr "×%.2f (специализация этого товара)"
+
 msgid "×%d"
 msgstr "×%d"
 

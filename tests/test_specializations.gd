@@ -62,6 +62,7 @@ func _run() -> void:
     _test_prerequisites(state)
     _test_bonuses(state)
     _test_goods_bonuses(state)
+    _test_internal_market_goods_bonus(state)
     _test_effects(state)
     await _test_live(state)
 
@@ -591,6 +592,71 @@ func _test_goods_bonuses(state: Dictionary) -> void:
         state)
     check(_cdata.get_production_product_multipliers().is_empty(),
         "a branch that names no goods must leave the map of the goods empty", state)
+    _reset_specs()
+
+# --- 6b. A bonus of the internal market scoped to one good ---
+
+# The system-wide branch of the domestic market raises the price of every good, but a branch may
+# name the goods it pays for. Such a bonus must reach the price and the income of exactly those
+# goods, and must add to the system-wide share once rather than replace or double it.
+func _test_internal_market_goods_bonus(state: Dictionary) -> void:
+    _reset_specs()
+    var priced: Array = []
+    for key in _gdata.products:
+        var candidate := str(key)
+        if not _gdata.parse_generated_id(candidate).is_empty():
+            continue
+        if float(_gdata.products[key].get("price", 0.0)) <= 0.0:
+            continue
+        priced.append(candidate)
+        if priced.size() >= 2:
+            break
+    check(priced.size() >= 2,
+            "the data must have two priced goods to measure a scoped market bonus", state)
+    if priced.size() < 2:
+        return
+    var pid: String = priced[0]
+    var outside: String = priced[1]
+    var domestic := str(_branch_with_type("internal_market_price", true).get("id", ""))
+    var global_step := _value_of(domestic, "internal_market_price")
+    var scoped_step := 0.15
+    var scoped_spec := {
+        "id": "_test_scoped_market",
+        "name": "Scoped Market",
+        "bonuses": [{
+            "type": "internal_market_price", "value": scoped_step, "products": [pid]
+        }],
+    }
+    _gdata.specializations.append(scoped_spec)
+
+    var market_mult := float(_gdata.game_balance.get("internal_market_price_multiplier", 1.0))
+    var base_price := float(_gdata.products[pid].get("price", 0.0))
+    var plain_price: int = _cdata.get_internal_market_price(pid)
+    var outside_plain: int = _cdata.get_internal_market_price(outside)
+    _cdata.chosen_specialization_ids.append(str(scoped_spec["id"]))
+
+    var market_base := int(round(base_price * market_mult * (1.0 + scoped_step)))
+    check(_cdata.get_internal_market_price(pid) == market_base,
+            "a good named by a scoped branch must get its internal-market price raised", state)
+    check(_cdata.get_internal_market_price(pid) > plain_price,
+            "the scoped bonus must raise the price above the plain one", state)
+    check(_cdata.get_internal_market_price(outside) == outside_plain,
+            "a good outside the branch must keep its plain internal-market price", state)
+    check(_cdata.get_internal_market_income(pid, {"common": 2})
+            == _cdata.get_internal_market_price(pid) * 2,
+            "the internal-market income must use the price with the scoped branch", state)
+
+    # The system-wide branch and the scoped one add up in the share of the named good; that share
+    # already carries the system-wide one, so it must not be applied a second time.
+    _cdata.chosen_specialization_ids.append(domestic)
+    check(is_equal_approx(_cdata.get_internal_market_price_spec_multiplier(pid),
+            1.0 + global_step + scoped_step),
+            "the scoped and the system-wide shares must add up once", state)
+    var both_base := int(round(base_price * market_mult * (1.0 + global_step + scoped_step)))
+    check(_cdata.get_internal_market_price(pid) == both_base,
+            "the price must carry both the system-wide and the scoped branch", state)
+
+    _gdata.specializations.pop_back()
     _reset_specs()
 
 # Every bonus of the data that names its goods, as the pair [the branch, the bonus].

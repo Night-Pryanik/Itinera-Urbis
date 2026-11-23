@@ -865,6 +865,12 @@ func _format_treasury_rate(value: float) -> String:
         return str(int(round(value)))
     return "%.1f" % value
 
+# The specialization multiplier of the price the internal market pays for ONE good. The share of a
+# good already carries the system-wide domestic-market branch, so the global multiplier must not be
+# applied on top of it a second time — a branch scoped to this good adds to the same share.
+func get_internal_market_price_spec_multiplier(pid: String) -> float:
+    return maxf(0.1, 1.0 + get_specialization_product_share(SPEC_INTERNAL_MARKET_PRICE, pid))
+
 # Returns the price at which the internal market buys a unit of the goods pid from the city
 # (in the coins of the treasury). It is a share of the base price of the goods (price from
 # data/products/*.json), set by internal_market_price_multiplier in data/game_balance.json,
@@ -889,7 +895,7 @@ func get_internal_market_price(pid: String, quality_id: String = "") -> int:
     var mult = float(GameData.game_balance.get("internal_market_price_multiplier", 1.0))
     # The domestic-market specialization and researched technology modifiers act here, so the
     # "Price" row of the trade tab, treasury income and the market plan all use the same amount.
-    var spec_mult := get_specialization_multiplier(SPEC_INTERNAL_MARKET_PRICE)
+    var spec_mult := get_internal_market_price_spec_multiplier(pid)
     var tech_mult := _get_tech_percent_modifier_multiplier("internal_market_trade_income")
     var market_base := int(round(base_price * mult * spec_mult * tech_mult))
     if not GameData.parse_generated_id(pid).is_empty():

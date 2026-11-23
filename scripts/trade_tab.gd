@@ -695,15 +695,16 @@ func _price_tooltip_text(row: Dictionary) -> String:
         return ""
     var lines: Array = []
     var market_mult := float(GameData.game_balance.get("internal_market_price_multiplier", 1.0))
-    # The domestic market specialization is a factor of the same price: without it in the formula
-    # the tooltip would explain a number the card does not show.
-    var spec_mult: float = CityData.get_specialization_multiplier(
+    # The system-wide domestic-market branch is a factor of the same price: without it in the
+    # formula the tooltip would explain a number the card does not show. A bonus scoped to one
+    # good is carried by that good's row — the members of a group need not share it.
+    var global_spec_mult: float = CityData.get_specialization_multiplier(
             CityData.SPEC_INTERNAL_MARKET_PRICE)
-    if is_equal_approx(spec_mult, 1.0):
+    if is_equal_approx(global_spec_mult, 1.0):
         lines.append(tr("Price = base price of the goods ×%.2f (market) × quality multiplier") % market_mult)
     else:
         lines.append(tr("Price = base price of the goods ×%.2f (market) ×%.2f (specialization) × quality multiplier")
-                % [market_mult, spec_mult])
+                % [market_mult, global_spec_mult])
     lines.append("")
     for pid in row.get("members", []):
         var member := str(pid)
@@ -712,6 +713,10 @@ func _price_tooltip_text(row: Dictionary) -> String:
         if base_price <= 0.0:
             lines.append(tr("%s: goods without a price") % member_name)
             continue
+        var scoped_note := ""
+        var member_spec_mult: float = CityData.get_internal_market_price_spec_multiplier(member)
+        if not is_equal_approx(member_spec_mult, global_spec_mult):
+            scoped_note = "  " + (tr("×%.2f (specialization of this good)") % member_spec_mult)
         var stock_detail: Dictionary = CityData.get_quality_breakdown(member)
         # The stock is summed by the level of the good: a row with an additional ingredient
         # carries two levels and shows up on the ladder row of the level the good itself has.
@@ -726,9 +731,13 @@ func _price_tooltip_text(row: Dictionary) -> String:
         if stock_total <= 0:
             lines.append(tr("%s (base %d): %s") % [
                 member_name, int(round(base_price)), _price_ladder_inline(member)])
+            if scoped_note != "":
+                lines.append(scoped_note)
             _append_extra_price(lines, member)
             continue
         lines.append(tr("%s (base %d):") % [member_name, int(round(base_price))])
+        if scoped_note != "":
+            lines.append(scoped_note)
         for qid in GameData.get_quality_levels():
             var tail := GameData.format_quality_price_tail(member, str(qid))
             if tail == "":
