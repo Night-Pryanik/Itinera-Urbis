@@ -202,8 +202,8 @@
       "production_bonus": 0.0
     },
     {
-      // Household lighting: moderate rate so citizen demand leaves candles in storage
-      // for miners, scholars and bookbinders.
+      // Everyday lighting of all citizens, like the lamp oils of @consumer_goods: no production
+      // bonus goes with it. Both kinds are written off together at a moderate rate.
       "resource": "@candles",
       "profession": [ "all" ],
       "amount": 5,

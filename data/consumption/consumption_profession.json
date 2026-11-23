@@ -214,14 +214,6 @@
       "production_bonus": 0.15
     },
     {
-      // Lamp oils light glassworks and alchemists' houses; the tannery also uses them to degrease hides.
-      "resource": "@lamp_oils",
-      "profession": [ "glassmaker", "alchemist", "tanner" ],
-      "amount": 10,
-      "interval": 15,
-      "production_bonus": 0.15
-    },
-    {
       // Mercury extracts gold and silver from ore by amalgamation and coats ornaments
       // in fire-gilding.
       "resource": "mercury",
@@ -439,22 +431,6 @@
       "amount": 10,
       "interval": 10,
       "production_bonus": 0.1
-    },
-    {
-      // Tallow candles light mine workings and everyday reading tables.
-      "resource": "tallow_candles",
-      "profession": [ "miner", "scientist" ],
-      "amount": 10,
-      "interval": 10,
-      "production_bonus": 0.1
-    },
-    {
-      // Clean beeswax candles illuminate libraries, scriptoriums and binderies without soot.
-      "resource": "wax_candles",
-      "profession": [ "scientist", "bookbinder" ],
-      "amount": 10,
-      "interval": 15,
-      "production_bonus": 0.15
     },
     {
       // Tarred ropes haul ore and stone from wet shafts and quarries, edge stitched sails

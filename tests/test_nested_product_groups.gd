@@ -34,9 +34,12 @@ func _test_real_data(state: Dictionary):
     var declared: Array = loader.product_group_declarations.get("consumer_goods", [])
     check(declared.has("@lamp_oils"),
             "consumer_goods must declare the nested lamp_oils group", state)
+    var oils: Array = loader.product_groups.get("lamp_oils", [])
+    check(oils.has("vegetable_oil") and oils.has("white_naphtha") and oils.has("shale_oil"),
+            "the lamp oils must include the ancient vegetable fuel and both mineral oils", state)
     var members: Array = loader.product_groups.get("consumer_goods", [])
-    check(members.has("white_naphtha") and members.has("shale_oil"),
-            "both lamp oils must be in the expanded basket", state)
+    check(members.has("vegetable_oil") and members.has("white_naphtha") and members.has("shale_oil"),
+            "all three lamp oils must be in the expanded basket", state)
     check(not members.has("@lamp_oils"),
             "the expanded basket must hold products, not a group key", state)
     check(members.size() == 8, "the basket must still hold all eight goods", state)
