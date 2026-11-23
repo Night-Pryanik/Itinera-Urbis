@@ -2008,11 +2008,13 @@ func _check_population_change():
 
     # --- THE DYNAMICS OF THE FOOD (for the determination of the famine) ---
     var total_prod = 0
-    var total_cons = 0
     for pid in city_food_pool:
         if city_food_pool[pid]:
             total_prod += production_rates.get(pid, 0)
-            total_cons += consumption_rates.get(pid, 0)
+    # The famine is decided against the ration the citizens need, not the recorded consumption:
+    # consumption_rates fills only when there is food to write off, so it reads zero at an empty
+    # storage — exactly when the decision matters. This is the same ration do_tick() tries to feed.
+    var food_demand = max(0, total_population - 1) * food_per_citizen
 
     # The production delivered along a road is credited to production_rates on ARRIVAL
     # (delivery_manager._deliver), and the arrivals of the whole window are cleared by
@@ -2063,7 +2065,7 @@ func _check_population_change():
         check_specialization_choice()
 
     # --- THE FAMINE (the death from the lack of the food) ---
-    elif available_food == 0 and total_cons > total_prod and total_population > 1:
+    elif available_food == 0 and food_demand > total_prod and total_population > 1:
         total_population -= 1
 
         # The free residents are taken first: an unemployed citizen costs the city nothing,

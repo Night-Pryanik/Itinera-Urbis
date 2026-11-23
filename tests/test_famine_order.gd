@@ -1,8 +1,8 @@
 # Headless test for the famine death order (CityData._check_population_change):
 #   godot --headless --path . --script res://tests/test_famine_order.gd
 #
-# The famine fires when the food pool holds exactly zero units AND the food
-# consumption exceeds the food production. Exactly one resident dies per tick, in a
+# The famine fires when the food pool holds exactly zero units AND the citizens' food
+# demand exceeds the food production. Exactly one resident dies per tick, in a
 # fixed order:
 #   1. the free residents (the unemployed) first;
 #   2. then the residents of the city buildings;
