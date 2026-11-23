@@ -66,6 +66,9 @@ func _run() -> void:
     await process_frame
     var tm = main_map.get_node("TownsfolkManager")
     city.food_consumption_enabled = false
+    # The debug toggle must spare the citizens even at an empty storage. new_game()
+    # seeds 10 beef, which would keep the famine from firing without this reset.
+    city.city_storage["beef"] = 0
     city.total_population = 20
     city.idle_population = 4
     city.city_storage["writing_set"] = 1000
@@ -84,6 +87,8 @@ func _run() -> void:
     city.unlocked_technologies.append("astronomy")
     city.do_tick()
     var boosted_rate: float = city.science_buildings_rate_per_sec
+    check(city.total_population == 20,
+            "with food consumption disabled an empty storage must not starve the citizens", state)
     check(is_equal_approx(boosted_rate, plain_rate * 1.15),
             "Astronomy must raise the scholars' output by 15%% (%.3f -> %.3f)" \
                     % [plain_rate, boosted_rate], state)

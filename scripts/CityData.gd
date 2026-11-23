@@ -2055,8 +2055,8 @@ func do_tick():
     # therefore we write off by the default "best" through the helper, so that the breakdown
     # of the quality always remains consistent.
     # The debug toggle: while food_consumption_enabled == false the citizens
-    # do NOT eat the food (the toggle in the debug menu). The growth/decline of the population is at that time
-    # counted as usual — only the write-off of the food from the storage is disabled.
+    # do NOT eat the food (the toggle in the debug menu). _check_population_change() mirrors this
+    # by dropping the ration to zero, so an empty storage cannot starve anybody either.
     if food_consumption_enabled:
         var food_needed = max(0, total_population - 1) * food_per_citizen
         # The ration is taken as a basket: an equal share from every kind of
@@ -2125,8 +2125,11 @@ func _check_population_change():
             total_prod += production_rates.get(pid, 0)
     # The famine is decided against the ration the citizens need, not the recorded consumption:
     # consumption_rates fills only when there is food to write off, so it reads zero at an empty
-    # storage — exactly when the decision matters. This is the same ration do_tick() tries to feed.
-    var food_demand = max(0, total_population - 1) * food_per_citizen
+    # storage — exactly when the decision matters. This is the same ration do_tick() tries to feed,
+    # and it is zero while the debug food consumption is off: citizens who do not eat cannot starve.
+    var food_demand: int = 0
+    if food_consumption_enabled:
+        food_demand = max(0, total_population - 1) * food_per_citizen
 
     # The production delivered along a road is credited to production_rates on ARRIVAL
     # (delivery_manager._deliver), and the arrivals of the whole window are cleared by
