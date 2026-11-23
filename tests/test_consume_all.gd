@@ -241,6 +241,51 @@ func _run() -> void:
     gdata.consumption_rules.remove_at(gdata.consumption_rules.size() - 1)
     gdata.product_groups.erase("debt_basket")
 
+    # A long absence must not grow the debt without limit: one unit is enough to
+    # make the first draw immediate when the goods come back.
+    gdata.consumption_rules.append({
+        "resource": "salt",
+        "profession": ["miner"],
+        "amount": 10,
+        "interval": 10,
+        "production_bonus": 0.0
+    })
+    wm.consumption_timers.clear()
+    _clear_stock(city)
+    for _i in range(30):
+        wm.tick_consumption(0, 0, 1.0)
+    var long_frac: Dictionary = wm.consumption_timers.get("0,0", {}).get("fractional", {})
+    check(is_equal_approx(float(long_frac.get("salt", 0.0)), 1.0),
+        "a long empty shelf must cap the banked debt at one unit, got %f"
+            % float(long_frac.get("salt", 0.0)), state)
+    _set_one(city, "salt", 5)
+    wm.tick_consumption(0, 0, 1.0)
+    check(city.get_storage_amount("salt") == 4,
+        "restocking after a long absence must draw one unit, not the whole debt", state)
+
+    # A partial draw spends what is actually taken; the undrawn units stay banked.
+    # A fast rule (amount 10 per 2 s) is used to make the debt larger than the stock.
+    wm.consumption_timers.clear()
+    gdata.consumption_rules.remove_at(gdata.consumption_rules.size() - 1)
+    gdata.consumption_rules.append({
+        "resource": "salt",
+        "profession": ["miner"],
+        "amount": 10,
+        "interval": 2,
+        "production_bonus": 0.0
+    })
+    _clear_stock(city)
+    wm.tick_consumption(0, 0, 1.0)
+    _set_one(city, "salt", 2)
+    wm.tick_consumption(0, 0, 1.0)
+    check(city.get_storage_amount("salt") == 0,
+        "a partial draw must empty the small stock", state)
+    var partial_frac: Dictionary = wm.consumption_timers.get("0,0", {}).get("fractional", {})
+    check(is_equal_approx(float(partial_frac.get("salt", 0.0)), 4.0),
+        "a partial draw must keep the undrawn units banked, got %f"
+            % float(partial_frac.get("salt", 0.0)), state)
+    gdata.consumption_rules.remove_at(gdata.consumption_rules.size() - 1)
+
     # --- The precision instruments follow the same metal ladder as the work tools ---
     # The scholar's instruments are drawn, but this test has no building to host him: the
     # ladder is read directly from the assembled rule, the same way the boats and the work

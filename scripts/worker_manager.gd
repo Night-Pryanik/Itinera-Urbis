@@ -374,42 +374,52 @@ func _tick_profession_consumption(prof: String, key: String, timers: Dictionary,
         var per_tick: float = float(amt) / interval * delta
         var frac_key: String = _fractional_key(entry)
         var cur_frac: float = float(fractional.get(frac_key, 0.0)) + per_tick
+        # An empty shelf banks at most one whole unit of debt, so a long absence never
+        # turns into a large draw on restock. The sub-unit remainder is kept intact:
+        # clipping it would slow rules whose rate is below one unit per tick.
+        var whole_cap: float = 1.0 if per_tick <= 1.0 else floorf(per_tick) + 1.0
+        var whole_cur: float = floorf(cur_frac)
+        if whole_cur > whole_cap:
+            cur_frac = whole_cap + cur_frac - whole_cur
         # Repeated fractional ticks can land just below a whole unit.
         var floor_take := floori(cur_frac + 1e-9)
-        # The whole units are kept while the shelves are empty: the draw happens at once
+        # The bounded debt is kept while the shelves are empty: the draw happens at once
         # when the resource appears, as with the urban consumption.
         if floor_take <= 0 or not _has_consumable_stock(entry):
             fractional[frac_key] = cur_frac
             continue
 
-        fractional[frac_key] = maxf(0.0, cur_frac - float(floor_take))
-
+        var taken: int = floor_take
         if entry.get("is_group", false):
             if bool(entry.get("consume_all", false)):
                 _consume_group_all(entry.get("group_members", []), floor_take, prof_source, priority)
             elif _has_member_overrides(entry):
-                _consume_group_tiered(entry, floor_take, prof_source, priority)
+                taken = _consume_group_tiered(entry, floor_take, prof_source, priority)
             else:
-                _consume_group_rotate(entry.get("group_members", []), floor_take,
+                taken = _consume_group_rotate(entry.get("group_members", []), floor_take,
                         prof_source, priority, rotation, frac_key)
         else:
             var pid: String = str(entry.get("product_id", ""))
             if pid.is_empty():
                 continue
             var avail_single: int = CityData.get_storage_amount(pid)
-            var take_single: int = mini(avail_single, floor_take)
-            if take_single <= 0:
+            taken = mini(avail_single, floor_take)
+            if taken <= 0:
+                fractional[frac_key] = cur_frac
                 continue
-            var single_consumed: Dictionary = CityData.remove_from_storage(pid, take_single, priority)
-            CityData.record_consumption_source(pid, prof_source, take_single)
+            var single_consumed: Dictionary = CityData.remove_from_storage(pid, taken, priority)
+            CityData.record_consumption_source(pid, prof_source, taken)
             # The fact of the inner market (see above).
-            CityData.record_market_consumption(pid, take_single)
+            CityData.record_market_consumption(pid, taken)
             # The price is by the quality of each written-off unit (see above).
             var single_take_price: int = CityData.get_internal_market_income(pid, single_consumed)
             CityData.add_treasury(single_take_price)
             # The source of the income for the tooltip "Treasury" by the same key,
             # as in the plan map (the name of a profession, for example "Fisherman").
             CityData.record_treasury_income(prof_source, single_take_price, pid)
+
+        # A partial draw keeps the undrawn units banked instead of losing them.
+        fractional[frac_key] = maxf(0.0, cur_frac - float(taken))
 
     timers[key].fractional = fractional
     return 1.0 + _aggregate_production_bonus(cons_list)
@@ -478,10 +488,10 @@ func _consume_group_all(members: Array, amount: int, source_id: String, priority
 # rotation continues after a load. The quality priority still applies within
 # the chosen member.
 func _consume_group_rotate(members: Array, amount: int, source_id: String,
-        priority: String, rotation: Dictionary, rot_key: String) -> void:
+        priority: String, rotation: Dictionary, rot_key: String) -> int:
     var count: int = members.size()
     if count <= 0:
-        return
+        return 0
     var start: int = int(rotation.get(rot_key, 0)) % count
     for offset in range(count):
         var idx: int = (start + offset) % count
@@ -501,15 +511,17 @@ func _consume_group_rotate(members: Array, amount: int, source_id: String,
         CityData.add_treasury(income)
         CityData.record_treasury_income(source_id, income, pid)
         rotation[rot_key] = (idx + 1) % count
-        return
+        return take
+    return 0
 
 # Tiered group draw (rules with "members"): spends the highest-tier member in stock first,
 # spilling into the next lower tier only when the better one runs dry.
-func _consume_group_tiered(entry: Dictionary, amount: int, source_id: String, priority: String) -> void:
+func _consume_group_tiered(entry: Dictionary, amount: int, source_id: String, priority: String) -> int:
     var remaining: int = amount
+    var taken: int = 0
     for raw_pid in GameData.get_entry_members_ordered_by_tier(entry):
         if remaining <= 0:
-            return
+            return taken
         var pid := str(raw_pid)
         if pid.is_empty():
             continue
@@ -526,6 +538,8 @@ func _consume_group_tiered(entry: Dictionary, amount: int, source_id: String, pr
         CityData.add_treasury(income)
         CityData.record_treasury_income(source_id, income, pid)
         remaining -= take
+        taken += take
+    return taken
 
 # The DISPLAY_KEY of a record of the consumption is the single addressing key of the settings
 # of the inner market (CityData.market_consumption_enabled /
