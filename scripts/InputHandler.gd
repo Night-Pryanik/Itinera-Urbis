@@ -31,6 +31,21 @@ var is_dragging: bool = false
 var drag_start_scroll_offset: Vector2 = Vector2.ZERO
 var drag_start_mouse: Vector2 = Vector2.ZERO
 
+# --- The pinch of the map ---
+# A single finger needs no special code: touch emulation turns it into mouse events, and
+# a tap and a pan already work through them. A pinch needs the raw touches — the emulated
+# mouse would otherwise pan the map with the very movement that zooms it.
+const PINCH_MIN_DISTANCE: float = 32.0
+# The emulated mouse also sends the release of the last finger. It must not turn into a
+# selection of the hex under the fingers after a pinch.
+const PINCH_RELEASE_GRACE_MSEC: int = 250
+
+var _touches: Dictionary = {} # index -> position in the viewport
+var _pinching: bool = false
+var _pinch_start_distance: float = 1.0
+var _pinch_start_zoom: float = 1.0
+var _pinch_ended_msec: int = -PINCH_RELEASE_GRACE_MSEC
+
 var tooltip_delay: float = 0.5
 var extended_tooltip_delay: float = 1.0
 # The speed of the movement of the map — both by the cursor standing at the edge of the
@@ -89,6 +104,12 @@ func handle_input(event: InputEvent):
     # is built, and while a new game generates its world (main_map.world_generating)
     # there is nothing for the input to work with.
     if main_map == null or main_map.world_generating:
+        return
+
+    # The touches are tracked before the checks below: a menu may open in the middle of a
+    # pinch, and the release of the fingers must still end it and store the zoom.
+    if event is InputEventScreenTouch or event is InputEventScreenDrag:
+        _handle_touch(event)
         return
 
     # SPACE: the hotkey of the active pause. It does exactly what the button of the
@@ -211,6 +232,12 @@ func handle_process(delta: float):
     # stay frozen half-zoomed because a menu happened to open in the middle of a gesture.
     main_map.process_zoom(delta)
 
+    if _pinching:
+        # Edge scrolling would fight the fingers, and a tooltip under them is useless.
+        _hide_tooltip()
+        expansion_manager.clear_hovered_chunk()
+        return
+
     if town_ui.visible or city_ui.visible or pause_menu.visible or (main_map.settings_menu and main_map.settings_menu.visible):
         _hide_tooltip()
         return
@@ -314,7 +341,7 @@ func handle_process(delta: float):
 # control panel covers the whole bottom edge of the screen, so the downward
 # direction would be unreachable.
 func _process_edge_scrolling(delta: float):
-    if is_dragging or not main_map.use_edge_scrolling:
+    if is_dragging or _pinching or not main_map.use_edge_scrolling:
         return
 
     var mouse_pos = main_map.get_viewport().get_mouse_position()
@@ -401,7 +428,106 @@ func _handle_esc():
     else:
         main_map.open_pause_menu()
 
+func _handle_touch(event: InputEvent) -> void:
+    if event is InputEventScreenTouch:
+        var touch := event as InputEventScreenTouch
+        if touch.pressed:
+            _touches[touch.index] = touch.position
+            if _touches.size() == 2 and not _pinching:
+                _begin_pinch()
+        else:
+            _touches.erase(touch.index)
+            if _pinching and _touches.size() < 2:
+                _end_pinch()
+        return
+    if event is InputEventScreenDrag:
+        var drag := event as InputEventScreenDrag
+        if _touches.has(drag.index):
+            _touches[drag.index] = drag.position
+        if _pinching:
+            if not _map_input_allowed():
+                _end_pinch()
+                return
+            _update_pinch()
+            get_viewport().set_input_as_handled()
+
+func _map_input_allowed() -> bool:
+    if town_ui.visible or city_ui.visible or pause_menu.visible \
+            or (main_map.settings_menu and main_map.settings_menu.visible):
+        return false
+    return not (debug_manager and debug_manager.is_open)
+
+# The wheel is not allowed to zoom through the HUD or the control panel, and neither is
+# a pinch: the same parts of the screen belong to the interface, not to the map.
+func _map_input_allowed_at(pos: Vector2) -> bool:
+    if not _map_input_allowed():
+        return false
+    if hud != null and hud.get_global_rect().has_point(pos):
+        return false
+    if main_map.control_panel != null and main_map.control_panel.get_global_rect().has_point(pos):
+        return false
+    if _is_mouse_over_treasury_tooltip(pos) or _is_mouse_over_top_right(pos):
+        return false
+    return true
+
+func _begin_pinch() -> void:
+    var pair := _pinch_pair()
+    if pair.is_empty():
+        return
+    var middle: Vector2 = (pair[0] + pair[1]) * 0.5
+    if not _map_input_allowed_at(middle):
+        return
+    # A wheel animation in flight would keep correcting the scroll offset under the
+    # fingers; the pinch starts from the still image the player sees now.
+    main_map.finish_zoom()
+    _pinching = true
+    _pinch_start_distance = maxf(_pinch_distance(pair), PINCH_MIN_DISTANCE)
+    _pinch_start_zoom = main_map.zoom
+    is_dragging = false
+    _hide_tooltip()
+    expansion_manager.clear_hovered_chunk()
+
+func _update_pinch() -> void:
+    var pair := _pinch_pair()
+    if pair.is_empty():
+        return
+    var distance: float = maxf(_pinch_distance(pair), PINCH_MIN_DISTANCE)
+    var middle: Vector2 = (pair[0] + pair[1]) * 0.5
+    main_map.zoom_to(_pinch_start_zoom * distance / _pinch_start_distance, middle)
+
+func _end_pinch() -> void:
+    if not _pinching:
+        return
+    _pinching = false
+    _pinch_ended_msec = Time.get_ticks_msec()
+    main_map.end_pinch()
+    is_dragging = false
+    # If one finger stays on the screen, the pan continues from where it is now and not
+    # from the press that started the pinch.
+    if not _touches.is_empty():
+        var keys := _touches.keys()
+        keys.sort()
+        drag_start_mouse = _touches[keys[0]]
+        drag_start_scroll_offset = main_map.scroll_offset
+
+func _pinch_pair() -> Array:
+    var keys := _touches.keys()
+    keys.sort()
+    if keys.size() < 2:
+        return []
+    return [_touches[keys[0]], _touches[keys[1]]]
+
+func _pinch_distance(pair: Array) -> float:
+    return (pair[0] as Vector2).distance_to(pair[1] as Vector2)
+
+func _pinch_just_ended() -> bool:
+    return Time.get_ticks_msec() - _pinch_ended_msec < PINCH_RELEASE_GRACE_MSEC
+
 func _handle_mouse_button(event: InputEventMouseButton):
+    if _pinching or _pinch_just_ended():
+        # The emulated mouse events of a pinch must not select a hex or start a drag.
+        return
+
     # The wheel zooms the map around the cursor. The map keeps drawing at a fixed hex
     # radius, so the wheel only moves the TARGET zoom; the animation and the scroll
     # correction are owned by main_map.
@@ -476,6 +602,8 @@ func _handle_mouse_button(event: InputEventMouseButton):
                 main_map.clear_selection()
 
 func _handle_mouse_motion(event: InputEventMouseMotion):
+    if _pinching or _pinch_just_ended():
+        return
     if town_ui.visible or city_ui.visible or pause_menu.visible:
         return
 

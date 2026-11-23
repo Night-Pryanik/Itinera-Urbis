@@ -82,6 +82,22 @@ func set_zoom(value: float) -> void:
     apply_view_transform()
     _redraw_view_layers()
 
+# A pinch sets the zoom directly: the fingers move the picture one-to-one, so an
+# animation would only lag behind them. `anchor` is the midpoint of the fingers and
+# stays in place while the picture grows or shrinks around it.
+func zoom_to(value: float, anchor: Vector2) -> void:
+    _zoom_anchor = anchor
+    _zoom_world = screen_to_local(anchor)
+    zoom = clampf(value, ZOOM_MIN, ZOOM_MAX)
+    zoom_target = zoom
+    _apply_zoom_view()
+
+# A pinch is over: the zoom reached by the fingers has no animation to settle it, so
+# the shift of the last frame is folded into the scroll offset here.
+func end_pinch() -> void:
+    _settle_zoom()
+    _save_zoom_level()
+
 # Snaps a running animation to its target. The drag and the jump of the camera must not
 # fight the animation: both write scroll_offset, and the loser would make the map twitch.
 func finish_zoom() -> void:

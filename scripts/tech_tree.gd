@@ -83,6 +83,18 @@ var _zoom_visual: float = 1.0
 var _zoom_anchor: Vector2 = Vector2.ZERO
 var _zoom_cursor: Vector2 = Vector2.ZERO
 var _zoom_animating: bool = false
+
+# --- The pinch of the tree ---
+# Touch emulation gives the buttons and the one-finger pan their ordinary mouse events.
+# The pinch needs the raw touches, and the emulated mouse events it produces must not
+# turn into a pan or a click on a technology.
+const PINCH_MIN_DISTANCE: float = 32.0
+const PINCH_RELEASE_GRACE_MSEC: int = 250
+var _touches: Dictionary = {} # index -> position in the viewport
+var _pinching: bool = false
+var _pinch_start_distance: float = 1.0
+var _pinch_start_zoom: float = 1.0
+var _pinch_ended_msec: int = -PINCH_RELEASE_GRACE_MSEC
 # The size of the tree at the zoom it is built for (without the scale of the animation).
 var _layout_size: Vector2 = Vector2.ZERO
 
@@ -298,12 +310,14 @@ func _process_zoom(delta: float) -> void:
 
 # Shows the tree at the current zoom: the tree is scaled as a picture, and the bars of the
 # ScrollContainer take their range from the scaled size of the tree.
-func _apply_zoom_scale() -> void:
+func _apply_zoom_scale(force_scroll: bool = false) -> void:
     var k: float = _zoom_visual / _zoom
     _content.scale = Vector2(k, k)
     _inner.size = _layout_size * k
     _inner.custom_minimum_size = _layout_size * k
-    if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+    # A pinch produces an emulated pressed mouse button, but the fingers — not that
+    # phantom drag — own the scroll while the tree zooms around them.
+    if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and not force_scroll:
         # The player drags the tree — the scroll belongs to him now.
         return
     # The bars carry the range of the previous frame: ScrollContainer refreshes it in
@@ -332,6 +346,19 @@ func _compensate_scroll(wanted_h: float, wanted_v: float) -> void:
     var dx: float = _scroll.scroll_horizontal - wanted_h
     var dy: float = _scroll.scroll_vertical - wanted_v
     _content.position = Vector2(dx, dy)
+
+# A pinch sets the zoom directly: the fingers move the picture one-to-one, and an
+# animation would only lag behind them. The point of the tree the fingers took at the
+# start of the gesture stays their anchor; only the cursor — the midpoint — moves with
+# them. Recapturing the anchor on every drag would accumulate the rounding of the
+# scroll bars and let the tree drift away from the fingers.
+func zoom_to(value: float, global_pos: Vector2) -> void:
+    var target: float = clampf(value, ZOOM_MIN, ZOOM_MAX)
+    _zoom_cursor = global_pos - _scroll.global_position
+    _zoom_target = target
+    _zoom_visual = target
+    _zoom_animating = false
+    _apply_zoom_scale(true)
 
 # The gesture has settled: the tree keeps the scale it has reached.
 #
@@ -628,11 +655,19 @@ func _build_ui(parent: Control):
 func _input(event: InputEvent) -> void:
     if _scroll == null:
         return
+    # The touches are tracked even when the tab is hidden, so that switching away in the
+    # middle of a pinch still ends it and stores the zoom the fingers reached.
+    if event is InputEventScreenTouch or event is InputEventScreenDrag:
+        _handle_touch(event)
+        return
     if not is_visible_in_tree():
         # The tab can be switched while the button is held. Do not let that press
         # turn into a pan when the tree is shown again.
         _drag_possible = false
         _dragging = false
+        return
+    if _pinching or _pinch_just_ended():
+        # The emulated mouse of a pinch must not pan the tree or press a technology.
         return
     if event is InputEventMouseButton:
         var mb := event as InputEventMouseButton
@@ -695,6 +730,71 @@ func _handle_zoom_wheel(mb: InputEventMouseButton) -> void:
     zoom_by(factor, mb.global_position)
     # The ScrollContainer would scroll the tree by the same wheel — the zoom replaces it.
     get_viewport().set_input_as_handled()
+
+func _handle_touch(event: InputEvent) -> void:
+    if event is InputEventScreenTouch:
+        var touch := event as InputEventScreenTouch
+        if touch.pressed:
+            _touches[touch.index] = touch.position
+            if _touches.size() == 2 and not _pinching:
+                _begin_pinch()
+        else:
+            _touches.erase(touch.index)
+            if _pinching and _touches.size() < 2:
+                _end_pinch()
+        return
+    if event is InputEventScreenDrag:
+        var drag := event as InputEventScreenDrag
+        if _touches.has(drag.index):
+            _touches[drag.index] = drag.position
+        if not _pinching:
+            return
+        var pair := _pinch_pair()
+        if pair.is_empty():
+            return
+        var distance: float = maxf(_pinch_distance(pair), PINCH_MIN_DISTANCE)
+        var middle: Vector2 = (pair[0] + pair[1]) * 0.5
+        zoom_to(_pinch_start_zoom * distance / _pinch_start_distance, middle)
+        get_viewport().set_input_as_handled()
+
+func _begin_pinch() -> void:
+    var pair := _pinch_pair()
+    if pair.is_empty() or not is_visible_in_tree():
+        return
+    var middle: Vector2 = (pair[0] + pair[1]) * 0.5
+    if not _scroll.get_global_rect().has_point(middle):
+        return
+    # A wheel animation in flight would keep changing the scale under the fingers.
+    if _zoom_animating:
+        _settle_zoom()
+    _capture_zoom_anchor(middle)
+    _pinching = true
+    _pinch_start_distance = maxf(_pinch_distance(pair), PINCH_MIN_DISTANCE)
+    _pinch_start_zoom = _zoom_visual
+    _drag_possible = false
+    _dragging = false
+
+func _end_pinch() -> void:
+    if not _pinching:
+        return
+    _pinching = false
+    _pinch_ended_msec = Time.get_ticks_msec()
+    _save_zoom_level()
+    _drag_possible = false
+    _dragging = false
+
+func _pinch_pair() -> Array:
+    var keys := _touches.keys()
+    keys.sort()
+    if keys.size() < 2:
+        return []
+    return [_touches[keys[0]], _touches[keys[1]]]
+
+func _pinch_distance(pair: Array) -> float:
+    return (pair[0] as Vector2).distance_to(pair[1] as Vector2)
+
+func _pinch_just_ended() -> bool:
+    return Time.get_ticks_msec() - _pinch_ended_msec < PINCH_RELEASE_GRACE_MSEC
 
 # Whether the cursor stands over a row of the unlocked content that overflows: such a row
 # scrolls itself by the wheel.
