@@ -172,7 +172,7 @@ const ENTITY_COLLECTIONS := [
 # vanilla game.
 func load_all_data(mod_dirs: Array = []):
     var merged_data = _load_all_json_files("res://data")
-    if merged_data == null:
+    if merged_data.is_empty():
         print("Error: failed to load the data from the data folder.")
         return
 
@@ -491,7 +491,11 @@ func _read_json_file(file_path: String):
 func _remember_sources(file_path: String, raw_text: String, data: Dictionary):
     if not (data is Dictionary):
         return
-    _remember_key_sources(file_path, raw_text, data)
+    # A comment may hold an example record with a real identifier. Search the cleaned
+    # text so that example cannot be reported as a declaration. The cleaner keeps the
+    # original line breaks, so the numbers still match the file in the editor.
+    var search_text := JsonUtils.strip_comments(raw_text)
+    _remember_key_sources(file_path, search_text, data)
     for collection in SOURCE_COLLECTIONS:
         var entries = data.get(collection, null)
         if not (entries is Array):
@@ -504,9 +508,9 @@ func _remember_sources(file_path: String, raw_text: String, data: Dictionary):
                 continue
             entity_sources["%s:%s" % [collection, id]] = {
                 "file": file_path,
-                "line": _find_decl_line(raw_text, id),
+                "line": _find_decl_line(search_text, id),
             }
-    _remember_consumption_sources(file_path, raw_text, data)
+    _remember_consumption_sources(file_path, search_text, data)
 
 # The origin of the TOP-LEVEL keys — the collections themselves ("resources", "crafts",
 # "game_balance"), indexed as "@key:<name>". A collection has no entity of its own to hang
@@ -516,21 +520,21 @@ func _remember_sources(file_path: String, raw_text: String, data: Dictionary):
 #
 # A key that several files share (crafts, resources) keeps the first file it was seen in:
 # any of them is a fair pointer, and the first one is at least stable.
-func _remember_key_sources(file_path: String, raw_text: String, data: Dictionary):
+func _remember_key_sources(file_path: String, search_text: String, data: Dictionary):
     for key in data.keys():
         var index_key := "@key:%s" % str(key)
         if entity_sources.has(index_key):
             continue
         entity_sources[index_key] = {
             "file": file_path,
-            "line": _find_key_line(raw_text, str(key)),
+            "line": _find_key_line(search_text, str(key)),
         }
 
 # The line of a top-level key — the one where it is written as `"name":`, and not merely
 # mentioned inside a comment or in the value of another field.
-func _find_key_line(raw_text: String, key: String) -> int:
+func _find_key_line(search_text: String, key: String) -> int:
     var needle := "\"%s\"" % key
-    var lines := raw_text.split("\n")
+    var lines := search_text.split("\n")
     for i in lines.size():
         var line: String = lines[i]
         var at := line.find(needle)
@@ -554,7 +558,7 @@ func _find_key_line(raw_text: String, key: String) -> int:
 # A key collision for two rules with the same resource is impossible: the registry
 # forbids it (GameData.get_profession_consumption discards a duplicate by
 # display_key), therefore an index overwrite does not happen here.
-func _remember_consumption_sources(file_path: String, raw_text: String, data: Dictionary):
+func _remember_consumption_sources(file_path: String, search_text: String, data: Dictionary):
     var rules = data.get("consumption", null)
     if not (rules is Array):
         return
@@ -566,21 +570,16 @@ func _remember_consumption_sources(file_path: String, raw_text: String, data: Di
             continue
         entity_sources["consumption:%s" % res_key] = {
             "file": file_path,
-            "line": _find_resource_decl_line(raw_text, res_key),
+            "line": _find_resource_decl_line(search_text, res_key),
         }
 
-    # The declaration line of a consumption rule — the one where the "resource" field
-    # with this value stands.
-    #
-    # Its own _find_decl_line does not work here: it looks for the first occurrence of
-    # the value in the RAW text, does not strip comments, and the declaration is preceded
-    # by any comment of the form // ... "resource" with a value about which the author
-    # writes an explanation. The pointer
-    # then points at the explanation, and not at the rule — exactly what the origin
-    # index was made for.
-func _find_resource_decl_line(raw_text: String, res_key: String) -> int:
+# The declaration line of a consumption rule — the one where the "resource" field
+# with this value stands. A rule has no "id" for _find_decl_line to look for, so it
+# is identified by that field. The search runs on comment-stripped text for the
+# same reason: an example in a comment must not be reported as the rule.
+func _find_resource_decl_line(search_text: String, res_key: String) -> int:
     var needle := "\"%s\"" % res_key
-    var lines := raw_text.split("\n")
+    var lines := search_text.split("\n")
     for i in lines.size():
         var line: String = lines[i]
         # The field name and the value on one line — a compact record
@@ -590,22 +589,21 @@ func _find_resource_decl_line(raw_text: String, res_key: String) -> int:
             return i + 1
     return 0
 
-    # The line on which an entity with such an id is DECLARED, — or 0 if it was not found.
-    #
-    # We search in the ORIGINAL text of the file, and not in the one cleaned of
-    # comments: JsonUtils.strip_comments
-    # discards the line breaks inside /* … */, therefore the line numbering of the cleaned
-    # text would not match what the author sees in the editor (in data/improvements.json
-    # the comment header takes up half the screen).
-    #
-    # First we search for the line where the id stands next to an "id" (a compact record
-    # { "id": "salt", "price": 6 }) — that is the declaration itself. If there is no such one, we take
-    # the first line where the id occurs at all: for multi-line records like a goods
-    # group of data/product_groups/ (id on one line, "products" — on the next ones) it still
-    # leads to the declaration line.
-func _find_decl_line(raw_text: String, id: String) -> int:
+# The line on which an entity with such an id is DECLARED, — or 0 if it was not found.
+#
+# The text is searched after the comments have been stripped: a commented-out example
+# may carry a real id, and pointing at it would be worse than no line at all.
+# JsonUtils.strip_comments keeps the line breaks, so the number still matches the file
+# the author sees in the editor.
+#
+# First we search for the line where the id stands next to an "id" (a compact record
+# { "id": "salt", "price": 6 }) — that is the declaration itself. If there is no such one, we take
+# the first line where the id occurs at all: for multi-line records like a goods
+# group of data/product_groups/ (id on one line, "products" — on the next ones) it still
+# leads to the declaration line.
+func _find_decl_line(search_text: String, id: String) -> int:
     var needle := "\"%s\"" % id
-    var lines := raw_text.split("\n")
+    var lines := search_text.split("\n")
     var fallback := 0
     for i in lines.size():
         var line: String = lines[i]
