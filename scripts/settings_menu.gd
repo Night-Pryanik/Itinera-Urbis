@@ -260,6 +260,11 @@ func _setup_ui_scale_option():
 
 func _on_ui_scale_selected(index: int):
     UiScale.save(float(ui_scale_option_button.get_item_metadata(index)))
+    # The main menu cancels the global scale for its splash, so it has to re-read the new
+    # multiplier. The window itself is a sibling of that splash and keeps scaling normally.
+    var main_menu := get_tree().root.find_child("MainMenu", true, false)
+    if main_menu != null and main_menu.has_method("apply_ui_scale_compensation"):
+        main_menu.apply_ui_scale_compensation()
 
 func _apply_display_settings():
     if resolution_option_button == null or window_mode_option_button == null:

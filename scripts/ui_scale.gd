@@ -21,6 +21,13 @@ const MAXIMUM := 2.0
 # need not be one of these: the dropdown shows the closest step when a saved value is off it.
 const STEPS: Array[float] = [1.0, 1.1, 1.25, 1.5, 1.75, 2.0]
 
+# The multiplier applied to the root window right now. Scenes that must keep their designed
+# size (the main menu) read it to cancel the scale locally.
+static var applied_multiplier: float = DEFAULT
+
+static func current() -> float:
+    return applied_multiplier
+
 static func base_factor() -> float:
     var value := float(ProjectSettings.get_setting("display/window/stretch/scale", 1.0))
     return value if value > 0.0 else 1.0
@@ -43,7 +50,8 @@ static func apply(value: float) -> void:
     var tree := Engine.get_main_loop() as SceneTree
     if tree == null or tree.root == null:
         return
-    tree.root.content_scale_factor = base_factor() * clamp_scale(value)
+    applied_multiplier = clamp_scale(value)
+    tree.root.content_scale_factor = base_factor() * applied_multiplier
     # The glyphs on screen were rasterised for the old scale. Re-resolve them on the next
     # frame: otherwise a dropdown opened immediately after the change can resize the font
     # atlas while the old text still holds UVs into it, and the letters turn into blocks.
