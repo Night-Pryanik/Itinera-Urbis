@@ -119,6 +119,16 @@
       "description": "Makes jewelry out of porphyry."
     },
     {
+      "id": "amber_jewelry",
+      "name": "Amber Jewelry",
+      "produced_in": [ "jeweler_house" ],
+      "resources": { "amber": 10 },
+      "result": { "amber_jewelry": 10 },
+      "time": 18,
+      "unlock_tech": "jewelry",
+      "description": "Makes jewelry out of amber."
+    },
+    {
       "id": "pearl_jewelry",
       "name": "Pearl Jewelry",
       "produced_in": [ "jeweler_house" ],

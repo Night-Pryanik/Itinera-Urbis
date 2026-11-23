@@ -445,6 +445,23 @@
       "color": [ 150, 0, 0 ]
     },
     {
+      "id": "amber_deposit",
+      "price": 20,
+      "name": "Amber",
+      "type": "raw",
+      "category": "minerals",
+      "group": "minerals",
+      "subgroup": [ "jewelry_minerals" ],
+      "strategic": true,
+      "tech_required": "mining",
+      "allowed_terrain": [ "plain", "hill", "rocky_desert" ],
+      "allowed_cover": [ "none", "temperate_rainforest_sparse", "temperate_dry_forest_sparse", "temperate_rainforest", "temperate_dry_forest" ],
+      "improved_by": "mine",
+      "produces": { "amber": 10 },
+      "icon": "amber.png",
+      "color": [ 255, 176, 48 ]
+    },
+    {
       "id": "pyrite_deposit",
       "price": 10,
       "name": "Pyrite",

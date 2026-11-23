@@ -39,6 +39,7 @@
     { "id": "obsidian", "kind": "gemstone", "amount": 10, "unlock_tech": "jewelry" },
     { "id": "pearl", "kind": "gemstone", "amount": 10, "unlock_tech": "jewelry" },
     { "id": "coral", "kind": "gemstone", "amount": 10, "unlock_tech": "jewelry" },
+    { "id": "amber", "kind": "gemstone", "amount": 10, "unlock_tech": "jewelry" },
 
     { "id": "ochre", "kind": "dye", "amount": 10, "unlock_tech": "dyeing" },
     { "id": "woad", "kind": "dye", "amount": 10, "unlock_tech": "dyeing" },
