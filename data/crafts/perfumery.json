@@ -7,18 +7,18 @@
       "id": "perfume",
       "name": "Perfume",
       "produced_in": [ "perfumer_house" ],
-      "resources": [ [ { "frankincense": 20 }, { "myrrh": 20 }, { "roses": 20 }, { "cinnamon": 20 } ], { "vegetable_oil": 10 } ],
+      "resources": [ [ { "frankincense": 20 }, { "myrrh": 20 }, { "storax": 20 }, { "camphor": 20 }, { "roses": 20 }, { "cinnamon": 20 } ], { "vegetable_oil": 10 } ],
       "result": { "perfume": 10 },
       "time": 5.0,
       "unlock_tech": "perfume_making",
       "description": "Dissolves the fragrant material in oil and keeps the scent in a jar."
     },
     {
-      // Rose petals are a perfume material, but resins and sandalwood oil are burned on the hearth.
+      // Rose petals are a perfume material: the hearth burns resins, camphor and sandalwood oil.
       "id": "incense",
       "name": "Incense",
       "produced_in": [ "perfumer_house" ],
-      "resources": [ [ { "frankincense": 20 }, { "myrrh": 20 }, { "sandalwood_oil": 20 } ], { "charcoal": 10 } ],
+      "resources": [ [ { "frankincense": 20 }, { "myrrh": 20 }, { "storax": 20 }, { "camphor": 20 }, { "sandalwood_oil": 20 } ], { "charcoal": 10 } ],
       "result": { "incense": 10 },
       "time": 5.0,
       "unlock_tech": "perfume_making",
@@ -40,7 +40,7 @@
       "id": "attar",
       "name": "Attar",
       "produced_in": [ "perfumer_house" ],
-      "resources": [ [ { "frankincense": 20 }, { "myrrh": 20 }, { "roses": 20 }, { "chamomile": 20 }, { "cinnamon": 20 } ] ],
+      "resources": [ [ { "frankincense": 20 }, { "myrrh": 20 }, { "storax": 20 }, { "camphor": 20 }, { "roses": 20 }, { "chamomile": 20 }, { "cinnamon": 20 } ] ],
       "result": { "attar": 5 },
       "time": 8.0,
       "unlock_tech": "distillation",
@@ -67,19 +67,20 @@
       "description": "Steam-distils deep-blue essential oil from chamomile blossoms."
     },
     {
-      // Essential oils come before table spices in the alternatives list so the
-      // perfumer uses workshop oils first and draws on spices only when needed.
+      // Essential oils come before the raw aromatics and the table spices in the
+      // alternatives list so the perfumer uses workshop oils first and draws on
+      // the rest only when needed.
       "id": "spirit_perfume",
       "name": "Fragrant Spirit",
       "produced_in": [ "perfumer_house" ],
       "resources": [
         { "rectified_spirit": 10 },
-        [ { "sandalwood_oil": 10 }, { "chamomile_oil": 10 }, { "nutmeg": 10 }, { "vanilla": 10 }, { "saffron": 10 } ]
+        [ { "sandalwood_oil": 10 }, { "chamomile_oil": 10 }, { "storax": 10 }, { "camphor": 10 }, { "nutmeg": 10 }, { "vanilla": 10 }, { "saffron": 10 } ]
       ],
       "result": { "spirit_perfume": 10 },
       "time": 10.0,
       "unlock_tech": "distillation",
-      "description": "Dissolves distilled oils or rare spices in rectified spirit to make a lasting perfume."
+      "description": "Dissolves distilled oils, fragrant balsams or rare spices in rectified spirit to make a lasting perfume."
     }
   ]
 }

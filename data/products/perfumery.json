@@ -29,6 +29,24 @@
       "icon": "sandalwood.png"
     },
     {
+      "id": "storax",
+      "price": 18,
+      "name": "Storax",
+      "type": "product",
+      "category": "perfumery",
+      "unlock_tech": "wood_processing",
+      "icon": "storax.png"
+    },
+    {
+      "id": "camphor",
+      "price": 24,
+      "name": "Camphor",
+      "type": "product",
+      "category": "perfumery",
+      "unlock_tech": "wood_processing",
+      "icon": "camphor.png"
+    },
+    {
       "id": "perfume",
       "price": 50,
       "name": "Perfume",
