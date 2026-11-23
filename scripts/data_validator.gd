@@ -158,8 +158,8 @@ const IDENT_BLOCKS := [
 #
 # A single list for the checks id_charset / id_lookalike: they are orthogonal
 # to the other checks (those care about the VALUE of the references, these — about the text of the id itself), and
-# keeping the list in one place is cheaper than adding it per call into each of the
-# fifteen collections. The pairs "the field of GameData → the kind of the entity for the message":
+# keeping the list in one place is cheaper than adding it per call into each collection.
+# The pairs "the field of GameData → the kind of the entity for the message":
 # the second one is needed so that in the text of the problem it says "Product", and not "Resource".
 const IDENT_COLLECTIONS := [
     {"field": "products", "kind": "product"},
@@ -177,6 +177,11 @@ const IDENT_COLLECTIONS := [
     {"field": "categories", "kind": "category"},
     {"field": "eras", "kind": "era"},
     {"field": "roads", "kind": "road"},
+    {"field": "challenges", "kind": "challenge"},
+    {"field": "specializations", "kind": "specialization"},
+    {"field": "climate_zones", "kind": "climate_zone"},
+    {"field": "craft_extras", "kind": "craft_extra"},
+    {"field": "craft_extra_kinds", "kind": "craft_extra_kind"},
 ]
 
 # The quality levels lie not in a dictionary, but in an array inside a dictionary
@@ -714,6 +719,7 @@ const BLACKLIST_COLLECTIONS := [
     "covers",
     "climate_zones",
     "special_actions",
+    "challenges",
     "consumption",
 ]
 const BLACKLIST_FIELDS := {
@@ -842,6 +848,7 @@ const BLACKLIST_KINDS := {
     "covers": "cover",
     "climate_zones": "climate_zone",
     "special_actions": "special_action",
+    "challenges": "challenge",
     "consumption": "consumption_rule",
 }
 
