@@ -376,7 +376,9 @@ func _tick_profession_consumption(prof: String, key: String, timers: Dictionary,
         var cur_frac: float = float(fractional.get(frac_key, 0.0)) + per_tick
         # Repeated fractional ticks can land just below a whole unit.
         var floor_take := floori(cur_frac + 1e-9)
-        if floor_take <= 0:
+        # The whole units are kept while the shelves are empty: the draw happens at once
+        # when the resource appears, as with the urban consumption.
+        if floor_take <= 0 or not _has_consumable_stock(entry):
             fractional[frac_key] = cur_frac
             continue
 
@@ -395,8 +397,6 @@ func _tick_profession_consumption(prof: String, key: String, timers: Dictionary,
             if pid.is_empty():
                 continue
             var avail_single: int = CityData.get_storage_amount(pid)
-            if avail_single <= 0:
-                continue
             var take_single: int = mini(avail_single, floor_take)
             if take_single <= 0:
                 continue
@@ -413,6 +413,17 @@ func _tick_profession_consumption(prof: String, key: String, timers: Dictionary,
 
     timers[key].fractional = fractional
     return 1.0 + _aggregate_production_bonus(cons_list)
+
+# Whether the record has anything to draw at the moment. For a group it is enough that
+# one member has stock; the draw itself decides which members to take from.
+func _has_consumable_stock(entry: Dictionary) -> bool:
+    if entry.get("is_group", false):
+        for raw_pid in entry.get("group_members", []):
+            if CityData.get_storage_amount(str(raw_pid)) > 0:
+                return true
+        return false
+    var pid := str(entry.get("product_id", ""))
+    return not pid.is_empty() and CityData.get_storage_amount(pid) > 0
 
 # Checks whether there is enough of a resource for a full cycle of the consumption for one record.
 # For the groups - in total over all the members of the group.
@@ -531,7 +542,10 @@ func _entry_display_key(entry: Dictionary) -> String:
 # One accumulator per record of the consumption.
 func _fractional_key(entry: Dictionary) -> String:
     if entry.get("is_group", false):
-        return "@" + str(entry.get("display_key", ""))
+        var key := _entry_display_key(entry)
+        if not key.begins_with("@"):
+            key = "@" + key
+        return key
     return str(entry.get("product_id", entry.get("display_key", "")))
 
 # The serialization of the timers of the consumption for the save.

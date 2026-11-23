@@ -158,10 +158,10 @@ func _run() -> void:
     stub.add_child(wm2)
     wm2.load_consumption_timers(saved)
     var rot: Dictionary = wm2.consumption_timers.get("0,0", {}).get("rotation", {})
-    # The key of a group record is its fractional key: "@" + the display key.
-    check(int(rot.get("@@rotate_basket", -1)) == 2,
+    # The key of a group record is its fractional key: the "@<group>" display key.
+    check(int(rot.get("@rotate_basket", -1)) == 2,
         "the rotation index must survive save/load, got %d"
-            % int(rot.get("@@rotate_basket", -1)), state)
+            % int(rot.get("@rotate_basket", -1)), state)
     wm2.free()
     gdata.consumption_rules.remove_at(gdata.consumption_rules.size() - 1)
     gdata.product_groups.erase("rotate_basket")
@@ -197,6 +197,49 @@ func _run() -> void:
     multiplier = wm.tick_consumption(0, 0, 1.0)
     check(is_equal_approx(multiplier, 1.25) and city.get_storage_amount("steel_tools") == 29,
         "the miner must fall back to ordinary steel tools when Damascus tools are unavailable", state)
+
+    # --- An empty shelf keeps the whole units accumulated by a professional rule ---
+    gdata.consumption_rules.append({
+        "resource": "salt",
+        "profession": ["miner"],
+        "amount": 10,
+        "interval": 10,
+        "production_bonus": 0.0
+    })
+    wm.consumption_timers.clear()
+    _clear_stock(city)
+    wm.tick_consumption(0, 0, 1.0)
+    var salt_frac: Dictionary = wm.consumption_timers.get("0,0", {}).get("fractional", {})
+    check(is_equal_approx(float(salt_frac.get("salt", 0.0)), 1.0),
+        "an empty shelf must keep the accumulated unit, not discard it", state)
+    _set_one(city, "salt", 1)
+    wm.tick_consumption(0, 0, 1.0)
+    check(city.get_storage_amount("salt") == 0,
+        "the unit accumulated while the shelf was empty must be drawn at once", state)
+    gdata.consumption_rules.remove_at(gdata.consumption_rules.size() - 1)
+
+    # The same for a group whose every member is empty.
+    gdata.product_groups["debt_basket"] = ["soap"]
+    gdata.consumption_rules.append({
+        "resource": "@debt_basket",
+        "profession": ["miner"],
+        "amount": 10,
+        "interval": 10,
+        "production_bonus": 0.0,
+        "consume_all": true
+    })
+    wm.consumption_timers.clear()
+    _clear_stock(city)
+    wm.tick_consumption(0, 0, 1.0)
+    var group_frac: Dictionary = wm.consumption_timers.get("0,0", {}).get("fractional", {})
+    check(is_equal_approx(float(group_frac.get("@debt_basket", 0.0)), 1.0),
+        "an empty group must keep the accumulated unit", state)
+    _set_one(city, "soap", 1)
+    wm.tick_consumption(0, 0, 1.0)
+    check(city.get_storage_amount("soap") == 0,
+        "the unit accumulated by an empty group must be drawn at once", state)
+    gdata.consumption_rules.remove_at(gdata.consumption_rules.size() - 1)
+    gdata.product_groups.erase("debt_basket")
 
     # --- The precision instruments follow the same metal ladder as the work tools ---
     # The scholar's instruments are drawn, but this test has no building to host him: the
