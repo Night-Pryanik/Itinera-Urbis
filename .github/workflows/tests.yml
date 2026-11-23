@@ -1,6 +1,8 @@
 name: Tests
 
 on:
+  push:
+    branches: [master]
   pull_request:
     types: [opened, synchronize, reopened]
   workflow_dispatch:
@@ -28,6 +30,11 @@ jobs:
       - uses: actions/checkout@v6
         with:
           persist-credentials: false
+
+      - name: Fast Python checks
+        run: |
+          python3 tools/validate_json.py
+          python3 tools/check_indentation.py
 
       - name: Install Godot
         run: |
