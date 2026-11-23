@@ -35,6 +35,7 @@
 extends Node
 
 const JsonUtils = preload("res://scripts/json_utils.gd")
+const ImageFiles = preload("res://scripts/image_files.gd")
 
 const ROOT := "res://tilesets"
 const MANIFEST := "tileset.json"
@@ -43,11 +44,6 @@ const MANIFEST := "tileset.json"
 # the pause and the upgrade of a building, the marks of the menu.
 const TYPES := ["resources", "buildings", "technologies", "terrains", "improvements",
     "special_actions", "misc"]
-
-# What is taken for an image. The engine imports each of these into a texture; anything
-# else in a tileset folder (a readme, a palette, a source file) is left alone.
-const IMAGE_SUFFIXES := [".png", ".svg", ".webp", ".jpg", ".jpeg", ".bmp", ".tga"]
-const SKIP_SUFFIXES := [".import", ".remap", ".uid"]
 
 # A folder whose name starts with this is not a tileset: the shipped example carries it so
 # that the game keeps its own art until the folder is renamed.
@@ -391,7 +387,7 @@ func _record_error(record: Dictionary) -> String:
                 PackedStringArray(TYPES))]
     if (record["icons"] as Dictionary).is_empty():
         return "The tileset folder holds no images (%s)." % ", ".join(
-            PackedStringArray(IMAGE_SUFFIXES))
+            PackedStringArray(ImageFiles.IMAGE_SUFFIXES))
     return ""
 
 # A manifest field that is either a list of strings or a single string.
@@ -425,9 +421,9 @@ func _collect_icons(folder_path: String, out: Dictionary) -> void:
             var lower := file_name.to_lower()
             if lower.ends_with(".import"):
                 var base := file_name.substr(0, file_name.length() - 7)
-                if _is_image(base):
+                if ImageFiles.is_image(base):
                     services.append(base)
-            elif _is_image(file_name):
+            elif ImageFiles.is_image(file_name):
                 images.append(file_name)
         file_name = dir.get_next()
     dir.list_dir_end()
@@ -443,18 +439,6 @@ func _register_image(name: String, folder_path: String, out: Dictionary) -> void
     var bare_name := name.get_basename()
     if not out.has(bare_name):
         out[bare_name] = folder_path.path_join(name)
-
-func _is_image(file_name: String) -> bool:
-    if file_name.begins_with("."):
-        return false
-    var lower := file_name.to_lower()
-    for suffix in SKIP_SUFFIXES:
-        if lower.ends_with(suffix):
-            return false
-    for suffix in IMAGE_SUFFIXES:
-        if lower.ends_with(suffix):
-            return true
-    return false
 
 # Tells the author about the files that replace nothing: a misnamed picture is invisible in
 # the game otherwise. The names are the vanilla ones — an icon a mod adds is not a target,

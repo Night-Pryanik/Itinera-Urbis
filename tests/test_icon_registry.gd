@@ -15,10 +15,10 @@
 # subfolders.
 #
 # Checked:
-#  1. The index is complete: it holds exactly the files in res://icons, minus
-#     the service ones (*.import/*.remap/hidden) — checked by name against the
-#     walk.
-#  2. No service files in the index, no hidden ones.
+#  1. The index is complete: it holds exactly the pictures in res://icons, minus
+#     the service ones (*.import/*.remap/*.uid/hidden) — checked by name against
+#     the walk. A readme in a folder of icons is not a picture.
+#  2. No service, hidden or non-picture files in the index.
 #  3. No duplicate names (otherwise one image would silently replace another,
 #     and the result would depend on the walk order).
 #  4. Every path in the index is an existing file with the same name.
@@ -51,8 +51,8 @@ extends SceneTree
 const WATCHDOG = preload("res://tests/watchdog.gd")
 
 const ROOT := "res://icons"
-# Service files the registry must skip.
-const SKIP_SUFFIXES := [".import", ".remap"]
+# The picture-file filter shared by the registry, TilesetManager and this walk.
+const ImageFiles = preload("res://scripts/image_files.gd")
 
 func _initialize():
     WATCHDOG.arm(self)
@@ -90,17 +90,19 @@ func _run() -> void:
     check(extra_in_index.is_empty(),
         "the index has entries that are not on disk: %s" % _fmt_list(extra_in_index), state)
 
-    # --- 2. Service and hidden files do not get into the index ---
+    # --- 2. Service, hidden and non-picture files do not get into the index ---
     var junk: Array = []
     for file_name in registry.paths.keys():
-        var is_junk: bool = file_name.begins_with(".")
-        for suffix in SKIP_SUFFIXES:
-            if file_name.ends_with(suffix):
-                is_junk = true
-        if is_junk:
+        if not ImageFiles.is_image(file_name):
             junk.append(file_name)
     check(junk.is_empty(),
-        "service/hidden files got into the index: %s" % _fmt_list(junk), state)
+        "service, hidden or non-picture files got into the index: %s" % _fmt_list(junk), state)
+    # A readme in a folder of icons and the uid files Godot writes next to an asset
+    # are not pictures, so they must not become icons.
+    for probe in ["AGENTS.md", "icon.png.uid", "icon.png.import", "icon.png.remap", ".hidden.png"]:
+        check(not ImageFiles.is_image(probe), "\"%s\" was taken for a picture" % probe, state)
+    for probe in ["icon.png", "icon.SVG", "icon.webp"]:
+        check(ImageFiles.is_image(probe), "\"%s\" was not taken for a picture" % probe, state)
 
     # --- 3. Duplicate names ---
     # We count them ourselves: if two images in different subfolders have the
@@ -331,13 +333,8 @@ func _scan_disk(folder_path: String, out: Dictionary) -> void:
     while not file_name.is_empty():
         if dir.current_is_dir():
             _scan_disk(folder_path.path_join(file_name), out)
-        else:
-            var skip: bool = file_name.begins_with(".")
-            for suffix in SKIP_SUFFIXES:
-                if file_name.ends_with(suffix):
-                    skip = true
-            if not skip:
-                out[file_name] = folder_path.path_join(file_name)
+        elif ImageFiles.is_image(file_name):
+            out[file_name] = folder_path.path_join(file_name)
         file_name = dir.get_next()
     dir.list_dir_end()
 

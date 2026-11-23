@@ -21,6 +21,8 @@
 @tool
 extends Node
 
+const ImageFiles = preload("res://scripts/image_files.gd")
+
 # The root in which the icons are searched.
 const ROOT := "res://icons"
 
@@ -33,10 +35,6 @@ const MOD_ICONS := "icons"
 # uses (svg/scale=1.0 in every *.import), so a mod picture keeps the size its author
 # declared.
 const SVG_SCALE := 1.0
-
-# Service files that get into res://icons during the walk but are not icons: *.import
-# lies next to the picture, *.remap appears in a build.
-const SKIP_SUFFIXES := [".import", ".remap"]
 
 # The type name used in a tileset manifest -> the folder under ROOT it owns. The names
 # differ from the folder names where the folder is shorter (tech, terrain) or where the
@@ -183,13 +181,11 @@ func _scan_folder(folder_path: String, duplicates: Array) -> void:
             _scan_folder(folder_path.path_join(file_name), duplicates)
         else:
             var lower := file_name.to_lower()
-            if lower.begins_with("."):
-                pass
-            elif lower.ends_with(".import"):
-                services.append(file_name.substr(0, file_name.length() - 7))
-            elif lower.ends_with(".remap"):
-                pass
-            else:
+            if lower.ends_with(".import"):
+                var base := file_name.substr(0, file_name.length() - 7)
+                if ImageFiles.is_image(base):
+                    services.append(base)
+            elif ImageFiles.is_image(file_name):
                 names.append(file_name)
         file_name = dir.get_next()
     dir.list_dir_end()
@@ -259,15 +255,10 @@ func _folder_type(folder_path: String, root: String = ROOT) -> String:
             return type_name
     return str(FOLDER_ALIASES.get(folder, MISC))
 
-# The name under which a file gets into the index; "" — the file is a service one,
-# it is not an icon.
+# The name under which a file gets into the index; "" — the file is not an icon:
+# a service one, a hidden one, or a file of another kind (a readme in a mod's icons).
 func _index_key(file_name: String) -> String:
-    if file_name.begins_with("."):
-        return ""
-    for suffix in SKIP_SUFFIXES:
-        if file_name.ends_with(suffix):
-            return ""
-    return file_name
+    return file_name if ImageFiles.is_image(file_name) else ""
 
 # The file name without the extension: the name a tileset uses for its own files.
 func _bare_name(file_name: String) -> String:
