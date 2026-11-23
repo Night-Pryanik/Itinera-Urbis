@@ -826,15 +826,18 @@ func _process(delta):
             building_detail_locked = true
             building_detail_locked_id = buildings_tab.get_hovered_building_id()
     else:
+        # Keep the stuck tooltip during the leave grace, but do not skip the
+        # treasury polling below — _process must finish updating all tooltips.
+        var in_building_detail_grace := false
         if building_detail_locked:
             building_detail_leave_timer += delta
-            if building_detail_leave_timer < BUILDING_DETAIL_LEAVE_GRACE:
-                return
-        building_detail_hover_timer = 0.0
-        building_detail_leave_timer = 0.0
-        building_detail_locked = false
-        building_detail_locked_id = ""
-        ui_helpers.hide_building_detail_tooltip()
+            in_building_detail_grace = building_detail_leave_timer < BUILDING_DETAIL_LEAVE_GRACE
+        if not in_building_detail_grace:
+            building_detail_hover_timer = 0.0
+            building_detail_leave_timer = 0.0
+            building_detail_locked = false
+            building_detail_locked_id = ""
+            ui_helpers.hide_building_detail_tooltip()
 
     # The breakdown tooltip of the treasury by the sources of income/expense: polling + the sticking
     # (the same pattern as the building details tooltip above, and the same delay
