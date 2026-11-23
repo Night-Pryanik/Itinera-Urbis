@@ -286,7 +286,7 @@
       "name": "Astronomy",
       "era": "antiquity",
       "science_cost": 5.0,
-      "icon": "science.png",
+      "icon": "astronomy.png",
       "prerequisites": [ [ "mathematics", "precision_instruments" ] ],
       "description": "Orientation by the stars lets scholars work 15% faster.",
       "flavor": "The ploughman reads the seasons and the sailor reads the swell, but the traveller beyond both needs a sky that does not change. Star paths were measured in the camps of the steppe, on the reefs of the Pacific, in the caravans of the desert and in the observatories of Serica and Alexandria; the same fixed points led a caravan across the sand and a hull across dark water. With the astrolabe at his belt the scholar could teach the angle of a star to an apprentice and give the distant road a name.",
