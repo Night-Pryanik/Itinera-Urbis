@@ -66,6 +66,13 @@ LOG_DIR = PROJECT_ROOT / "tools" / "test_logs"
 if sys.platform.startswith("linux"):
     USER_DATA_ENV = "XDG_DATA_HOME"
     USER_DATA_RELATIVE = Path("godot") / "app_userdata" / "Itinera Urbis"
+elif sys.platform == "darwin":
+    # Godot derives its macOS user-data path from $HOME, so redirecting HOME
+    # sandboxes it the way APPDATA/XDG_DATA_HOME do on the other platforms.
+    USER_DATA_ENV = "HOME"
+    USER_DATA_RELATIVE = (
+        Path("Library") / "Application Support" / "Godot" / "app_userdata" / "Itinera Urbis"
+    )
 else:
     USER_DATA_ENV = "APPDATA"
     USER_DATA_RELATIVE = Path("Godot") / "app_userdata" / "Itinera Urbis"
@@ -376,7 +383,10 @@ def main() -> int:
         default="",
         help="comma-separated substrings; run tests whose name contains any of them",
     )
-    parser.add_argument("-j", "--jobs", type=int, default=0, help="parallel workers (default: cpu-2)")
+    parser.add_argument(
+        "-j", "--jobs", type=int, default=0,
+        help="parallel workers (default: one per CPU core)",
+    )
     parser.add_argument("--list", action="store_true", help="list tests and exit")
     parser.add_argument("--verbose", "-v", action="store_true", help="stream each test's log path")
     parser.add_argument(
