@@ -15,7 +15,6 @@ def strip_comments(text: str) -> str:
     while i < len(text):
         c = text[i]
         nxt = text[i + 1] if i + 1 < len(text) else ""
-        prev = text[i - 1] if i > 0 else ""
         if not in_string and not in_single and not in_multi:
             if c == '"':
                 in_string = True
@@ -31,8 +30,16 @@ def strip_comments(text: str) -> str:
                 i += 2
                 continue
         if in_string:
-            if c == '"' and prev != "\\":
-                in_string = False
+            if c == '"':
+                # A quote closes the literal only when an even number of backslashes
+                # precedes it; an escaped backslash ("foo\\") must not end the string.
+                backslashes = 0
+                j = i - 1
+                while j >= 0 and text[j] == "\\":
+                    backslashes += 1
+                    j -= 1
+                if backslashes % 2 == 0:
+                    in_string = False
             result.append(c)
             i += 1
             continue
