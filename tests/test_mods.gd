@@ -71,6 +71,8 @@ func _run() -> void:
     _test_save_set(state, save_manager)
     _test_dependencies(state)
     _test_validation(state)
+    _test_baseline_after_locale_change(state)
+    _test_missing_mod_warning(state, save_manager)
     _test_blacklist_example(state)
     await _test_list(state)
     await _test_new_game_flow(state)
@@ -321,6 +323,47 @@ func _test_validation(state: Dictionary) -> void:
         if str(file).contains("user://mods/" + BLACKLIST_MOD):
             typo_points_at_mod = true
     check(typo_points_at_mod, "the blacklist problems point at the file of the mod", state)
+
+# --- 6a. The baseline survives a language switch ------------------------------------
+#
+# The validator builds "message" in the current language, so the baseline is compared
+# by the structure of a problem: it survives a switch of language, the message does not.
+func _test_baseline_after_locale_change(state: Dictionary) -> void:
+    var original_locale := TranslationServer.get_locale()
+    var english: Array = _mod_manager.validate_selection([BROKEN_MOD])
+    check(not english.is_empty(), "the broken mod has problems", state)
+    if english.is_empty():
+        return
+    _mod_manager._vanilla_problems = english.duplicate(true)
+    _mod_manager._baseline_ready = true
+
+    var validator = load("res://scripts/data_validator.gd")
+    var en_title: String = validator.check_title("result")
+    TranslationServer.set_locale("ru")
+    check(validator.check_title("result") != en_title,
+            "the language actually changed", state)
+
+    var russian: Array = _mod_manager.validate_selection([BROKEN_MOD])
+    check(russian.is_empty(),
+            "the problems of the cached baseline stay filtered in another language", state)
+
+    TranslationServer.set_locale(original_locale)
+    _mod_manager._vanilla_problems = []
+    _mod_manager._baseline_ready = false
+
+# --- 6b. A deleted mod is reported ----------------------------------------------------
+
+func _test_missing_mod_warning(state: Dictionary, save_manager) -> void:
+    var slot := "test_mods_missing_slot"
+    save_manager.write_slot(slot, {"mods": [SHIPPED_MOD, "deleted_mod"]})
+    check(save_manager.load_game(slot), "a slot with a deleted mod still loads", state)
+    check(_mod_manager.active_ids == [SHIPPED_MOD],
+            "the installed mod is kept, the deleted one is dropped", state)
+    check(save_manager.missing_mods == ["deleted_mod"],
+            "the dropped identifier is kept for the player", state)
+    save_manager.delete_save(slot)
+    save_manager.new_game()
+    check(save_manager.missing_mods.is_empty(), "a new game clears the warning", state)
 
 # --- 7. The shipped blacklist example -----------------------------------------------
 

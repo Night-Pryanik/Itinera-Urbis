@@ -538,10 +538,24 @@ func _ready():
 
     _update_loading_progress(1.0)
     _remove_loading_overlay()
+    _report_missing_mods()
 
     # A loaded save may carry a milestone the player has not spent yet: the choice is offered at
     # once, before the first tick of the session. A new game has one citizen, so nothing happens.
     CityData.check_specialization_choice()
+
+# A save may name a mod that has been deleted since it was written. The load happens
+# before this map exists, so SaveManager keeps the dropped identifiers until now. The
+# message is important: the journal keeps it after the HUD clears the line.
+func _report_missing_mods() -> void:
+    if SaveManager.missing_mods.is_empty():
+        return
+    var ids: Array = []
+    for mod_id in SaveManager.missing_mods:
+        ids.append(str(mod_id))
+    hud.show_message(tr("Mods from this save are missing and were not loaded: %s") %
+            ", ".join(PackedStringArray(ids)), GameData.HUD_MESSAGE_IMPORTANT)
+    SaveManager.missing_mods.clear()
 
 # The keys of the debug menu (F9, ESC, the digits of the items) are handled by the
 # menu node itself: it stays alive during the pause, while this node stops with the

@@ -1653,6 +1653,9 @@ msgstr ""
 msgid "Mods"
 msgstr ""
 
+msgid "Mods from this save are missing and were not loaded: %s"
+msgstr ""
+
 msgid "Mods: %s"
 msgstr ""
 

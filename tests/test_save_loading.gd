@@ -103,6 +103,17 @@ func _run() -> void:
     check(str(get_root().get_node("CityData").city_name) == "Test City",
             "the restored city keeps the name of the save", state)
 
+    # A save may name a mod that no longer exists. The load records the dropped id, and
+    # the map tells the player once its HUD is there — and keeps the line in the journal.
+    save_manager.missing_mods = ["gone_mod"]
+    map._report_missing_mods()
+    check(map.hud.message_label.text.contains("gone_mod"),
+            "the HUD names the mod that was not loaded", state)
+    check(not map.journal.entries.is_empty() and
+            str(map.journal.entries[0]["text"]).contains("gone_mod"),
+            "the warning reaches the journal", state)
+    check(save_manager.missing_mods.is_empty(), "the warning is consumed", state)
+
     _cleanup(save_manager, last_slot_backup)
     _finish(state)
 

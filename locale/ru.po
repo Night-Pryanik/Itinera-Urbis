@@ -1704,6 +1704,9 @@ msgstr "Режим"
 msgid "Mods"
 msgstr "Модификации"
 
+msgid "Mods from this save are missing and were not loaded: %s"
+msgstr "Модификации из этого сохранения отсутствуют и не были загружены: %s"
+
 msgid "Mods: %s"
 msgstr "Модификации: %s"
 

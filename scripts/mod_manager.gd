@@ -110,6 +110,16 @@ func resolve(ids: Array) -> Array:
         _visit(str(id), wanted, visiting, ordered)
     return ordered
 
+# The identifiers resolve() would drop because the mod is not installed. A save keeps
+# running without them; callers that need to tell the player use this list.
+func missing_ids(ids: Array) -> Array:
+    var out: Array = []
+    for id in ids:
+        var mod_id := str(id)
+        if not is_known(mod_id) and not out.has(mod_id):
+            out.append(mod_id)
+    return out
+
 func _visit(mod_id: String, wanted: Dictionary, visiting: Dictionary, ordered: Array) -> void:
     if ordered.has(mod_id) or visiting.has(mod_id) or not is_known(mod_id):
         return
@@ -254,12 +264,27 @@ func validate_selection(ids: Array) -> Array:
         return merged
     var known := {}
     for problem in baseline:
-        known[str(problem.get("message", ""))] = true
+        known[_problem_key(problem)] = true
     var out: Array = []
     for problem in merged:
-        if not known.has(str(problem.get("message", ""))):
+        if not known.has(_problem_key(problem)):
             out.append(problem)
     return out
+
+# The language-independent identity of a problem. The validator stores the wording in
+# "message" and rebuilds it when the language changes, and "source_name" comes from the
+# translated game data; the rest of the record is the structure the check produced.
+func _problem_key(problem: Dictionary) -> Array:
+    return [
+        str(problem.get("kind", "")),
+        str(problem.get("target", "")),
+        str(problem.get("ref_id", "")),
+        str(problem.get("source_kind", "")),
+        str(problem.get("source_id", "")),
+        str(problem.get("field", "")),
+        str(problem.get("file", "")),
+        int(problem.get("line", 0)),
+    ]
 
 func _problems_for(dirs: Array) -> Array:
     var game_data = _game_data()

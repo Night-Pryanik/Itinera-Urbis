@@ -20,6 +20,11 @@ const LAST_SLOT_KEY := "last_slot"
 var is_loaded = false
 var saved_data = {}
 
+# The mods a loaded slot named but that are no longer installed. The load happens in
+# the menu, where there is no HUD to show a message in, so main_map reports this list
+# once the map is ready.
+var missing_mods: Array = []
+
 # The slot selected last by the player — in the save window or in the load window.
 # An empty id means that no slot has been chosen yet.
 var last_slot_id := ""
@@ -53,6 +58,7 @@ func save_game(slot_id: String = "", save_name: String = "") -> bool:
 # Reads a slot into saved_data. The empty id means the slot selected last; if there
 # is none, the newest one. The scene applies saved_data on its own (main_map).
 func load_game(slot_id: String = "") -> bool:
+    missing_mods.clear()
     var id := slot_id.strip_edges()
     if id.is_empty():
         id = _default_slot()
@@ -164,7 +170,9 @@ func _apply_saved_mods(data: Dictionary) -> void:
     var mod_manager = _mod_manager()
     if mod_manager == null:
         return
-    mod_manager.set_active(_mod_ids(data))
+    var ids := _mod_ids(data)
+    missing_mods = mod_manager.missing_ids(ids)
+    mod_manager.set_active(ids)
 
 func _current_mod_ids() -> Array:
     var mod_manager = _mod_manager()
@@ -425,6 +433,7 @@ func apply_loaded_data():
     CityData.rebuild_generated_products()
 
 func new_game():
+    missing_mods.clear()
     GameData.load_all_data()
     CityData.setup()
     is_loaded = false
