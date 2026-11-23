@@ -687,7 +687,14 @@ func _compute_route_to_city(
         var town_net = town_connected_hexes.get(_hex_key(town_row, town_col), null)
         if town_net != null:
             for key in town_road_segments.keys():
-                segments[key] = true
+                # Only the segments of THIS town belong to its network; the segments
+                # of the foreign towns must not enter the route.
+                var ends := _parse_segment_key(key)
+                if ends.is_empty():
+                    continue
+                if town_net.has(_hex_key(int(ends[0]), int(ends[1]))) \
+                        and town_net.has(_hex_key(int(ends[2]), int(ends[3]))):
+                    segments[key] = true
 
     # The adjacency list: "row,col" -> [{"key": String, "to": "row,col"}].
     var adjacency: Dictionary = {}
