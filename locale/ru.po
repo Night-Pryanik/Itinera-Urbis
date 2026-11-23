@@ -4080,6 +4080,10 @@ msgid "Makes iron out of ore."
 msgstr "Изготавливает железо из руды"
 
 msgctxt "crafts.description"
+msgid "Makes jewelry out of amber."
+msgstr "Изготавливает украшения из янтаря."
+
+msgctxt "crafts.description"
 msgid "Makes jewelry out of bronze."
 msgstr "Создаёт украшения из бронзы"
 
@@ -4578,6 +4582,10 @@ msgstr "Мясо альпаки"
 msgctxt "crafts.name"
 msgid "Alum"
 msgstr "Квасцы"
+
+msgctxt "crafts.name"
+msgid "Amber Jewelry"
+msgstr "Украшения из янтаря"
 
 msgctxt "crafts.name"
 msgid "Amphora"
@@ -6270,6 +6278,14 @@ msgstr "Алунит"
 msgctxt "resources.name"
 msgid "Amaranth"
 msgstr "Амарант"
+
+msgctxt "resources.name"
+msgid "Amber"
+msgstr "Янтарь"
+
+msgctxt "resources.name"
+msgid "Amber Jewelry"
+msgstr "Украшения из янтаря"
 
 msgctxt "resources.name"
 msgid "Amphora"
