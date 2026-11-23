@@ -134,9 +134,11 @@ func _process(delta):
 
     for data in to_complete_expansions:
         var ekey = data.get("build_key", "")
+        # First we remove the entry from the active builds: the signal handlers
+        # may immediately update state and must see the completed claim.
+        active_expansion_builds.erase(ekey)
         emit_signal("build_message", tr("Claiming complete!"), 0)
         emit_signal("expansion_build_completed", data["chunk"])
-        active_expansion_builds.erase(ekey)
 
     # After the completion of the builds in _process we update the cache of the counter.
     if not to_complete.is_empty() or not to_complete_buildings.is_empty() or not to_complete_expansions.is_empty():
@@ -817,7 +819,11 @@ func restore_builds(data: Dictionary):
             "row": int(build_data.get("row", 0)),
             "col": int(build_data.get("col", 0)),
             "status": String(build_data.get("status", "active")),
-            "allocated_labor": float(build_data.get("allocated_labor", 0.0))
+            "allocated_labor": float(build_data.get("allocated_labor", 0.0)),
+            # A cancelled breeding returns the seed herd; a cancelled outpost
+            # returns its fee — both must survive the reload.
+            "livestock_res_id": str(build_data.get("livestock_res_id", "")),
+            "outpost_fee": int(build_data.get("outpost_fee", 0))
         }
     _recount_active_builds()
 
@@ -840,7 +846,9 @@ func restore_expansion_builds(data: Dictionary):
             "chunk": build_data.get("chunk", []),
             "build_key": String(build_data.get("build_key", key)),
             "status": String(build_data.get("status", "active")),
-            "allocated_labor": float(build_data.get("allocated_labor", 0.0))
+            "allocated_labor": float(build_data.get("allocated_labor", 0.0)),
+            # The claim fee must survive the reload so a cancel can return it.
+            "money_cost": int(build_data.get("money_cost", 0))
         }
     _recount_active_builds()
 
