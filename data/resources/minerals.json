@@ -614,6 +614,26 @@
       "color": [ 92, 64, 42 ]
     },
     {
+      // Oil shale can be burned directly or heated in a closed retort to recover oil.
+      "id": "oil_shale_deposit",
+      "price": 4,
+      "name": "Oil Shale",
+      "type": "raw",
+      "category": "minerals",
+      "group": "minerals",
+      "subgroup": "",
+      "strategic": true,
+      "spawn_count": [ 1, 5 ],
+      "tech_reveal": "mining",
+      "tech_required": "mining",
+      "allowed_terrain": [ "hill", "mountain" ],
+      "allowed_cover": [ "none", "temperate_rainforest_sparse", "temperate_dry_forest_sparse", "temperate_rainforest", "temperate_dry_forest" ],
+      "improved_by": "mine",
+      "produces": { "oil_shale": 10 },
+      "icon": "oil_shale.png",
+      "color": [ 75, 69, 57 ]
+    },
+    {
       // Sedimentary seams of black mineral coal in hills and mountains across cold, mild
       // and warm belts. Hidden until coal mining is researched, then worked by mines to
       // fuel hearths, kilns and boilers and to be baked into metallurgical coke.
