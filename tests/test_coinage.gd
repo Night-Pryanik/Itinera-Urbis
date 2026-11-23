@@ -40,10 +40,10 @@ func _run() -> void:
     var tm = main_map.get_node("TownsfolkManager")
     var wm = main_map.get_node("WorkerManager")
     # A famine death would unassign the worker and change the population under the check.
+    # The toggle stops only the write-off: the population dynamics still run, and an empty
+    # food pool counts as starvation. A zero ration keeps food_demand at zero.
     city.food_consumption_enabled = false
-    # The tests empty the storage and keep a large population, so the food balance is put out
-    # of the way entirely: no food kind in the pool means neither a birth nor a famine, and
-    # the population stays exactly what the checks below set.
+    city.food_per_citizen = 0
     city.city_food_pool.clear()
 
     # --- 1. The data of the branch ---
