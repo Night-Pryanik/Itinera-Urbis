@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://byond26oht575"]
+[gd_scene load_steps=16 format=3 uid="uid://byond26oht575"]
 
 ; The layers of the menu, from the bottom up: the dark plate the panorama lies on (the
 ; picture is wider than the window is high, so it keeps its shape and leaves a band
@@ -12,6 +12,8 @@
 [ext_resource type="Script" path="res://scripts/main_menu_ambience.gd" id="5_ambience"]
 [ext_resource type="Texture2D" path="res://backgrounds/main_menu/water_mask.png" id="6_water_mask"]
 [ext_resource type="Texture2D" path="res://backgrounds/main_menu/smoke_puff.png" id="7_smoke_puff"]
+[ext_resource type="Script" path="res://scripts/main_menu_birds.gd" id="8_birds"]
+[ext_resource type="Texture2D" path="res://backgrounds/main_menu/bird_flap.png" id="9_flap"]
 
 [sub_resource type="Gradient" id="Gradient_vignette"]
 offsets = PackedFloat32Array(0, 0.6, 1)
@@ -131,6 +133,33 @@ fixed_fps = 30
 visibility_rect = Rect2(-40, -120, 180, 160)
 texture = ExtResource("7_smoke_puff")
 process_material = SubResource("ParticleProcessMaterial_smoke")
+
+[node name="BirdsRoot" type="Node2D" parent="."]
+script = ExtResource("8_birds")
+
+[node name="BirdNear" type="Sprite2D" parent="BirdsRoot"]
+position = Vector2(-60, 168)
+scale = Vector2(0.42, 0.42)
+flip_h = true
+texture = ExtResource("9_flap")
+metadata/speed_factor = 1.0
+metadata/phase = 0.0
+
+[node name="BirdLow" type="Sprite2D" parent="BirdsRoot"]
+position = Vector2(200, 184)
+scale = Vector2(0.36, 0.36)
+flip_h = true
+texture = ExtResource("9_flap")
+metadata/speed_factor = 0.86
+metadata/phase = 0.37
+
+[node name="BirdHigh" type="Sprite2D" parent="BirdsRoot"]
+position = Vector2(470, 136)
+scale = Vector2(0.3, 0.3)
+flip_h = true
+texture = ExtResource("9_flap")
+metadata/speed_factor = 1.14
+metadata/phase = 0.71
 
 [node name="Scrim" type="ColorRect" parent="."]
 layout_mode = 1

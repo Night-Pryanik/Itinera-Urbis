@@ -11,6 +11,9 @@ extends Node
 @export_range(0.0, 0.4, 0.005) var water_flow_speed := 0.055
 @export_range(0.3, 4.0, 0.05) var water_ripple_scale := 1.7
 
+@export_group("Birds")
+@export var birds_enabled := true
+
 @export_group("Smoke")
 @export var smoke_enabled := true
 @export_range(0.0, 1.0, 0.01) var smoke_opacity := 0.65
@@ -21,11 +24,13 @@ extends Node
 @export_node_path("TextureRect") var picture_path := ^"../Picture"
 @export_node_path("TextureRect") var water_path := ^"../WaterLayer"
 @export_node_path("Node2D") var smoke_path := ^"../SmokeRoot"
+@export_node_path("Node2D") var birds_path := ^"../BirdsRoot"
 
 var _picture: TextureRect
 var _water: TextureRect
 var _water_material: ShaderMaterial
 var _smoke_root: Node2D
+var _birds_root: Node2D
 var _smoke: Array[GPUParticles2D] = []
 var _smoke_material: ParticleProcessMaterial
 var _base_velocity_min := 0.0
@@ -36,6 +41,7 @@ func _ready():
     _picture = get_node(picture_path)
     _water = get_node(water_path)
     _smoke_root = get_node(smoke_path)
+    _birds_root = get_node(birds_path)
     _water_material = _water.material as ShaderMaterial
     for child in _smoke_root.get_children():
         if child is GPUParticles2D:
@@ -60,6 +66,7 @@ func _apply_settings():
         _water_material.set_shader_parameter("opacity", water_opacity)
 
     _smoke_root.visible = smoke_enabled
+    _birds_root.visible = birds_enabled
     if _smoke_material != null:
         _smoke_material.initial_velocity_min = _base_velocity_min * smoke_speed_scale
         _smoke_material.initial_velocity_max = _base_velocity_max * smoke_speed_scale
@@ -79,5 +86,8 @@ func _layout_to_picture():
         return
     var view := get_viewport().get_visible_rect().size
     var fit := minf(view.x / image.x, view.y / image.y)
-    _smoke_root.position = (view - image * fit) * 0.5
+    var origin := (view - image * fit) * 0.5
+    _smoke_root.position = origin
     _smoke_root.scale = Vector2(fit, fit)
+    _birds_root.position = origin
+    _birds_root.scale = Vector2(fit, fit)
