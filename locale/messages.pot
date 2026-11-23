@@ -4486,10 +4486,6 @@ msgctxt "crafts.description"
 msgid "Weaves heavy sailcloth from plant fibers on a hand loom."
 msgstr ""
 
-msgctxt "crafts.description"
-msgid "The tally of the citizens turns into coins in the treasury."
-msgstr ""
-
 msgctxt "crafts.name"
 msgid "Aged Cheese"
 msgstr ""
@@ -5342,10 +5338,6 @@ msgctxt "crafts.name"
 msgid "Damascus Precision Instruments"
 msgstr ""
 
-msgctxt "crafts.name"
-msgid "Coin Collection"
-msgstr ""
-
 msgctxt "eras.name"
 msgid "Ancient"
 msgstr ""
@@ -5576,10 +5568,6 @@ msgstr ""
 
 msgctxt "modifiers.tech_modifiers.name"
 msgid "Woodcutter's camp: +10% production"
-msgstr ""
-
-msgctxt "modifiers.tech_modifiers.name"
-msgid "Assaying: +50% to the Mint's coinage share"
 msgstr ""
 
 msgctxt "priority_names"
@@ -9446,21 +9434,9 @@ msgctxt "professions.description"
 msgid "Collects mineral water at a spring catchment."
 msgstr ""
 
-msgctxt "professions.description"
-msgid "Strikes coins and checks the metal at the mint. One master does the work of both minter and assayer, so more of the poll tax reaches the treasury."
-msgstr ""
-
 #: data/technologies/ancient.json
 msgctxt "technologies.unlock_effects.name"
 msgid "Unlocks spring catchments for collecting mineral spring water."
-msgstr ""
-
-msgctxt "technologies.unlock_effects.name"
-msgid "Mint: +5% to the poll tax per worker"
-msgstr ""
-
-msgctxt "technologies.unlock_effects.name"
-msgid "Assaying: +50% to the Mint's coinage share"
 msgstr ""
 
 #: data/covers.json
@@ -9549,10 +9525,6 @@ msgctxt "buildings.description"
 msgid "Strands laid along a long covered lane are twisted into full-length ropes and cables."
 msgstr ""
 
-msgctxt "buildings.description"
-msgid "Strikes coins and assays the metal, adding to the tax collected."
-msgstr ""
-
 msgctxt "technologies.name"
 msgid "Rope Twisting"
 msgstr ""
@@ -9567,14 +9539,6 @@ msgstr ""
 
 msgctxt "technologies.description"
 msgid "Unlocks the ropewalk."
-msgstr ""
-
-msgctxt "technologies.description"
-msgid "Allows you to build the Mint.\nA Mint worker adds +5% to the poll tax."
-msgstr ""
-
-msgctxt "technologies.description"
-msgid "The master of the Mint now tests the metal as well as strikes it: +50% to his share of the poll tax.\nConsumes precision instruments."
 msgstr ""
 
 msgctxt "technologies.flavor"
@@ -9644,4 +9608,145 @@ msgstr ""
 
 msgctxt "technologies.flavor"
 msgid "A market at the edge of the known world is not the end of trade. Merchants who knew the stars and the carry of a hull sent their wares past the last road, to ports and courts no map of the region showed: the bargain was written in the ledger of the city, not on its fields. The caravanserai of the steppe and the counting houses of the monsoon coast kept the same book."
+msgstr ""
+
+msgid "Seigniorage"
+msgstr ""
+
+msgid "Tax Collection"
+msgstr ""
+
+msgid "Strike Copper Coins"
+msgstr ""
+
+msgid "Strike Silver Coins"
+msgstr ""
+
+msgid "Strike Gold Coins"
+msgstr ""
+
+msgctxt "technologies.name"
+msgid "Taxation"
+msgstr ""
+
+msgctxt "technologies.description"
+msgid "Allows you to collect taxes from the citizens and to build the tax yard.\nA staffed tax yard adds +5% to the poll tax."
+msgstr ""
+
+msgctxt "technologies.flavor"
+msgid "A granary means a surplus, and a surplus means an argument about whose it is. The tally of the fields and the herd turned a shared store into a due: a share set aside before the grain is divided, kept by those who count it and defended by those who no longer plough. Every settled people found the same answer — the levy in grain, in heads, in days of work — and with it the first office of the city."
+msgstr ""
+
+msgctxt "technologies.unlock_effects.name"
+msgid "Tax Yard: +5% to the poll tax per yard"
+msgstr ""
+
+msgctxt "buildings.name"
+msgid "Tax Yard"
+msgstr ""
+
+msgctxt "buildings.description"
+msgid "The yard where the dues of the citizens are tallied, weighed and carried into the treasury."
+msgstr ""
+
+msgctxt "professions.name"
+msgid "Tax Collector"
+msgstr ""
+
+msgctxt "professions.description"
+msgid "Takes the tally of the citizens in the tax yard, so that the poll tax is gathered in full and a little more reaches the treasury."
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Seigniorage"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Tax Collection"
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "The tax collectors tally the citizens and carry the dues into the treasury."
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Strike Copper Coins"
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Copper heated and struck into small change, worth more as coin than as metal."
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Strike Silver Coins"
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Silver struck into coin for the great payments of the city."
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Strike Gold Coins"
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Gold struck into the heaviest coin of the city, kept for its largest bargains."
+msgstr ""
+
+msgctxt "technologies.description"
+msgid "Allows you to build the Mint, which strikes coins for the city.\nEach batch of coin leaves a seigniorage in the treasury: the more metal a strike takes, the more coin the treasury keeps."
+msgstr ""
+
+msgctxt "technologies.description"
+msgid "The master of the Mint now tests the metal as well as strikes it: +50% to the seigniorage of the coins.\nConsumes precision instruments."
+msgstr ""
+
+msgctxt "technologies.unlock_effects.name"
+msgid "Mint: coins struck from copper, silver or gold pay a seigniorage"
+msgstr ""
+
+msgctxt "technologies.unlock_effects.name"
+msgid "Assaying: +50% to the Mint's seigniorage"
+msgstr ""
+
+msgctxt "professions.description"
+msgid "Strikes the coins of the city and assays the metal at the mint. Every batch of coin leaves a seigniorage in the treasury."
+msgstr ""
+
+msgctxt "buildings.description"
+msgid "Strikes the city's coins out of copper, silver or gold, and takes a seigniorage on every batch."
+msgstr ""
+
+msgid " + %s%% from the Tax Yard"
+msgstr ""
+
+msgctxt "modifiers.tech_modifiers.name"
+msgid "Assaying: +50% to the Mint's seigniorage"
+msgstr ""
+
+msgctxt "technologies.name"
+msgid "Banking"
+msgstr ""
+
+msgctxt "technologies.description"
+msgid "Tax income: +10%.\nInternal-market trade income: +10%.\nExternal-market trade income: +10%."
+msgstr ""
+
+msgctxt "technologies.flavor"
+msgid "Banking-like practices took different forms across history. In the ancient Near East, Mesopotamian temples made interest-bearing loans from their treasuries; Greek trapezitai at money-changing tables handled exchange and credit, while Roman argentarii managed payments, credit and exchange. Indian inscriptions record interest-bearing endowments entrusted to śreṇi guilds. In Tang China, guifang offered safekeeping services and feiqian certificates facilitated transfers. These were not modern banks, but their distinct services helped people manage wealth and move value farther than coin alone."
+msgstr ""
+
+msgctxt "modifiers.tech_modifiers.name"
+msgid "Tax income: +10%"
+msgstr ""
+
+msgctxt "modifiers.tech_modifiers.name"
+msgid "Internal-market trade income: +10%"
+msgstr ""
+
+msgctxt "modifiers.tech_modifiers.name"
+msgid "External-market trade income: +10%"
+msgstr ""
+
+msgid " × %.2f from researched technologies"
 msgstr ""

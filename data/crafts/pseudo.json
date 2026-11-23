@@ -21,14 +21,54 @@
       "description": "Scribes and scholars turn written material into knowledge that speeds up technology research."
     },
     {
-      "id": "coin_collection",
-      "name": "Coin Collection",
-      "produced_in": [ "mint" ],
+      // The dues of the citizens are paid in coin, not in goods, so the recipe spends no
+      // material. The virtual yield is the share of the poll tax the collectors add: one
+      // unit is +1% of the tax (see CityData.do_tick).
+      "id": "tax_collection",
+      "name": "Tax Collection",
+      "produced_in": [ "tax_yard" ],
       "resources": {  },
       "result": {  },
       "display_result": { "coinage": 5 },
       "time": 5.0,
-      "description": "The tally of the citizens turns into coins in the treasury."
+      "unlock_tech": "taxation",
+      "description": "The tax collectors tally the citizens and carry the dues into the treasury."
+    },
+    {
+      // A recipe without ingredients would mint coins out of nothing, so it waits for the
+      // metal: the block does not freeze the container, but the release of the seigniorage
+      // follows the progress of the charge (see CityData.do_tick).
+      "id": "strike_copper_coins",
+      "name": "Strike Copper Coins",
+      "produced_in": [ "mint" ],
+      "resources": { "copper": 20, "@smelting_fuel": 10 },
+      "result": {  },
+      "display_result": { "seigniorage": 6 },
+      "time": 10.0,
+      "unlock_tech": "coinage",
+      "description": "Copper heated and struck into small change, worth more as coin than as metal."
+    },
+    {
+      "id": "strike_silver_coins",
+      "name": "Strike Silver Coins",
+      "produced_in": [ "mint" ],
+      "resources": { "silver": 20, "@smelting_fuel": 10 },
+      "result": {  },
+      "display_result": { "seigniorage": 12 },
+      "time": 10.0,
+      "unlock_tech": "coinage",
+      "description": "Silver struck into coin for the great payments of the city."
+    },
+    {
+      "id": "strike_gold_coins",
+      "name": "Strike Gold Coins",
+      "produced_in": [ "mint" ],
+      "resources": { "gold": 20, "@smelting_fuel": 10 },
+      "result": {  },
+      "display_result": { "seigniorage": 20 },
+      "time": 10.0,
+      "unlock_tech": "coinage",
+      "description": "Gold struck into the heaviest coin of the city, kept for its largest bargains."
     }
   ]
 }

@@ -305,6 +305,10 @@ const RESOURCE_FIELDS := {
     "improved_by": LEAF,
     "unlock_improvement": LEAF,
     "unlock_tech": LEAF,
+    # The virtual yields (data/products/pseudo.json): science, the share of the collected
+    # tax, the seigniorage of the struck coin. They are counted per craft cycle and are never
+    # stored, so a recipe declaring one of them skips the check of the stockable result.
+    "virtual": LEAF,
     # The fame of a good: the three optional tiers and the base good of a prestige one.
     "reputation": PRODUCT_FAME_TIER_FIELDS,
     "brand": PRODUCT_FAME_TIER_FIELDS,
@@ -640,6 +644,7 @@ const GAME_BALANCE_BLOCKS := {
     },
     "logistics": {
         "transit_time_per_hex": LEAF,
+        "sea_trade_flow_rate": LEAF,
     },
     "towns": {
         "town_storage_limit": LEAF,

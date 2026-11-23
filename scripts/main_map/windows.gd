@@ -48,7 +48,7 @@ func open_town_ui(row: int, col: int):
     var town = find_town_at(row, col)
     if town == null:
         return
-    town_ui.open_town(town, town_manager.is_trade_available(town))
+    town_ui.open_town(town, town_manager.is_trade_available(town, tile_data, map_rows, map_cols))
     # The HUD stays visible so the player can see the treasury while trading, but its
     # buttons are disabled (see _process). The control panel of the hex is not needed
     # while the interface of the town is open.
@@ -73,7 +73,7 @@ func get_trade_partners() -> Array:
             "col": col,
             "color": town.get("border_color", []),
             "distance": HexUtils.hex_distance(city_row, city_col, row, col),
-            "trade_available": town_manager.is_trade_available(town),
+            "trade_available": town_manager.is_trade_available(town, tile_data, map_rows, map_cols),
         })
     return result
 
@@ -202,9 +202,13 @@ func _on_research_completed(tech_id: String):
         hud.show_message(
                 tr("A mountain spring is revealed — an aqueduct can bring its water to the city."),
                 GameData.HUD_MESSAGE_IMPORTANT)
-    # Cartography changes which hexes the highlighting may cover.
+    # Cartography and Compass change which hexes the chunk highlighting covers.
+    if expansion_manager != null and expansion_manager.current_hover_hex != null:
+        var hh = expansion_manager.current_hover_hex
+        expansion_manager.update_hovered_chunk(int(hh.row), int(hh.col))
     highlight_layer.queue_redraw()
     _redraw_progress_layer()
+    refresh_open_town_trade_state()
     # The window of the learned technology stops the simulation: the player must not
     # interact with the map while it is open. The owner recomputes the flag after the
     # window is shown, so an active pause or a menu already holding the world is kept.

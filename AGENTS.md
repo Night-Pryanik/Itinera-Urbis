@@ -256,6 +256,12 @@ A tooltip of the HUD belongs to the interface of the map and must not outlive it
 
 ---
 
+## Technology Icon Assets
+
+The instructions in [`icons/tech/AGENTS.md`](icons/tech/AGENTS.md) are mandatory whenever creating, editing, replacing, or reviewing a technology icon. Read and follow them before changing anything under `icons/tech/`. The canonical base is `icons/tech/template.png`: compose the central illustration over this original asset; never redraw or alter the template.
+
+---
+
 ## Itinera Urbis: Historical, Geographical, and Cultural Context
 
 ### The Fundamental Principle

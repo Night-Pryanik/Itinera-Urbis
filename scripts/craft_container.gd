@@ -66,6 +66,11 @@ var release_fractional: Dictionary = {}
 # exactly full_amount, while a tick can pay out only whole units — the debt is settled on
 # completion (see the end of tick()).
 var released: Dictionary = {}
+# What the current cycle has already paid out for a recipe whose result is virtual (the
+# seigniorage of a coin strike): key -> int. The cycle owes exactly the same number as a
+# good would, and the debt is settled on completion. It is reset by reset() and saved with
+# the rest of the container, so a loaded game neither loses nor repeats a payment.
+var virtual_paid: Dictionary = {}
 
 # Constructs the container by the recipe. If slot_data is passed — it is used
 # as the restored state (from the save). Otherwise — an empty container.
@@ -97,6 +102,8 @@ func _init(recipe: Dictionary = {}, slot_data: Dictionary = {}):
         release_fractional = saved_release if saved_release is Dictionary else {}
         var saved_released = slot_data.get("released", {})
         released = saved_released if saved_released is Dictionary else {}
+        var saved_virtual = slot_data.get("virtual_paid", {})
+        virtual_paid = saved_virtual if saved_virtual is Dictionary else {}
 
 # Initializes the result cache and the sub-unit accumulator.
 func _init_release_state(recipe: Dictionary):
@@ -281,6 +288,23 @@ func tick(delta: float, is_active: bool, quality_priority: String = "best",
         result["completed"] = true
     return result
 
+# The progress of the cycle by the ingredients (0..1), and whether an ingredient that still
+# needs units has nothing left to take. They are read by the Mint: a strike pays its
+# seigniorage only once the metal has actually been charged.
+func progress() -> float:
+    return _fill_progress()
+
+func is_starving() -> bool:
+    return _is_starving()
+
+# What the current cycle has already paid out for the virtual yield `key` (see virtual_paid),
+# and the recording of a payment. They are read by CityData.tick_mint_seigniorage.
+func get_virtual_paid(key: String) -> int:
+    return int(virtual_paid.get(key, 0))
+
+func add_virtual_paid(key: String, amount: int) -> void:
+    virtual_paid[key] = int(virtual_paid.get(key, 0)) + maxi(0, amount)
+
 # The progress of the cycle by the ingredients: min over the slots of filled/required (1.0 — every
 # ingredient is gathered). It is used by the completion check: the time may have passed while the
 # raw materials were missing, so the fill has the last word.
@@ -333,6 +357,8 @@ func reset():
         release_fractional[pid] = 0.0
     for pid in released:
         released[pid] = 0
+    for key in virtual_paid:
+        virtual_paid[key] = 0
 
 # The quality of the result at the moment of the call — it is applied to each portion of the
 # output. The base ingredients give the weighted average of their qualities; the additional
@@ -446,7 +472,8 @@ func serialize() -> Dictionary:
         "elapsed": elapsed,
         "slots": ingredient_slots.duplicate(true),
         "release_fractional": release_fractional.duplicate(true),
-        "released": released.duplicate(true)
+        "released": released.duplicate(true),
+        "virtual_paid": virtual_paid.duplicate(true)
     }
 
 # Restoration of the state from the previously serialized data. On a mismatch
@@ -482,6 +509,10 @@ func _restore_from_slot_data(recipe: Dictionary, slot_data: Dictionary):
         # We merge by pid — we keep only the known result_products.
         release_fractional[pid] = float(saved_release.get(pid, 0.0)) if saved_release is Dictionary else 0.0
         released[pid] = int(saved_released.get(pid, 0)) if saved_released is Dictionary else 0
+    # The virtual payouts of the current cycle (the seigniorage of a strike) survive the load
+    # next to the released goods: a reloaded game neither loses nor repeats a payment.
+    var saved_virtual_paid = slot_data.get("virtual_paid", {})
+    virtual_paid = saved_virtual_paid.duplicate(true) if saved_virtual_paid is Dictionary else {}
 
 # --- BUILDING THE SLOTS FROM THE RECIPE ---
 # The resources are normalized through GameData.craft_alternatives(): an array of OR-groups

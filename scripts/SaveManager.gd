@@ -300,6 +300,8 @@ func _collect_data(main_map: Node) -> Dictionary:
         "active_builds": build_manager.active_builds if build_manager else {},
         "active_building_builds": build_manager.active_building_builds if build_manager else {},
         "active_expansion_builds": build_manager.active_expansion_builds if build_manager else {},
+        "scouting_expeditions": main_map.serialize_scouting_expeditions() \
+                if main_map.has_method("serialize_scouting_expeditions") else [],
         # The unfinished staged projects (the queue of road segments). It is
         # the queue itself that is saved, and not the road segments: the segments,
         # as all the other roads, are restored from the hex flags.

@@ -396,6 +396,18 @@ func open_town(town: Dictionary, trade_available: bool = true):
     _center_window()
     show()
 
+# Updates trade availability and route-capacity warnings while the window is open
+# (for example, when a road, road upgrade, harbor, or Compass finishes).
+func refresh_trade_route(trade_available: bool) -> void:
+    if _town == null:
+        return
+    if _trade_available != trade_available:
+        _trade_available = trade_available
+        _refresh()
+        return
+    if not _selected_key.is_empty():
+        _update_warning_badge(_current_amount())
+
 # Updates the window contents for the current town.
 func _refresh():
     if _town == null:
@@ -406,10 +418,13 @@ func _refresh():
     title_label.text = str(_town.get("name", tr("Town")))
     _update_treasury_label()
     if status_label:
-        # The trade status — for now only a label. An empty row when trade is
-        # available: "everything is fine, there is nothing to report".
-        status_label.text = "" if _trade_available \
-                else tr("Trade unavailable: there is no road from the city to this town")
+        # The trade status — an empty row when trade is available.
+        if _trade_available:
+            status_label.text = ""
+        elif CityData.is_tech_unlocked("compass"):
+            status_label.text = tr("Trade unavailable: there is no road or sea harbor route from the city to this town")
+        else:
+            status_label.text = tr("Trade unavailable: there is no road from the city to this town")
         status_label.visible = not status_label.text.is_empty()
     _row_nodes.clear()
     _buy_rows.clear()

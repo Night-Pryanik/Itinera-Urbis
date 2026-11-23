@@ -1,8 +1,8 @@
 # Itinera Urbis: Hearth to Horizon — Design document
 
-**Version:** 2026-11-20  
-**Repository:** https://github.com/Night-Pryanik/Itinera-Urbis  
-**Engine:** Godot (GDScript)  
+**Version:** 2026-11-22<br>
+**Repository:** https://github.com/Night-Pryanik/Itinera-Urbis<br>
+**Engine:** Godot (GDScript)<br>
 **Purpose of the document:** a canonical description of the game for continuing development (including by a new assistant) without reading the whole chat history. The code and JSON in the repository are the source of truth for the implementation; this file is the source of truth for the *intent*.
 
 ---
@@ -28,11 +28,17 @@ The author's old notes (2014–2019) described a more "urban-planning" variant (
 
 ## Worldview and Historical Context
 
-### 1. The World of Itinera Urbis: Hearth to Horizon
+### 1. An Alternate World, Not an Alternate Earth
 
-Itinera Urbis: Hearth to Horizon is an economic strategy game about the development of human civilization as a whole. Its world is built around an intentionally alternate geography, an alternate historical context, and a flexible cultural identity.
+Itinera Urbis: Hearth to Horizon is an economic strategy game about the development of human civilization as a whole, set in an entirely fictional world rather than on Earth. Its geography, place names, natural environment, and geology are not bound by their real-world counterparts.
 
 The game does not represent any particular real-world geographical region or civilization. It is neither a simulation of Europe nor a reconstruction of the Mediterranean, the Middle East, or any other specific part of the world. There are no direct equivalents of real-world historical or geographical regions on the game map.
+
+Cultures, names, plants, animals, and mineral resources associated with different continents and climatic zones on Earth may naturally coexist in this world. Their distribution, the location of deposits, and the characteristics of the natural environment are determined by the world's design, not by Earth's geography.
+
+Earth's history and science serve as sources of knowledge, ideas, and inspiration, not as mandatory constraints. Historical technologies, materials, and production processes may be used, combined, and adapted to suit the needs of the game world. Intentional departures from Earth's geography, geology, and historical chronology are acceptable when they make the world more interesting, enrich gameplay mechanics, or create new economic and strategic opportunities.
+
+**Earth's history is a reference, not a specification.**
 
 Most importantly, **Europe is not the historical, geographical, or cultural center of Itinera Urbis: Hearth to Horizon**. European history is one source of historical knowledge among many, but it does not provide the universal framework through which the game's world is understood.
 

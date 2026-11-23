@@ -372,11 +372,11 @@ var science_buildings_rate_per_sec: float = 0.0
 # Before the first tick — an empty dictionary (the tooltip shows only the base).
 var science_breakdown: Dictionary = {}
 
-# The share of the poll tax added by staffed Mints. One virtual unit of "coinage" from a
-# building's additional_yield is +1% of the tax. It is recalculated from scratch in do_tick()
+# The share of the poll tax added by staffed Tax Yards. One virtual unit of "coinage" of the
+# recipe "tax_collection" is +1% of the tax. It is recalculated from scratch in do_tick()
 # before the taxes are collected, so the collection and the tooltip of the treasury use the
 # same value. The bonus belongs to the staffed building, not to the technology that unlocked it.
-var mint_tax_share: float = 0.0
+var tax_collector_share: float = 0.0
 
 # --- THE LABOUR ---
 # The labour = the rate of the work of the city. 1 citizen = 1 labour/sec.
@@ -427,7 +427,7 @@ func setup():
     research_science_accumulated = 0.0
     science_buildings_rate_per_sec = 0.0
     science_breakdown = {}
-    mint_tax_share = 0.0
+    tax_collector_share = 0.0
     current_era_index = 0
     last_research_messages = []
     city_name = ""
@@ -525,6 +525,9 @@ func spend_treasury(amount: int) -> bool:
     return true
 
 # --- THE TAXES ---
+# The dues of the citizens are collected only once the Taxation technology is learned: a
+# city that has not yet learned to tally its surplus takes nothing from its people, and the
+# row "Taxes" is absent from the breakdown of the treasury.
 # Every citizen pays the base tax into the treasury for EVERY tick of the simulation
 # (the value is base_tax_per_citizen in data/game_balance.json). The single point of
 # the collection is collect_taxes(), it is called by do_tick().
@@ -538,6 +541,8 @@ func spend_treasury(amount: int) -> bool:
 # remain the same in any language, and a change of the language does not require a rebuild
 # of the accumulators of the treasury.
 const TAX_INCOME_TYPE: String = "Taxes"
+# The technology that opens the collection of the taxes and the Tax Yard.
+const TAXATION_TECH: String = "taxation"
 # The source of the tax in the FLAT accumulator of the incomes (treasury_income_accum ->
 # treasury_income_snapshot, see record_treasury_income). A separate name — so that
 # the collection of the taxes is not mixed with the market income from "All citizens" in the flat
@@ -549,28 +554,112 @@ const TAX_INCOME_SOURCE: String = "Poll tax"
 # tr("Population consumption") right in worker_manager, and it changed together with the
 # language — in the middle of the accumulation window the old and the new key would not have matched.
 const POPULATION_INCOME_TYPE: String = "Population consumption"
+# The top-level type of the income the Mint takes from striking coins: the difference between
+# the face value of the coins and the metal spent on them, paid into the treasury. Like the two
+# above, the constant stores the English text and is translated where it is drawn.
+const SEIGNIORAGE_INCOME_TYPE: String = "Seigniorage"
+
+# Whether the citizens pay taxes yet. Only the learned Taxation technology opens the collection;
+# without it the treasury takes nothing from the population, and the "Taxes" row of the
+# breakdown is not drawn at all.
+func are_taxes_enabled() -> bool:
+    return is_tech_unlocked(TAXATION_TECH)
+
+# Percentage modifiers with the same target compound across researched technologies.
+func _get_tech_percent_modifier_multiplier(target: String) -> float:
+    var multiplier := 1.0
+    for tm in GameData.modifiers.get("tech_modifiers", []):
+        var tech_id := str(tm.get("tech_id", ""))
+        if tech_id == "" or not is_tech_unlocked(tech_id):
+            continue
+        for mod in tm.get("modifiers", []):
+            if str(mod.get("target", "")) != target:
+                continue
+            if str(mod.get("type", "percent")) != "percent":
+                continue
+            multiplier *= 1.0 + float(mod.get("value", 0.0)) / 100.0
+    return multiplier
 
 # The base tax from one citizen for one tick of the simulation
 # (data/game_balance.json, the field base_tax_per_citizen).
 func get_base_tax_per_citizen() -> int:
     return int(GameData.game_balance.get("base_tax_per_citizen", 2))
 
-# The tax income for one tick: the base tax × the population, scaled by the share of the
-# staffed Mints. Rounded to whole coins because the treasury is always an integer.
+# The researched technology factor is also used to explain the tax rate in the treasury tooltip.
+func get_tax_income_technology_multiplier() -> float:
+    return _get_tech_percent_modifier_multiplier("tax_income")
+
+# The tax income for one tick: the base tax × the population, scaled by staffed Tax Yards
+# and researched tax modifiers. Rounded to whole coins because the treasury is an integer.
 # The single source of truth for the collection (collect_taxes) and for the row "Taxes" in the
-# tooltip of the treasury (worker_manager._fill_tax_income).
+# tooltip of the treasury (worker_manager._fill_tax_income). Zero until Taxation is learned.
 func get_tax_income_per_tick() -> int:
+    if not are_taxes_enabled():
+        return 0
     var base: int = get_base_tax_per_citizen() * total_population
-    return int(round(float(base) * (1.0 + mint_tax_share)))
+    var tax_multiplier := get_tax_income_technology_multiplier()
+    return int(round(float(base) * (1.0 + tax_collector_share) * tax_multiplier))
 
 # The collection of the taxes for the tick: every citizen pays the base tax into the treasury.
-# It returns the actually collected amount (0 — there is no one to pay).
+# It returns the actually collected amount (0 — there is no one to pay, or the city has not
+# learned Taxation yet).
 func collect_taxes() -> int:
     var amount: int = get_tax_income_per_tick()
     if amount <= 0:
         return 0
     add_treasury(amount)
     record_treasury_income(TAX_INCOME_SOURCE, amount)
+    return amount
+
+# --- THE SEIGNIORAGE OF THE MINT ---
+# The Mint does not sell a good: it melts metal into coin, and the treasury keeps the
+# difference between the face value of the struck coins and the metal spent on them. The
+# difference is the virtual yield "seigniorage" (data/products/pseudo.json): one unit is one
+# coin, paid into the treasury over the cycle of the strike. The amount belongs to the recipe
+# (data/crafts/pseudo.json) rather than to the building, because the metal decides it: a
+# batch of gold coin is worth far more than a batch of copper one.
+#
+# The recipe spends real metal, so a batch takes seigniorage only once the metal has been
+# charged at least as far as the output has been paid out (see do_tick) — otherwise the Mint
+# would mint coins out of nothing.
+
+const SEIGNIORAGE_YIELD_KEY: String = "seigniorage"
+
+# The virtual yield of the Tax Yard (data/crafts/pseudo.json, the recipe "tax_collection"):
+# the share of the poll tax the collectors add, one unit — one percent.
+const CITY_COINAGE_YIELD_KEY: String = "coinage"
+
+# The seigniorage one strike pays per craft cycle, in coins: the virtual yield of the recipe
+# scaled by the whole output multiplier of the building (the worker's tools, the
+# specialization of the city and the technology bonuses — the same factors that act on the
+# goods of every other building).
+func get_seigniorage_per_cycle(recipe: Dictionary, output_multiplier: float) -> int:
+    var units := float(recipe.get("display_result", {}).get(SEIGNIORAGE_YIELD_KEY, 0))
+    return int(round(units * output_multiplier))
+
+# The seigniorage the strike of the current tick pays: per_cycle × the share of the metal the
+# container has already charged, minus what its cycle has paid so far. The whole cycle pays
+# exactly per_cycle, because the last tick of the cycle settles the debt — the same rule the
+# gradual release of a good follows. Until the recipe has charged its first unit of metal the
+# container is "starving" and nothing is paid: a strike without metal would mint coins out of
+# nothing.
+func tick_mint_seigniorage(container: CraftContainer, per_cycle: int, complete: bool) -> int:
+    if container == null or per_cycle <= 0:
+        return 0
+    var paid: int = container.get_virtual_paid(SEIGNIORAGE_YIELD_KEY)
+    if paid >= per_cycle:
+        return 0
+    var due: int = 0
+    if complete:
+        due = per_cycle
+    elif not container.is_starving():
+        due = int(floor(float(per_cycle) * container.progress() + 1e-9))
+    var amount: int = mini(due, per_cycle) - paid
+    if amount <= 0:
+        return 0
+    container.add_virtual_paid(SEIGNIORAGE_YIELD_KEY, amount)
+    add_treasury(amount)
+    record_treasury_income(SEIGNIORAGE_INCOME_TYPE, amount)
     return amount
 
 # --- THE UPKEEP OF THE BUILT ENTITIES ---
@@ -778,9 +867,9 @@ func _format_treasury_rate(value: float) -> String:
 
 # Returns the price at which the internal market buys a unit of the goods pid from the city
 # (in the coins of the treasury). It is a share of the base price of the goods (price from
-# data/products/*.json), set by the multiplier internal_market_price_multiplier
-# in data/game_balance.json, with the rounding
-# to the nearest whole number. It returns 0 for the goods without a price.
+# data/products/*.json), set by internal_market_price_multiplier in data/game_balance.json,
+# city specializations and researched technology modifiers. It rounds to whole coins and returns 0
+# for goods without a price.
 #
 # quality_id is the quality KEY of the unit being WRITTEN OFF (""/"common" — the ordinary one):
 # a plain good is multiplied by the multiplier of its level (data/qualities.json,
@@ -798,11 +887,11 @@ func get_internal_market_price(pid: String, quality_id: String = "") -> int:
     if base_price <= 0.0:
         return 0
     var mult = float(GameData.game_balance.get("internal_market_price_multiplier", 1.0))
-    # The domestic market specialization: the price the city gets for its goods on its own market.
-    # It is applied here and nowhere else, so the row "Price" of the tab "Trade", the income of the
-    # treasury and the plan of the market all read the same number.
+    # The domestic-market specialization and researched technology modifiers act here, so the
+    # "Price" row of the trade tab, treasury income and the market plan all use the same amount.
     var spec_mult := get_specialization_multiplier(SPEC_INTERNAL_MARKET_PRICE)
-    var market_base := int(round(base_price * mult * spec_mult))
+    var tech_mult := _get_tech_percent_modifier_multiplier("internal_market_trade_income")
+    var market_base := int(round(base_price * mult * spec_mult * tech_mult))
     if not GameData.parse_generated_id(pid).is_empty():
         # The ratio of the two prices, so that the dynamic market multipliers of the parts cancel
         # out and only the share of the quality remains.
@@ -1722,7 +1811,7 @@ func do_tick():
     # science_breakdown.
     science_buildings_rate_per_sec = 0.0
     var science_breakdown_buildings: Array = []
-    mint_tax_share = 0.0
+    tax_collector_share = 0.0
 
     # The goods a taken branch speeds the making of, and by how much. The map is built once per tick
     # because the loop of the buildings reads it for every slot; it is empty for a city whose branches
@@ -1891,15 +1980,32 @@ func do_tick():
                 }
                 science_breakdown_buildings.append(science_bld_entry)
 
-            # --- THE RECIPE "COIN COLLECTION": a staffed Mint raises the poll tax ---
-            # The yield "coinage" is virtual: one unit is +1% of the tax, not a good in storage.
-            # It is scaled by the building's whole output multiplier: the worker's consumption
-            # bonus (precision instruments), the building production specialization and the
-            # technology bonuses all act on the share as they act on the goods of the building.
-            # The share is counted per slot, so a Mint keeps exactly one coin collection slot.
-            if recipe_id == "coin_collection":
-                var coinage_units := float(GameData.get_building_additional_yield(bld.get("id", "")).get("coinage", 0))
-                mint_tax_share += coinage_units * 0.01 * output_multiplier
+            # --- THE VIRTUAL YIELDS OF THE RECIPE (data/crafts/pseudo.json) ---
+            # Some recipes produce no good at all: their display_result holds a virtual product
+            # instead (data/products/pseudo.json, "virtual"). The container never puts such a
+            # product into the storage, so its yield is credited here, from the recipe and the
+            # building's whole output multiplier — the same factors that act on the goods of
+            # every other building.
+            var recipe_data := GameData.get_craft(recipe_id)
+            var recipe_yield: Dictionary = recipe_data.get("display_result", {})
+
+            # THE RECIPE "TAX COLLECTION": a staffed Tax Yard raises the poll tax.
+            # One unit of "coinage" is +1% of the tax, not a good in storage. The share is
+            # counted per slot: a second yard adds its own.
+            if recipe_yield.has(CITY_COINAGE_YIELD_KEY):
+                var coinage_units := float(recipe_yield[CITY_COINAGE_YIELD_KEY])
+                tax_collector_share += coinage_units * 0.01 * output_multiplier
+
+            # THE STRIKE OF THE MINT: the seigniorage of the struck coins.
+            # The Mint spends metal on coins and pays the difference between the face value of
+            # the coin and the metal into the treasury (data/products/pseudo.json,
+            # "seigniorage"). The container has no result of its own for such a recipe, so the
+            # seigniorage is paid by CityData.tick_mint_seigniorage on the progress of the
+            # charge: no metal charged — no coin paid.
+            if recipe_yield.has(SEIGNIORAGE_YIELD_KEY):
+                tick_mint_seigniorage(container,
+                        get_seigniorage_per_cycle(recipe_data, output_multiplier),
+                        bool(tick_res.get("completed", false)))
 
             # --- THE GRADUAL RELEASE OF THE RESULT (every tick) ---
             # Each "portion" of the release has the quality, calculated by
@@ -3912,15 +4018,15 @@ func get_production_product_multipliers() -> Dictionary:
         out[pid] = 1.0 + get_specialization_product_share(SPEC_BUILDING_PRODUCTION, str(pid))
     return out
 
-# What a town pays for one unit of a good of the city: the branches of trade, the branches scoped to
-# this very good, and the fame of the good itself (challenge_manager.gd). The three multiply, so a
-# general branch and the reputation of one good are worth more together than either alone.
+# What a town pays for one unit of a city good: trade specializations, its fame and researched
+# technology modifiers. The price factors multiply, so their combined value exceeds any one alone.
 func get_trade_sell_price_multiplier(pid: String) -> float:
     var manager := _challenge_manager()
     var fame := float(manager.get_fame_trade_price_share(pid)) if manager != null else 0.0
     return maxf(0.1, get_specialization_multiplier(SPEC_TRADE_SELL_PRICE)) \
             * maxf(0.1, 1.0 + get_specialization_product_share(SPEC_TRADE_SELL_PRICE, pid)) \
-            * maxf(0.1, 1.0 + fame)
+            * maxf(0.1, 1.0 + fame) \
+            * _get_tech_percent_modifier_multiplier("external_market_trade_income")
 
 # The non-numeric consequences of a branch: a building, a recipe, a mechanic. They are text lines of
 # the data, the code does not act on them, and only the tab "Specialization" shows them.

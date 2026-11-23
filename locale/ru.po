@@ -4561,10 +4561,6 @@ msgctxt "crafts.description"
 msgid "Weaves heavy sailcloth from plant fibers on a hand loom."
 msgstr "Ткёт плотную парусину из растительных волокон на ручном станке."
 
-msgctxt "crafts.description"
-msgid "The tally of the citizens turns into coins in the treasury."
-msgstr "Счёт жителей превращается в монеты в казне."
-
 msgctxt "crafts.name"
 msgid "Aged Cheese"
 msgstr "Выдержанный сыр"
@@ -5417,10 +5413,6 @@ msgctxt "crafts.name"
 msgid "Damascus Precision Instruments"
 msgstr "Дамасские точные инструменты"
 
-msgctxt "crafts.name"
-msgid "Coin Collection"
-msgstr "Сбор подати"
-
 msgctxt "eras.name"
 msgid "Ancient"
 msgstr "Древняя"
@@ -5652,10 +5644,6 @@ msgstr "Снижает вклад расстояния от города в ст
 msgctxt "modifiers.tech_modifiers.name"
 msgid "Woodcutter's camp: +10% production"
 msgstr "Лесная делянка: +10% к производству"
-
-msgctxt "modifiers.tech_modifiers.name"
-msgid "Assaying: +50% to the Mint's coinage share"
-msgstr "Пробирное дело: +50% к доле чеканки"
 
 msgctxt "priority_names"
 msgid "Best quality"
@@ -9520,22 +9508,10 @@ msgctxt "professions.description"
 msgid "Collects mineral water at a spring catchment."
 msgstr "Набирает минеральную воду из каптажа."
 
-msgctxt "professions.description"
-msgid "Strikes coins and checks the metal at the mint. One master does the work of both minter and assayer, so more of the poll tax reaches the treasury."
-msgstr "Чеканит монеты и проверяет металл в монетном дворе. Один мастер совмещает работу чеканщика и пробирера, поэтому в казну поступает больше подушной подати."
-
 #: data/technologies/ancient.json
 msgctxt "technologies.unlock_effects.name"
 msgid "Unlocks spring catchments for collecting mineral spring water."
 msgstr "Открывает строительство каптажей для сбора минеральной воды."
-
-msgctxt "technologies.unlock_effects.name"
-msgid "Mint: +5% to the poll tax per worker"
-msgstr "Монетный двор: +5% к подушной подати за работника"
-
-msgctxt "technologies.unlock_effects.name"
-msgid "Assaying: +50% to the Mint's coinage share"
-msgstr "Пробирное дело: +50% к доле чеканки"
 
 #: data/covers.json
 msgctxt "covers.name"
@@ -9623,10 +9599,6 @@ msgctxt "buildings.description"
 msgid "Strands laid along a long covered lane are twisted into full-length ropes and cables."
 msgstr "Пряди, уложенные вдоль длинного крытого двора, скручивают на всю длину каната или троса."
 
-msgctxt "buildings.description"
-msgid "Strikes coins and assays the metal, adding to the tax collected."
-msgstr "Чеканит монеты и проверяет пробу металла, увеличивая собранную подать."
-
 msgctxt "technologies.name"
 msgid "Rope Twisting"
 msgstr "Витьё канатов"
@@ -9642,14 +9614,6 @@ msgstr "Пробирное дело"
 msgctxt "technologies.description"
 msgid "Unlocks the ropewalk."
 msgstr "Открывает канатный двор."
-
-msgctxt "technologies.description"
-msgid "Allows you to build the Mint.\nA Mint worker adds +5% to the poll tax."
-msgstr "Позволяет строить монетный двор.\nРаботник монетного двора добавляет +5% к подушной подати."
-
-msgctxt "technologies.description"
-msgid "The master of the Mint now tests the metal as well as strikes it: +50% to his share of the poll tax.\nConsumes precision instruments."
-msgstr "Мастер монетного двора теперь не только чеканит монеты, но и проверяет металл: +50% к его доле подушной подати.\nПотребляет точные инструменты."
 
 msgctxt "technologies.flavor"
 msgid "Yarns were spun up into strands and then laid together with a counter-twist. A long covered lane let a ropery stretch the strands from end to end and walk back as they combined, making ropes far longer and thicker than a household shed could twist. Ropewalks became a familiar part of medieval shipbuilding and dockyard work."
@@ -9719,3 +9683,184 @@ msgstr "Знание, открывающее путь к рынкам за пр�
 msgctxt "technologies.flavor"
 msgid "A market at the edge of the known world is not the end of trade. Merchants who knew the stars and the carry of a hull sent their wares past the last road, to ports and courts no map of the region showed: the bargain was written in the ledger of the city, not on its fields. The caravanserai of the steppe and the counting houses of the monsoon coast kept the same book."
 msgstr "Рынок на краю известного мира — ещё не конец торговли. Купцы, знавшие звёзды и груз судна, отправляли товары дальше последней дороги, в порты и дворы, которых не было ни на одной карте региона: сделка записывалась в книгу города, а не на его полях. Караван-сарай степи и счётные конторы муссонного побережья вели одну и ту же книгу."
+
+msgctxt "technologies.name"
+msgid "Compass"
+msgstr "Компас"
+
+msgctxt "technologies.description"
+msgid "Fishing boats: +25% production.\nScouting: up to 7 tiles per area, up to 2 simultaneous expeditions, -30% distance surcharge on scouting cost, and +25% maximum map scroll distance from the city.\nAllows sea trade with coastal towns through harbors without a road."
+msgstr "Рыбацкие лодки: +25% к производству.\nРазведка: до 7 гексов в области, до 2 одновременных экспедиций, −30% к надбавке за дальность в стоимости разведки и +25% к максимальной дальности прокрутки карты от города.\nПозволяет вести морскую торговлю с прибрежными городками через пристани без сухопутной дороги."
+
+msgctxt "technologies.flavor"
+msgid "A magnetized steel needle balanced in a graduated bowl keeps a steady bearing under fog, clouds, and forest canopy alike. Described in Song-dynasty Chinese manuals for both land surveyors and mariners and carried across the Indian Ocean and Mediterranean, the magnetic compass turned open water and trackless wilderness into charted routes."
+msgstr "Намагниченная стальная стрелка в чаше с делениями удерживает верный курс в тумане, под сплошной облачностью и под пологом леса. Описанный в трактатах эпохи Сун для землемеров и мореходов и распространившийся по Индийскому океану и Средиземноморью, магнитный компас превратил открытую воду и бездорожную глушь в размеченные маршруты."
+
+msgctxt "technologies.unlock_effects.name"
+msgid "Allows sea trade with coastal towns through harbors without a road"
+msgstr "Позволяет торговать по морю с прибрежными городками через пристани без дороги"
+
+msgctxt "modifiers.tech_modifiers.name"
+msgid "Fishing boats: +25% production"
+msgstr "Рыбацкие лодки: +25% к производству"
+
+msgctxt "modifiers.tech_modifiers.name"
+msgid "Reduces the effect of distance from the city on scouting cost by 30%"
+msgstr "Снижает влияние расстояния от города на стоимость разведки на 30%"
+
+msgctxt "modifiers.tech_modifiers.name"
+msgid "Scouting: up to 7 tiles per area, up to 2 simultaneous expeditions, +25% map scroll range"
+msgstr "Разведка: до 7 гексов в области, до 2 одновременных экспедиций, +25% к дальности прокрутки карты"
+
+msgid "Sea route to the city: %d water hexes, %.1f units/sec"
+msgstr "Морской маршрут до города: %d водных гексов, %.1f ед./сек"
+
+msgid " (trade unavailable: no road or sea harbor route to the town)"
+msgstr " (торговля недоступна: нет дороги или морского пути через пристани к городку)"
+
+msgid "Build a land road from the city to the town%s"
+msgstr "Проложить сухопутную дорогу от города к городку%s"
+
+msgid "Trade unavailable: there is no road or sea harbor route from the city to this town"
+msgstr "Торговля недоступна: от города к этому городку нет дороги или морского маршрута через пристани"
+
+msgid "Seigniorage"
+msgstr "Сеньораж"
+
+msgid "Tax Collection"
+msgstr "Сбор податей"
+
+msgid "Strike Copper Coins"
+msgstr "Чеканка медных монет"
+
+msgid "Strike Silver Coins"
+msgstr "Чеканка серебряных монет"
+
+msgid "Strike Gold Coins"
+msgstr "Чеканка золотых монет"
+
+msgctxt "technologies.name"
+msgid "Taxation"
+msgstr "Налогообложение"
+
+msgctxt "technologies.description"
+msgid "Allows you to collect taxes from the citizens and to build the tax yard.\nA staffed tax yard adds +5% to the poll tax."
+msgstr "Позволяет собирать налоги с жителей и строить податный двор.\nУкомплектованный податный двор добавляет +5% к подушному налогу."
+
+msgctxt "technologies.flavor"
+msgid "A granary means a surplus, and a surplus means an argument about whose it is. The tally of the fields and the herd turned a shared store into a due: a share set aside before the grain is divided, kept by those who count it and defended by those who no longer plough. Every settled people found the same answer — the levy in grain, in heads, in days of work — and with it the first office of the city."
+msgstr "Амбар означает излишек, а излишек — спор о том, чей он. Учёт полей и стад превратил общий запас в повинность: долю, отложенную прежде, чем делят зерно, хранимую теми, кто считает, и защищаемую теми, кто уже не пашет. Каждый оседлый народ находил один и тот же ответ — побор зерном, с души, днями работы, — а вместе с ним и первую должность города."
+
+msgctxt "technologies.unlock_effects.name"
+msgid "Tax Yard: +5% to the poll tax per yard"
+msgstr "Податный двор: +5% к подушному налогу за двор"
+
+msgctxt "buildings.name"
+msgid "Tax Yard"
+msgstr "Податный двор"
+
+msgctxt "buildings.description"
+msgid "The yard where the dues of the citizens are tallied, weighed and carried into the treasury."
+msgstr "Двор, где считают и отвешивают подати горожан, а затем относят их в казну."
+
+msgctxt "professions.name"
+msgid "Tax Collector"
+msgstr "Сборщик податей"
+
+msgctxt "professions.description"
+msgid "Takes the tally of the citizens in the tax yard, so that the poll tax is gathered in full and a little more reaches the treasury."
+msgstr "Ведёт счёт горожанам на податном дворе, чтобы подушный налог собирался сполна и до казны доходило немного больше."
+
+msgctxt "resources.name"
+msgid "Seigniorage"
+msgstr "Сеньораж"
+
+msgctxt "crafts.name"
+msgid "Tax Collection"
+msgstr "Сбор податей"
+
+msgctxt "crafts.description"
+msgid "The tax collectors tally the citizens and carry the dues into the treasury."
+msgstr "Сборщики податей считают горожан и относят собранное в казну."
+
+msgctxt "crafts.name"
+msgid "Strike Copper Coins"
+msgstr "Чеканка медных монет"
+
+msgctxt "crafts.description"
+msgid "Copper heated and struck into small change, worth more as coin than as metal."
+msgstr "Медь, разогретая и отчеканенная в мелкую монету, что стоит дороже как монета, чем как металл."
+
+msgctxt "crafts.name"
+msgid "Strike Silver Coins"
+msgstr "Чеканка серебряных монет"
+
+msgctxt "crafts.description"
+msgid "Silver struck into coin for the great payments of the city."
+msgstr "Серебро, отчеканенное в монету для крупных платежей города."
+
+msgctxt "crafts.name"
+msgid "Strike Gold Coins"
+msgstr "Чеканка золотых монет"
+
+msgctxt "crafts.description"
+msgid "Gold struck into the heaviest coin of the city, kept for its largest bargains."
+msgstr "Золото, отчеканенное в самую тяжёлую монету города, хранимую для самых крупных сделок."
+
+msgctxt "technologies.description"
+msgid "Allows you to build the Mint, which strikes coins for the city.\nEach batch of coin leaves a seigniorage in the treasury: the more metal a strike takes, the more coin the treasury keeps."
+msgstr "Позволяет строить монетный двор, который чеканит монету для города.\nКаждая партия монеты оставляет в казне сеньораж: чем больше металла берёт чеканка, тем больше монеты остаётся казне."
+
+msgctxt "technologies.description"
+msgid "The master of the Mint now tests the metal as well as strikes it: +50% to the seigniorage of the coins.\nConsumes precision instruments."
+msgstr "Мастер монетного двора теперь не только чеканит металл, но и пробует его: +50% к сеньоражу с монеты.\nПотребляет точные инструменты."
+
+msgctxt "technologies.unlock_effects.name"
+msgid "Mint: coins struck from copper, silver or gold pay a seigniorage"
+msgstr "Монетный двор: монета из меди, серебра или золота приносит сеньораж"
+
+msgctxt "technologies.unlock_effects.name"
+msgid "Assaying: +50% to the Mint's seigniorage"
+msgstr "Пробирное дело: +50% к сеньоражу монетного двора"
+
+msgctxt "professions.description"
+msgid "Strikes the coins of the city and assays the metal at the mint. Every batch of coin leaves a seigniorage in the treasury."
+msgstr "Чеканит монету города и пробует металл на монетном дворе. Каждая партия монеты оставляет в казне сеньораж."
+
+msgctxt "buildings.description"
+msgid "Strikes the city's coins out of copper, silver or gold, and takes a seigniorage on every batch."
+msgstr "Чеканит монету города из меди, серебра или золота и берёт сеньораж с каждой партии."
+
+msgid " + %s%% from the Tax Yard"
+msgstr " + %s%% с податного двора"
+
+msgctxt "modifiers.tech_modifiers.name"
+msgid "Assaying: +50% to the Mint's seigniorage"
+msgstr "Пробирное дело: +50% к сеньоражу монетного двора"
+
+msgctxt "technologies.name"
+msgid "Banking"
+msgstr "Банковское дело"
+
+msgctxt "technologies.description"
+msgid "Tax income: +10%.\nInternal-market trade income: +10%.\nExternal-market trade income: +10%."
+msgstr "Налоговый доход: +10%.\nДоход от торговли на внутреннем рынке: +10%.\nДоход от торговли на внешнем рынке: +10%."
+
+msgctxt "technologies.flavor"
+msgid "Banking-like practices took different forms across history. In the ancient Near East, Mesopotamian temples made interest-bearing loans from their treasuries; Greek trapezitai at money-changing tables handled exchange and credit, while Roman argentarii managed payments, credit and exchange. Indian inscriptions record interest-bearing endowments entrusted to śreṇi guilds. In Tang China, guifang offered safekeeping services and feiqian certificates facilitated transfers. These were not modern banks, but their distinct services helped people manage wealth and move value farther than coin alone."
+msgstr "Практики, напоминавшие банковское дело, принимали разные формы. На древнем Ближнем Востоке месопотамские храмы выдавали процентные ссуды из своих сокровищниц; греческие трапезиты за меняльными столами занимались обменом и кредитом, а римские аргентарии — платежами, кредитом и обменом. Индийские надписи свидетельствуют о том, что гильдиям шрени доверяли вклады, приносившие проценты. В Китае эпохи Тан гуифаны предоставляли услуги по хранению денег, а сертификаты «фэйцянь» облегчали переводы. Это не были банки в современном смысле, но их различные услуги помогали управлять богатством и перемещать ценности дальше, чем позволяла одна лишь монета."
+
+msgctxt "modifiers.tech_modifiers.name"
+msgid "Tax income: +10%"
+msgstr "Налоговый доход: +10%"
+
+msgctxt "modifiers.tech_modifiers.name"
+msgid "Internal-market trade income: +10%"
+msgstr "Доход от торговли на внутреннем рынке: +10%"
+
+msgctxt "modifiers.tech_modifiers.name"
+msgid "External-market trade income: +10%"
+msgstr "Доход от торговли на внешнем рынке: +10%"
+
+msgid " × %.2f from researched technologies"
+msgstr " × %.2f от изученных технологий"

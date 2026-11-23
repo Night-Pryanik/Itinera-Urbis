@@ -192,7 +192,14 @@
       //                        (the number of its segments, see route.length) × this
       //                        value. 0.2 gives 2 seconds for a 10-hex route.
       //                        Read by DeliveryManager.get_transit_time_per_hex().
-      "transit_time_per_hex": 0.2
+      "transit_time_per_hex": 0.2,
+
+      // sea_trade_flow_rate — the cargo throughput (units/sec) of a sea trade route
+      //                        between a player harbor and a coastal town's harbor on
+      //                        the same sea body once "Compass" is researched.
+      //                        Transit delay still scales with water hex distance ×
+      //                        transit_time_per_hex.
+      "sea_trade_flow_rate": 60.0
     },
 
     // --- TOWNS: the treasury, the warehouse and the daily trade of a town ---

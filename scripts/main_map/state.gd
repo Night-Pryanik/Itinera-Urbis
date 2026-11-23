@@ -196,7 +196,18 @@ var production_timer = 0.0
 # their own, slower clock (TownManager.get_town_tick_seconds — town_tick_ticks
 # common ticks), therefore the timer is separate from production_timer.
 var town_timer = 0.0
-var scouting_timer: float = 0.0
+# Active scouting expeditions: each entry is {"chunk": Array, "timer": float, "cost": int}.
+# Base limit is 1; technologies such as "Compass" raise it to allow concurrent expeditions.
+var scouting_expeditions: Array = []
+
+# Compatibility accessors over the first active scouting expedition.
+var scouting_timer: float:
+    get:
+        return float(scouting_expeditions[0].get("timer", 0.0)) if not scouting_expeditions.is_empty() else 0.0
+    set(value):
+        if not scouting_expeditions.is_empty():
+            scouting_expeditions[0]["timer"] = float(value)
+
 # Whether there are pastures which are being filled right now (0% < fill < 100%).
 # It is used as the condition of the redrawing of the layer of the progress bars: while the herd is growing,
 # the layer is updated; when everything is full — the layer "sleeps" again.
@@ -205,8 +216,29 @@ var _has_growing_pastures := false
 # It is assembled on the production tick, it advances frame by frame in _tick_pasture_fill().
 var _growing_pastures := {}
 
-var scouting_chunk: Array = []
-var is_scouting: bool = false
+var scouting_chunk: Array:
+    get:
+        return scouting_expeditions[0].get("chunk", []) if not scouting_expeditions.is_empty() else []
+    set(value):
+        if value.is_empty():
+            if scouting_expeditions.size() == 1:
+                scouting_expeditions.clear()
+            elif not scouting_expeditions.is_empty():
+                scouting_expeditions[0]["chunk"] = []
+        else:
+            if scouting_expeditions.is_empty():
+                scouting_expeditions.append({"chunk": value, "timer": 0.0, "cost": 0})
+            else:
+                scouting_expeditions[0]["chunk"] = value
+
+var is_scouting: bool:
+    get:
+        return not scouting_expeditions.is_empty()
+    set(value):
+        if not value:
+            scouting_expeditions.clear()
+        elif scouting_expeditions.is_empty():
+            scouting_expeditions.append({"chunk": [], "timer": 0.0, "cost": 0})
 
 var settings_config = ConfigFile.new()
 var show_hex_borders = true
@@ -466,3 +498,89 @@ func is_hex_on_map(row: int, col: int) -> bool:
 func is_in_influence(row: int, col: int) -> bool:
     return row >= influence_start_row and row <= influence_end_row \
         and col >= influence_start_col and col <= influence_end_col
+
+func get_max_scouting_expeditions() -> int:
+    return MapHelpers.get_max_scouting_expeditions()
+
+func get_pending_scouting_count() -> int:
+    if active_pause == null or not active_pause.has_method("get_pending_actions"):
+        return 0
+    var count := 0
+    for rec in active_pause.get_pending_actions():
+        var key := str(rec.get("key", ""))
+        if key == "scouting" or key.begins_with("scouting:"):
+            count += 1
+    return count
+
+func can_start_scouting() -> bool:
+    return scouting_expeditions.size() + get_pending_scouting_count() < get_max_scouting_expeditions()
+
+# Returns the active scouting expedition whose first hex (progress bar anchor) is (row, col).
+func get_scouting_progress_for_hex(row: int, col: int) -> Dictionary:
+    for exp_data in scouting_expeditions:
+        var chunk: Array = exp_data.get("chunk", [])
+        if chunk.is_empty():
+            continue
+        var first = chunk[0]
+        if first != null and int(first.row) == row and int(first.col) == col:
+            return exp_data
+    return {}
+
+# Returns the active scouting expedition whose chunk contains (row, col), or {}.
+func get_scouting_expedition_containing_hex(row: int, col: int) -> Dictionary:
+    for exp_data in scouting_expeditions:
+        for hex in exp_data.get("chunk", []):
+            if int(hex.row) == row and int(hex.col) == col:
+                return exp_data
+    return {}
+
+# Returns true when (row, col) belongs to an active or queued scouting expedition.
+func is_hex_being_scouted(row: int, col: int) -> bool:
+    if not get_scouting_expedition_containing_hex(row, col).is_empty():
+        return true
+    if active_pause != null and active_pause.has_method("get_pending_actions"):
+        for rec in active_pause.get_pending_actions():
+            var key := str(rec.get("key", ""))
+            if key != "scouting" and not key.begins_with("scouting:"):
+                continue
+            for hex in rec.get("chunk", []):
+                if int(hex.row) == row and int(hex.col) == col:
+                    return true
+    return false
+
+func serialize_scouting_expeditions() -> Array:
+    var out: Array = []
+    for exp_data in scouting_expeditions:
+        var chunk_copy: Array = []
+        for hex in exp_data.get("chunk", []):
+            chunk_copy.append({"row": int(hex.row), "col": int(hex.col)})
+        if chunk_copy.is_empty():
+            continue
+        out.append({
+            "chunk": chunk_copy,
+            "timer": float(exp_data.get("timer", 0.0)),
+            "cost": int(exp_data.get("cost", 0)),
+        })
+    return out
+
+func restore_scouting_expeditions(data: Variant) -> void:
+    scouting_expeditions.clear()
+    if not (data is Array):
+        return
+    for entry in data:
+        if not (entry is Dictionary):
+            continue
+        var raw_chunk = entry.get("chunk", [])
+        if not (raw_chunk is Array) or raw_chunk.is_empty():
+            continue
+        var chunk_copy: Array = []
+        for hex in raw_chunk:
+            if hex is Dictionary and hex.has("row") and hex.has("col"):
+                chunk_copy.append({"row": int(hex.row), "col": int(hex.col)})
+        if chunk_copy.is_empty():
+            continue
+        scouting_expeditions.append({
+            "chunk": chunk_copy,
+            "timer": maxf(0.0, float(entry.get("timer", 0.0))),
+            "cost": maxi(0, int(entry.get("cost", 0))),
+        })

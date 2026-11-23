@@ -187,17 +187,18 @@ func _draw_progress_bars(row: int, col: int):
         draw_rect(Rect2(bar_x, bar_y, bar_width, bar_height), UI_THEME.color("text"), false)
 
     # --- The chunk scouting progress bar ---
-    if main_map.is_scouting and not main_map.scouting_chunk.is_empty():
-        var scout_center_hex = main_map.scouting_chunk[0]
-        if scout_center_hex.row == row and scout_center_hex.col == col:
-            var scout_progress = clamp(main_map.scouting_timer / (main_map.scouting_chunk.size() * main_map.SCOUTING_TIME_PER_HEX), 0.0, 1.0)
-            var scout_bar_width = RESOURCE_ICON_SIZE
-            var scout_bar_height = 6
-            var scout_bar_x = center.x - scout_bar_width / 2.0
-            var scout_bar_y = center.y + RESOURCE_ICON_SIZE / 2.0 + 16
-            draw_rect(Rect2(scout_bar_x, scout_bar_y, scout_bar_width, scout_bar_height), UI_THEME.color("track"))
-            draw_rect(Rect2(scout_bar_x, scout_bar_y, scout_bar_width * scout_progress, scout_bar_height), UI_THEME.color("quality"))
-            draw_rect(Rect2(scout_bar_x, scout_bar_y, scout_bar_width, scout_bar_height), UI_THEME.color("text"), false)
+    var scout_exp: Dictionary = main_map.get_scouting_progress_for_hex(row, col)
+    if not scout_exp.is_empty():
+        var exp_chunk: Array = scout_exp.get("chunk", [])
+        var duration: float = maxf(main_map._get_scouting_time(exp_chunk.size()), 0.001)
+        var scout_progress: float = clampf(float(scout_exp.get("timer", 0.0)) / duration, 0.0, 1.0)
+        var scout_bar_width = RESOURCE_ICON_SIZE
+        var scout_bar_height = 6
+        var scout_bar_x = center.x - scout_bar_width / 2.0
+        var scout_bar_y = center.y + RESOURCE_ICON_SIZE / 2.0 + 16
+        draw_rect(Rect2(scout_bar_x, scout_bar_y, scout_bar_width, scout_bar_height), UI_THEME.color("track"))
+        draw_rect(Rect2(scout_bar_x, scout_bar_y, scout_bar_width * scout_progress, scout_bar_height), UI_THEME.color("quality"))
+        draw_rect(Rect2(scout_bar_x, scout_bar_y, scout_bar_width, scout_bar_height), UI_THEME.color("text"), false)
 
     # --- The bar of an action that is WAITING in the queue of the active pause ---
     # The simulation is stopped, therefore the bar has no progress yet: it is drawn

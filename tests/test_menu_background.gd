@@ -68,7 +68,7 @@ func _run() -> void:
                 % first_item.theme_type_variation, state)
 
     if title != null:
-        check(title.text == "Itinera Urbis",
+        check(title.text == "Itinera Urbis:\nHearth to Horizon",
             "the title is the name of the game (got: %s)" % title.text, state)
         var items = menu.get_node_or_null("VBoxContainer") as Control
         check(items != null, "the menu has its items", state)
