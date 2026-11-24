@@ -119,6 +119,8 @@ var _msdf_source: Font = null # the face the distance field was built from
 const BASE_ERA_LABEL_HEIGHT: float = 64.0 # the height of the strip above the columns under the headings of the eras
 const BASE_ERA_LABEL_WIDTH: float = 200.0 # the fixed width of the heading of the era
 const BASE_ERA_LINE_WIDTH: float = 2.0 # the thickness of the vertical separator of the eras
+# The band stops short of the frame of the city window, so the frame stays unbroken.
+const ERA_STRIP_INSET: float = 4.0
 var ERA_LABEL_HEIGHT: float = BASE_ERA_LABEL_HEIGHT # the height of the strip above the columns under the headings of the eras
 var ERA_LABEL_WIDTH: float = BASE_ERA_LABEL_WIDTH # the fixed width of the heading of the era
 var ERA_LINE_WIDTH: float = BASE_ERA_LINE_WIDTH # the thickness of the vertical separator of the eras
@@ -174,6 +176,9 @@ var _tech_index_valid: bool = false
 # --- The separation by eras ---
 var _era_labels: Array = [] # the Label-headings of the eras (they are cleared in rebuild)
 var _era_groups: Array = [] # [{era_id, era_name, col_start, col_end, x_center, x_boundary}]
+# The headings are pinned to the top of the viewport, so the columns scroll beneath them.
+# The opaque band hides the buttons that pass behind the headings.
+var _era_strip: ColorRect = null
 
 # The icons of the technologies are taken from the common registry IconRegistry (autoload):
 # the index of the file names is built there once per game.
@@ -315,6 +320,7 @@ func _apply_zoom_scale(force_scroll: bool = false) -> void:
     _content.scale = Vector2(k, k)
     _inner.size = _layout_size * k
     _inner.custom_minimum_size = _layout_size * k
+    _update_era_header()
     # A pinch produces an emulated pressed mouse button, but the fingers — not that
     # phantom drag — own the scroll while the tree zooms around them.
     if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and not force_scroll:
@@ -334,6 +340,7 @@ func _apply_zoom_scale(force_scroll: bool = false) -> void:
     _scroll.scroll_horizontal = wanted_h
     _scroll.scroll_vertical = wanted_v
     _compensate_scroll(wanted_h, wanted_v)
+    _update_era_header()
 
 # The scroll of the ScrollContainer is kept in whole pixels: the remainder is given to
 # the content, so that the point of the tree under the cursor does not drift from the
@@ -346,6 +353,7 @@ func _compensate_scroll(wanted_h: float, wanted_v: float) -> void:
     var dx: float = _scroll.scroll_horizontal - wanted_h
     var dy: float = _scroll.scroll_vertical - wanted_v
     _content.position = Vector2(dx, dy)
+    _update_era_header()
 
 # A pinch sets the zoom directly: the fingers move the picture one-to-one, and an
 # animation would only lag behind them. The point of the tree the fingers took at the
@@ -1184,17 +1192,31 @@ func _col_y() -> float:
     return float(ERA_LABEL_HEIGHT + COL_PADDING)
 
 # Creates the Label-headings of the eras above the fresh columns. It is called from rebuild().
-# The headings are added to _inner, therefore they scroll together with the tree.
+# _update_era_header keeps them in view while the columns scroll in both directions.
 func _create_era_labels(era_groups: Array) -> void:
     # First we remove the old headings (if there was a rebuild).
     for l in _era_labels:
         if is_instance_valid(l):
             l.queue_free()
     _era_labels.clear()
+    if is_instance_valid(_era_strip):
+        _era_strip.queue_free()
+    _era_strip = null
 
     _era_groups = era_groups
     if _era_groups.is_empty():
         return
+
+    # The band is sized and placed by _update_era_header, so that it stays inside the window
+    # frame at any horizontal scroll. rebuild() adds it after the columns, above them.
+    _era_strip = ColorRect.new()
+    _era_strip.name = "EraStrip"
+    var strip_color := UI_THEME.color("panel_bg")
+    strip_color.a = 1.0 # the buttons scrolling under the band must not show through it
+    _era_strip.color = strip_color
+    _era_strip.mouse_filter = Control.MOUSE_FILTER_STOP
+    _era_strip.size = Vector2(1.0, ERA_LABEL_HEIGHT) # the width follows the viewport in _update_era_header
+    _content.add_child(_era_strip)
 
     # The height of the strip on the top — the strip occupies the top (y=0),
     # we place the Label in the middle of the strip.
@@ -1254,6 +1276,57 @@ func _create_antiquity_era_label(group: Dictionary) -> void:
     _content.add_child(rtl)
     _era_labels.append(rtl)
 
+# Keeps the band and the headings of the eras at the top of the viewport. Each heading is
+# centred in the visible part of its era, so a partially scrolled-off era is still named
+# in the middle of its piece of the band. The band stops short of the frame of the city
+# window. The tree is a scaled picture, so the scroll and the sub-pixel compensation of
+# _content.position are converted with the same factor k.
+func _update_era_header() -> void:
+    if _scroll == null or _content == null:
+        return
+    var k: float = maxf(_content.scale.x, 0.001)
+    var offset := Vector2(_scroll.scroll_horizontal, _scroll.scroll_vertical) - _content.position
+    var y: float = offset.y / k
+    var page_width: float = _scroll.size.x
+    var vbar := _scroll.get_v_scroll_bar()
+    if vbar != null and vbar.visible:
+        page_width -= vbar.size.x
+    # The band follows the horizontal scroll, but its edges stay inside the window frame:
+    # the inset is in viewport pixels, while the band lives in the scaled picture.
+    var band_x: float = (offset.x + ERA_STRIP_INSET) / k
+    var band_width: float = maxf(0.0, page_width - ERA_STRIP_INSET * 2.0) / k
+    if is_instance_valid(_era_strip):
+        if not is_equal_approx(_era_strip.position.x, band_x):
+            _era_strip.position.x = band_x
+        if not is_equal_approx(_era_strip.position.y, y):
+            _era_strip.position.y = y
+        if not is_equal_approx(_era_strip.size.x, band_width):
+            _era_strip.size.x = band_width
+
+    # The visible part of the band in the coordinates of _content.
+    var viewport_left: float = band_x
+    var viewport_right: float = band_x + band_width
+
+    for i in range(mini(_era_labels.size(), _era_groups.size())):
+        var lab = _era_labels[i]
+        if not is_instance_valid(lab):
+            continue
+        var group: Dictionary = _era_groups[i]
+        var group_left: float = 0.0
+        if i > 0:
+            group_left = float(_era_groups[i - 1]["x_boundary"])
+        var group_right: float = float(group["x_boundary"])
+        # The visible piece of the era is the intersection of its span with the viewport.
+        # Centring the heading there keeps it on screen even when the piece is narrower
+        # than the heading's box, since the text itself is much smaller than the box.
+        var lo: float = maxf(viewport_left, group_left)
+        var hi: float = minf(viewport_right, group_right)
+        var x: float = (lo + hi) * 0.5 - ERA_LABEL_WIDTH * 0.5
+        if not is_equal_approx(lab.position.x, x):
+            lab.position.x = x
+        if not is_equal_approx(lab.position.y, y):
+            lab.position.y = y
+
 func rebuild():
     # A full rebuild: we clear and create from scratch.
     # It is called on the structural changes (a new research, a completion and so on).
@@ -1312,11 +1385,6 @@ func rebuild():
     _scroll.get_combined_minimum_size()
     _scroll.queue_sort()
 
-    # We create the headings of the eras (the strip on the top). We do this BEFORE the columns,
-    # so that the headings end up under them in the z-order (the arrows are drawn
-    # by the last layer over everything).
-    _create_era_labels(era_groups)
-
     # We place the columns manually inside _inner (and NOT through HBoxContainer),
     # so that the positions are predictable for the drawing of the arrows.
     for c in range(num_cols):
@@ -1353,16 +1421,19 @@ func rebuild():
                 "row": i,
             }
 
-    # The layer with the arrows — over the columns. Without z_index: _arrows_layer
-    # is added last to _inner, therefore by default it is drawn
-    # over the columns. z_index here must NOT be set — otherwise the arrows
-    # will rise above all the Controls in the canvas layer, including
+    # The layer with the arrows — over the columns. z_index here must NOT be set:
+    # it would lift the arrows above all the Controls of the canvas layer, including
     # tech_popup (the message window of a learned technology).
     _arrows_layer = Control.new()
     _arrows_layer.set_anchors_preset(Control.PRESET_FULL_RECT)
     _arrows_layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
     _content.add_child(_arrows_layer)
     _arrows_layer.draw.connect(_on_arrows_draw)
+
+    # The headings are created last: the pinned band and the labels must draw over the
+    # columns and the arrows that scroll beneath them.
+    _create_era_labels(era_groups)
+    _update_era_header()
 
     # The states (the colours, the progress, the tooltips) — over the freshly created buttons.
     _update_states()
@@ -2328,6 +2399,10 @@ func _build_arrow_path(parent_right: Vector2, child_left: Vector2, parent_col: i
     ])
 
 func _process(_delta: float) -> void:
+    # ScrollContainer has no per-pixel scroll signal, so the pinned headings follow the
+    # scroll from the frame tick. The city UI keeps processing during the active pause.
+    _update_era_header()
+
     # The zoom of the tree approaches its target smoothly, as the zoom of the map does.
     _process_zoom(_delta)
 
