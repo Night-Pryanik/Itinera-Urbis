@@ -27,6 +27,11 @@ func _ready():
     message_label = vbox.get_node("MapMessageLabel")
     message_label.visible = false
     hud_original_size = size
+    if not Engine.is_editor_hint():
+        # The treasury row changes width with the balance and reflows a frame later.
+        # Refit the panel in that same frame: a container taller than the panel
+        # would otherwise grow upwards and push its first row above the screen.
+        vbox.minimum_size_changed.connect(_fit_size)
     # The width adapts to the contents immediately: the "Treasury" line has become
     # longer ("Treasury: N [+X≈ / -Y≈]"), while the HUD in the scene has a fixed 184 px.
     _fit_size()
