@@ -63,17 +63,16 @@ static func format_bonus_suffix(min_bonus: float, max_bonus: float) -> String:
     return TranslationServer.translate(" (+%d–%d%% to production)") % [lo_pct, hi_pct]
 
 
-# The Russian form of the numeral: 1 building / 2 buildings / 5 buildings.
-static func _plural(count: int, one: String, few: String, many: String) -> String:
-    var mod100 := count % 100
-    if mod100 >= 11 and mod100 <= 14:
-        return many
-    var mod10 := count % 10
-    if mod10 == 1:
-        return one
-    if mod10 >= 2 and mod10 <= 4:
-        return few
-    return many
+# The form of the numeral for a count of working buildings. The rule of the language
+# lives in its catalog ("Plural-Forms"), so no language is preferred here: English needs
+# "1 building / 2 buildings", Russian and Polish add a case for 2-4 that 5+ does not
+# share, and a language with a single form needs nothing at all.
+#
+# tr_n() is not available in a static function, so the plural call goes through
+# TranslationServer, which takes the same plural rule the catalog declared.
+static func _buildings_plural(count: int) -> String:
+    return str(TranslationServer.translate_plural(
+            "building", "buildings", count, "consumption_buildings"))
 
 
 # Assembles the display rows of the occupational consumption of a profession.
@@ -171,17 +170,7 @@ static func _format_rate_label(per_sec: float, bonus: float, workers: int) -> St
     if workers > 1:
         # Several working objects of one type share the expense — we show
         # the total and how much it gives (the building details window).
-        #
-        # The three plural forms are distinguished by CONTEXT, and not by different
-        # English words: in English "buildings" is a single word, while Russian
-        # needs "здания" (2-4) and "зданий" (5+) — the exact msgstr values are
-        # listed in the ru catalog. In a static function it is not
-        # possible to call tr_n(), but TranslationServer.translate() with
-        # a context works — see the corresponding entries in the locale/<code>.po catalog.
-        text += " (%d %s)" % [workers, _plural(workers,
-            TranslationServer.translate("building", "consumption_buildings_one"),
-            TranslationServer.translate("buildings", "consumption_buildings_few"),
-            TranslationServer.translate("buildings", "consumption_buildings_many"))]
+        text += " (%d %s)" % [workers, _buildings_plural(workers)]
     elif workers == 0:
         text += TranslationServer.translate(" (no working buildings)")
     if bonus > 0.0:
@@ -192,10 +181,7 @@ static func _format_rate_label(per_sec: float, bonus: float, workers: int) -> St
 static func _format_range_rate_label(rate_min: float, rate_max: float, bonus_min: float, bonus_max: float, workers: int) -> String:
     var text := format_rate_range_with_unit(rate_min, rate_max)
     if workers > 1:
-        text += " (%d %s)" % [workers, _plural(workers,
-            TranslationServer.translate("building", "consumption_buildings_one"),
-            TranslationServer.translate("buildings", "consumption_buildings_few"),
-            TranslationServer.translate("buildings", "consumption_buildings_many"))]
+        text += " (%d %s)" % [workers, _buildings_plural(workers)]
     elif workers == 0:
         text += TranslationServer.translate(" (no working buildings)")
     text += format_bonus_suffix(bonus_min, bonus_max)

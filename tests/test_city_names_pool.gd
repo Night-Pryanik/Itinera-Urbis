@@ -40,8 +40,11 @@ func _run() -> void:
     var state = {"failed": false}
     var localization = get_root().get_node("LocalizationManager")
 
+    # The languages come from the loaded catalogs, not from a table: every language the
+    # project ships is one the settings offer, and each of them carries a pool.
     var pools := {}
-    for lang in localization.LANGUAGES:
+    pools[localization.DEFAULT_LOCALE] = _read_pool_file(localization.DEFAULT_LOCALE)
+    for lang in localization.described_languages():
         var code := str(lang["code"])
         pools[code] = _read_pool_file(code)
 

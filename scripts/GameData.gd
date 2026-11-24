@@ -255,16 +255,17 @@ func zone_terrain(zone_id: String, family: String) -> String:
 # ("Boreal, Plain", "Tropical, Hills" — data/terrains/terrains.json; the swamp and the mountains
 # are the same in every belt, so their name carries none), and the cover on top of it —
 # "Tropical, Hills, Tropical Forest". A hex without a cover keeps the bare name of the terrain.
+#
+# The cover reads in its list form when its catalog has one
+# (data_loader._localize_cover_names_in_lists): the case of the later parts of such a list
+# belongs to the language, and the catalog carries it. A language without the form has no
+# such field, and then the plain name of the cover — already translated — is what is read.
 func terrain_display_name(terrain_id: String, cover_id: String = "none") -> String:
     var name := str(terrains.get(terrain_id, {}).get("name", terrain_id))
     if cover_id == "" or cover_id == "none":
         return name
-    var cover_name := str(covers.get(cover_id, {}).get("name", cover_id))
-    # Russian writes the parts of such a list after the first in lowercase ("Тропики, холмы,
-    # тропический лес"), English keeps the case of every part ("Tropical, Hills, Tropical Forest"),
-    # so the rule follows the language of the game.
-    if TranslationServer.get_locale().begins_with("ru"):
-        cover_name = cover_name.to_lower()
+    var cover: Dictionary = covers.get(cover_id, {})
+    var cover_name := str(cover.get("name_in_list", cover.get("name", cover_id)))
     return "%s, %s" % [name, cover_name]
 
 # === ROAD LEVELS (data/roads.json) ===
