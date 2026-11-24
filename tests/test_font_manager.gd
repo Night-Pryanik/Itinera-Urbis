@@ -41,6 +41,10 @@ extends SceneTree
 # from the outside. Details — in tests/watchdog.gd.
 const WATCHDOG = preload("res://tests/watchdog.gd")
 
+# The script of the FontManager autoload: the letter check is a static function, so it is
+# reached through the class and not through the node.
+const FontManagerScript = preload("res://scripts/font_manager.gd")
+
 const SETTINGS_PATH := "user://settings.cfg"
 # A folder of the test's own: NOT user://fonts, so that nothing is left behind in the
 # folder the player keeps their own fonts in.
@@ -244,11 +248,23 @@ func _run() -> void:
     check(fm.get_stored_font() == "Inter", "the unknown family is rewritten in the settings", state)
 
     # --- 6. The letter check ---
+    # The characters come from the catalog itself, so the language is checked by its own
+    # text: Russian brings Cyrillic, the source language brings nothing but Latin.
+    var ru_letters: String = fm.locale_letters("ru")
+    check(ru_letters.contains("Ж"), "the letters of Russian are read from its catalog", state)
+    check(ru_letters.contains("A"), "the Latin letters are always part of the check", state)
     check(fm.covers_locale(inter, "ru"), "Inter has the letters of Russian", state)
     check(not fm.covers_locale(FontFile.new(), "ru"),
         "a font without the letters of the language is refused", state)
     check(fm.covers_locale(FontFile.new(), "xx"),
-        "a language the game does not know is not checked", state)
+        "a language with no catalog is not checked", state)
+
+    # A language without a catalog has nothing to check, and a language with one is
+    # checked by the letters of that catalog rather than by an alphabet listed in code.
+    var unknown_letters: String = fm.locale_letters("xx")
+    check(unknown_letters == FontManagerScript.SOURCE_LETTERS,
+        "a language with no catalog checks only the source letters, got \"%s\"" % unknown_letters,
+        state)
 
     # --- Clean up ---
     settings.queue_free()

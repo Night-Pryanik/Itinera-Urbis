@@ -23,6 +23,22 @@ When a new language is added, drop in `locale/<code>.po` next to the others and
 register it in `project.godot` under
 `internationalization/locale/translations`. No code changes are needed.
 
+The catalog is the only file a language needs. The engine reads the `.po` with its
+own loader (`TranslationLoaderPO`), so there is no import step and no compiled
+copy: `res://locale/<code>.po` is what is loaded, and no `.mo` is shipped or read.
+The header of the file carries the `Language:` field and the `Plural-Forms` rule,
+which tells the engine how many forms a numeral has in that language (see "Plural
+forms").
+
+Two optional pieces follow the language rather than the translation:
+
+- `msgctxt "language.name"`, `msgid` = the code of the language itself, and the
+  native name in the `msgstr` (`"fr"` → `"Français"`). The settings read it from
+  that catalog, so the list reads natively whatever interface language is on.
+  Without the entry the engine's table gives the English name (`"French"`);
+- `locale/city_names_<code>.json`, the pool of city names — a language without a
+  pool of its own names its cities from the source pool.
+
 ## Rules for translating
 
 1. **Placeholders are untouchable.** `%s`, `%d`, `%.0f`, `%05.2f`, `%%`, `%.2f`
@@ -190,14 +206,44 @@ Two ways to express that in the catalog:
 1. **Different msgids** (`Building` / `this building` / `building`) — used by
    the data validator for entity names (`validator_entity_*`). Each form is
    its own translatable word, so no context is needed.
-2. **Same msgid, different msgctxt** — used for plural forms
-   (`consumption_buildings_one` / `_few` / `_many`): English has a single
-   "buildings", so the only thing that distinguishes the entries is the
-   context passed as the second argument to `tr()` /
-   `TranslationServer.translate()`.
+2. **Same msgid, different msgctxt** — used when one English text reads
+   differently in another language depending on where it stands. The
+   `covers.name_in_list` entries are an example: the same forest is «Лес» on its
+   own and «лес» inside a list after a terrain, and German capitalises it in
+   both places while Russian and French do not. The context is passed as the
+   second argument to `tr()` / `TranslationServer.translate()`.
+
+   Such a form is **optional**. A language that leaves it empty keeps reading
+   the plain name everywhere: the loader writes the list form only when the
+   catalog has one, because an empty `msgstr` comes back as the English msgid
+   and would put the source text into a translated interface.
 
 Choose form 1 when the surrounding English wording differs anyway (it is the
 clearer catalog), and form 2 when the English word is genuinely one word.
+
+## Plural forms
+
+A numeral is **not** a context: the count picks the form by the rule of the
+language, and that rule belongs to the catalog, not to the code. Such an entry
+carries `msgid_plural` and one `msgstr[n]` per form the header declares in
+`Plural-Forms`:
+
+```
+msgctxt "consumption_buildings"
+msgid "building"
+msgid_plural "buildings"
+msgstr[0] "здание"
+msgstr[1] "здания"
+msgstr[2] "зданий"
+```
+
+English (`nplurals=2; plural=(n != 1);`), Russian (three forms) and a language
+with a single form are all served by the same call: the code asks the engine
+for the form of a given count (`TranslationServer.translate_plural`) and never
+does arithmetic on the count itself.
+
+The header has to be right — `nplurals` must match the number of `msgstr[n]`
+entries, or the loader refuses the whole file.
 
 ## Rules for the data validator's texts
 

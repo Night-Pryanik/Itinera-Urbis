@@ -190,6 +190,11 @@ func load_all_data(mod_dirs: Array = []):
     # re-reads the data from scratch (LocalizationManager.set_locale → GameData.load_all_data).
     # The name of a good of the brand is the exception: its phrase carries the tag <city_name>, which only
     # the city knows later, so such a record is display-ready after GameData.get_product_name, not before.
+    #
+    # The list form of a cover is read from the SOURCE name, so it has to be taken before the names
+    # themselves are translated: afterwards the key would be the translated text, and no
+    # catalog could have an entry for it.
+    _localize_cover_names_in_lists(merged_data)
     _localize_display_fields(merged_data)
 
     terrains = {}
@@ -450,6 +455,30 @@ func _localize_display_fields(node: Variant, context: String = "") -> void:
     elif node is Array:
         for item in node:
             _localize_display_fields(item, context)
+
+# The name a cover takes when it is listed after a terrain ("Tropical, Hills, Tropical
+# Forest" in the source, "Тропики, холмы, тропический лес" in Russian). The case of the
+# later parts of such a list is a matter of the language — Russian and French write them
+# lowercase, German capitalises every noun — so the catalog decides it, not the code.
+#
+# The field is written ONLY when the catalog has the form. An untranslated message comes
+# back as the message itself, and that answer must not be taken for a translation: a
+# language that translated the plain name but not the list form would otherwise get the
+# source text in its lists. Without the field, terrain_display_name reads the plain name,
+# which is the translation the language does have.
+#
+# The form is looked up BEFORE the names are translated (see _load_all_data): the message
+# is the source text, and a key of the already translated one would match nothing.
+func _localize_cover_names_in_lists(tree: Dictionary) -> void:
+    for cover in tree.get("covers", []):
+        if not (cover is Dictionary):
+            continue
+        var name = cover.get("name")
+        if not (name is String) or name.is_empty():
+            continue
+        var in_list := tr(str(name), "covers.name_in_list")
+        if in_list != str(name):
+            cover["name_in_list"] = in_list
 
 func _load_all_json_files(folder_path: String) -> Dictionary:
     var result = {}

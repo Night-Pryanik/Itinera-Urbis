@@ -5,6 +5,8 @@
 # Source language: en. Every target language has its own file in locale/,
 # built from the same msgids.
 # Catalog role: template for translators; every msgstr is empty.
+# The header keeps the plural rule of the SOURCE language: a translator replaces
+# both nplurals and the expression with the rule of the target language.
 #
 msgid ""
 msgstr ""
@@ -28,10 +30,6 @@ msgstr ""
 
 msgctxt ""
 msgid "Maintenance: %g coins/sec"
-msgstr ""
-
-msgctxt ""
-msgid "Maintenance: from %g coins/sec (+ share of sales)"
 msgstr ""
 
 msgctxt ""
@@ -571,9 +569,6 @@ msgid "About the game"
 msgstr ""
 
 msgid "Above average"
-msgstr ""
-
-msgid "Active bonuses: (coming later)"
 msgstr ""
 
 msgid "Actual is below plan: buyers want more than what is in storage."
@@ -1230,9 +1225,6 @@ msgstr ""
 msgid "Diversity"
 msgstr ""
 
-msgid "Diversity: %d subgroups"
-msgstr ""
-
 msgid "Domestic market: %s to the price"
 msgstr ""
 
@@ -1726,9 +1718,6 @@ msgid "No description available."
 msgstr ""
 
 msgid "No description."
-msgstr ""
-
-msgid "No domesticated resources yet"
 msgstr ""
 
 msgid "No effects act on the city"
@@ -2266,9 +2255,6 @@ msgid "Road to town \"%s\" built — trade available!"
 msgstr ""
 
 msgid "Road work cost cannot be negative"
-msgstr ""
-
-msgid "Road: %s"
 msgstr ""
 
 msgid "Roads cannot be built over water"
@@ -3679,17 +3665,11 @@ msgctxt "challenges.name"
 msgid "Hanc marginis exiguitas non caperet"
 msgstr ""
 
-msgctxt "consumption_buildings_few"
-msgid "buildings"
-msgstr ""
-
-msgctxt "consumption_buildings_many"
-msgid "buildings"
-msgstr ""
-
-msgctxt "consumption_buildings_one"
+msgctxt "consumption_buildings"
 msgid "building"
-msgstr ""
+msgid_plural "buildings"
+msgstr[0] ""
+msgstr[1] ""
 
 msgctxt "covers.name"
 msgid "Coral Reef"
@@ -5592,10 +5572,6 @@ msgid "Fresh water passes through in a chain (up to 4 tiles)"
 msgstr ""
 
 msgctxt "modifiers.tech_modifiers.name"
-msgid "Mine, quarry, animal mill, oilmaker's house, weaver's and silkmaker's house, mason's, carpenter's and jeweler's workshop: +25% production"
-msgstr ""
-
-msgctxt "modifiers.tech_modifiers.name"
 msgid "Mine, quarry, bloomery, smelter: +25% production only where fresh water is available"
 msgstr ""
 
@@ -5797,6 +5773,14 @@ msgstr ""
 
 msgctxt "product_groups.name"
 msgid "Precision Instruments"
+msgstr ""
+
+msgctxt "product_groups.name"
+msgid "Lamp Oils"
+msgstr ""
+
+msgctxt "product_groups.name"
+msgid "Meat"
 msgstr ""
 
 msgctxt "professions.description"
@@ -9478,10 +9462,6 @@ msgstr ""
 msgid " Distance to city: %d hex(es)"
 msgstr ""
 
-#: data/crafts/metalworking.json data/products/metalworking.json
-msgid "Tools of <city_name> Steel"
-msgstr ""
-
 msgctxt "covers.name"
 msgid "Volcano"
 msgstr ""
@@ -9503,6 +9483,14 @@ msgstr ""
 #: data/improvements.json
 msgctxt "improvements.name"
 msgid "Spring Catchment"
+msgstr ""
+
+# The name of a language in its own tongue, keyed by its code. The entry below is the
+# one of the shipped catalog; a new language replaces the code with its own and puts
+# its native name in the msgstr ("fr" → "Français"). Without it the settings fall back
+# to the engine's English name of the language.
+msgctxt "language.name"
+msgid "ru"
 msgstr ""
 
 #: data/professions.json
@@ -9529,6 +9517,90 @@ msgctxt "covers.name"
 msgid "Salt Spring"
 msgstr ""
 
+msgctxt "covers.name_in_list"
+msgid "None"
+msgstr ""
+
+msgctxt "covers.name_in_list"
+msgid "Moss and Lichen"
+msgstr ""
+
+msgctxt "covers.name_in_list"
+msgid "Temperate Rainforest"
+msgstr ""
+
+msgctxt "covers.name_in_list"
+msgid "Sparse Temperate Rainforest"
+msgstr ""
+
+msgctxt "covers.name_in_list"
+msgid "Temperate Dry Forest"
+msgstr ""
+
+msgctxt "covers.name_in_list"
+msgid "Sparse Temperate Dry Forest"
+msgstr ""
+
+msgctxt "covers.name_in_list"
+msgid "Taiga"
+msgstr ""
+
+msgctxt "covers.name_in_list"
+msgid "Sparse Taiga"
+msgstr ""
+
+msgctxt "covers.name_in_list"
+msgid "Tropical Rainforest"
+msgstr ""
+
+msgctxt "covers.name_in_list"
+msgid "Sparse Tropical Rainforest"
+msgstr ""
+
+msgctxt "covers.name_in_list"
+msgid "Tropical Dry Forest"
+msgstr ""
+
+msgctxt "covers.name_in_list"
+msgid "Sparse Tropical Dry Forest"
+msgstr ""
+
+msgctxt "covers.name_in_list"
+msgid "Reeds"
+msgstr ""
+
+msgctxt "covers.name_in_list"
+msgid "Forest"
+msgstr ""
+
+msgctxt "covers.name_in_list"
+msgid "Sparse Forest"
+msgstr ""
+
+msgctxt "covers.name_in_list"
+msgid "Oasis"
+msgstr ""
+
+msgctxt "covers.name_in_list"
+msgid "Coral Reef"
+msgstr ""
+
+msgctxt "covers.name_in_list"
+msgid "Volcano"
+msgstr ""
+
+msgctxt "covers.name_in_list"
+msgid "Mineral Spring"
+msgstr ""
+
+msgctxt "covers.name_in_list"
+msgid "Salt Spring"
+msgstr ""
+
+msgctxt "covers.name_in_list"
+msgid "Mountain Spring"
+msgstr ""
+
 #: data/resources/minerals.json
 msgctxt "resources.name"
 msgid "Salt Spring"
@@ -9536,30 +9608,6 @@ msgstr ""
 
 msgctxt "resources.name"
 msgid "Coinage"
-msgstr ""
-
-msgid "Oil Mill"
-msgstr ""
-
-msgid "Wedge presses squeeze oil from batches of oil crops."
-msgstr ""
-
-msgid "Wedge Oil Press"
-msgstr ""
-
-msgid "Unlocks the oil mill."
-msgstr ""
-
-msgid "Vat Fermentation"
-msgstr ""
-
-msgid "Fermentation Workshop"
-msgstr ""
-
-msgid "Unlocks the fermentation workshop."
-msgstr ""
-
-msgid "Large wooden vats hold separate batches of fermenting drink or vinegar."
 msgstr ""
 
 msgctxt "buildings.name"
@@ -9730,6 +9778,14 @@ msgctxt "buildings.name"
 msgid "Tax Yard"
 msgstr ""
 
+msgctxt "buildings.name"
+msgid "Fermentation Workshop"
+msgstr ""
+
+msgctxt "buildings.name"
+msgid "Oil Mill"
+msgstr ""
+
 msgctxt "buildings.description"
 msgid "The yard where the dues of the citizens are tallied, weighed and carried into the treasury."
 msgstr ""
@@ -9744,6 +9800,18 @@ msgstr ""
 
 msgctxt "resources.name"
 msgid "Seigniorage"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Tools of <city_name> Steel"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Oil Shale"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Shale Oil"
 msgstr ""
 
 msgctxt "crafts.name"
@@ -9774,8 +9842,20 @@ msgctxt "crafts.name"
 msgid "Strike Gold Coins"
 msgstr ""
 
+msgctxt "crafts.name"
+msgid "Tools of <city_name> Steel"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Shale Oil"
+msgstr ""
+
 msgctxt "crafts.description"
 msgid "Gold struck into the heaviest coin of the city, kept for its largest bargains."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Heats oil shale in a closed retort to recover crude shale oil."
 msgstr ""
 
 msgctxt "technologies.description"
@@ -9802,6 +9882,14 @@ msgctxt "buildings.description"
 msgid "Strikes the city's coins out of copper, silver or gold, and takes a seigniorage on every batch."
 msgstr ""
 
+msgctxt "buildings.description"
+msgid "Large wooden vats hold separate batches of fermenting drink or vinegar."
+msgstr ""
+
+msgctxt "buildings.description"
+msgid "Wedge presses squeeze oil from batches of oil crops."
+msgstr ""
+
 msgid " + %s%% from the Tax Yard"
 msgstr ""
 
@@ -9813,8 +9901,24 @@ msgctxt "technologies.name"
 msgid "Banking"
 msgstr ""
 
+msgctxt "technologies.name"
+msgid "Vat Fermentation"
+msgstr ""
+
+msgctxt "technologies.name"
+msgid "Wedge Oil Press"
+msgstr ""
+
 msgctxt "technologies.description"
 msgid "Tax income: +10%.\nInternal-market trade income: +10%.\nExternal-market trade income: +10%."
+msgstr ""
+
+msgctxt "technologies.description"
+msgid "Unlocks the fermentation workshop."
+msgstr ""
+
+msgctxt "technologies.description"
+msgid "Unlocks the oil mill."
 msgstr ""
 
 msgctxt "technologies.flavor"
@@ -9831,6 +9935,10 @@ msgstr ""
 
 msgctxt "modifiers.tech_modifiers.name"
 msgid "External-market trade income: +10%"
+msgstr ""
+
+msgctxt "modifiers.tech_modifiers.name"
+msgid "Mine, quarry, animal mill, oil mill, oilmaker's, weaver's and silkmaker's houses, weaver's, mason's, carpenter's and jeweler's workshops: +25% production"
 msgstr ""
 
 msgid " × %.2f from researched technologies"
@@ -10031,3 +10139,4 @@ msgstr ""
 msgctxt "professions.flavor"
 msgid "Butchery is as old as domestication: once animals were kept, killing and dividing the carcass followed. Stone and bone knives preceded metal, and customs differed — halal and kosher rules, pig butchery in East Asia, llama and camel butchery in the Andes and Central Asia.\n\nButchers bled and dressed the animal, split the hide, removed organs and cut meat into pieces for cooking, drying or salting. Nothing was wasted: fat became tallow, skin became leather, bones and sinew served other trades. The work was often done outdoors, shaped by custom, season and household need."
 msgstr ""
+

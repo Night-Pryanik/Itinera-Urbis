@@ -13,7 +13,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
 msgid "Mint"
 msgstr "Монетный двор"
@@ -29,10 +29,6 @@ msgstr "Содержание"
 msgctxt ""
 msgid "Maintenance: %g coins/sec"
 msgstr "Содержание: %g монет/сек"
-
-msgctxt ""
-msgid "Maintenance: from %g coins/sec (+ share of sales)"
-msgstr "Содержание: от %g монет/сек (+ доля от продаж)"
 
 msgctxt ""
 msgid "Not enough coins for the upkeep (%d unpaid)! Grow the population or demolish a building/improvement."
@@ -575,9 +571,6 @@ msgstr "О программе"
 
 msgid "Above average"
 msgstr "Выше среднего"
-
-msgid "Active bonuses: (coming later)"
-msgstr "Активные бонусы: (будут позже)"
 
 msgid "Actual is below plan: buyers want more than what is in storage."
 msgstr "Факт ниже плана: покупатели хотят больше, чем лежит на складе."
@@ -1260,9 +1253,6 @@ msgstr "бонус не активен"
 msgid "next: %d"
 msgstr "далее: %d"
 
-msgid "Diversity: %d subgroups"
-msgstr "Разнообразие: %d подгрупп"
-
 msgid "Domestic market: %s to the price"
 msgstr "Внутренний рынок: %s к цене"
 
@@ -1781,9 +1771,6 @@ msgstr "Описание отсутствует."
 
 msgid "No description."
 msgstr "Нет описания."
-
-msgid "No domesticated resources yet"
-msgstr "Одомашненных ресурсов пока нет"
 
 msgid "No effects act on the city"
 msgstr "На город пока не действуют эффекты"
@@ -2330,9 +2317,6 @@ msgstr "Дорога до городка «%s» построена — торг�
 
 msgid "Road work cost cannot be negative"
 msgstr "Цена участка дороги не может быть отрицательной"
-
-msgid "Road: %s"
-msgstr "Дорога: %s"
 
 msgid "Roads cannot be built over water"
 msgstr "По воде дорога не строится"
@@ -3757,17 +3741,15 @@ msgctxt "challenges.name"
 msgid "Hanc marginis exiguitas non caperet"
 msgstr "Поля этой книги слишком узки"
 
-msgctxt "consumption_buildings_few"
-msgid "buildings"
-msgstr "здания"
-
-msgctxt "consumption_buildings_many"
-msgid "buildings"
-msgstr "зданий"
-
-msgctxt "consumption_buildings_one"
+# One "building", two to four "здания", five and more "зданий" — the rule itself is
+# declared by Plural-Forms in the header of this file, so the number of forms here has
+# to match nplurals exactly.
+msgctxt "consumption_buildings"
 msgid "building"
-msgstr "здание"
+msgid_plural "buildings"
+msgstr[0] "здание"
+msgstr[1] "здания"
+msgstr[2] "зданий"
 
 msgctxt "covers.name"
 msgid "Coral Reef"
@@ -5670,10 +5652,6 @@ msgid "Fresh water passes through in a chain (up to 4 tiles)"
 msgstr "Передача пресной воды по цепочке (до 4 гексов)"
 
 msgctxt "modifiers.tech_modifiers.name"
-msgid "Mine, quarry, animal mill, oilmaker's house, weaver's and silkmaker's house, mason's, carpenter's and jeweler's workshop: +25% production"
-msgstr "Шахта, каменоломня, мельница с животной тягой, маслобойня, дом маслодела, дом ткача и ткацкая мастерская, дом шелковода, мастерские каменотёса, плотника и ювелира: +25% к производству"
-
-msgctxt "modifiers.tech_modifiers.name"
 msgid "Mine, quarry, bloomery, smelter: +25% production only where fresh water is available"
 msgstr "Шахта, каменоломня, сыродутная печь, плавильня: +25% к производству только при наличии пресной воды"
 
@@ -5876,6 +5854,14 @@ msgstr "Свечи"
 msgctxt "product_groups.name"
 msgid "Precision Instruments"
 msgstr "Точные инструменты"
+
+msgctxt "product_groups.name"
+msgid "Meat"
+msgstr "Мясо"
+
+msgctxt "product_groups.name"
+msgid "Lamp Oils"
+msgstr "Ламповые масла"
 
 msgctxt "professions.description"
 msgid "A pseudo-profession that covers the whole population of the city, including employed citizens."
@@ -8191,7 +8177,7 @@ msgstr "Даёт возможность строить лесную делянк
 
 msgctxt "technologies.description"
 msgid "Allows you to build improvements on explored resource hexes outside the Region. Such an outpost needs a road to the city and costs coins on top of labour; the further from the city, the more expensive."
-msgstr "Позволяет строить улучшения на разведанных гексах с ресурсами вне Региона.\nТакая фактория требует дороги до города и стоит монет в дополнение к труду; чем дальше от города, тем дороже."
+msgstr "Позволяет строить улучшения на разведанных гексах с ресурсами вне Региона. Такая фактория требует дороги до города и стоит монет в дополнение к труду; чем дальше от города, тем дороже."
 
 msgctxt "technologies.description"
 msgid "Allows you to build kilns: limestone → lime, alunite → alum."
@@ -9555,10 +9541,6 @@ msgstr "Пресноводный источник: акведук частичн
 msgid " Distance to city: %d hex(es)"
 msgstr " Расстояние до города: %d гекс."
 
-#: data/crafts/metalworking.json data/products/metalworking.json
-msgid "Tools of <city_name> Steel"
-msgstr "Инструменты из стали «<city_name>»"
-
 msgctxt "covers.name"
 msgid "Volcano"
 msgstr "Вулкан"
@@ -9581,6 +9563,12 @@ msgstr "Минеральная вода"
 msgctxt "improvements.name"
 msgid "Spring Catchment"
 msgstr "Каптаж источника"
+
+# The name of a language in its own tongue, keyed by its code: the settings read it
+# from the catalog of that language, so the list reads natively in any interface.
+msgctxt "language.name"
+msgid "ru"
+msgstr "Русский"
 
 #: data/professions.json
 msgctxt "professions.name"
@@ -9606,6 +9594,93 @@ msgctxt "covers.name"
 msgid "Salt Spring"
 msgstr "Солёный источник"
 
+# The same cover named inside a list after a terrain ("Тропики, холмы, тропический лес"),
+# where the language decides the case of the later parts. A language without these forms
+# reads the plain name everywhere.
+msgctxt "covers.name_in_list"
+msgid "Coral Reef"
+msgstr "коралловый риф"
+
+msgctxt "covers.name_in_list"
+msgid "Forest"
+msgstr "лес"
+
+msgctxt "covers.name_in_list"
+msgid "Moss and Lichen"
+msgstr "мхи и лишайники"
+
+msgctxt "covers.name_in_list"
+msgid "None"
+msgstr "нет"
+
+msgctxt "covers.name_in_list"
+msgid "Oasis"
+msgstr "оазис"
+
+msgctxt "covers.name_in_list"
+msgid "Reeds"
+msgstr "тростник"
+
+msgctxt "covers.name_in_list"
+msgid "Sparse Forest"
+msgstr "редколесье"
+
+msgctxt "covers.name_in_list"
+msgid "Sparse Taiga"
+msgstr "редкая тайга"
+
+msgctxt "covers.name_in_list"
+msgid "Sparse Temperate Dry Forest"
+msgstr "редкий умеренный сухой лес"
+
+msgctxt "covers.name_in_list"
+msgid "Sparse Temperate Rainforest"
+msgstr "редкий умеренный дождевой лес"
+
+msgctxt "covers.name_in_list"
+msgid "Sparse Tropical Dry Forest"
+msgstr "редкий сухой тропический лес"
+
+msgctxt "covers.name_in_list"
+msgid "Sparse Tropical Rainforest"
+msgstr "редкий влажный тропический лес"
+
+msgctxt "covers.name_in_list"
+msgid "Taiga"
+msgstr "тайга"
+
+msgctxt "covers.name_in_list"
+msgid "Temperate Dry Forest"
+msgstr "умеренный сухой лес"
+
+msgctxt "covers.name_in_list"
+msgid "Temperate Rainforest"
+msgstr "умеренный дождевой лес"
+
+msgctxt "covers.name_in_list"
+msgid "Tropical Dry Forest"
+msgstr "сухой тропический лес"
+
+msgctxt "covers.name_in_list"
+msgid "Tropical Rainforest"
+msgstr "влажный тропический лес"
+
+msgctxt "covers.name_in_list"
+msgid "Mountain Spring"
+msgstr "горный источник"
+
+msgctxt "covers.name_in_list"
+msgid "Volcano"
+msgstr "вулкан"
+
+msgctxt "covers.name_in_list"
+msgid "Mineral Spring"
+msgstr "минеральный источник"
+
+msgctxt "covers.name_in_list"
+msgid "Salt Spring"
+msgstr "солёный источник"
+
 #: data/resources/minerals.json
 msgctxt "resources.name"
 msgid "Salt Spring"
@@ -9614,30 +9689,6 @@ msgstr "Солёный источник"
 msgctxt "resources.name"
 msgid "Coinage"
 msgstr "Чеканка монет"
-
-msgid "Oil Mill"
-msgstr "Маслобойня"
-
-msgid "Wedge presses squeeze oil from batches of oil crops."
-msgstr "В маслобойне отжимают растительное масло клиновыми прессами."
-
-msgid "Wedge Oil Press"
-msgstr "Клиновой маслобойный пресс"
-
-msgid "Unlocks the oil mill."
-msgstr "Открывает маслобойню."
-
-msgid "Vat Fermentation"
-msgstr "Чановое брожение"
-
-msgid "Fermentation Workshop"
-msgstr "Бродильный цех"
-
-msgid "Unlocks the fermentation workshop."
-msgstr "Открывает бродильный цех."
-
-msgid "Large wooden vats hold separate batches of fermenting drink or vinegar."
-msgstr "В больших деревянных чанах готовят отдельные партии напитков или уксуса."
 
 msgctxt "buildings.name"
 msgid "Paper Mill"
@@ -9895,6 +9946,10 @@ msgctxt "crafts.description"
 msgid "Gold struck into the heaviest coin of the city, kept for its largest bargains."
 msgstr "Золото, отчеканенное в самую тяжёлую монету города, хранимую для самых крупных сделок."
 
+msgctxt "crafts.description"
+msgid "Heats oil shale in a closed retort to recover crude shale oil."
+msgstr "Нагревает горючий сланец в закрытой реторте, чтобы получить сырое сланцевое масло."
+
 msgctxt "technologies.description"
 msgid "Allows you to build the Mint, which strikes coins for the city.\nEach batch of coin leaves a seigniorage in the treasury: the more metal a strike takes, the more coin the treasury keeps."
 msgstr "Позволяет строить монетный двор, который чеканит монету для города.\nКаждая партия монеты оставляет в казне сеньораж: чем больше металла берёт чеканка, тем больше монеты остаётся казне."
@@ -9949,6 +10004,10 @@ msgstr "Доход от торговли на внутреннем рынке: +
 msgctxt "modifiers.tech_modifiers.name"
 msgid "External-market trade income: +10%"
 msgstr "Доход от торговли на внешнем рынке: +10%"
+
+msgctxt "modifiers.tech_modifiers.name"
+msgid "Mine, quarry, animal mill, oil mill, oilmaker's, weaver's and silkmaker's houses, weaver's, mason's, carpenter's and jeweler's workshops: +25% production"
+msgstr "Шахты, каменоломни, мельницы с животной тягой, маслобойни, дома маслодела, ткача и шелкопряда, мастерские ткача, каменотёса, плотника и ювелира: +25% к производству"
 
 msgid " × %.2f from researched technologies"
 msgstr " × %.2f от изученных технологий"
@@ -10148,3 +10207,55 @@ msgstr "Суда строили независимо там, где были в�
 msgctxt "professions.flavor"
 msgid "Butchery is as old as domestication: once animals were kept, killing and dividing the carcass followed. Stone and bone knives preceded metal, and customs differed — halal and kosher rules, pig butchery in East Asia, llama and camel butchery in the Andes and Central Asia.\n\nButchers bled and dressed the animal, split the hide, removed organs and cut meat into pieces for cooking, drying or salting. Nothing was wasted: fat became tallow, skin became leather, bones and sinew served other trades. The work was often done outdoors, shaped by custom, season and household need."
 msgstr "Мясничество так же старо, как одомашнивание: когда животных стали держать, за убоем последовала и разделка туши. Каменные и костяные ножи предшествовали металлическим, а обычаи различались — правила халяль и кашер, разделка свиней в Восточной Азии, лам и верблюдов в Андах и Центральной Азии.\n\nМясники обескровливали и свежевали животное, снимали шкуру, удаляли внутренности и резали мясо на куски для варки, сушки или засолки. Ничто не пропадало: жир шёл на сало, шкура — на кожу, кости и сухожилия — другим ремеслам. Работа часто шла на открытом воздухе, определяемая обычаем, сезоном и нуждами дома."
+
+msgctxt "buildings.name"
+msgid "Oil Mill"
+msgstr "Маслобойня"
+
+msgctxt "buildings.description"
+msgid "Wedge presses squeeze oil from batches of oil crops."
+msgstr "В маслобойне отжимают растительное масло клиновыми прессами."
+
+msgctxt "buildings.name"
+msgid "Fermentation Workshop"
+msgstr "Бродильный цех"
+
+msgctxt "buildings.description"
+msgid "Large wooden vats hold separate batches of fermenting drink or vinegar."
+msgstr "В больших деревянных чанах готовят отдельные партии напитков или уксуса."
+
+msgctxt "technologies.name"
+msgid "Wedge Oil Press"
+msgstr "Клиновой маслобойный пресс"
+
+msgctxt "technologies.description"
+msgid "Unlocks the oil mill."
+msgstr "Открывает маслобойню."
+
+msgctxt "technologies.name"
+msgid "Vat Fermentation"
+msgstr "Чановое брожение"
+
+msgctxt "technologies.description"
+msgid "Unlocks the fermentation workshop."
+msgstr "Открывает бродильный цех."
+
+msgctxt "crafts.name"
+msgid "Tools of <city_name> Steel"
+msgstr "Инструменты из стали «<city_name>»"
+
+msgctxt "crafts.name"
+msgid "Shale Oil"
+msgstr "Сланцевое масло"
+
+msgctxt "resources.name"
+msgid "Tools of <city_name> Steel"
+msgstr "Инструменты из стали «<city_name>»"
+
+msgctxt "resources.name"
+msgid "Oil Shale"
+msgstr "Горючий сланец"
+
+msgctxt "resources.name"
+msgid "Shale Oil"
+msgstr "Сланцевое масло"

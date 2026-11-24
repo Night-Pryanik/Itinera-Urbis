@@ -78,12 +78,60 @@ The rules of the community are in [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md).
 ## Translations
 
 English is the source language: the English text of a string is its key, and it
-lives in the code and in the JSON of the data. The Russian catalog is
-[`locale/ru.po`](../locale/ru.po), and the compiled catalog the game loads is
-[`locale/ru.mo`](../locale/ru.mo).
+lives in the code and in the JSON of the data. Each target language has one
+catalog, [`locale/<code>.po`](../locale) — the Russian one is
+[`locale/ru.po`](../locale/ru.po).
+
+Godot reads the `.po` itself: the engine has a loader for the format
+(`TranslationLoaderPO`), so the catalog is loaded straight from
+`res://locale/<code>.po` — the paths listed under
+`internationalization/locale/translations` in `project.godot` — and no import
+step, no `.godot/imported/` copy and no other build step takes part. The engine
+can read `.mo` as well, but nothing in this project reads one: a `.mo` file in the
+repository would be a second copy that nothing loads, nothing checks and nothing
+updates with the `.po`, so the catalog is kept in `.po` alone.
 
 A new string therefore needs two things: the English text in the code, and the
-Russian translation in `locale/ru.po`.
+translation in `locale/<code>.po`.
+
+### A new language
+
+1. Put `locale/<code>.po` next to the others. The header of the file carries the
+   `Language:` field and the `Plural-Forms` rule of that language.
+2. Register it in `project.godot`:
+
+   ```
+   locale/translations=PackedStringArray("res://locale/ru.po", "res://locale/fr.po")
+   ```
+
+No code change is needed: the languages the settings offer are read from the
+catalogs that are loaded (`scripts/localization_manager.gd`), not from a table in
+the code.
+
+Two optional pieces then make the language read like a language of its own:
+
+- an entry that names it in its own tongue, `msgctxt "language.name"` with the
+  code as the `msgid` (`"fr"` → `"Français"`). Without it the list falls back to
+  the engine's language table, which gives the English name (`"French"`);
+- `locale/city_names_<code>.json`, the pool of invented city names — a language
+  without it takes the source pool.
+
+The plural forms of a string are a `msgid_plural` entry with one `msgstr[n]` per
+form that `Plural-Forms` declares for the language:
+
+```
+msgctxt "consumption_buildings"
+msgid "building"
+msgid_plural "buildings"
+msgstr[0] "здание"
+msgstr[1] "здания"
+msgstr[2] "зданий"
+```
+
+The rule belongs to the catalog, and the code asks the engine for the form it
+needs (`TranslationServer.translate_plural`), so a language with two forms, with
+one form, or with six needs no change in the code.
+
 
 ## Mods
 
