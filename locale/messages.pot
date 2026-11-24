@@ -9837,197 +9837,197 @@ msgid " × %.2f from researched technologies"
 msgstr ""
 
 msgctxt "professions.flavor"
-msgid "A boat and a dock reach fishing grounds the shore cannot reach."
+msgid "Counting people is among the oldest acts of government: Egyptian grain enumerations, Chinese household registers and Inca quipu records all listed residents so that rations and dues could be shared out. The heads counted were usually households, not individuals, and the list was rewritten as families grew or moved.\n\nThe notion that every resident draws a common share, employed or idle, runs through many traditions — from communal grain distributions to the poll assessments of market towns. Keeping such a roll turned an abstract population into a body the town could provision and tax."
 msgstr ""
 
 msgctxt "professions.flavor"
-msgid "A catchment at a spring saves carrying water from the stream for every vessel."
+msgid "Digging sticks and hoes cultivated ground millennia before the plough. Early farmers worked floodplains and clearings by hand: maize, beans and squash in Mesoamerica, rice in Asian wetlands, millet and sorghum in Africa, wheat in West Asia. Such plots demanded weeding and water control, not draft power.\n\nThe animal-drawn ard let a household break harder soil and cover more ground; iron shares later eased the work. Where draft animals were scarce, intensive hand cultivation persisted — Asian wet-rice terraces, garden plots elsewhere — making the plough one option among many, not a single path."
 msgstr ""
 
 msgctxt "professions.flavor"
-msgid "A knife, a hook and a steady hand turn a live animal into meat that keeps."
+msgid "Herding grew wherever grazing animals were domesticated: sheep and goats in West Asia, cattle in Africa and South Asia, yaks on the Tibetan plateau, llamas in the Andes, reindeer in northern Eurasia. Herders moved with their animals to pasture and water, protecting them and counting heads at the fold.\n\nSeasons shaped the work — summer uplands, winter lowlands, long treks between. Some communities stayed mobile, trading their products; others folded the flock into village life. The herd was a walking store of food, fibre and fuel, its size counted in an economy of living animals."
 msgstr ""
 
 msgctxt "professions.flavor"
-msgid "A loom turns thread into cloth more evenly than hands alone can."
+msgid "Keeping poultry and small stock around the house needed no pasture, only scraps and shelter. Chickens descend from wild fowl of South and Southeast Asia and spread through village yards worldwide; ducks were domesticated in Asia, guinea fowl in Africa, turkeys in Mesoamerica. Every region had its own barnyard bird.\n\nBirds that foraged and bred in a yard made this work a household task beside gardening and cooking. As flocks grew, keepers added coops and selective breeding, turning a few scavengers into a steady supply of eggs, meat and feathers close to the door."
 msgstr ""
 
 msgctxt "professions.flavor"
-msgid "A tally of residents lets a town collect its dues without guessing at the headcount."
+msgid "Pigs were domesticated independently in West and East Asia and spread across Asia, Africa and the Pacific islands wherever they could be fed. Omnivorous rooters, they thrived on scraps, so a sty beside the house needed no open pasture.\n\nAcross Asia and Oceania pigs were raised for feasts and counted as wealth; elsewhere they supplied a household with meat and lard. Herders drove them to woodland for mast, fattened them on kitchen waste and later penned them in sties, turning a scavenger into a managed animal."
 msgstr ""
 
 msgctxt "professions.flavor"
-msgid "A timber frame, planked and sealed, gives a hull that carries goods over water."
+msgid "Mining followed useful stone and metal below the surface: turquoise and copper in West Asia, tin in Central Asia, gold in Nubia and the Andes. Before explosives, picks and hammers broke rock, or fire-setting heated a face until water cracked it.\n\nDeep galleries required timber props, ventilation and drainage, and work was organized around shifts and haulage. Ore was sorted and crushed at the mouth, then sent to furnaces. Tools changed, but the sequence — locate a seam, follow it underground, hold the roof up, lift the rock out — was much the same everywhere."
 msgstr ""
 
 msgctxt "professions.flavor"
-msgid "A wick dipped again and again in melted fat or wax becomes a candle that stores light."
+msgid "Open quarries supplied stone for tools, walls and roads long before deep shafts were needed. Flint came from pits in many regions; limestone, sandstone, granite and marble were worked at surface outcrops. Egyptian temple blocks, Inca masonry and dressed stone in African and Asian towns all began as cuts in rock.\n\nQuarrymen split stone with wedges and hammers, levered blocks free and dragged them away. Growing settlements turned scattered collecting into organized cuttings with tool shops and transport routes. The methods stayed conservative, but the scale and the distance blocks travelled grew enormously."
 msgstr ""
 
 msgctxt "professions.flavor"
-msgid "Beaten plant fibre suspended in water settles into thin sheets on a frame."
+msgid "Wild nests were robbed before bees were kept, and keeping arose independently in many lands: clay hives in West Asia and Egypt, woven or log hives across Africa and Asia, stingless bees tended by the Maya. Any seasonal bloom could support a few hives.\n\nColonies could be moved to follow flowering, so the craft travelled with its owner, not to one field. Baskets and hollow logs gave way to hives with movable parts, letting keepers inspect the brood and take honey without killing the colony. Wax and honey travelled far in trade."
 msgstr ""
 
 msgctxt "professions.flavor"
-msgid "Clay is dug, left to weather and sorted before a potter can shape or fire it."
+msgid "Wild grapes were gathered first; cultivation took hold in the Caucasus and West Asia, where the oldest evidence of winemaking comes from, and spread with trade across Eurasia. Vineyards trained vines on the ground, on trellises or on shading pergolas.\n\nDressing vines was a yearly cycle of pruning, tying and weeding, then one concentrated harvest. Since the fruit ripened together, the work needed many hands in a few weeks. Grapes could be eaten fresh, dried or pressed, so the dresser's skill lay in timing and care, not heavy machinery."
 msgstr ""
 
 msgctxt "professions.flavor"
-msgid "Coins are struck from weighed metal, and the stamp is a promise the treasury must honour."
+msgid "Clay was dug wherever settlements lay near usable deposits: river silt in Mesopotamia and on the Nile, loess in China, weathered rock in Africa. Raw clay is seldom workable, so diggers weathered it in frost and rain, then soaked and kneaded it, letting grit settle out.\n\nKnowing which seam would fire without cracking was a skill handed down alongside the digging. As towns grew, clay getting became a separate trade serving potters, brick makers and tablet scribes. The tools stayed simple — pick, basket, settling pit — but the scale grew from a household pit to whole workshops."
 msgstr ""
 
 msgctxt "professions.flavor"
-msgid "Copying and comparing texts keeps knowledge alive even where no school stands."
+msgid "In waterlogged ground, dead plants build up as peat. Turf cutting for fuel is an old practice in the cool bogs of northern Eurasia and North America, though its earliest dates are uncertain — turf leaves little trace. Where wood was scarce, a bog could heat a household.\n\nCutters stripped the surface, sliced wet turf with a spade and stacked it in rows to dry. Dry peat burned slowly and evenly, but winning it took space and labour. Hand cutting later gave way to drainage, machines and briquettes — the fuel stayed the same; only gathering changed."
 msgstr ""
 
 msgctxt "professions.flavor"
-msgid "Every resident is counted here, whether the day is spent in a workshop or at home; the common needs of the town are shared by all."
+msgid "Settlements formed near springs, and drawing water was among the first town tasks. Catchments took many forms: stone basins in West Asia, stepwells in South Asia, cenotes in Mesoamerica, channels in the Andes. Mineral springs, tasting of salts, were prized for healing and drew crowds.\n\nWater was carried in jars; catchments and gutters saved trips, then pipes and carts brought it nearer. Since a polluted well could sicken a quarter, keepers of springs and conduits held a responsible post. The work shifted from carrying to managing a supply, yet the spring kept its value."
 msgstr ""
 
 msgctxt "professions.flavor"
-msgid "Fields were tilled with hand tools long before the plough; the plough let one household work more ground."
+msgid "Vessels were shaped by hand for millennia before the wheel: pinched, coiled, smoothed, then fired in an open fire or pit. Wheel and kiln appeared at different times in West Asia, the Indus valley, Egypt and China, letting one potter throw thin walls and fire wares evenly.\n\nThe wheel was never universal. Across the Americas, Africa and Oceania, potters coiled and burnished fine ceramics without a wheel or kiln, their work no less skilled. Where wheels spread, the craft favored speed and uniform output — pots, bricks, tablets — while hand methods continued for special wares."
 msgstr ""
 
 msgctxt "professions.flavor"
-msgid "Herding follows the seasons: the flock moves to fresh pasture and its heads are counted at the fold."
+msgid "Farmers grew crops for fibre, colour and scent: cotton in the Indus valley and Mesoamerica, ramie in East Asia, pepper in South Asia, indigo in Africa, tobacco and cacao in the Americas. Many were used locally long before travelling far; some crossed continents only after contact.\n\nThese crops demanded more care than grain: seedbeds, transplanting, weeding and a dry place to cure the harvest. Their value lay in exchange, so growers were tied to markets and traders. The work — seed, tending, drying — changed little, but the range of plants and the distances they travelled grew."
 msgstr ""
 
 msgctxt "professions.flavor"
-msgid "Poultry and small stock stay near the house, where scraps and a roof are enough."
+msgid "Tar reaches the surface on its own: bitumen seeps in Mesopotamia, asphalt rises at Trinidad's Pitch Lake, conifers bleed resin across Eurasia and North America. People used it as glue and sealant long before kilns; Mesopotamian builders bonded bricks with natural bitumen.\n\nGathering seepage and resin was simple; boiling drove off water and thickened it into pitch for caulking boats. With growing demand, collectors turned to destructive distillation — heating wood in a closed pit to make tar and charcoal. The source shifted from a seep to a furnace, but the uses stayed the same."
 msgstr ""
 
 msgctxt "professions.flavor"
-msgid "Pigs root for scraps and can be kept beside the houses instead of out in the fields."
+msgid "Alkali salts form where water evaporates from closed basins: natron in Egypt, trona in East Africa, deposits in dry inland Asia. The same chemistry also came from plants — salt-tolerant species were burned and their ash soaked for carbonate — a practice known around the Mediterranean and across Asia.\n\nGathering crust or ash was only the start: it had to be dissolved, strained and evaporated for use. Glassmakers used it to melt sand, soapmakers to cut fat, dyers to fix colour. For centuries supply followed the deposits and plants; factory-made soda freed the trade from those places."
 msgstr ""
 
 msgctxt "professions.flavor"
-msgid "Ore was followed into the ground with pick and fire; timber props held the galleries open."
+msgid "Fish were taken long before boats: bone hooks, woven nets and spears appear at coastal sites everywhere. Outrigger canoes in the Pacific, dhows in the Indian Ocean, junks in East Asia and kayaks in the Arctic carried fishers beyond the surf to grounds the shore could not reach.\n\nA dock made the boat a tool: a place to land, mend nets and cure the catch. Hulls and sails improved, voyages lengthened, and dried or salted fish went inland. The craft adapted to local waters, but its rhythm of setting, hauling and preserving stayed the same."
 msgstr ""
 
 msgctxt "professions.flavor"
-msgid "Open cuts supplied stone for walls and roads before deeper galleries were needed."
+msgid "Felling trees with stone and later metal axes is among humanity's oldest crafts; people cut timber for fuel, shelter and boats long before any written record, on every forested continent from the Amazon to Siberia. The work demanded seasonal camps, skids, rafts and teams hauling logs to water or workshops. Over time the axe gave way to the two-man saw and, much later, mechanical saws, but the essential pattern — select, fell, drag, float — stayed remarkably constant across regions."
 msgstr ""
 
 msgctxt "professions.flavor"
-msgid "Hives can stand wherever flowers grow, so wax and honey were carried with the keeper."
+msgid "Charcoal making is nearly as old as controlled fire: wood heated slowly with little air drives off water and tar, leaving a light, hot-burning fuel. The technique appears independently wherever metalworkers needed high heat — in African and Asian furnaces as well as European forests — usually in conical pits or earth-covered mounds tended for days. Burners watched smoke colour and sealed cracks to control air. Even after coal and coke displaced charcoal in heavy industry, the same craft survived for forge fuel and cooking."
 msgstr ""
 
 msgctxt "professions.flavor"
-msgid "Vines are trained and pruned by hand, and the whole harvest arrives in one short season."
+msgid "Glass first emerged where sand, an alkali and sufficient heat met; the earliest vessels and beads come from Egypt and Mesopotamia, and glassmaking independently took root in China and elsewhere. Craftsmen melted the batch in crucibles or tank furnaces, then shaped it by winding around a core, casting, or — a later innovation — blowing through a tube. The trade travelled widely with migrant workshops, and its recipes shifted from natron to plant ash depending on local supplies, so each region produced its own characteristic glass."
 msgstr ""
 
 msgctxt "professions.flavor"
-msgid "Wet turf cut from a bog and stacked to dry becomes fuel that burns slowly and evenly."
+msgid "Extracting metal from ore by heat is an ancient, widespread art: copper was reduced from its ores in Anatolia, the Balkans, the Andes and Africa, each tradition developing its own furnace and flux. Smelters built clay shafts or bowl furnaces, layered ore with charcoal, and tapped the resulting metal or bloom. The basic chemistry changed little for millennia, though bellows, water power and larger furnaces steadily raised output. What changed most was scale, not the fundamental act of separating metal from stone."
 msgstr ""
 
 msgctxt "professions.flavor"
-msgid "The wheel and the kiln let one maker turn soft clay into vessels, bricks and tablets."
+msgid "Once metal could be won from ore, shaping it by hammering followed almost everywhere: smiths in Africa, Asia, Europe and the Americas forged tools, weapons and ornaments at a charcoal hearth. The craft demanded judgement of heat and hammer blow, and it absorbed new metals as they arrived — bronze, iron, steel, brass. Smiths often doubled as repairers and traders, their portable skill travelling with caravans and settlements. Mechanised rolling and casting later took over bulk production, yet hand forging persisted where a strong, custom piece was needed."
 msgstr ""
 
 msgctxt "professions.flavor"
-msgid "Technical and spice crops need seedbeds, weeding and a dry place to keep the harvest."
+msgid "Before modern laboratories, what passed for science often meant the copying, comparing and commenting on texts — work done in temples, monasteries, madrasas and courts across Asia, Africa and Europe. Scholars preserved astronomical tables, medical recipes and legal lore, adding observations of their own. Institution-building varied: some traditions centred on a single royal observatory, others on networks of scribes. The printing press and later the experimental method widened the circle, but the core activity — careful recording and critical reading of inherited knowledge — remained recognisable."
 msgstr ""
 
 msgctxt "professions.flavor"
-msgid "Tar seeps from the ground and certain trees; boiling it down thickens it into pitch."
+msgid "Coins appeared independently in several regions — Lydia, China, and the Indian subcontinent among them — as stamped metal pieces whose mark guaranteed weight and purity. Mint workers weighed and assayed bullion, cast or cut blanks, and struck them between dies; the ruler's image turned a lump of metal into trusted money. Techniques spread by trade and conquest, from hammered flakes to milled edges. Debasement and re-striking were recurring temptations, so the assay and the stamp were as much political as technical acts."
 msgstr ""
 
 msgctxt "professions.flavor"
-msgid "Natural soda is gathered from deposits and plant ash and washed before glass or soap can use it."
+msgid "Organised taxation is as old as cities: ancient Egypt, Mesopotamia, China and the Inca state all kept censuses and assessed dues in grain, labour or coin. Collectors tallied households and harvests, assessed obligations and handed the proceeds to the treasury, often farming the task out to contractors who kept a cut. Methods ranged from tally sticks and papyrus rolls to quipu knots in the Andes. The underlying need — a reliable count of people and produce — outlasted every change of currency or regime."
 msgstr ""
 
 msgctxt "professions.flavor"
-msgid "Trees are felled with axe and saw, then hauled to the plots that need timber."
+msgid "Fermenting grape juice into wine is an ancient art, with evidence of production in the Caucasus, the Near East and the Mediterranean, and independent traditions wherever grapes grew. Makers crushed fruit, pressed the must and let natural yeasts work in clay vessels, later in wooden casks; the container shaped flavour as much as the grape. The craft spread with trade and colonisation across continents, and wherever settlers carried vines they rebuilt presses and cellars. Techniques evolved from skin-fermented jars to controlled fermentation, yet the basic sequence — crush, press, ferment, age — endures."
 msgstr ""
 
 msgctxt "professions.flavor"
-msgid "Wood baked slowly with little air turns to charcoal, which burns hotter than raw wood."
+msgid "Beer-like fermented grain drinks were brewed independently in Mesopotamia, Egypt, China and the Americas, often before bread and beer parted ways as separate crafts. Brewers mashed crushed grain with water, sometimes adding hops or other bittering plants, boiled the wort and let it ferment in cool vessels. In many regions brewing was a household or temple activity; later it became a specialised trade with proprietary recipes. The arrival of temperate grains, reliable refrigeration and industrial yeast transformed scale and consistency, but the mash-and-ferment core is ancient."
 msgstr ""
 
 msgctxt "professions.flavor"
-msgid "Sand and soda melt in a hot furnace and cool into glass without any finer tool."
+msgid "Pressing oil from seeds and fruit is a widespread ancient technology: olives in the Mediterranean, sesame and linseed in Asia and Africa, and later groundnuts and maize in the Americas. Makers crushed the material under edge mills or mortars and squeezed it in beam or screw presses, sometimes heating or leaching to raise yield. Oil served food, lamp light, soap and ritual. The screw press and, much later, hydraulic and expeller presses increased output, yet the essential idea — crush and squeeze — remained the same."
 msgstr ""
 
 msgctxt "professions.flavor"
-msgid "Ore and fuel in a heated furnace yield metal; the heat does the work, wherever the furnace stands."
+msgid "Perfumery grew from the preparation of aromatic resins, oils and flowers for ritual, medicine and adornment — practices documented in Egypt, India, Arabia, China and among Indigenous peoples of the Americas. Makers ground, steeped, macerated or distilled fragrant material, fixing scents in fats, oils or alcohol. Distillation improved and expanded the palette of essential oils; alcohol-based perfumes spread widely through trade. The desire to capture and preserve scent is near-universal, and the same techniques were reinvented in many places with local flowers, woods and resins."
 msgstr ""
 
 msgctxt "professions.flavor"
-msgid "Metal is hammered while hot and soft; tools and ornaments leave the same hearth."
+msgid "Colouring textiles is an ancient, widespread craft: indigo in Asia, Africa and the Americas, madder and safflower across Eurasia, cochineal in the Americas, and many local roots and barks. Dyers prepared baths, used mordants such as alum or tannin to fix colour, and layered dips to build shades. Recipes were closely guarded and varied by region and available plants. The arrival of synthetic dyes in the nineteenth century displaced many natural ones, but for millennia the dyer's skill lay in knowing which local material would yield a fast, repeatable colour."
 msgstr ""
 
 msgctxt "professions.flavor"
-msgid "Grapes are pressed and the juice left to ferment; the vessels matter as much as the fruit."
+msgid "Weaving predates recorded history; fragments of woven cloth survive from neolithic sites in the Near East, Asia and the Americas, and the loom was developed independently in many regions. Weavers interlaced warp and weft threads on frames ranging from simple backstrap looms to large treadle machines, producing plain cloth, patterned textiles and carpets. The craft supported entire households and economies — cloth served as currency and tribute in places such as the Andes. Mechanisation later transformed output in some regions, yet hand weaving endures wherever patterned, local fabric is valued."
 msgstr ""
 
 msgctxt "professions.flavor"
-msgid "Grain is mashed, boiled with hops and left to ferment in a cool vessel."
+msgid "Paper was invented in China, where craftsmen beat mulberry and other fibres into pulp, suspended them in water and lifted thin sheets on a screened frame; the technique spread through Asia to the Islamic world and beyond. Makers cooked and macerated plant material, formed sheets, pressed and dried them, producing a cheap, light writing surface that gradually displaced costlier materials. Mills using water power and, later, machines for pulping and forming mass-produced paper transformed scale. The essential operation — fibre in water, sheet on a screen — remained unchanged for centuries."
 msgstr ""
 
 msgctxt "professions.flavor"
-msgid "Olives and oilseeds are crushed and pressed; a press gives more than a hand can."
+msgid "Writing skins were prepared wherever livestock were raised: hides were soaked in lime, scraped clean of hair and flesh, stretched on a frame and dried into a smooth, durable surface. This craft is documented in Egypt and across Eurasia, with regional variants in the treatment of skins from calf, goat and sheep. Parchment was costly and labour-intensive, reserved for important texts, and its quality depended on careful scraping and stretching. Paper eventually displaced it for everyday writing, but parchment remained the medium of choice for formal and illuminated manuscripts."
 msgstr ""
 
 msgctxt "professions.flavor"
-msgid "Resins and flowers give their scent when ground, steeped or gently distilled."
+msgid "Bound books arose in several traditions at once: Roman scribes sewed folded quires, Coptic binders stitched them into leather boards, and East Asian makers folded and stapled sheets into their own formats. The codex won out because it could be carried, shelved and opened at any page.\n\nEarly binders sewed sheets onto cords and glued the spine beneath a cover; presses and tooled decoration came later. Workshops followed literacy, paper and trade routes, so the craft travelled with schools and merchants rather than belonging to one empire."
 msgstr ""
 
 msgctxt "professions.flavor"
-msgid "Roots, bark and insects give colour to cloth when steeped in a mordant bath."
+msgid "Turning raw hide into stable leather is ancient and widespread: Egyptian and Mesopotamian workshops used vegetable tannins, while peoples of the Americas and the Pacific chewed or smoked skins and used fats and brains. Mineral tanning with alum and chrome came much later.\n\nThe trade was often kept outside town walls because of its smell and foul water. Tanners soaked hides in lime, worked them with bark or salts, then scraped and stretched them. Leather then moved into saddlery, footwear, bookbinding and harness wherever animals were raised."
 msgstr ""
 
 msgctxt "professions.flavor"
-msgid "Hides are limed, scraped and stretched dry into a surface that takes ink."
+msgid "Woodworking is among the oldest crafts: chopping, splitting and joining timber needed only stone and copper tools. Carpenters raised frames, bridges, boats and tools in every region where trees grew, from the Nile to the forests of East Asia and the Americas.\n\nThe toolkit changed slowly — axes, adzes, saws, chisels and pegs did most of the work for millennia. Joinery that locked pieces without nails let serious structures stand. Carpenter's work was the framework beneath nearly every other trade: houses, carts, looms, ploughs and the hulls of ships."
 msgstr ""
 
 msgctxt "professions.flavor"
-msgid "Sheets are sewn and covered so that a text can be carried and kept."
+msgid "Coopery grew wherever goods had to travel in bulk: fitted staves bound by hoops made a vessel that was light, strong and repairable. Ancient Egyptian and Mesopotamian scenes show wooden casks, and the craft is documented in early China and among peoples of the Americas.\n\nA cooper cut staves, heated them to bend, then drove hoops tight so the joints swelled shut. Sealed with tar or resin, the barrel carried water, wine, oil, grain and salted fish. Its portability made it a partner of trade and shipping long before metal containers existed."
 msgstr ""
 
 msgctxt "professions.flavor"
-msgid "Hides treated with bark or mineral salts stop rotting and can be sewn into goods."
+msgid "Furniture began as few movable pieces: a stool, a mat, a chest. Examples survive from ancient Egypt and China, and from the Americas, where low seats and woven furnishings suited life on the floor. As houses grew more permanent, joinery produced beds, tables and storage.\n\nThe craft balanced comfort, status and available timber. Makers in different regions found their own solutions — lacquered wood in East Asia, inlaid and carved pieces in the Islamic world, joined oak in the north. Luxury furniture followed the same trade routes as the materials and tastes behind it."
 msgstr ""
 
 msgctxt "professions.flavor"
-msgid "Timber is sawn and joined with pegs into frames, tools and furniture."
+msgid "Distillation — boiling a liquid and cooling its vapour — was known in ancient Mesopotamia and Egypt for perfumes and medicines, and independently in Asia. The still spread long before strong drink became its main use, so the technique predates any single spirit.\n\nEarly stills were pots with a cooled lid; later designs added long condensers and repeated runs. Distillers learned to discard the tail and redistil for purity. Spirits, solvents and medicinal waters came from the same apparatus, and the craft followed grain, fruit and sugar wherever they grew."
 msgstr ""
 
 msgctxt "professions.flavor"
-msgid "Staves are cut and bound with hoops; a tight barrel keeps goods dry."
+msgid "Alchemists worked across continents: Chinese and Indian practitioners sought elixirs and transmutations, Hellenistic and Islamic scholars built a huge corpus of laboratory practice, and similar pursuits existed in other traditions. Much of practical chemistry grew out of this search, whatever its mystical goals.\n\nRetorts, alembics, gentle heat and careful weighing let them distil acids, solvents and salts. Recipes were guarded and often written obscurely, so knowledge moved through apprenticeship and trade. When the search for gold faded, the same skills fed pharmacy, metallurgy and the growing study of matter."
 msgstr ""
 
 msgctxt "professions.flavor"
-msgid "Joinery turns plain timber into pieces that make a house usable and comfortable."
+msgid "Jewellery is older than cities: beads of shell, bone and stone appear worldwide, and gold was worked in ancient Egypt, Nubia and the Americas long before contact between them. Few tools were needed, so the craft arose wherever metal and stone could be found.\n\nEarly jewelers hammered, cast, soldered and set stones with punches and bow drills; finer abrasives came later. Pieces served as adornment, currency and grave goods, marking rank. Styles travelled with merchants, and each region developed its own grammar of metal, colour and form."
 msgstr ""
 
 msgctxt "professions.flavor"
-msgid "Fermented drinks heated in a still give a stronger spirit when the vapour is cooled."
+msgid "Soap arose independently in several places: Babylonian tablets describe boiling fats with alkali, and similar recipes appear in ancient Egypt and China. Plant ashes and animal fat were enough, so the craft did not wait for any single civilisation to discover it.\n\nEarly soap was a soft cleansing paste for washing and wool; cheap kinds served fullers and dyers before household use spread. The process changed little for centuries: fat or oil boiled with lye, then salted out and cut. Regions used olive oil, sesame, coconut or tallow, giving local soaps their own character."
 msgstr ""
 
 msgctxt "professions.flavor"
-msgid "Retorts and gentle heat separate acids and solvents from minerals and plants."
+msgid "Candles grew from the simple fact that fat and wax burn with a wick. Clay lamps and rushlights lit homes long before dipped candles; both moulds and dipping appear in ancient Egypt and China and later Islamic lands. No rare material was needed, so the craft arose in many places.\n\nTallow gave a cheap, smoky light, beeswax burned cleaner and cost more; resin and plant waxes found local use. Chandlers dipped wicks, poured moulds and stored candles against dark seasons. Their trade linked the hive, the animal and the household, later church and workshop."
 msgstr ""
 
 msgctxt "professions.flavor"
-msgid "Soft metal is cut and set with stone; the work needs a steady eye more than heavy tools."
+msgid "Stone dressing is prehistoric: hammerstones shaped rough blocks, and communities from the Nile to the Andes raised walls and tombs with them. Mortar was not universal — dry-stone work in many regions needed only skill and patience, while others used mud, lime or gypsum.\n\nMasons quarried, squared and set stone, cutting joints so weight passed cleanly into the wall. Tools changed slowly: bronze and iron chisels, wedges and levers did most of the work for ages. Their craft built houses, bridges, aqueducts and temples, and its proportions were often sacred knowledge passed between masters."
 msgstr ""
 
 msgctxt "professions.flavor"
-msgid "Fat or oil boiled with alkali becomes soap that carries dirt away with water."
+msgid "Preserving food with smoke and drying is ancient and widespread: fish and meat were hung over slow fires in North America, Siberia, Africa and Southeast Asia, each with its own fuels and methods. Only a fire and time were needed, so no single culture can claim the discovery.\n\nSmoke dried the surface, added flavour and helped keep insects and spoilage away; cold smoking treated fish without cooking. Smokers learned to choose woods, control a low fire and judge the season. Cured fish and meat travelled far, feeding households, ships and winter camps long before refrigeration."
 msgstr ""
 
 msgctxt "professions.flavor"
-msgid "Stone is dressed into blocks that carry weight in walls, whether laid dry or in mortar."
+msgid "Grinding grain between stones is among humanity's oldest operations; hand querns appear worldwide from early farming onward. Water-driven mills are documented in the Hellenistic world and later in China, India and the Islamic world, while windmills developed separately in several regions.\n\nThe miller's skill lay in tending the stones, dressing their furrows and regulating grain and water. Mills were community property as much as businesses, and their owners often held a local monopoly. Whether turned by hand, animal, stream or wind, mills stood where grain was grown."
 msgstr ""
 
 msgctxt "professions.flavor"
-msgid "Fish hung over a slow fire dries and takes smoke, which keeps it through the cold season."
+msgid "Sails turned cloth into a machine for catching wind, and the idea is old: Egyptian and Mesopotamian boats carried linen sails, while Pacific and Asian traditions made mats and cloth of their own. Early sails were woven near the shore, so weaver and sailmaker were often one person.\n\nSailmakers cut panels, sewed strong seams, hemmed the edges and treated the cloth with oil or tar against water and rot. They worked to the hull's shape and the wind's strength. The craft followed trade routes and shipyards, and its patterns changed as rigs grew complex."
 msgstr ""
 
 msgctxt "professions.flavor"
-msgid "Millstones turn grain into flour; wind, water and animals have all been used to turn them."
+msgid "Boats were built independently wherever waterways mattered: dugouts, reed bundles, skin frames and planked hulls appear in Africa, the Americas, Asia and the Pacific, often without contact. The problem was always the same — a frame light enough to float and stiff enough to carry.\n\nBuilders shaped timber, lashed or pegged the frame, added planks and sealed seams with tar, resin or clay; some traditions used no metal. Designs reflected local waters: shallow rivers, open coasts or islands. The craft travelled with trade, and each region kept its own way of joining a hull."
 msgstr ""
 
 msgctxt "professions.flavor"
-msgid "Heavy cloth is sewn and treated so a boat or mill can catch the wind."
+msgid "Butchery is as old as domestication: once animals were kept, killing and dividing the carcass followed. Stone and bone knives preceded metal, and customs differed — halal and kosher rules, pig butchery in East Asia, llama and camel butchery in the Andes and Central Asia.\n\nButchers bled and dressed the animal, split the hide, removed organs and cut meat into pieces for cooking, drying or salting. Nothing was wasted: fat became tallow, skin became leather, bones and sinew served other trades. The work was often done outdoors, shaped by custom, season and household need."
 msgstr ""

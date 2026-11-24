@@ -13,6 +13,7 @@
 #     at its native size, and an entity without an icon keeps the picture in place.
 #  6. The page of a profession has its workplaces, its consumption, its description and a
 #     historical note in separate blocks; the links in the first two open the target entity.
+#     A group of goods carries the standard dashed underline and unfolds its members on hover.
 #     The butcher is a professional worker of the slaughterhouse and consumes work tools.
 #  7. A query searches every section at once and survives a refresh and a change of language.
 extends SceneTree
@@ -78,8 +79,14 @@ func _run() -> void:
         _finish(state)
         return
 
+    var back := panel.get_node_or_null("BackButton") as Button
+    check(back != null and back.disabled,
+            "the back button is disabled before the first jump", state)
     check(search.get_global_rect().end.y <= body.get_global_rect().position.y + 1.0,
             "the search field stands above the body", state)
+    check(search.get_global_rect().position.x > (back.get_global_rect().end.x
+            if back != null else 0.0),
+            "the search field stands to the right of the back button", state)
     check(column.get_global_rect().position.x < entities_column.get_global_rect().position.x,
             "the sections stand in the left column", state)
     check(entities_column.get_global_rect().position.x < detail_column.get_global_rect().position.x,
@@ -150,7 +157,7 @@ func _run() -> void:
                 "the detail picture never exceeds 256 pixels", state)
 
     column.get_child(5).pressed.emit()
-    _check_butcher(state, panel, list, gdata)
+    _check_butcher(state, panel, list, gdata, city_ui)
     var profession := _row_with_text(list, str(gdata.get_profession_name("miller")))
     check(profession != null, "the professions section lists the miller", state)
     if profession != null:
@@ -198,7 +205,7 @@ func _run() -> void:
     check(str(gdata.get_profession_name("butcher")) == "Butcher",
             "the name of the butcher is translated", state)
     check(str(gdata.professions.get("butcher", {}).get("flavor", ""))
-            == "A knife, a hook and a steady hand turn a live animal into meat that keeps.",
+            .begins_with("Butchery is as old as domestication"),
             "the historical note of the butcher is translated", state)
     TranslationServer.set_locale(original_locale)
     city_ui.refresh()
@@ -225,7 +232,7 @@ func _run() -> void:
     main_map.queue_free()
     _finish(state)
 
-func _check_butcher(state: Dictionary, panel: Control, list: VBoxContainer, gdata) -> void:
+func _check_butcher(state: Dictionary, panel: Control, list: VBoxContainer, gdata, city_ui) -> void:
     check(str(gdata.get_profession_for_building("slaughterhouse")) == "butcher",
             "the slaughterhouse has the butcher profession", state)
     var row := _row_with_text(list, str(gdata.get_profession_name("butcher")))
@@ -244,10 +251,47 @@ func _check_butcher(state: Dictionary, panel: Control, list: VBoxContainer, gdat
     check(str(labels[0].text).contains("[url=buildings:slaughterhouse]"),
             "the butcher works at the slaughterhouse and the workplace is a link", state)
     var group_name := str(gdata.get_product_group_name("instruments"))
-    check(group_name != "" and str(labels[1].text).contains(group_name),
+    var group_label := _find_underlined(box, group_name)
+    check(group_name != "" and group_label != null,
             "the butcher consumes the group of work tools", state)
-    check(not str(labels[1].text).contains("[url="),
-            "a group of goods is not a link to one entity", state)
+    if group_label == null:
+        return
+    if group_label != null:
+        check(str(group_label.get("underline_text")) == group_name,
+                "the group name carries the dashed underline", state)
+        check(group_label.mouse_filter == Control.MOUSE_FILTER_PASS,
+                "the group label receives the hover", state)
+
+    # Hovering the group opens the same panel the recipes and the costs use.
+    var helpers = city_ui.ui_helpers
+    group_label.mouse_entered.emit()
+    check(helpers != null and helpers.group_tooltip_panel.visible,
+            "hovering a group shows the standard group tooltip", state)
+    if helpers != null and helpers.group_tooltip_panel.visible:
+        check(helpers.group_tooltip_content.get_child_count() > 1,
+                "the group tooltip lists its members", state)
+    group_label.mouse_exited.emit()
+    check(helpers == null or not helpers.group_tooltip_panel.visible,
+            "leaving the group hides the tooltip", state)
+
+    # A link into another section and the way back to the profession.
+    labels[0].meta_clicked.emit("buildings:slaughterhouse")
+    var title := panel.get_node_or_null("Body/EntitiesColumn/TitleLabel") as Label
+    var name_label := panel.get_node_or_null("Body/DetailColumn/NameLabel") as Label
+    check(title != null and str(title.text) == tr("Buildings"),
+            "the butcher's workplace link opens the buildings section", state)
+    check(name_label != null
+            and str(name_label.text) == str(gdata.get_building_display_name("slaughterhouse")),
+            "the butcher's workplace link opens the slaughterhouse page", state)
+    var back := panel.get_node_or_null("BackButton") as Button
+    check(back != null and not back.disabled,
+            "the back button is enabled after a jump", state)
+    if back != null:
+        back.pressed.emit()
+        check(title != null and str(title.text) == tr("Professions"),
+                "back returns to the profession section", state)
+        check(name_label != null and str(name_label.text) == str(row.text),
+                "back returns to the butcher page", state)
 
 func _check_miller_description(state: Dictionary, panel: Control, gdata) -> void:
     var box := panel.get_node_or_null(
@@ -255,37 +299,45 @@ func _check_miller_description(state: Dictionary, panel: Control, gdata) -> void
     check(box != null, "the description column has a text block", state)
     if box == null:
         return
-    var labels := _rich_labels(box)
     check(box.get_child_count() == 8,
             "four blocks of the description are divided by hairlines (got %d)"
                     % box.get_child_count(), state)
-    check(labels.size() == 3,
-            "the description holds three rich blocks (got %d)" % labels.size(), state)
-    if labels.size() >= 2:
-        var work := str(labels[0].text)
-        check(work.begins_with(tr("Works at:")), "the workplace block is titled", state)
-        check(work.contains("[url=buildings:hand_mill]"),
+    var work := _find_rich(box, tr("Works at:"))
+    check(work != null, "the workplace block is titled", state)
+    if work != null:
+        check(str(work.text).contains("[url=buildings:hand_mill]"),
                 "a workplace is a link to the buildings section", state)
-        check(work.contains(str(gdata.get_building_display_name("hand_mill"))),
+        check(str(work.text).contains(str(gdata.get_building_display_name("hand_mill"))),
                 "the workplace link shows the name of the building", state)
-        check(not str(labels[0].get_parsed_text()).contains("[url="),
+        check(not str(work.get_parsed_text()).contains("[url="),
                 "the link tags are not shown to the player", state)
-        var consumes := str(labels[1].text)
-        check(consumes.begins_with(tr("Consumes:")), "the consumption block is titled", state)
-        check(consumes.contains("[url=products:"),
-                "a consumed good is a link to the products section", state)
-    if labels.size() >= 3:
-        var history := str(labels[2].text)
-        check(history.begins_with(tr("Historical background:")),
-                "the historical note is titled", state)
-        check(history.contains(str(gdata.professions.get("miller", {}).get("flavor", ""))),
+    var product_link := _find_rich(box, "[url=products:")
+    check(product_link != null,
+            "a consumed good is a link to the products section", state)
+    if product_link != null:
+        check(product_link.size_flags_horizontal == 0,
+                "a consumed good keeps the width of its text", state)
+    var consumes_row := box.get_node_or_null("ConsumesRow") as HBoxContainer
+    check(consumes_row != null, "the consumed goods stand in one row", state)
+    if consumes_row != null:
+        check(consumes_row.get_theme_constant("separation") == 0,
+                "the comma is not pushed away from the preceding good", state)
+        var commas := 0
+        for child in consumes_row.get_children():
+            var label := child as Label
+            if label != null and str(label.text) == ", ":
+                commas += 1
+        var expected_commas := maxi(0, int((consumes_row.get_child_count() - 2) / 2.0))
+        check(commas == expected_commas,
+                "the list is separated by commas with a space after them", state)
+    var history := _find_rich(box, tr("Historical background:"))
+    check(history != null, "the historical note is titled", state)
+    if history != null:
+        check(str(history.text).contains(
+                str(gdata.professions.get("miller", {}).get("flavor", ""))),
                 "the historical note comes from the profession data", state)
 
-    var link_label: RichTextLabel = null
-    for label in labels:
-        if str(label.text).contains("[url=buildings:hand_mill]"):
-            link_label = label
-            break
+    var link_label := _find_rich(box, "[url=buildings:hand_mill]") as RichTextLabel
     if link_label == null:
         return
     link_label.meta_clicked.emit("buildings:hand_mill")
@@ -304,6 +356,28 @@ func _rich_labels(box: VBoxContainer) -> Array:
         if label != null:
             out.append(label)
     return out
+
+func _find_rich(node: Node, needle: String) -> RichTextLabel:
+    if node is RichTextLabel and str((node as RichTextLabel).text).contains(needle):
+        return node as RichTextLabel
+    for child in node.get_children():
+        var found := _find_rich(child, needle)
+        if found != null:
+            return found
+    return null
+
+func _find_underlined(node: Node, text: String) -> Label:
+    if text == "":
+        return null
+    if node is Label:
+        var underline: Variant = node.get("underline_text")
+        if underline != null and str(underline) == text:
+            return node as Label
+    for child in node.get_children():
+        var found := _find_underlined(child, text)
+        if found != null:
+            return found
+    return null
 
 func _first_row(list: VBoxContainer) -> Button:
     if list.get_child_count() == 0:

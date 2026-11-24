@@ -628,11 +628,21 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
+[node name="BackButton" type="Button" parent="ContentPanel/EncyclopediaPanel" unique_id=1900000818]
+layout_mode = 1
+anchors_preset = 0
+offset_left = 4.0
+offset_top = 6.0
+offset_right = 84.0
+offset_bottom = 36.0
+disabled = true
+text = "Back"
+
 [node name="SearchField" type="LineEdit" parent="ContentPanel/EncyclopediaPanel" unique_id=1900000802]
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
-offset_left = 4.0
+offset_left = 92.0
 offset_top = 6.0
 offset_right = -8.0
 offset_bottom = 36.0

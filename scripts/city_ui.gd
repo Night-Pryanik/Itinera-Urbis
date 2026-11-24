@@ -238,7 +238,7 @@ func _ready():
     add_child(challenges_tab)
 
     encyclopedia_tab = load("res://scripts/encyclopedia_tab.gd").new()
-    encyclopedia_tab.setup($ContentPanel/EncyclopediaPanel)
+    encyclopedia_tab.setup($ContentPanel/EncyclopediaPanel, ui_helpers)
     add_child(encyclopedia_tab)
 
     # The signals of the buttons

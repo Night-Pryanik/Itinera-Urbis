@@ -24,6 +24,8 @@ const DETAIL_FALLBACK_ICON := "encyclopedia.svg"
 # a 200-pixel building stays 200 pixels instead of being blown up to fill the frame.
 
 var panel: Control = null
+var helpers: Node = null
+var back_button: Button = null
 var search_field: LineEdit = null
 var sections_list: VBoxContainer = null
 var title_label: Label = null
@@ -37,11 +39,20 @@ var search_text: String = ""
 var selected_key: String = ""
 var section_buttons: Dictionary = {}
 var entity_group: ButtonGroup = null
+# Each entry is a snapshot of the three fields that define an open page. The module
+# survives the rebuilds of the lists, so the history survives them as well.
+var history: Array = []
 
-func setup(p: Control) -> void:
+func setup(p: Control, ui_helpers: Node = null) -> void:
     if p == null or not is_instance_valid(p):
         return
     panel = p
+    helpers = ui_helpers
+    if helpers == null:
+        var owner := get_parent()
+        if owner != null:
+            helpers = owner.get("ui_helpers")
+    back_button = p.get_node_or_null("BackButton") as Button
     search_field = p.get_node_or_null("SearchField") as LineEdit
     sections_list = p.get_node_or_null("Body/SectionsColumn") as VBoxContainer
     title_label = p.get_node_or_null("Body/EntitiesColumn/TitleLabel") as Label
@@ -54,6 +65,8 @@ func setup(p: Control) -> void:
     entity_group.allow_unpress = false
     if search_field != null and not search_field.text_changed.is_connected(_on_search_text_changed):
         search_field.text_changed.connect(_on_search_text_changed)
+    if back_button != null and not back_button.pressed.is_connected(_on_back_pressed):
+        back_button.pressed.connect(_on_back_pressed)
     refresh()
 
 # The titles are built here rather than kept as a constant so that a change of language
@@ -90,8 +103,45 @@ func refresh() -> void:
     _highlight_sections()
     _update_title()
     _rebuild_entities()
+    _update_back_button()
+
+# --- The way back ---
+
+func _page_state() -> Dictionary:
+    return {
+        "section": selected_section,
+        "search_text": search_text,
+        "selected_key": selected_key,
+        "field_text": search_field.text if search_field != null else search_text,
+    }
+
+func _push_history() -> void:
+    var state := _page_state()
+    if not history.is_empty() and history.back() == state:
+        return
+    history.append(state)
+    if history.size() > 32:
+        history.pop_front()
+    _update_back_button()
+
+func _update_back_button() -> void:
+    if back_button != null and is_instance_valid(back_button):
+        back_button.disabled = history.is_empty()
+
+func _on_back_pressed() -> void:
+    if history.is_empty():
+        return
+    var state: Dictionary = history.pop_back()
+    selected_section = str(state.get("section", "resources"))
+    search_text = str(state.get("search_text", ""))
+    selected_key = str(state.get("selected_key", ""))
+    if search_field != null and is_instance_valid(search_field):
+        search_field.text = str(state.get("field_text", search_text))
+    refresh()
+    _update_back_button()
 
 func _on_section_pressed(id: String) -> void:
+    _push_history()
     selected_section = id
     selected_key = ""
     _highlight_sections()
@@ -264,7 +314,10 @@ func _rebuild_entities() -> void:
         _clear_detail()
 
 func _on_entity_pressed(entry: Dictionary) -> void:
-    selected_key = str(entry.get("key", ""))
+    var key := str(entry.get("key", ""))
+    if key != selected_key:
+        _push_history()
+    selected_key = key
     _show_detail(entry)
 
 # --- The column of the description ---
@@ -301,6 +354,7 @@ func show_entry(section: String, id: String) -> void:
             break
     if not known:
         return
+    _push_history()
     selected_section = section
     search_text = ""
     if search_field != null and is_instance_valid(search_field):
@@ -312,6 +366,7 @@ func show_entry(section: String, id: String) -> void:
                 selected_key = str(entry.get("key", ""))
                 break
     refresh()
+    _update_back_button()
 
 func _on_meta_clicked(meta: Variant) -> void:
     var link := str(meta)
@@ -321,6 +376,8 @@ func _on_meta_clicked(meta: Variant) -> void:
     show_entry(link.substr(0, separator), link.substr(separator + 1))
 
 func _clear_description() -> void:
+    if helpers != null and is_instance_valid(helpers):
+        helpers.hide_group_tooltip()
     if description_box == null or not is_instance_valid(description_box):
         return
     for child in description_box.get_children():
@@ -337,11 +394,9 @@ func _build_description(entry: Dictionary) -> void:
         return
 
     _add_separator()
-    var workplace_text := tr("Works at:")
     var places := _workplaces(prof_id)
-    if places.is_empty():
-        workplace_text += " —"
-    else:
+    var workplace_text := tr("Works at:") + (" " if not places.is_empty() else " —")
+    if not places.is_empty():
         for i in places.size():
             if i > 0:
                 workplace_text += ", "
@@ -351,21 +406,7 @@ func _build_description(entry: Dictionary) -> void:
     _add_rich_block(workplace_text)
 
     _add_separator()
-    var consumes_text := tr("Consumes:")
-    var goods := _consumption(prof_id)
-    if goods.is_empty():
-        consumes_text += " —"
-    else:
-        for i in goods.size():
-            if i > 0:
-                consumes_text += ", "
-            var good: Dictionary = goods[i]
-            var name := str(good.get("name", ""))
-            if bool(good.get("is_group", false)):
-                consumes_text += _bbcode_escape(name)
-            else:
-                consumes_text += _link(name, "products:%s" % str(good.get("key", "")))
-    _add_rich_block(consumes_text)
+    _add_consumption_block(_consumption(prof_id))
 
     _add_separator()
     var description := str(record.get("description", ""))
@@ -373,13 +414,13 @@ func _build_description(entry: Dictionary) -> void:
 
     _add_separator()
     var flavor := str(record.get("flavor", ""))
-    var history := tr("Historical background:")
+    var history_text := tr("Historical background:")
     if flavor == "":
-        history += " —"
+        history_text += " —"
     else:
-        history += " [color=%s]%s[/color]" % [
+        history_text += "\n[color=%s]%s[/color]" % [
                 UI_THEME.color("text_muted").to_html(false), _bbcode_escape(flavor)]
-    _add_rich_block(history)
+    _add_rich_block(history_text)
 
 func _profession_id(entry: Dictionary) -> String:
     for record in entry.get("records", []):
@@ -443,22 +484,75 @@ func _add_text_block(text: String, color_token: String) -> void:
     label.mouse_filter = Control.MOUSE_FILTER_IGNORE
     description_box.add_child(label)
 
+# The consumed goods stand in one row. A single good is a link to its page; a group is
+# the same dashed-underlined label the recipes and the costs use — it leads nowhere, but
+# its hover unfolds the composition in the standard panel.
+func _add_consumption_block(goods: Array) -> void:
+    var row := HBoxContainer.new()
+    row.name = "ConsumesRow"
+    # The comma carries the space after it; the container must not add one before it.
+    row.add_theme_constant_override("separation", 0)
+    var title := Label.new()
+    title.text = tr("Consumes:") + (" " if not goods.is_empty() else " —")
+    title.add_theme_color_override("font_color", UI_THEME.color("text_secondary"))
+    title.mouse_filter = Control.MOUSE_FILTER_IGNORE
+    row.add_child(title)
+    for i in goods.size():
+        if i > 0:
+            var comma := Label.new()
+            comma.text = ", "
+            comma.mouse_filter = Control.MOUSE_FILTER_IGNORE
+            row.add_child(comma)
+        var good: Dictionary = goods[i]
+        var name := str(good.get("name", ""))
+        if bool(good.get("is_group", false)):
+            var group_label = load("res://scripts/underlined_label.gd").new()
+            group_label.text = name
+            group_label.underline_text = name
+            group_label.mouse_filter = Control.MOUSE_FILTER_PASS
+            group_label.mouse_entered.connect(
+                    _on_group_hover.bind(str(good.get("key", ""))))
+            group_label.mouse_exited.connect(_on_group_exit)
+            row.add_child(group_label)
+        else:
+            var link := _make_rich_text(_link(name,
+                    "products:%s" % str(good.get("key", ""))))
+            link.autowrap_mode = TextServer.AUTOWRAP_OFF
+            # The row is a flow of short references: a link must take the width of
+            # its own text, not expand and push the other goods apart.
+            link.size_flags_horizontal = 0
+            row.add_child(link)
+    description_box.add_child(row)
+
+func _on_group_hover(group_key: String) -> void:
+    if helpers != null and is_instance_valid(helpers):
+        helpers.show_group_tooltip(get_viewport().get_mouse_position(), group_key, GameData.products)
+
+func _on_group_exit() -> void:
+    if helpers != null and is_instance_valid(helpers):
+        helpers.hide_group_tooltip()
+
 func _add_rich_block(text: String) -> void:
+    description_box.add_child(_make_rich_text(text))
+
+func _make_rich_text(text: String) -> RichTextLabel:
     var label := RichTextLabel.new()
     label.bbcode_enabled = true
     label.fit_content = true
     label.scroll_active = false
     label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
     label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+    # The links underline themselves with [u] so that only they carry a line.
+    label.meta_underlined = false
     if detail_name != null and is_instance_valid(detail_name):
         label.add_theme_font_size_override("normal_font_size",
                 detail_name.get_theme_font_size("font_size"))
     label.meta_clicked.connect(_on_meta_clicked)
     label.text = text
-    description_box.add_child(label)
+    return label
 
 func _link(text: String, meta: String) -> String:
-    return "[url=%s][color=%s]%s[/color][/url]" % [
+    return "[url=%s][color=%s][u]%s[/u][/color][/url]" % [
             meta, UI_THEME.color("info").to_html(false), _bbcode_escape(text)]
 
 func _bbcode_escape(text: String) -> String:
