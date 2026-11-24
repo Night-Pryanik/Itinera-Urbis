@@ -1,35 +1,22 @@
-[gd_scene load_steps=17 format=3 uid="uid://byond26oht575"]
-
-; The layers of the menu, from the bottom up: the dark plate the panorama lies on (the
-; picture is wider than the window is high, so it keeps its shape and leaves a band
-; above and below), the panorama itself, the moving highlights and the smoke over it,
-; the veil that keeps the items readable on the picture, the vignette, the name of the
-; game and the items themselves.
+[gd_scene format=3 uid="uid://byond26oht575"]
 
 [ext_resource type="Script" uid="uid://cfysnim8443ol" path="res://scripts/main_menu.gd" id="1_l6cm7"]
-[ext_resource type="Texture2D" path="res://backgrounds/main_menu/city_panorama.jpg" id="3_picture"]
-[ext_resource type="Shader" path="res://shaders/menu_water.gdshader" id="4_water_shader"]
-[ext_resource type="Script" path="res://scripts/main_menu_ambience.gd" id="5_ambience"]
-[ext_resource type="Texture2D" path="res://backgrounds/main_menu/water_mask.png" id="6_water_mask"]
-[ext_resource type="Texture2D" path="res://backgrounds/main_menu/smoke_puff.png" id="7_smoke_puff"]
-[ext_resource type="Script" path="res://scripts/main_menu_birds.gd" id="8_birds"]
-[ext_resource type="Texture2D" path="res://backgrounds/main_menu/bird_flap.png" id="9_flap"]
-[ext_resource type="Texture2D" path="res://backgrounds/main_menu/logo_geometric.png" id="10_logo"]
-
-[sub_resource type="Gradient" id="Gradient_vignette"]
-offsets = PackedFloat32Array(0, 0.6, 1)
-colors = PackedColorArray(0, 0, 0, 0, 0, 0, 0, 0.1, 0, 0, 0, 0.42)
-
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_vignette"]
-gradient = SubResource("Gradient_vignette")
-width = 512
-height = 512
-fill = 1
-fill_from = Vector2(0.5, 0.5)
-fill_to = Vector2(1.2071, 0.5)
+[ext_resource type="Texture2D" uid="uid://btvnxf1p7vrk" path="res://backgrounds/main_menu/city_panorama.jpg" id="3_picture"]
+[ext_resource type="Shader" uid="uid://b570munhv0nsv" path="res://shaders/menu_water.gdshader" id="4_water_shader"]
+[ext_resource type="Script" uid="uid://b6r7br1m7qr1w" path="res://scripts/main_menu_ambience.gd" id="5_ambience"]
+[ext_resource type="Texture2D" uid="uid://bl8chapheclfb" path="res://backgrounds/main_menu/water_mask.png" id="6_water_mask"]
+[ext_resource type="Texture2D" uid="uid://b3wodim0qpqol" path="res://backgrounds/main_menu/smoke_puff.png" id="7_smoke_puff"]
+[ext_resource type="Script" uid="uid://bdx0qa5ivd10a" path="res://scripts/main_menu_birds.gd" id="8_birds"]
+[ext_resource type="Texture2D" uid="uid://c0wmst46p4i8b" path="res://backgrounds/main_menu/bird_flap.png" id="9_flap"]
+[ext_resource type="Texture2D" uid="uid://f5vvmqu5rbtr" path="res://backgrounds/main_menu/logo_geometric.png" id="10_logo"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_water"]
 shader = ExtResource("4_water_shader")
+shader_parameter/flow_speed = 0.055
+shader_parameter/ripple_scale = 1.7
+shader_parameter/opacity = 0.32
+shader_parameter/highlight_color = Color(0.98, 0.99, 1, 1)
+shader_parameter/shade_color = Color(0.04, 0.06, 0.09, 1)
 
 [sub_resource type="Gradient" id="Gradient_smoke_fade"]
 offsets = PackedFloat32Array(0, 0.15, 0.6, 1)
@@ -52,9 +39,21 @@ initial_velocity_min = 12.0
 initial_velocity_max = 18.0
 gravity = Vector3(0, 0, 0)
 scale_min = 0.18
-scale_max = 0.30
+scale_max = 0.3
 scale_curve = SubResource("CurveTexture_smoke_growth")
 color_ramp = SubResource("GradientTexture1D_smoke_fade")
+
+[sub_resource type="Gradient" id="Gradient_vignette"]
+offsets = PackedFloat32Array(0, 0.6, 1)
+colors = PackedColorArray(0, 0, 0, 0, 0, 0, 0, 0.1, 0, 0, 0, 0.42)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_vignette"]
+gradient = SubResource("Gradient_vignette")
+width = 512
+height = 512
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1.2071, 0.5)
 
 [node name="MainMenu" type="Control" unique_id=732529238]
 layout_mode = 3
@@ -65,7 +64,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_l6cm7")
 
-[node name="Backdrop" type="ColorRect" parent="."]
+[node name="Backdrop" type="ColorRect" parent="." unique_id=77071752]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -75,7 +74,7 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0.07, 0.06, 0.05, 1)
 
-[node name="Picture" type="TextureRect" parent="."]
+[node name="Picture" type="TextureRect" parent="." unique_id=1998581420]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -87,7 +86,8 @@ texture = ExtResource("3_picture")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="WaterLayer" type="TextureRect" parent="."]
+[node name="WaterLayer" type="TextureRect" parent="." unique_id=250252633]
+material = SubResource("ShaderMaterial_water")
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -98,71 +98,67 @@ mouse_filter = 2
 texture = ExtResource("6_water_mask")
 expand_mode = 1
 stretch_mode = 5
-material = SubResource("ShaderMaterial_water")
 
-[node name="SmokeRoot" type="Node2D" parent="."]
+[node name="SmokeRoot" type="Node2D" parent="." unique_id=1376506448]
 
-[node name="ChimneyLeft" type="GPUParticles2D" parent="SmokeRoot"]
+[node name="ChimneyLeft" type="GPUParticles2D" parent="SmokeRoot" unique_id=1285670517]
 position = Vector2(305, 396)
 amount = 7
+texture = ExtResource("7_smoke_puff")
 lifetime = 2.8
 preprocess = 1.8
 randomness = 0.35
-fixed_fps = 30
 visibility_rect = Rect2(-40, -120, 180, 160)
-texture = ExtResource("7_smoke_puff")
 process_material = SubResource("ParticleProcessMaterial_smoke")
 
-[node name="ChimneyMiddle" type="GPUParticles2D" parent="SmokeRoot"]
+[node name="ChimneyMiddle" type="GPUParticles2D" parent="SmokeRoot" unique_id=320050303]
 position = Vector2(540, 398)
 amount = 7
+texture = ExtResource("7_smoke_puff")
 lifetime = 2.8
 preprocess = 2.1
 randomness = 0.35
-fixed_fps = 30
 visibility_rect = Rect2(-40, -120, 180, 160)
-texture = ExtResource("7_smoke_puff")
 process_material = SubResource("ParticleProcessMaterial_smoke")
 
-[node name="ChimneyRight" type="GPUParticles2D" parent="SmokeRoot"]
+[node name="ChimneyRight" type="GPUParticles2D" parent="SmokeRoot" unique_id=1991085520]
 position = Vector2(700, 390)
 amount = 6
+texture = ExtResource("7_smoke_puff")
 lifetime = 2.8
 preprocess = 1.8
 randomness = 0.35
-fixed_fps = 30
 visibility_rect = Rect2(-40, -120, 180, 160)
-texture = ExtResource("7_smoke_puff")
 process_material = SubResource("ParticleProcessMaterial_smoke")
 
-[node name="BirdsRoot" type="Node2D" parent="."]
+[node name="BirdsRoot" type="Node2D" parent="." unique_id=1241340790]
 script = ExtResource("8_birds")
 
-[node name="BirdNear" type="Sprite2D" parent="BirdsRoot"]
-position = Vector2(-60, 168)
+[node name="BirdNear" type="Sprite2D" parent="BirdsRoot" unique_id=456392958]
+position = Vector2(-60, 205)
 scale = Vector2(0.42, 0.42)
-flip_h = true
 texture = ExtResource("9_flap")
+flip_h = true
 metadata/speed_factor = 1.0
 metadata/phase = 0.0
 
-[node name="BirdLow" type="Sprite2D" parent="BirdsRoot"]
-position = Vector2(200, 184)
+[node name="BirdLow" type="Sprite2D" parent="BirdsRoot" unique_id=1593089156]
+position = Vector2(200, 227.00002)
 scale = Vector2(0.36, 0.36)
-flip_h = true
 texture = ExtResource("9_flap")
+flip_h = true
 metadata/speed_factor = 0.86
 metadata/phase = 0.37
 
-[node name="BirdHigh" type="Sprite2D" parent="BirdsRoot"]
-position = Vector2(470, 136)
+[node name="BirdHigh" type="Sprite2D" parent="BirdsRoot" unique_id=1207434938]
+position = Vector2(470, 81)
 scale = Vector2(0.3, 0.3)
-flip_h = true
 texture = ExtResource("9_flap")
+flip_h = true
 metadata/speed_factor = 1.14
 metadata/phase = 0.71
 
-[node name="Scrim" type="ColorRect" parent="."]
+[node name="Scrim" type="ColorRect" parent="." unique_id=1364147551]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -172,7 +168,7 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0, 0, 0, 0.16)
 
-[node name="Vignette" type="TextureRect" parent="."]
+[node name="Vignette" type="TextureRect" parent="." unique_id=1073291798]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -182,9 +178,8 @@ grow_vertical = 2
 mouse_filter = 2
 texture = SubResource("GradientTexture2D_vignette")
 expand_mode = 1
-stretch_mode = 0
 
-[node name="TitleLogo" type="TextureRect" parent="."]
+[node name="TitleLogo" type="TextureRect" parent="." unique_id=151019158]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
@@ -209,51 +204,50 @@ offset_left = 40.0
 offset_top = -100.0
 offset_right = 40.0
 offset_bottom = -100.0
-grow_horizontal = 1
 grow_vertical = 0
 
 [node name="ContinueButton" type="Button" parent="VBoxContainer" unique_id=272219451]
 layout_mode = 2
-theme_override_font_sizes/font_size = 24
 theme_type_variation = &"PictureButton"
-alignment = 0
+theme_override_font_sizes/font_size = 24
 text = "Continue game"
+alignment = 0
 
 [node name="NewGameButton" type="Button" parent="VBoxContainer" unique_id=272219450]
 layout_mode = 2
-theme_override_font_sizes/font_size = 24
 theme_type_variation = &"PictureButton"
-alignment = 0
+theme_override_font_sizes/font_size = 24
 text = "New game"
+alignment = 0
 
 [node name="LoadGameButton" type="Button" parent="VBoxContainer" unique_id=1464345619]
 layout_mode = 2
-theme_override_font_sizes/font_size = 24
 theme_type_variation = &"PictureButton"
-alignment = 0
+theme_override_font_sizes/font_size = 24
 disabled = true
 text = "Load game"
+alignment = 0
 
 [node name="SettingsButton" type="Button" parent="VBoxContainer" unique_id=1273105862]
 layout_mode = 2
-theme_override_font_sizes/font_size = 24
 theme_type_variation = &"PictureButton"
-alignment = 0
+theme_override_font_sizes/font_size = 24
 text = "Settings"
+alignment = 0
 
 [node name="AboutButton" type="Button" parent="VBoxContainer" unique_id=1900000001]
 layout_mode = 2
-theme_override_font_sizes/font_size = 24
 theme_type_variation = &"PictureButton"
-alignment = 0
+theme_override_font_sizes/font_size = 24
 text = "About"
+alignment = 0
 
 [node name="QuitButton" type="Button" parent="VBoxContainer" unique_id=1616336660]
 layout_mode = 2
-theme_override_font_sizes/font_size = 24
 theme_type_variation = &"PictureButton"
-alignment = 0
+theme_override_font_sizes/font_size = 24
 text = "Quit"
+alignment = 0
 
-[node name="Ambience" type="Node" parent="."]
+[node name="Ambience" type="Node" parent="." unique_id=416947612]
 script = ExtResource("5_ambience")
