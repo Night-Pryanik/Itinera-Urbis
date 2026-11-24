@@ -346,6 +346,7 @@ const BUILDING_FIELDS := {
     "id": LEAF,
     "name": LEAF,
     "description": LEAF,
+    "flavor": LEAF,
     "icon": LEAF,
     "work_cost": LEAF,
     "maintenance_cost": LEAF,

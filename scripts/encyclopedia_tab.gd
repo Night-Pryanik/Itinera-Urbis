@@ -9,7 +9,8 @@
 # The description of an entity is a set of blocks divided by hairlines. Some blocks hold
 # links to other entities: a click on one opens that entity in its own section instead
 # of leaving the encyclopedia. A profession page describes its workplaces and consumption;
-# an improvement page describes its costs, its unlock, its worker and its properties.
+# an improvement page describes its costs, its unlock, its worker and its properties; a
+# building page describes its costs, unlock, worker, slots, upgrade and historical note.
 #
 # The query and the picked entity are kept with the tab while the player moves between
 # the sections and refreshes the window, so that neither is lost on a rebuild.
@@ -401,12 +402,77 @@ func _build_description(entry: Dictionary) -> void:
     for record in entry.get("records", []):
         var section := str(record.get("section", ""))
         var id := str(record.get("id", ""))
+        if section == "buildings":
+            _build_building_description(id)
+            return
         if section == "improvements":
             _build_improvement_description(id)
             return
         if section == "professions":
             _build_profession_description(id)
             return
+
+# A building page reads its numbers from the record; only the historical note is authored
+# text. The additional cost is skipped when the building needs no materials, and the upgrade
+# row is skipped when it has no improved version.
+func _build_building_description(building_id: String) -> void:
+    var record: Dictionary = GameData.get_building_data(building_id)
+    if record.is_empty():
+        return
+
+    _add_separator()
+    _add_labeled_block(tr("Description:"), _bbcode_escape(str(record.get("description", ""))))
+
+    _add_separator()
+    _add_labeled_block(tr("Base cost:"),
+            _bbcode_escape(tr("%d work") % int(record.get("work_cost", 0))))
+
+    var materials := _additional_cost_goods(record)
+    if not materials.is_empty():
+        _add_separator()
+        _add_goods_block(tr("Additional cost:"), materials, "AdditionalCostRow", true)
+
+    _add_separator()
+    _add_labeled_block(tr("Maintenance cost:"), _bbcode_escape(tr("%s coins/sec")
+            % str(maxf(0.0, float(record.get("maintenance_cost", 0.0))))))
+
+    _add_separator()
+    var tech_id := str(record.get("unlock_tech", ""))
+    var tech_name := _technology_name(tech_id)
+    var tech_value := "—"
+    if tech_name != "":
+        tech_value = _link(tech_name, "technologies:" + tech_id)
+    _add_labeled_block(tr("Unlocked by technology:"), tech_value)
+
+    _add_separator()
+    var prof_id := str(record.get("profession", ""))
+    var prof_value := "—"
+    if prof_id != "" and GameData.professions.has(prof_id):
+        prof_value = _link(GameData.get_profession_name(prof_id), "professions:" + prof_id)
+    _add_labeled_block(tr("Who works:"), prof_value)
+
+    _add_separator()
+    _add_labeled_block(tr("Production slots:"),
+            str(int(record.get("production_slots", 0))))
+
+    var upgrade_id := str(record.get("upgrades_into", ""))
+    if upgrade_id != "":
+        _add_separator()
+        var upgrade_value := "—"
+        if not GameData.get_building_data(upgrade_id).is_empty():
+            upgrade_value = _link(GameData.get_building_display_name(upgrade_id),
+                    "buildings:" + upgrade_id)
+        _add_labeled_block(tr("Can be upgraded into:"), upgrade_value)
+
+    _add_separator()
+    var flavor := str(record.get("flavor", ""))
+    var history_text := tr("Historical essay:")
+    if flavor == "":
+        history_text += " —"
+    else:
+        history_text += "\n[color=%s]%s[/color]" % [
+                UI_THEME.color("text_muted").to_html(false), _bbcode_escape(flavor)]
+    _add_rich_block(history_text)
 
 # An improvement has no separate description field: the costs, the unlock, the worker and
 # the flags are all read from its record, and only the historical note is authored text.
@@ -547,6 +613,25 @@ func _consumption(prof_id: String) -> Array:
             return str(a.get("name", "")).nocasecmp_to(str(b.get("name", ""))) < 0)
     return goods
 
+# An @-prefixed key names a group of goods rather than one product: it gets the group
+# label and its hover panel, while a plain key links to the good's own page. The batches
+# of additional_cost are flattened, since the encyclopedia lists what is required, not
+# the order in which the game writes it off.
+func _additional_cost_goods(record: Dictionary) -> Array:
+    var seen := {}
+    var goods: Array = []
+    for bundle in GameData.parse_additional_cost(record.get("additional_cost", [])):
+        for key in bundle:
+            var id := str(key)
+            if id.is_empty() or seen.has(id):
+                continue
+            seen[id] = true
+            var is_group := id.begins_with("@")
+            var name := GameData.get_product_group_name(id) if is_group else GameData.get_product_name(id)
+            goods.append({"key": id, "name": name, "is_group": is_group,
+                    "amount": int(bundle[key])})
+    return goods
+
 func _add_separator() -> void:
     if description_box != null and is_instance_valid(description_box):
         description_box.add_child(UiHelpers.build_separator())
@@ -560,19 +645,23 @@ func _add_text_block(text: String, color_token: String) -> void:
     label.mouse_filter = Control.MOUSE_FILTER_IGNORE
     description_box.add_child(label)
 
-# The consumed goods stand in one row. A single good is a link to its page; a group is
-# the same dashed-underlined label the recipes and the costs use — it leads nowhere, but
-# its hover unfolds the composition in the standard panel.
 func _add_consumption_block(goods: Array) -> void:
+    _add_goods_block(tr("Consumes:"), goods, "ConsumesRow", false)
+
+# The goods stand in one row. A single good is a link to its page; a group is the same
+# dashed-underlined label the recipes and the costs use — it leads nowhere, but its hover
+# unfolds the composition in the standard panel. The cost of a building also carries the
+# required amount next to the name.
+func _add_goods_block(title: String, goods: Array, row_name: String, with_amount: bool) -> void:
     var row := HBoxContainer.new()
-    row.name = "ConsumesRow"
+    row.name = row_name
     # The comma carries the space after it; the container must not add one before it.
     row.add_theme_constant_override("separation", 0)
-    var title := Label.new()
-    title.text = tr("Consumes:") + (" " if not goods.is_empty() else " —")
-    title.add_theme_color_override("font_color", UI_THEME.color("text_secondary"))
-    title.mouse_filter = Control.MOUSE_FILTER_IGNORE
-    row.add_child(title)
+    var title_label := Label.new()
+    title_label.text = title + (" " if not goods.is_empty() else " —")
+    title_label.add_theme_color_override("font_color", UI_THEME.color("text_secondary"))
+    title_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+    row.add_child(title_label)
     for i in goods.size():
         if i > 0:
             var comma := Label.new()
@@ -581,9 +670,12 @@ func _add_consumption_block(goods: Array) -> void:
             row.add_child(comma)
         var good: Dictionary = goods[i]
         var name := str(good.get("name", ""))
+        var amount_text := ""
+        if with_amount:
+            amount_text = tr(" x%d") % int(good.get("amount", 0))
         if bool(good.get("is_group", false)):
             var group_label = load("res://scripts/underlined_label.gd").new()
-            group_label.text = name
+            group_label.text = name + amount_text
             group_label.underline_text = name
             group_label.mouse_filter = Control.MOUSE_FILTER_PASS
             group_label.mouse_entered.connect(
@@ -591,8 +683,10 @@ func _add_consumption_block(goods: Array) -> void:
             group_label.mouse_exited.connect(_on_group_exit)
             row.add_child(group_label)
         else:
-            var link := _make_rich_text(_link(name,
-                    "products:%s" % str(good.get("key", ""))))
+            var text := _link(name, "products:%s" % str(good.get("key", "")))
+            if amount_text != "":
+                text += _bbcode_escape(amount_text)
+            var link := _make_rich_text(text)
             link.autowrap_mode = TextServer.AUTOWRAP_OFF
             # The row is a flow of short references: a link must take the width of
             # its own text, not expand and push the other goods apart.

@@ -15,10 +15,13 @@
 #     historical note in separate blocks; the links in the first two open the target entity.
 #     A group of goods carries the standard dashed underline and unfolds its members on hover.
 #     The butcher is a professional worker of the slaughterhouse and consumes work tools.
-#  7. The page of an improvement lists its base cost, upkeep, unlocking technology, worker,
+#  7. The page of a building lists its description, base and additional cost, upkeep,
+#     unlocking technology, worker, slots, upgrade and historical note in separate blocks.
+#     The technology, the profession, the materials and the upgrade are links or group labels.
+#  8. The page of an improvement lists its base cost, upkeep, unlocking technology, worker,
 #     special properties and historical note in separate blocks; the technology and the
 #     profession are links into their own sections.
-#  8. A query searches every section at once and survives a refresh and a change of language.
+#  9. A query searches every section at once and survives a refresh and a change of language.
 extends SceneTree
 
 const WATCHDOG = preload("res://tests/watchdog.gd")
@@ -159,6 +162,8 @@ func _run() -> void:
                 and detail_icon.texture.get_size().y <= 256.0,
                 "the detail picture never exceeds 256 pixels", state)
 
+    _check_hand_mill_description(state, panel, list, gdata, city_ui)
+
     column.get_child(4).pressed.emit()
     _check_farm_description(state, panel, list, gdata)
 
@@ -216,6 +221,9 @@ func _run() -> void:
     check(str(gdata.improvements.get("farm", {}).get("flavor", ""))
             .begins_with("Wherever grains were first domesticated"),
             "the historical note of the farm is translated", state)
+    check(str(gdata.get_building_data("hand_mill").get("flavor", ""))
+            .begins_with("Grinding grain between stones"),
+            "the historical note of the hand mill is translated", state)
     TranslationServer.set_locale(original_locale)
     city_ui.refresh()
 
@@ -240,6 +248,129 @@ func _run() -> void:
     city_ui.hide()
     main_map.queue_free()
     _finish(state)
+
+func _check_hand_mill_description(state: Dictionary, panel: Control, list: VBoxContainer, gdata, city_ui) -> void:
+    var title := panel.get_node_or_null("Body/EntitiesColumn/TitleLabel") as Label
+    check(title != null and str(title.text) == tr("Buildings"),
+            "the caption names the buildings section", state)
+    var mill_name := str(gdata.get_building_display_name("hand_mill"))
+    var row := _row_with_text(list, mill_name)
+    check(row != null, "the buildings section lists the hand mill", state)
+    if row == null:
+        return
+    row.pressed.emit()
+    var box := panel.get_node_or_null(
+            "Body/DetailColumn/DescriptionScroll/Description") as VBoxContainer
+    check(box != null, "the building has a description", state)
+    if box == null:
+        return
+    var data: Dictionary = gdata.get_building_data("hand_mill")
+    check(box.get_child_count() == 18,
+            "eight blocks and a cost row of the building are divided by hairlines (got %d)"
+                    % box.get_child_count(), state)
+    var separators := 0
+    for child in box.get_children():
+        if child is ColorRect:
+            separators += 1
+    check(separators == 9, "a hairline stands before every subsection (got %d)"
+            % separators, state)
+    var labels := _rich_labels(box)
+    check(labels.size() == 8, "the building page has eight titled blocks (got %d)"
+            % labels.size(), state)
+    if labels.size() < 8:
+        return
+    check(str(labels[0].text).contains(tr("Description:"))
+            and str(labels[0].text).contains(str(data.get("description", ""))),
+            "the description comes from the building data", state)
+    check(str(labels[1].text).contains(tr("Base cost:"))
+            and str(labels[1].text).contains("%d" % int(data.get("work_cost", 0))),
+            "the base cost comes from the building data", state)
+    var cost_row := box.get_node_or_null("AdditionalCostRow") as HBoxContainer
+    check(cost_row != null, "the additional cost stands in its own row", state)
+    if cost_row == null:
+        return
+    check(str(cost_row.get_child(0).text).begins_with(tr("Additional cost:")),
+            "the additional cost is titled", state)
+    var plank_link := _find_rich(cost_row, "[url=products:planks]") as RichTextLabel
+    check(plank_link != null, "a required material is a link to its page", state)
+    if plank_link != null:
+        check(str(plank_link.text).contains(tr(" x%d") % 30),
+                "the required amount stands next to the material", state)
+        check(plank_link.size_flags_horizontal == 0,
+                "the material takes only the width of its text", state)
+    check(str(labels[2].text).contains(tr("Maintenance cost:"))
+            and str(labels[2].text).contains("%s" % str(data.get("maintenance_cost", 0.0))),
+            "the upkeep comes from the building data", state)
+    check(str(labels[3].text).contains(tr("Unlocked by technology:"))
+            and str(labels[3].text).contains("—"),
+            "a building without an unlock is shown with a dash", state)
+    check(str(labels[4].text).contains("[url=professions:miller]")
+            and str(labels[4].text).contains(str(gdata.get_profession_name("miller"))),
+            "the worker is a link with the profession name", state)
+    check(str(labels[5].text).contains(tr("Production slots:"))
+            and str(labels[5].text).contains("1"),
+            "the number of slots comes from the building data", state)
+    check(str(labels[6].text).contains(tr("Can be upgraded into:"))
+            and str(labels[6].text).contains("[url=buildings:animal_mill]")
+            and str(labels[6].text).contains(str(gdata.get_building_display_name("animal_mill"))),
+            "the improved version is a link to its page", state)
+    check(str(labels[7].text).contains(tr("Historical essay:"))
+            and str(labels[7].text).contains(str(data.get("flavor", ""))),
+            "the historical note comes from the building data", state)
+
+    var name_label := panel.get_node_or_null("Body/DetailColumn/NameLabel") as Label
+    var back := panel.get_node_or_null("BackButton") as Button
+    var worker_link := _find_rich(box, "[url=professions:miller]") as RichTextLabel
+    if worker_link != null:
+        worker_link.meta_clicked.emit("professions:miller")
+        check(title != null and str(title.text) == tr("Professions"),
+                "the profession link opens the professions section", state)
+        check(name_label != null
+                and str(name_label.text) == str(gdata.get_profession_name("miller")),
+                "the profession link opens the miller page", state)
+        if back != null:
+            back.pressed.emit()
+            check(title != null and str(title.text) == tr("Buildings"),
+                    "back returns to the buildings section", state)
+            check(name_label != null and str(name_label.text) == mill_name,
+                    "back returns to the hand mill page", state)
+
+    var upgrade_link := _find_rich(box, "[url=buildings:animal_mill]") as RichTextLabel
+    check(upgrade_link != null, "the upgrade link survives the return", state)
+    if upgrade_link != null:
+        upgrade_link.meta_clicked.emit("buildings:animal_mill")
+        check(title != null and str(title.text) == tr("Buildings"),
+                "the upgrade stays inside the buildings section", state)
+        check(name_label != null
+                and str(name_label.text) == str(gdata.get_building_display_name("animal_mill")),
+                "the upgrade link opens the improved building", state)
+
+        # The improved mill needs a group of goods; the group is the standard dashed label.
+        var group_name := str(gdata.get_product_group_name("building_stone"))
+        var group_label := _find_underlined(box, group_name)
+        check(group_name != "" and group_label != null,
+                "a group of materials carries the dashed underline", state)
+        if group_label == null:
+            return
+        check(str(group_label.get("underline_text")) == group_name,
+                "only the name of the group is underlined, not the amount", state)
+        var helpers = city_ui.ui_helpers
+        group_label.mouse_entered.emit()
+        check(helpers != null and helpers.group_tooltip_panel.visible,
+                "hovering a group shows the standard tooltip", state)
+        group_label.mouse_exited.emit()
+        check(helpers == null or not helpers.group_tooltip_panel.visible,
+                "leaving the group hides the tooltip", state)
+
+    var material_link := _find_rich(box, "[url=products:planks]") as RichTextLabel
+    check(material_link != null, "the material link survives the jumps", state)
+    if material_link != null:
+        material_link.meta_clicked.emit("products:planks")
+        check(title != null and str(title.text) == tr("Products"),
+                "the material opens the products section", state)
+        check(name_label != null
+                and str(name_label.text) == str(gdata.get_product_name("planks")),
+                "the material opens the planks page", state)
 
 func _check_farm_description(state: Dictionary, panel: Control, list: VBoxContainer, gdata) -> void:
     var title := panel.get_node_or_null("Body/EntitiesColumn/TitleLabel") as Label

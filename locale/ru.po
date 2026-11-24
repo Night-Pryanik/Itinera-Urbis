@@ -24,12 +24,24 @@ msgid "%s coins/sec"
 msgstr "%s монет/сек"
 
 msgctxt ""
+msgid "Additional cost:"
+msgstr "Дополнительная стоимость:"
+
+msgctxt ""
 msgid "Additional properties:"
 msgstr "Дополнительные свойства:"
 
 msgctxt ""
 msgid "Base cost:"
 msgstr "Базовая стоимость:"
+
+msgctxt ""
+msgid "Can be upgraded into:"
+msgstr "Можно улучшить в:"
+
+msgctxt ""
+msgid "Description:"
+msgstr "Описание:"
 
 msgctxt ""
 msgid "Historical essay:"
@@ -10391,3 +10403,227 @@ msgstr "Там, где сильно солнце и рядом море или �
 msgctxt "improvements.flavor"
 msgid "Wherever grains were first domesticated — in the river valleys of South Asia, in the Americas, in the Near East — the same operation appeared: break the soil and return seed to it. A farm does not change the land; it gives a settled community a dependable way to work the food plants already growing there."
 msgstr "Там, где зерновые были одомашнены впервые — в долинах Южной Азии, в Америке, на Ближнем Востоке — появлялась одна и та же операция: рыхлить землю и возвращать ей семена. Ферма не меняет ландшафт; она даёт оседлому сообществу надёжный способ возделывать пищевые растения, которые уже растут вокруг."
+
+msgctxt "buildings.flavor"
+msgid "Grinding grain between stones needs no engine, only a heavy upper stone and a hand to turn it. Hand mills appear wherever people cultivate grain, from the river valleys of South Asia to the highlands of the Americas, and remained in use long after larger mills existed. The small mill lets a household do without the workshop down the road."
+msgstr "Молоть зерно между камнями можно без всякого двигателя — нужен лишь тяжёлый верхний жернов и рука, которая его поворачивает. Ручные жернова известны там, где возделывают зерно: от речных долин Южной Азии до нагорий Америки — и они оставались в ходу задолго после появления больших мельниц. Небольшая мельница позволяет домохозяйству не зависеть от мастерской за дорогой."
+
+msgctxt "buildings.flavor"
+msgid "Once draft animals were trained to walk a circle, the same millstones could be turned without human effort. The animal mill carries a heavier stone than the hand mill and frees the household's time for other work. It is a change of power, not of the principle of grinding."
+msgstr "Когда тягловое животное научились водить по кругу, те же жернова стали вращаться без человеческих усилий. Животная мельница поднимает более тяжёлый камень, чем ручная, и освобождает время домохозяйства для других дел. Меняется источник силы, а не принцип помола."
+
+msgctxt "buildings.flavor"
+msgid "A wheel in a stream turns the grindstone without tiring people or animals, but it needs a channel and a fall of water. Water mills were built in many regions, from the valleys of China to the river towns of the Middle East, wherever a reliable current could be led to the stone. The mill ties the town's bread to the rhythm of the water."
+msgstr "Колесо в ручье вращает жернов, не утомляя людей и животных, но ему нужны канал и перепад воды. Водяные мельницы строили во многих краях — от долин Китая до речных городов Ближнего Востока — где надёжное течение можно было подвести к жернову. Мельница привязывает городской хлеб к ритму воды."
+
+msgctxt "buildings.flavor"
+msgid "Where water is scarce but wind is steady, sails can drive the same millstones. The cloth sail is light, cheap to replace and quick to mend, so a windmill can stand where a water wheel cannot. Its two sets of stones let one building serve more than one batch of grain."
+msgstr "Там, где воды мало, а ветер постоянен, те же жернова приводят в движение паруса. Полотняный парус лёгок, дёшев и легко чинится, поэтому ветряная мельница может стоять там, где нельзя поставить водяное колесо. Два комплекта жерновов позволяют одной мельнице обслуживать больше зерна."
+
+msgctxt "buildings.flavor"
+msgid "Bread needs only flour, water and fire, yet keeping a steady oven hot is work in itself. Communal ovens are known from the earliest farming towns in many parts of the world; a bakery makes that shared hearth a permanent place in the city. It turns the staple grain into a food that travels and keeps."
+msgstr "Для хлеба нужны только мука, вода и огонь, но держать печь постоянно горячей — работа сама по себе. Общие печи известны с первых земледельческих городов во многих частях света; пекарня делает этот общий очаг постоянным местом в городе. Она превращает зерно, основной продукт питания, в еду, которую легко переносить и хранить."
+
+msgctxt "buildings.flavor"
+msgid "Butchery is as old as domestication: once animals are kept for milk or wool, their meat, hide and bones must eventually be processed. A slaughterhouse gathers that work in one place so that nothing of the animal is wasted. It links the pasture to the tanner, the soap maker and the kitchen."
+msgstr "Разделка скота известна с тех пор, как животных начали держать ради молока и шерсти: рано или поздно их мясо, шкуру и кости надо обработать. Скотобойня собирает эту работу в одном месте, чтобы ни одна часть животного не пропала. Она связывает пастбище с кожевником, мыловаром и кухней."
+
+msgctxt "buildings.flavor"
+msgid "Milk spoils quickly, but cheese and other cultured milk foods keep for months. Herders developed the techniques independently from the steppes to the highlands of East Africa. A dairy makes those keeping qualities available to the whole town."
+msgstr "Молоко быстро портится, а сыр и другие кисломолочные продукты хранятся месяцами. Пастухи выработали приёмы их приготовления независимо — от степей до нагорий Восточной Африки. Молочная ферма делает это умение достоянием всего города."
+
+msgctxt "buildings.flavor"
+msgid "Wood burns hotter and cleaner when it is first turned to charcoal in a sealed kiln. The operation is simple enough to be known wherever wood was plentiful, and it made metalworking possible with a small amount of fuel. A kiln turns a bulky forest product into one a smith can carry."
+msgstr "Дерево горит жарче и чище, если сначала превратить его в уголь в закрытой печи. Операция настолько проста, что известна всюду, где много леса, и она позволяет плавить металл при небольшом количестве топлива. Печь превращает громоздкий лесной продукт в то, что кузнец может унести."
+
+msgctxt "buildings.flavor"
+msgid "Coal can be cleaned of smoke and sulfur by heating it without air, much as wood is turned to charcoal. The resulting coke burns hot enough to reduce iron ore in a shaft furnace. That is why the coke oven belongs to the age of large-scale metal production rather than the first forge."
+msgstr "Уголь можно очистить от дыма и серы, нагрев его без доступа воздуха — так же, как дерево превращают в древесный уголь. Получившийся кокс горит достаточно жарко, чтобы выплавлять железо из руды в шахтной печи. Поэтому коксовая печь относится к эпохе крупного производства металла, а не первой кузницы."
+
+msgctxt "buildings.flavor"
+msgid "A forge is where heated metal is shaped by hammering. It needs a hearth, a hammer and a worker who knows when the metal is soft enough — knowledge passed on in every metalworking tradition. The tools made here are what all the other crafts depend on."
+msgstr "Кузница — место, где нагретый металл превращают в вещи ударами молота. Нужны горн, молот и работник, который знает, когда металл достаточно мягок; такое умение передавали в каждой традиции обработки металла. Инструменты, сделанные здесь, нужны всем остальным ремеслам."
+
+msgctxt "buildings.flavor"
+msgid "A water-driven hammer strikes without tiring a smith, so larger pieces of metal can be worked in one session. It is the same principle as the water mill, applied to a hammer instead of a grindstone. The workshop lets one smith do the work of several."
+msgstr "Приводимый водой молот бьёт без устали, поэтому крупные куски металла можно обработать за один сеанс. Принцип тот же, что у водяной мельницы, только вместо жернова работает молот. Мастерская позволяет одному кузнецу сделать работу нескольких."
+
+msgctxt "buildings.flavor"
+msgid "Ore is not yet metal: it must be heated with fuel until the metal separates from the rock. Smelting is known from very early metalworking cultures in Africa, Asia and the Americas, each with its own furnace design. A smelter repeats that transformation day after day."
+msgstr "Руда — ещё не металл: её надо нагреть с топливом, пока металл не отделится от породы. Плавка известна очень ранним культурам обработки металла в Африке, Азии и Америке, у каждой из которых были свои печи. Плавильня повторяет это превращение из дня в день."
+
+msgctxt "buildings.flavor"
+msgid "A bloomery reduces iron ore below the melting point, leaving a spongy mass of iron that is hammered into shape. Furnaces of this kind were built across many regions, from the Andes to West Africa and East Asia. They supply metal before a taller furnace becomes possible."
+msgstr "В сыродутной печи железная руда восстанавливается при температуре ниже плавления, оставляя губчатую массу железа, которую потом куют. Печи такого устройства строили во многих краях — от Анд до Западной Африки и Восточной Азии. Они дают металл ещё до того, как становится возможна высокая печь."
+
+msgctxt "buildings.flavor"
+msgid "A tall shaft furnace reaches the temperature at which iron melts, so the metal can be tapped as a liquid and cast. It needs a steady blast of air, a charge of ore and flux, and a furnace that stands repeated heat. The blast furnace turns iron from a craft material into a bulk one."
+msgstr "Высокая шахтная печь достигает температуры, при которой железо плавится, поэтому металл выпускают жидким и разливают по формам. Ей нужны постоянное дутьё, шихта из руды и флюса и печь, выдерживающая повторяющийся жар. Доменное производство превращает железо из ремесленного материала в массовый."
+
+msgctxt "buildings.flavor"
+msgid "The potter's wheel shapes clay faster and more evenly than hands alone. Wheels were used in many ancient centres of pottery, from the Yangtze valley to the Near East, and the workshop spreads that skill to every vessel the town needs. Fired clay also gives the builder brick and tile."
+msgstr "Гончарный круг позволяет придавать глине форму быстрее и ровнее, чем одними руками. Круги применяли во многих древних центрах гончарства — от долины Янцзы до Ближнего Востока — и мастерская распространяет это умение на все сосуды города. Обожжённая глина даёт строителю также кирпич и черепицу."
+
+msgctxt "buildings.flavor"
+msgid "Stone must be cut to size before it can be built into a wall. A workshop with chisels and a yard for blocks lets one mason prepare stone for many building sites. Since stone is heavy, the work is done as near the quarry and the town as possible."
+msgstr "Камень надо обтесать, прежде чем класть его в стену. Мастерская с зубилами и двором для блоков позволяет одному камнетесу заготавливать камень для многих строек. Поскольку камень тяжёл, работу выполняют как можно ближе к карьеру и городу."
+
+msgctxt "buildings.flavor"
+msgid "A hide left untreated soon decays; tanning with bark or other plant matter turns it into leather that lasts. The craft is found wherever animals are raised, from the steppes to the savannas. The tanner's house supplies shoes, straps and covers to the rest of the city."
+msgstr "Необработанная шкура быстро гниёт; дубление корой или другими растительными веществами превращает её в долговечную кожу. Ремесло встречается всюду, где разводят животных — от степей до саванн. Кожевник обеспечивает город обувью, ремнями и покрывалами."
+
+msgctxt "buildings.flavor"
+msgid "A loom turns thread into cloth, crossing one thread after another. Simple looms were known to farmers and herders in many regions — flax in the north, cotton in South Asia, ramie in East Asia, wool on the steppes. The house keeps that daily work inside the town."
+msgstr "Ткацкий стан превращает нить в ткань, переплетая её по одной нити за раз. Простейшие станки знали земледельцы и скотоводы во многих краях — лён на севере, хлопок в Южной Азии, рами в Восточной Азии, шерсть в степи. Дом сохраняет эту повседневную работу внутри города."
+
+msgctxt "buildings.flavor"
+msgid "A foot treadle lifts the shed of the loom, leaving both hands free to pass the shuttle. Several such looms under one roof let different cloths be woven at the same time. The workshop increases output without changing the fibre or the weave."
+msgstr "Педальный механизм поднимает зево, поэтому обе руки ткача свободны для челнока. Несколько таких станков под одной крышей позволяют ткать разные партии одновременно. Мастерская увеличивает выпуск, не меняя ни волокно, ни переплетение."
+
+msgctxt "buildings.flavor"
+msgid "Fermentation turns grain into a low-alcohol drink that keeps better than the mash it came from. Brewing is known in many farming societies, from the Nile valley to the highlands of East Africa and the valleys of Asia. The brewer uses the same grain the miller and the baker use."
+msgstr "Брожение превращает зерно в слабоалкогольный напиток, который хранится лучше, чем исходная каша. Пивоварение известно многим земледельческим обществам — от долины Нила до нагорий Восточной Африки и долин Азии. Пивовар использует то же зерно, что мельник и пекарь."
+
+msgctxt "buildings.flavor"
+msgid "Large vats let several batches ferment at once, each with its own time and temperature. The vessels are simple, but the workshop needs a worker who can judge when a batch is ready. The same skill turns the drink into vinegar when it is left too long."
+msgstr "Большие чаны позволяют бродить нескольким партиям одновременно, у каждой свой срок и температура. Сосуды просты, но мастерская требует работника, который умеет определить готовность партии. То же умение превращает напиток в уксус, если его оставить слишком надолго."
+
+msgctxt "buildings.flavor"
+msgid "Grapes begin to ferment on their own once their skins are broken, so pressing is the oldest part of the craft. Vineyards and wild grapes are found in many climates, and the drink travelled far beyond the region where the fruit grew. The winemaker's house turns a perishable harvest into a good that can be stored."
+msgstr "Виноград начинает бродить сам, стоит раздавить его кожицу, поэтому давление — древнейшая часть ремесла. Виноградники и дикая лоза встречаются во многих климатах, а напиток уходил далеко за пределы края, где выросла ягода. Дом винодела превращает скоропортящийся урожай в товар, который можно хранить."
+
+msgctxt "buildings.flavor"
+msgid "The seeds of many plants hold oil that can be pressed out with a simple lever or wedge. Sesame in Africa and Asia, olives around the Mediterranean, and oil crops of the Americas all gave rise to the same craft. The house supplies cooking fat, the base for soap and fuel for lamps."
+msgstr "Семена многих растений содержат масло, которое можно выжать простым рычагом или клином. Кунжут в Африке и Азии, олива в Средиземноморье и масличные культуры Америки привели к одному и тому же ремеслу. Мастерская даёт кухонный жир, основу для мыла и топливо для ламп."
+
+msgctxt "buildings.flavor"
+msgid "A wedge press applies more force than a hand can, so more oil is recovered from the same batch of seed. The mill keeps several presses at work, each serving a batch of its own. It is the workshop version of the operation the oilmaker's house performs."
+msgstr "Клиновой пресс развивает большее усилие, чем рука, поэтому из той же партии семян получается больше масла. Мельница держит несколько прессов, каждый со своей партией. Это мастерская версия операции, которую выполняет дом маслодела."
+
+msgctxt "buildings.flavor"
+msgid "Glass is made by melting sand with a flux, and it can be blown into shape while hot. The craft appeared in several ancient regions and travelled with the workers who knew the recipe. A glassmaker's house gives the town vessels and windows that clay and wood cannot."
+msgstr "Стекло получают, сплавляя песок с плавнем, и пока оно горячо, ему можно придать форму выдуванием. Ремесло возникло в нескольких древних краях и распространялось вместе с мастерами, знавшими рецепт. Стекольная мастерская даёт городу сосуды и окна, которых не дают глина и дерево."
+
+msgctxt "buildings.flavor"
+msgid "Rope is made by twisting fibres together; the twist is what gives a bundle of strands its strength. Fibres differ by region — hemp, flax, jute, agave — but the operation is the same. Every ship, well and building site needs the product of this house."
+msgstr "Верёвку получают, скручивая волокна; именно крутка придаёт пучку нитей прочность. Волокна различаются по краям — конопля, лён, джут, агава — но операция одна и та же. Каждое судно, колодец и стройплощадка нуждаются в изделии этой мастерской."
+
+msgctxt "buildings.flavor"
+msgid "A long covered lane lets a worker twist a rope to its full length in one pass. The building is long, but the tools are simple, and the result is a cable strong enough for a sail or a hoist. A ropewalk supplies the shipyard and the windmill alike."
+msgstr "Длинный крытый проход позволяет свернуть верёвку на всю длину за один проход. Здание длинное, но инструменты просты, а результат — канат, годный для паруса или подъёма. Канатный двор снабжает и верфь, и ветряную мельницу."
+
+msgctxt "buildings.flavor"
+msgid "Tar and pitch are made by heating resinous wood until the tar runs out. The same product sealed boats and roofs in many regions, from the northern forests to the pine woods of the Americas. The distillery gathers the whole process in one workshop."
+msgstr "Смолу и пек получают, нагревая смолистую древесину, пока смола не вытечет. Один и тот же продукт конопатил суда и крыши во многих краях — от северных лесов до сосновых лесов Америки. Смолокурня собирает весь процесс в одной мастерской."
+
+msgctxt "buildings.flavor"
+msgid "Soap is made by combining fat with alkali, and both are at hand wherever animals are rendered and soda or ash is available. The recipe was known in ancient Mesopotamia, in Egypt and in many later traditions. The house turns otherwise useless scraps into a good the whole town uses."
+msgstr "Мыло получают, соединяя жир со щелочью, а оба материала ближе всего там, где вытапливают жир и есть сода или зола. Рецепт был известен в древней Месопотамии, в Египте и во многих более поздних традициях. Мастерская превращает бесполезные отходы в товар, которым пользуется весь город."
+
+msgctxt "buildings.flavor"
+msgid "Silk comes from the cocoon of a moth, which must be reeled before the insect breaks it. Sericulture began in East Asia and spread through trade to other regions; raising the worms and weaving the thread are two different crafts. The house turns that thread into cloth."
+msgstr "Шёлк даёт кокон мотылька, который надо размотать, пока насекомое не прогрызло его. Шелководство началось в Восточной Азии и через торговлю пришло в другие края; выращивание червей и ткачество нити — разные ремесла. Дом превращает эту нить в ткань."
+
+msgctxt "buildings.flavor"
+msgid "Limestone heated in a kiln becomes quicklime, which goes into plaster, mortar and the preparation of other materials. The operation needs only fire and a stone that is easy to find. The kiln also yields alum from alunite, another example of a raw mineral becoming a workshop material."
+msgstr "Известняк, обожжённый в печи, превращается в негашёную известь, которая идёт в штукатурку, раствор и подготовку других материалов. Для операции нужны лишь огонь и легко доступный камень. Печь даёт также квасцы из алунита — ещё один пример того, как сырой минерал становится предметом ремесла."
+
+msgctxt "buildings.flavor"
+msgid "Papyrus is made by laying strips of the reed's stem in crossing layers and pressing them into a sheet. The craft is tied to a plant that grows in warm wetlands and gave writing a light, cheap surface. The workshop turns a water plant into the material of records."
+msgstr "Папирус делают, укладывая полоски стебля тростника крест-накрест и прессуя их в лист. Ремесло привязано к растению, которое растёт в тёплых болотах, и дало письму лёгкую и дешёвую поверхность. Мастерская превращает болотное растение в материал для записей."
+
+msgctxt "buildings.flavor"
+msgid "Smoking preserves fish by drying it and coating it with compounds from the smoke. Coastal and river peoples in many regions developed the practice long before refrigeration. The smokehouse lets the catch of a good season last into a lean one."
+msgstr "Копчение сохраняет рыбу: она сушится и покрывается веществами из дыма. Приём известен многим прибрежным и речным народам задолго до холодильников. Коптильня позволяет улову урожайного сезона дожить до скудного."
+
+msgctxt "buildings.flavor"
+msgid "Parchment is made from animal skin that has been scraped, soaked and stretched. Unlike papyrus, it can be made wherever livestock are raised, which is why it became a writing surface in many different regions. The workshop supplies sheets that stand up to frequent use and travel."
+msgstr "Пергамент делают из шкуры, которую соскабливают, вымачивают и натягивают. В отличие от папируса, его можно сделать там, где разводят скот, поэтому он стал писчим материалом во многих краях. Мастерская поставляет листы, которые выдерживают частое использование и дорогу."
+
+msgctxt "buildings.flavor"
+msgid "Loose sheets are easily lost; stitched under a cover, they become a book that can be carried and kept. The technique developed wherever paper or parchment was in use, from East Asian bindings to the codex of the Mediterranean. The binder turns writing into a durable object."
+msgstr "Отдельные листы легко потерять; сшитые под обложкой, они становятся книгой, которую можно носить и хранить. Приём возник всюду, где пользовались бумагой или пергаментом — от восточноазиатских переплётов до кодекса Средиземноморья. Работа переплётчика превращает письмо в долговечную вещь."
+
+msgctxt "buildings.flavor"
+msgid "A library is more than a store of sheets: it keeps knowledge available to people who did not write it themselves. Collections were gathered by temples, palaces and scholars in many parts of the world. In the town, the library is where written knowledge becomes science."
+msgstr "Библиотека — не просто хранилище листов: она сохраняет знание для людей, которые сами его не писали. Собрания создавали храмы, дворцы и учёные во многих частях света. В городе библиотека — место, где написанное знание превращается в науку."
+
+msgctxt "buildings.flavor"
+msgid "A saw turns a log into planks, which are easier to carry and build with than the whole trunk. Woodworking is among the oldest crafts, since wood is abundant and easy to shape. The workshop supplies every other trade that needs timber."
+msgstr "Пила превращает бревно в доски, которые легче возить и строить, чем целый ствол. Обработка дерева — одно из древнейших ремесёл, ведь дерево повсюду и его легко обрабатывать. Мастерская обеспечивает все остальные ремёсла древесиной."
+
+msgctxt "buildings.flavor"
+msgid "A market is a place where goods change hands regularly rather than by chance encounter. Such meeting places exist in every farming society, from the highlands of the Americas to the river towns of Asia and Africa. The town's market turns trade into a lasting institution."
+msgstr "Рынок — место, где товары меняют хозяина регулярно, а не при случайной встрече. Такие места встреч есть в каждом земледельческом обществе — от нагорий Америки до речных городов Азии и Африки. Городской рынок превращает торговлю в постоянный институт."
+
+msgctxt "buildings.flavor"
+msgid "A coin is a piece of metal of a known weight and mark, which saves weighing it at every exchange. Striking coins needs a die, a hammer and a ruler whose mark is trusted. The mint gives the town's trade a measure that travels beyond it."
+msgstr "Монета — кусок металла с известным весом и знаком, что избавляет от взвешивания при каждом обмене. Для чеканки нужны штемпель, молот и доверие к знаку правителя. Монетный двор даёт торговле города меру, которая выходит за его пределы."
+
+msgctxt "buildings.flavor"
+msgid "A tax must be counted, stored and carried somewhere before it can pay for anything. Keeping the dues in one yard makes that work visible and gives the treasury a predictable income. Tax systems appear wherever a city has expenses no single household can meet."
+msgstr "Подать надо сосчитать, сложить и куда-то донести, прежде чем она сможет оплатить что-то. Двор, где собирают пошлины, делает эту работу заметной и даёт казне предсказуемый доход. Налоговые системы возникают там, где у города есть расходы, которые не потянуть одному домохозяйству."
+
+msgctxt "buildings.flavor"
+msgid "Paper begins as plant fibre beaten into pulp and dried into thin sheets. The craft began in East Asia and reached other regions over centuries of trade; almost any fibre-rich plant can serve as raw material. A paper workshop gives writing a surface cheaper than parchment."
+msgstr "Бумага начинается с волокон растения, которые взбивают в массу и сушат в тонкие листы. Ремесло началось в Восточной Азии и за века торговли дошло до других краёв; сырьём может служить почти любое волокнистое растение. Бумажная мастерская даёт письму поверхность дешевле пергамента."
+
+msgctxt "buildings.flavor"
+msgid "Water-driven stampers beat fibre into pulp far faster than hands can, so a mill can keep several batches in production. The principle is the same as in the water mill and the fulling of cloth, applied to a different material. The mill makes paper a bulk good."
+msgstr "Водяные толчеи взбивают волокно в массу куда быстрее рук, поэтому мельница может вести несколько партий сразу. Принцип тот же, что у водяной мельницы и сукновальни, только материал другой. Мельница делает бумагу массовым товаром."
+
+msgctxt "buildings.flavor"
+msgid "Sun and air preserve food by removing the water that spoilage needs. Drying is among the oldest methods of preservation: fruit, grain, fish and herbs were dried in every climate with a dry season. The dryer's house makes that method available whatever the weather outside."
+msgstr "Солнце и воздух сохраняют пищу, убирая воду, без которой идёт порча. Сушка — один из древнейших способов заготовки: фрукты, зерно, рыбу и травы сушили в каждом климате с сухим сезоном. Сушильня делает этот способ доступным независимо от погоды на улице."
+
+msgctxt "buildings.flavor"
+msgid "Tobacco was first used by the peoples of the Americas, long before it reached other continents. The leaf is cured and cut before it is smoked or prepared in other ways. The workshop turns a raw crop into a good the citizens can use."
+msgstr "Табак впервые стали применять народы Америки задолго до того, как он попал на другие континенты. Лист перед употреблением сушат и нарезают, затем его курят или готовят иным способом. Мастерская превращает сырую культуру в товар, который горожане могут использовать."
+
+msgctxt "buildings.flavor"
+msgid "A scriptorium is a room set aside for copying and correcting texts. Scribes worked in palaces, temples and monasteries in many regions; their careful copies carried much of the ancient world's writing to later generations. Here that work produces science for the town."
+msgstr "Скрипторий — комната, отведённая для переписывания и исправления текстов. Писцы работали во дворцах, храмах и монастырях во многих краях; их бережные копии сохранили немало древней письменности для потомков. Здесь эта работа даёт городу науку."
+
+msgctxt "buildings.flavor"
+msgid "Colour can be fixed into cloth with plant matter, minerals and a mordant. Dyeing traditions developed independently wherever textiles were woven, using local plants and minerals. The dyer's house gives the weaver's product its final value."
+msgstr "Краску можно закрепить в ткани растительными веществами, минералами и протравой. Традиции окраски возникали независимо всюду, где ткали, используя местные растения и минералы. Красильня придаёт изделию ткача его окончательную ценность."
+
+msgctxt "buildings.flavor"
+msgid "Metal and stone can be worked into ornaments that carry meaning beyond their weight. Jewellers used whatever their region supplied — gold, silver, copper, shell, jade — so the craft never depended on one material. The house turns valuable raw goods into objects the town can keep or trade."
+msgstr "Металл и камень можно превратить в украшения, которые значат больше, чем их вес. Ювелиры использовали то, что давал край: золото, серебро, медь, раковины, нефрит — поэтому ремесло не зависело от одного материала. Мастерская превращает ценное сырьё в вещи, которые город может хранить или продать."
+
+msgctxt "buildings.flavor"
+msgid "Before chemistry had a name, workers heated, dissolved and combined substances in search of useful transformations. The tradition drew on metalworking, medicine and dyeing in many regions. The alchemist's house is where such experiments are carried out deliberately."
+msgstr "Ещё до того, как химия получила имя, мастера нагревали, растворяли и соединяли вещества, ища полезные превращения. Традиция впитала знания кузнецов, врачей и красильщиков во многих краях. Дом алхимика — место, где такие опыты ведут намеренно."
+
+msgctxt "buildings.flavor"
+msgid "A barrel is made of staves held by hoops: the shape is strong, stackable and easy to roll. Coopering spread wherever goods had to be carried in bulk, from wine and oil to grain and tar. The cooper's house supplies the containers other workshops cannot do without."
+msgstr "Бочку собирают из клёпок, стянутых обручами: форма прочная, устойчивая и легко катится. Бондарство распространилось всюду, где товары возили навалом: вино, масло, зерно, смола. Бондарная мастерская поставляет ёмкости, без которых не обходятся другие ремёсла."
+
+msgctxt "buildings.flavor"
+msgid "Aromatic resins, flowers and spices can be ground, mixed and burned to give a scent. Perfumes and incense were made in many ancient cultures, from East Asia to the Mediterranean and the Americas. The house works the raw resin into goods worth more than the material itself."
+msgstr "Ароматные смолы, цветы и пряности можно растереть, смешать и сжечь, чтобы получить запах. Духи и фимиам делали во многих древних культурах — от Восточной Азии до Средиземноморья и Америки. Мастерская превращает сырую смолу в товары, которые стоят больше самого материала."
+
+msgctxt "buildings.flavor"
+msgid "Sugarcane was cultivated in South and Southeast Asia long before sugar reached other regions; beet and other sweet plants later gave the craft a second source. Boiling the juice drives off water so that sugar can be stored and carried. The sugar boiler turns a bulky juice into a compact sweet."
+msgstr "Сахарный тростник возделывали в Южной и Юго-Восточной Азии задолго до того, как сахар дошёл до других краёв; свёкла и другие сладкие растения дали ремеслу второй источник. Кипячение сока угоняет воду, чтобы сахар можно было хранить и возить. Варильня превращает громоздкий сок в плотный сладкий товар."
+
+msgctxt "buildings.flavor"
+msgid "Wood can be joined into a chair, a chest or a table as well as cut into planks. Furniture traditions differ widely — low stools, raised beds, folding screens — but the joinery answers the same needs. The house makes the town's homes usable and, at its best, luxurious."
+msgstr "Дерево можно соединить в стул, сундук или стол так же, как распилить на доски. Традиции мебели сильно различаются — низкие табуретки, высокие кровати, складные ширмы — но соединения отвечают одним и тем же нуждам. Мастерская делает дома города удобными, а на лучших образцах — роскошными."
+
+msgctxt "buildings.flavor"
+msgid "Distillation separates a volatile liquid from a fermented mash by boiling it and cooling the vapour. The technique is known in many traditions, from the Near East to the highlands of the Americas, and serves medicine as well as drink. The distillery carries it out on a scale a household cannot."
+msgstr "Перегонка отделяет летучую жидкость от забродившей браги кипячением и охлаждением пара. Приём известен многим традициям — от Ближнего Востока до нагорий Америки — и служит и медицине, и питью. Перегонная мастерская ведёт его в масштабе, недоступном домохозяйству."
+
+msgctxt "buildings.flavor"
+msgid "A candle is fuel given a shape so that it burns slowly: tallow from rendered fat or wax from a hive. Candle-making existed wherever those materials were at hand, and light after dark extended the working day. The chandler supplies mines, workshops and homes."
+msgstr "Свеча — это топливо, которому придали форму, чтобы оно горело медленно: сало из вытопленного жира или воск из улья. Свечное дело известно всюду, где были эти материалы, а свет после заката удлинял рабочий день. Свечная мастерская обеспечивает шахты, мастерские и дома."
+
+msgctxt "buildings.flavor"
+msgid "A sail is a piece of cloth cut and reinforced so that the wind can pull a boat. The craft grew with sailing itself, in every region where boats moved people and goods, and later served the windmill as well. The sailmaker turns woven canvas into power."
+msgstr "Парус — кусок ткани, раскроенный и укреплённый так, чтобы ветер тянул судно. Ремесло росло вместе с плаванием в каждом краю, где суда возили людей и товары, а позже понадобилось и ветряной мельнице. Парусная мастерская превращает тканое полотно в силу."
+
+msgctxt "buildings.flavor"
+msgid "A wooden boat needs a frame, planking and a way to seal the seams, all of which a yard can keep in repair. Boatbuilding traditions arose independently on rivers, lakes and coasts across the world. The yard builds the hull; the sailmaker and the ropemaker supply the rest."
+msgstr "Деревянному судну нужны каркас, обшивка и способ законопатить швы — всё это верфь может держать в порядке. Судостроение возникало независимо на реках, озёрах и побережьях по всему свету. Верфь строит корпус, а паруса и снасти поставляют другие мастерские."
