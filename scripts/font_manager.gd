@@ -505,7 +505,7 @@ static func locale_letters(locale: String) -> String:
         for i in text.length():
             var code: int = text.unicode_at(i)
             if _is_letter_or_digit(code):
-                found[chr(code)] = true
+                found[char(code)] = true
             if found.size() >= LETTER_SAMPLE_LIMIT:
                 break
         if found.size() >= LETTER_SAMPLE_LIMIT:

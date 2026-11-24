@@ -26,10 +26,6 @@ extends SceneTree
 # outside like eternal silence. Details — in tests/watchdog.gd.
 const WATCHDOG = preload("res://tests/watchdog.gd")
 
-# The script of the FontManager autoload: the letter check is static, so it is reached
-# through the class and not through the node.
-const FontManagerScript = preload("res://scripts/font_manager.gd")
-
 # The exception, with the reason it is not a language preference: the manager itself is
 # where the source language is named as the default one. Every other script is expected
 # to treat the languages alike.
@@ -182,7 +178,7 @@ func _find(languages: Array, code: String) -> Dictionary:
 
 func _test_language_list(state: Dictionary) -> void:
     var localization = get_root().get_node("LocalizationManager")
-    var offered := localization.described_languages()
+    var offered: Array = localization.described_languages()
     check(_find(offered, "ru") != {}, "the shipped Russian catalog is offered", state)
     check(_find(offered, localization.DEFAULT_LOCALE) == {},
         "the source language is not in the list of catalogs: it has no catalog of its own", state)
@@ -205,7 +201,7 @@ func _test_language_list(state: Dictionary) -> void:
         state)
     # The dropdown draws every item through this label, so the source language has to be
     # known to it as well: a bare code in the list would read as "en".
-    var source_label := localization.get_language_label(localization.DEFAULT_LOCALE)
+    var source_label: String = localization.get_language_label(localization.DEFAULT_LOCALE)
     check(source_label != localization.DEFAULT_LOCALE,
         "the source language is labelled, got \"%s\"" % source_label, state)
 
@@ -213,7 +209,7 @@ func _test_language_list(state: Dictionary) -> void:
     # built from the loaded catalogs, so this is the same mechanism a new .po uses.
     var translation := _load_synthetic(SANDWICH_LOCALE, SANDWICH_PO)
     check(translation != null, "the synthetic catalog is read as a Translation", state)
-    var after := localization.described_languages()
+    var after: Array = localization.described_languages()
     var entry := _find(after, SANDWICH_LOCALE)
     check(entry != {}, "a newly loaded catalog appears in the list with no code change", state)
     check(str(entry.get("name", "")) == SANDWICH_NAME,
@@ -338,21 +334,24 @@ func _test_list_form(state: Dictionary) -> void:
 # --- 4. The letter check -------------------------------------------------------------
 
 func _test_letters(state: Dictionary) -> void:
-    var ru_letters: String = FontManagerScript.locale_letters("ru")
+    # The autoload script is loaded here, not preloaded as a const: a const preload would
+    # compile it before the autoloads are registered, and it refers to LocalizationManager.
+    var font_manager_script = load("res://scripts/font_manager.gd")
+    var ru_letters: String = font_manager_script.locale_letters("ru")
     check(ru_letters.contains("Ж"), "the Russian catalog brings its Cyrillic letters", state)
     check(ru_letters.contains("A"), "the source letters are always part of the check", state)
     check(not ru_letters.contains(" "), "the sample carries no whitespace", state)
 
     # A language with no catalog has nothing to check beyond the source letters.
-    var unknown: String = FontManagerScript.locale_letters("xx")
-    check(unknown == FontManagerScript.SOURCE_LETTERS,
+    var unknown: String = font_manager_script.locale_letters("xx")
+    check(unknown == font_manager_script.SOURCE_LETTERS,
         "a language with no catalog checks only the source letters", state)
 
     # The letters follow the catalog, so a catalog of another script is covered with no
     # table in the code that would have to list its alphabet. The catalog is declared as
     # a language of its own, so nothing of the project's own catalogs takes part.
     var translation := _load_synthetic(SANDWICH_LOCALE, SANDWICH_PO)
-    var eo_letters: String = FontManagerScript.locale_letters(SANDWICH_LOCALE)
+    var eo_letters: String = font_manager_script.locale_letters(SANDWICH_LOCALE)
     check(eo_letters.contains("ĵ"),
         "the letters come from the catalog of that language, got \"%s\"" % eo_letters, state)
     check(not eo_letters.contains("Р"),
@@ -361,9 +360,9 @@ func _test_letters(state: Dictionary) -> void:
 
     # The check is a real check: a font without the letters is refused.
     var empty_font := FontFile.new()
-    check(not FontManagerScript.covers_locale(empty_font, "ru"),
+    check(not font_manager_script.covers_locale(empty_font, "ru"),
         "a font that cannot draw the letters is refused", state)
-    check(FontManagerScript.covers_locale(empty_font, ""),
+    check(font_manager_script.covers_locale(empty_font, ""),
         "an empty language has nothing to check", state)
 
 
