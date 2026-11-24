@@ -363,6 +363,7 @@ const BUILDING_FIELDS := {
 const IMPROVEMENT_FIELDS := {
     "id": LEAF,
     "name": LEAF,
+    "flavor": LEAF,
     "icon": LEAF,
     "color": LEAF,
     "work_cost": LEAF,

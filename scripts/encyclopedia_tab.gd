@@ -8,7 +8,8 @@
 #
 # The description of an entity is a set of blocks divided by hairlines. Some blocks hold
 # links to other entities: a click on one opens that entity in its own section instead
-# of leaving the encyclopedia.
+# of leaving the encyclopedia. A profession page describes its workplaces and consumption;
+# an improvement page describes its costs, its unlock, its worker and its properties.
 #
 # The query and the picked entity are kept with the tab while the player moves between
 # the sections and refreshes the window, so that neither is lost on a rebuild.
@@ -19,6 +20,17 @@ const UI_THEME = preload("res://scripts/ui_theme.gd")
 
 const ICON_SIZE := 32
 const DETAIL_FALLBACK_ICON := "encyclopedia.svg"
+
+# The flags of an improvement that say something about how it behaves. The order is the
+# order in which the properties are written in the encyclopedia.
+const IMPROVEMENT_PROPERTY_LABELS := {
+    "conducts_water": "conducts water",
+    "is_canal": "canal",
+    "no_worker": "no worker required",
+    "no_road": "no road is laid",
+    "water_body_harbor": "opens the water resources of its water body",
+    "requires_harbor": "requires a harbor on the same water body",
+}
 
 # The detail picture has room for 256 pixels but is drawn at the native size of the icon:
 # a 200-pixel building stays 200 pixels instead of being blown up to fill the frame.
@@ -386,9 +398,64 @@ func _clear_description() -> void:
 
 func _build_description(entry: Dictionary) -> void:
     _clear_description()
-    var prof_id := _profession_id(entry)
-    if prof_id == "":
+    for record in entry.get("records", []):
+        var section := str(record.get("section", ""))
+        var id := str(record.get("id", ""))
+        if section == "improvements":
+            _build_improvement_description(id)
+            return
+        if section == "professions":
+            _build_profession_description(id)
+            return
+
+# An improvement has no separate description field: the costs, the unlock, the worker and
+# the flags are all read from its record, and only the historical note is authored text.
+func _build_improvement_description(imp_id: String) -> void:
+    var record: Dictionary = GameData.improvements.get(imp_id, {})
+    if record.is_empty():
         return
+
+    _add_separator()
+    _add_labeled_block(tr("Base cost:"),
+            _bbcode_escape(tr("%d work") % int(record.get("work_cost", 0))))
+
+    _add_separator()
+    _add_labeled_block(tr("Maintenance cost:"), _bbcode_escape(tr("%s coins/sec")
+            % str(maxf(0.0, float(record.get("maintenance_cost", 0.0))))))
+
+    _add_separator()
+    var tech_id := str(record.get("unlock_tech", ""))
+    var tech_name := _technology_name(tech_id)
+    var tech_value := "—"
+    if tech_name != "":
+        tech_value = _link(tech_name, "technologies:" + tech_id)
+    _add_labeled_block(tr("Unlocked by technology:"), tech_value)
+
+    _add_separator()
+    var prof_id := str(record.get("profession", ""))
+    var prof_value := "—"
+    if prof_id != "" and GameData.professions.has(prof_id):
+        prof_value = _link(GameData.get_profession_name(prof_id), "professions:" + prof_id)
+    _add_labeled_block(tr("Who works:"), prof_value)
+
+    _add_separator()
+    var properties := _improvement_properties(record)
+    var properties_value := "—"
+    if not properties.is_empty():
+        properties_value = ", ".join(properties)
+    _add_labeled_block(tr("Additional properties:"), properties_value)
+
+    _add_separator()
+    var flavor := str(record.get("flavor", ""))
+    var history_text := tr("Historical essay:")
+    if flavor == "":
+        history_text += " —"
+    else:
+        history_text += "\n[color=%s]%s[/color]" % [
+                UI_THEME.color("text_muted").to_html(false), _bbcode_escape(flavor)]
+    _add_rich_block(history_text)
+
+func _build_profession_description(prof_id: String) -> void:
     var record: Dictionary = GameData.professions.get(prof_id, {})
     if record.is_empty():
         return
@@ -422,11 +489,20 @@ func _build_description(entry: Dictionary) -> void:
                 UI_THEME.color("text_muted").to_html(false), _bbcode_escape(flavor)]
     _add_rich_block(history_text)
 
-func _profession_id(entry: Dictionary) -> String:
-    for record in entry.get("records", []):
-        if str(record.get("section", "")) == "professions":
-            return str(record.get("id", ""))
+# The technologies are kept as an array, so the name is looked up by id. An unknown id has
+# no page to link to and is shown as an empty value instead.
+func _technology_name(tech_id: String) -> String:
+    for record in GameData.technologies:
+        if str(record.get("id", "")) == tech_id:
+            return str(record.get("name", ""))
     return ""
+
+func _improvement_properties(record: Dictionary) -> Array:
+    var labels: Array = []
+    for flag in IMPROVEMENT_PROPERTY_LABELS:
+        if bool(record.get(flag, false)):
+            labels.append(tr(str(IMPROVEMENT_PROPERTY_LABELS[flag])))
+    return labels
 
 # Workplaces come from two collections: the city buildings and the map improvements.
 # A profession such as the miller has several buildings, all of them listed.
@@ -534,6 +610,11 @@ func _on_group_exit() -> void:
 
 func _add_rich_block(text: String) -> void:
     description_box.add_child(_make_rich_text(text))
+
+# A titled row of an improvement page: the caption is muted, the value carries the links.
+func _add_labeled_block(title: String, value: String) -> void:
+    _add_rich_block("[color=%s]%s[/color] %s" % [
+            UI_THEME.color("text_secondary").to_html(false), _bbcode_escape(title), value])
 
 func _make_rich_text(text: String) -> RichTextLabel:
     var label := RichTextLabel.new()

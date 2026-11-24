@@ -15,7 +15,10 @@
 #     historical note in separate blocks; the links in the first two open the target entity.
 #     A group of goods carries the standard dashed underline and unfolds its members on hover.
 #     The butcher is a professional worker of the slaughterhouse and consumes work tools.
-#  7. A query searches every section at once and survives a refresh and a change of language.
+#  7. The page of an improvement lists its base cost, upkeep, unlocking technology, worker,
+#     special properties and historical note in separate blocks; the technology and the
+#     profession are links into their own sections.
+#  8. A query searches every section at once and survives a refresh and a change of language.
 extends SceneTree
 
 const WATCHDOG = preload("res://tests/watchdog.gd")
@@ -156,6 +159,9 @@ func _run() -> void:
                 and detail_icon.texture.get_size().y <= 256.0,
                 "the detail picture never exceeds 256 pixels", state)
 
+    column.get_child(4).pressed.emit()
+    _check_farm_description(state, panel, list, gdata)
+
     column.get_child(5).pressed.emit()
     _check_butcher(state, panel, list, gdata, city_ui)
     var profession := _row_with_text(list, str(gdata.get_profession_name("miller")))
@@ -207,6 +213,9 @@ func _run() -> void:
     check(str(gdata.professions.get("butcher", {}).get("flavor", ""))
             .begins_with("Butchery is as old as domestication"),
             "the historical note of the butcher is translated", state)
+    check(str(gdata.improvements.get("farm", {}).get("flavor", ""))
+            .begins_with("Wherever grains were first domesticated"),
+            "the historical note of the farm is translated", state)
     TranslationServer.set_locale(original_locale)
     city_ui.refresh()
 
@@ -231,6 +240,84 @@ func _run() -> void:
     city_ui.hide()
     main_map.queue_free()
     _finish(state)
+
+func _check_farm_description(state: Dictionary, panel: Control, list: VBoxContainer, gdata) -> void:
+    var title := panel.get_node_or_null("Body/EntitiesColumn/TitleLabel") as Label
+    check(title != null and str(title.text) == tr("Improvements"),
+            "the caption names the improvements section", state)
+    var farm_name := str(gdata.get_improvement_display_name("farm"))
+    var row := _row_with_text(list, farm_name)
+    check(row != null, "the improvements section lists the farm", state)
+    if row == null:
+        return
+    row.pressed.emit()
+    var box := panel.get_node_or_null(
+            "Body/DetailColumn/DescriptionScroll/Description") as VBoxContainer
+    check(box != null, "the improvement has a description", state)
+    if box == null:
+        return
+    check(box.get_child_count() == 12,
+            "six blocks of the improvement are divided by hairlines (got %d)"
+                    % box.get_child_count(), state)
+    var separators := 0
+    for child in box.get_children():
+        if child is ColorRect:
+            separators += 1
+    check(separators == 6, "a hairline stands before every subsection (got %d)"
+            % separators, state)
+    var labels := _rich_labels(box)
+    check(labels.size() == 6, "the improvement page has six titled blocks (got %d)"
+            % labels.size(), state)
+    if labels.size() < 6:
+        return
+    check(str(labels[0].text).contains(tr("Base cost:"))
+            and str(labels[0].text).contains("%d" % int(gdata.improvements["farm"].get("work_cost", 0))),
+            "the base cost comes from the improvement data", state)
+    check(str(labels[1].text).contains(tr("Maintenance cost:")),
+            "the maintenance cost is titled", state)
+    var tech_name := ""
+    for record in gdata.technologies:
+        if str(record.get("id", "")) == "farming":
+            tech_name = str(record.get("name", ""))
+            break
+    check(str(labels[2].text).contains("[url=technologies:farming]")
+            and str(labels[2].text).contains(tech_name),
+            "the unlocking technology is a link with its name", state)
+    check(str(labels[3].text).contains("[url=professions:farmer]")
+            and str(labels[3].text).contains(str(gdata.get_profession_name("farmer"))),
+            "the worker is a link with the profession name", state)
+    check(str(labels[4].text).contains(tr("conducts water")),
+            "a conductor of water is named among the properties", state)
+    check(str(labels[5].text).contains(tr("Historical essay:"))
+            and str(labels[5].text).contains(str(gdata.improvements["farm"].get("flavor", ""))),
+            "the historical note comes from the improvement data", state)
+
+    var name_label := panel.get_node_or_null("Body/DetailColumn/NameLabel") as Label
+    var back := panel.get_node_or_null("BackButton") as Button
+    labels[2].meta_clicked.emit("technologies:farming")
+    check(title != null and str(title.text) == tr("Technologies"),
+            "the technology link opens the technologies section", state)
+    check(name_label != null and str(name_label.text) == tech_name,
+            "the technology link opens the farming page", state)
+    if back != null:
+        back.pressed.emit()
+        check(title != null and str(title.text) == tr("Improvements"),
+                "back returns to the improvements section", state)
+        check(name_label != null and str(name_label.text) == farm_name,
+                "back returns to the farm page", state)
+
+    var farm_row := _row_with_text(list, farm_name)
+    if farm_row == null:
+        return
+    farm_row.pressed.emit()
+    var worker_link := _find_rich(box, "[url=professions:farmer]") as RichTextLabel
+    check(worker_link != null, "the profession link survives the return", state)
+    if worker_link != null:
+        worker_link.meta_clicked.emit("professions:farmer")
+        check(title != null and str(title.text) == tr("Professions"),
+                "the profession link opens the professions section", state)
+        check(name_label != null and str(name_label.text) == str(gdata.get_profession_name("farmer")),
+                "the profession link opens the farmer page", state)
 
 func _check_butcher(state: Dictionary, panel: Control, list: VBoxContainer, gdata, city_ui) -> void:
     check(str(gdata.get_profession_for_building("slaughterhouse")) == "butcher",

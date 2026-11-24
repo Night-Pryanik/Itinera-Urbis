@@ -15,6 +15,30 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
+msgctxt ""
+msgid "%d work"
+msgstr "%d труда"
+
+msgctxt ""
+msgid "%s coins/sec"
+msgstr "%s монет/сек"
+
+msgctxt ""
+msgid "Additional properties:"
+msgstr "Дополнительные свойства:"
+
+msgctxt ""
+msgid "Base cost:"
+msgstr "Базовая стоимость:"
+
+msgctxt ""
+msgid "Historical essay:"
+msgstr "Исторический очерк:"
+
+msgctxt ""
+msgid "Maintenance cost:"
+msgstr "Стоимость обслуживания:"
+
 msgid "Mint"
 msgstr "Монетный двор"
 
@@ -45,6 +69,14 @@ msgstr "Профессии"
 msgctxt ""
 msgid "The chance that a main river reaching a lake or the sea splits into distributaries at its mouth."
 msgstr "Шанс того, что главная река, впадающая в озеро или море, разделится на рукава у устья."
+
+msgctxt ""
+msgid "Unlocked by technology:"
+msgstr "Открывается технологией:"
+
+msgctxt ""
+msgid "Who works:"
+msgstr "Кто работает:"
 
 msgctxt ""
 msgid "Works at:"
@@ -1246,6 +1278,14 @@ msgstr "+%d%% к разнообразию пищи"
 
 msgid "Bonus: +%d%% (%s)"
 msgstr "Бонус: +%d%% (%s)"
+
+msgctxt ""
+msgid "canal"
+msgstr "канал"
+
+msgctxt ""
+msgid "conducts water"
+msgstr "проводит воду"
 
 msgid "no bonus"
 msgstr "бонус не активен"
@@ -3158,14 +3198,26 @@ msgstr "непроходимо"
 msgid "no path"
 msgstr "нет пути"
 
+msgctxt ""
+msgid "no road is laid"
+msgstr "дорога не прокладывается"
+
 msgid "no route to the city"
 msgstr "нет маршрута до города"
+
+msgctxt ""
+msgid "no worker required"
+msgstr "не требует работника"
 
 msgid "none"
 msgstr "нет"
 
 msgid "not working"
 msgstr "не работает"
+
+msgctxt ""
+msgid "opens the water resources of its water body"
+msgstr "открывает водные ресурсы водоёма"
 
 msgid "outposts outside the Region"
 msgstr "факторий вне Региона"
@@ -3175,6 +3227,10 @@ msgstr "позиция %d: «%s» (U+%04X"
 
 msgid "produces goods '%s' from resource '%s'"
 msgstr "produces продукта '%s' ресурса '%s'"
+
+msgctxt ""
+msgid "requires a harbor on the same water body"
+msgstr "требует гавань на том же водоёме"
 
 msgid "sec"
 msgstr "сек"
@@ -10259,3 +10315,79 @@ msgstr "Горючий сланец"
 msgctxt "resources.name"
 msgid "Shale Oil"
 msgstr "Сланцевое масло"
+
+msgctxt "improvements.flavor"
+msgid "A camp in the forest is among the first workshops of a settled community. Where a valuable tree grows, the camp takes that timber; where the forest is ordinary, it cuts wood by the density of the stand. It does not clear the land for good — it follows the forest as it regrows."
+msgstr "Стоянка в лесу — одна из первых мастерских оседлого сообщества. Там, где растёт ценное дерево, делянка берёт именно эту древесину; где лес обычный, она заготавливает лес по густоте насаждения. Она не расчищает землю навсегда — она следует за лесом, когда тот отрастает."
+
+msgctxt "improvements.flavor"
+msgid "A harbor is not a shelter for one ship but a claim on a whole body of water. Once the quay exists, every shoal and landing place on that lake or sea becomes reachable, and each body of water needs its own. The harbor itself needs no worker: it is the place from which other workers set out."
+msgstr "Пристань — не приют для одного судна, а доступ ко всему водоёму. Когда причал построен, становятся достижимы все отмели и пристанища на этом озере или море, и у каждого водоёма должна быть своя. Сама пристань не требует работника: это место, откуда выходят другие работники."
+
+msgctxt "improvements.flavor"
+msgid "A spring is a small but dependable gift, easily muddied by people and animals. A catchment built around it guards the water and lets it be drawn in quantity. The masonry is simple, yet it is what turns a trickle into a supply the town can count on."
+msgstr "Родник — небольшой, но надёжный дар, который легко замутнить людям и животным. Устроенный вокруг него водосбор бережёт воду и позволяет брать её в количестве. Кладка проста, но именно она превращает струйку в запас, на который город может положиться."
+
+msgctxt "improvements.flavor"
+msgid "Beekeeping is known from many ancient societies, from the Nile valley to the forests of Eastern Europe and the islands of the Pacific. Keepers learned to move hives to the flowering season instead of chasing wild swarms. The apiary turns the blossoms of the whole neighbourhood into honey and wax without taking the land out of other use."
+msgstr "Пчеловодство известно многим древним обществам — от долины Нила до лесов Восточной Европы и островов Тихого океана. Пчеловоды научились переносить улья к цветению, а не гнаться за дикими роями. Пасека превращает цветы всей округи в мёд и воск, не изымая землю из других дел."
+
+msgctxt "improvements.flavor"
+msgid "Canals are among the oldest pieces of infrastructure: a dug channel carries water further than anyone can carry a bucket. Once a chain of canals exists, water passes from one field to the next and every farm along it benefits. The canal needs no worker of its own — its work is done by gravity."
+msgstr "Каналы — одно из древнейших сооружений: вырытая канава несёт воду дальше, чем человек может донести ведро. Когда сеть каналов есть, вода переходит от поля к полю, и каждая ферма вдоль неё выигрывает. Каналу не нужен свой работник — его работу делает сила тяжести."
+
+msgctxt "improvements.flavor"
+msgid "Crops such as sugarcane, cotton and tea need a long season and a steady labour force. A plantation gathers them on one estate and processes them near the field, because the raw plants lose value quickly after harvest. Once irrigation is understood, the same estate can carry water to its neighbours."
+msgstr "Такие культуры, как сахарный тростник, хлопок и чай, требуют долгого сезона и постоянной рабочей силы. Плантация собирает их в одном имении и перерабатывает рядом с полем, потому что сырые растения быстро теряют ценность после сбора. Когда осваивается орошение, то же имение может подвести воду к соседним полям."
+
+msgctxt "improvements.flavor"
+msgid "Fishing boats extend the town beyond the shoreline. They can be used only where a harbor already gives access to the water, for a boat needs somewhere to land and a community to mend it. The catch comes from the water rather than the field, so the boats belong to a different economy than the farm."
+msgstr "Рыбацкие лодки выводят город за береговую черту. Их можно использовать только там, где пристань уже открыла доступ к воде: лодке нужно место для причала и сообщество, которое её починит. Улов приходит из воды, а не с поля, поэтому лодки относятся к иному хозяйству, чем ферма."
+
+msgctxt "improvements.flavor"
+msgid "Grapes grow readily in many climates and were pressed long before the plant was given rows and trellises. A vineyard fixes the crop in one place, so the harvest can be timed and its quality watched from year to year. The same fruit is eaten fresh or fermented, and the two uses compete for one harvest."
+msgstr "Виноград легко растёт во многих климатах, и его давили задолго до того, как лозу посадили рядами на шпалерах. Виноградник закрепляет культуру на одном месте, чтобы урожай можно было вовремя собрать и год за годом следить за его качеством. Один и тот же плод едят свежим и сбраживают — оба назначения спорят за один урожай."
+
+msgctxt "improvements.flavor"
+msgid "In cold wetlands, dead plant matter accumulates faster than it decays and forms peat. It can be cut by hand, dried and burned, and it served as fuel wherever wood was scarce. A peat pit is a mine of a different kind: its ore is the slow growth of a bog."
+msgstr "В холодных болотах мёртвые растения накапливаются быстрее, чем разлагаются, и образуют торф. Его режут вручную, сушат и жгут; он служил топливом там, где не хватало леса. Торфяной карьер — шахта особого рода: его руда — медленный рост болота."
+
+msgctxt "improvements.flavor"
+msgid "Keeping herds on open land is older than permanent fields. From the steppes of Central Asia to the savannas of Africa and the pampas of South America, herders learned to follow the grasses rather than sow them. A pasture fixes that wandering practice in one place and makes it part of the town's economy."
+msgstr "Содержать стада на открытой земле старше, чем постоянные поля. От степей Центральной Азии до саванн Африки и пампасов Южной Америки пастухи учились следовать за травой, а не сеять её. Пастбище закрепляет это кочевое занятие на одном месте и делает частью экономики города."
+
+msgctxt "improvements.flavor"
+msgid "Natural soda was gathered from dry lake beds and alkaline springs long before factories made it. It serves in washing, in glassmaking and in the preparation of food. A soda quarry is the place where those deposits are concentrated enough to be worked."
+msgstr "Природную соду собирали на высохших озёрных днах и щелочных источниках задолго до того, как её начали делать на заводах. Она идёт в стирку, в стеклоделие и в приготовление пищи. Содовый карьер — место, где эти залежи достаточно плотны, чтобы их разрабатывать."
+
+msgctxt "improvements.flavor"
+msgid "Not every domesticated animal can live on a range. Poultry, pigeons and rabbits do better in an enclosed yard, and a fenced homestead describes their place better than a grazing field. The small enclosure gives a household meat and manure without a larger territory."
+msgstr "Не каждое одомашненное животное может жить на пастбище. Птица, голуби и кролики лучше чувствуют себя в огороженном дворе, и подворье описывает их место точнее, чем выгон. Небольшой загон даёт домохозяйству мясо и навоз без большой территории."
+
+msgctxt "improvements.flavor"
+msgid "Pigs were domesticated independently in several regions and are kept close to the dwelling rather than driven to pasture. A sty keeps them out of the crops and turns household scraps into meat and fertilizer. It is a small structure with a large return."
+msgstr "Свиней одомашнили независимо в нескольких регионах, и держат их у жилища, а не гоняют на пастбище. Свинарник не даёт им портить посевы и превращает кухонные отходы в мясо и удобрение. Небольшая постройка даёт большую отдачу."
+
+msgctxt "improvements.flavor"
+msgid "Pottery appears wherever clay, water and fire meet, and it begins without a stone kiln. The pit supplies the earth; the potter decides what it becomes. Because clay is heavy and fragile in transit, the workshop is almost always built beside the pit."
+msgstr "Гончарство возникает там, где встречаются глина, вода и огонь, и начинается без каменной печи. Яма даёт землю, а гончар решает, чем она станет. Глину тяжело и хрупко возить, поэтому мастерская почти всегда стоит рядом с ямой."
+
+msgctxt "improvements.flavor"
+msgid "Stone is the oldest building material that does not rot. A quarry supplies the blocks for walls, roads and foundations, and its workers learn to read the grain of the rock before they cut it. Unlike a mine, it works at the surface and needs no shafts."
+msgstr "Камень — самый древний строительный материал, который не гниёт. Каменоломня даёт блоки для стен, дорог и фундаментов, а её работники учатся читать слои породы до того, как её режут. В отличие от шахты, она работает на поверхности и не требует стволов."
+
+msgctxt "improvements.flavor"
+msgid "Tar and pitch were known wherever coniferous forests grew: the resin was heated until it ran and then used to seal boats and roofs. Burning it in a pit is a simple operation, but it needs a steady supply of wood and a worker who knows when to stop the fire. The product is a waterproof layer that outlasts the timber it protects."
+msgstr "Смолу и пек знали всюду, где росли хвойные леса: смолу нагревали, пока она не потечёт, и использовали для конопатки лодок и крыш. Жжение ямы — операция простая, но ей нужны постоянная подача древесины и работник, который знает, когда остановить огонь. Получается водонепроницаемый слой, который служит дольше самой древесины."
+
+msgctxt "improvements.flavor"
+msgid "The first mines followed veins visible at the surface; deeper workings waited on timber supports, drainage and reliable lighting. Knowledge of rock and ore passed from master to apprentice in every mining region, from the Andes to the Urals and the hills of East Asia. A mine is where that knowledge becomes a lasting source of metal."
+msgstr "Первые шахты шли по жилам, видимым на поверхности; глубокие выработки ждали деревянной крепи, водоотвода и надёжного освещения. Знание породы и руды передавалось от мастера к ученику в каждом горнодобывающем краю — от Анд до Урала и холмов Восточной Азии. Шахта делает это знание постоянным источником металла."
+
+msgctxt "improvements.flavor"
+msgid "Where the sun is strong and the sea or a salt lake is near, a shallow pond makes salt by evaporation alone. No fire and no machinery are needed — only a basin, a season and patience. Salt preserves food, and a dependable pond frees the town from distant mines."
+msgstr "Там, где сильно солнце и рядом море или солёное озеро, неглубокий пруд даёт соль одним испарением. Не нужны ни огонь, ни машины — только бассейн, сезон и терпение. Соль сохраняет пищу, а надёжный пруд избавляет город от далёких шахт."
+
+msgctxt "improvements.flavor"
+msgid "Wherever grains were first domesticated — in the river valleys of South Asia, in the Americas, in the Near East — the same operation appeared: break the soil and return seed to it. A farm does not change the land; it gives a settled community a dependable way to work the food plants already growing there."
+msgstr "Там, где зерновые были одомашнены впервые — в долинах Южной Азии, в Америке, на Ближнем Востоке — появлялась одна и та же операция: рыхлить землю и возвращать ей семена. Ферма не меняет ландшафт; она даёт оседлому сообществу надёжный способ возделывать пищевые растения, которые уже растут вокруг."

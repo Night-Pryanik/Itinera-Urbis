@@ -37,7 +37,8 @@
       // A conductor of fresh water: after the technology "Irrigation" is
       // researched, the farm spreads fresh water to neighbouring hexes
       // (the water_access scheme: chain).
-      "conducts_water": true
+      "conducts_water": true,
+      "flavor": "Wherever grains were first domesticated — in the river valleys of South Asia, in the Americas, in the Near East — the same operation appeared: break the soil and return seed to it. A farm does not change the land; it gives a settled community a dependable way to work the food plants already growing there."
     },
     {
       "id": "pasture",
@@ -47,7 +48,8 @@
       "work_cost": 25,
       "maintenance_cost": 100.0,
       "unlock_tech": "animal_husbandry",
-      "profession": "herder"
+      "profession": "herder",
+      "flavor": "Keeping herds on open land is older than permanent fields. From the steppes of Central Asia to the savannas of Africa and the pampas of South America, herders learned to follow the grasses rather than sow them. A pasture fixes that wandering practice in one place and makes it part of the town's economy."
     },
     {
       "id": "farmstead",
@@ -63,7 +65,8 @@
       "work_cost": 12,
       "maintenance_cost": 100.0,
       "unlock_tech": "animal_husbandry",
-      "profession": "stockman"
+      "profession": "stockman",
+      "flavor": "Not every domesticated animal can live on a range. Poultry, pigeons and rabbits do better in an enclosed yard, and a fenced homestead describes their place better than a grazing field. The small enclosure gives a household meat and manure without a larger territory."
     },
     {
       "id": "pigsty",
@@ -77,7 +80,8 @@
       "work_cost": 16,
       "maintenance_cost": 100.0,
       "unlock_tech": "animal_husbandry",
-      "profession": "swineherd"
+      "profession": "swineherd",
+      "flavor": "Pigs were domesticated independently in several regions and are kept close to the dwelling rather than driven to pasture. A sty keeps them out of the crops and turns household scraps into meat and fertilizer. It is a small structure with a large return."
     },
     {
       "id": "mine",
@@ -87,7 +91,8 @@
       "work_cost": 30,
       "maintenance_cost": 36.0,
       "unlock_tech": "mining",
-      "profession": "miner"
+      "profession": "miner",
+      "flavor": "The first mines followed veins visible at the surface; deeper workings waited on timber supports, drainage and reliable lighting. Knowledge of rock and ore passed from master to apprentice in every mining region, from the Andes to the Urals and the hills of East Asia. A mine is where that knowledge becomes a lasting source of metal."
     },
     {
       "id": "quarry",
@@ -97,7 +102,8 @@
       "work_cost": 20,
       "maintenance_cost": 36.0,
       "unlock_tech": "masonry",
-      "profession": "quarryman"
+      "profession": "quarryman",
+      "flavor": "Stone is the oldest building material that does not rot. A quarry supplies the blocks for walls, roads and foundations, and its workers learn to read the grain of the rock before they cut it. Unlike a mine, it works at the surface and needs no shafts."
     },
     {
       "id": "beehive",
@@ -107,7 +113,8 @@
       "work_cost": 12,
       "maintenance_cost": 100.0,
       "unlock_tech": "beekeeping",
-      "profession": "beekeeper"
+      "profession": "beekeeper",
+      "flavor": "Beekeeping is known from many ancient societies, from the Nile valley to the forests of Eastern Europe and the islands of the Pacific. Keepers learned to move hives to the flowering season instead of chasing wild swarms. The apiary turns the blossoms of the whole neighbourhood into honey and wax without taking the land out of other use."
     },
     {
       "id": "vineyard",
@@ -117,7 +124,8 @@
       "work_cost": 35,
       "maintenance_cost": 54.0,
       "unlock_tech": "winegrowing",
-      "profession": "vinedresser"
+      "profession": "vinedresser",
+      "flavor": "Grapes grow readily in many climates and were pressed long before the plant was given rows and trellises. A vineyard fixes the crop in one place, so the harvest can be timed and its quality watched from year to year. The same fruit is eaten fresh or fermented, and the two uses compete for one harvest."
     },
     {
       "id": "clay_pit",
@@ -127,7 +135,8 @@
       "work_cost": 22,
       "maintenance_cost": 27.0,
       "unlock_tech": "pottery",
-      "profession": "clay_digger"
+      "profession": "clay_digger",
+      "flavor": "Pottery appears wherever clay, water and fire meet, and it begins without a stone kiln. The pit supplies the earth; the potter decides what it becomes. Because clay is heavy and fragile in transit, the workshop is almost always built beside the pit."
     },
     {
       "id": "peat_pit",
@@ -137,7 +146,8 @@
       "work_cost": 22,
       "maintenance_cost": 27.0,
       "unlock_tech": "peat_cutting",
-      "profession": "peat_cutter"
+      "profession": "peat_cutter",
+      "flavor": "In cold wetlands, dead plant matter accumulates faster than it decays and forms peat. It can be cut by hand, dried and burned, and it served as fuel wherever wood was scarce. A peat pit is a mine of a different kind: its ore is the slow growth of a bog."
     },
     {
       "id": "plantation",
@@ -152,7 +162,8 @@
       // researched, the plantation spreads fresh water to neighbouring hexes
       // (the water_access scheme: chain). As a grower of plants it also takes
       // the fresh-water production bonus itself.
-      "conducts_water": true
+      "conducts_water": true,
+      "flavor": "Crops such as sugarcane, cotton and tea need a long season and a steady labour force. A plantation gathers them on one estate and processes them near the field, because the raw plants lose value quickly after harvest. Once irrigation is understood, the same estate can carry water to its neighbours."
     },
     {
       "id": "tar_pit",
@@ -162,7 +173,8 @@
       "work_cost": 30,
       "maintenance_cost": 81.0,
       "unlock_tech": "tar_burning",
-      "profession": "tar_collector"
+      "profession": "tar_collector",
+      "flavor": "Tar and pitch were known wherever coniferous forests grew: the resin was heated until it ran and then used to seal boats and roofs. Burning it in a pit is a simple operation, but it needs a steady supply of wood and a worker who knows when to stop the fire. The product is a waterproof layer that outlasts the timber it protects."
     },
     {
       "id": "soda_quarry",
@@ -172,7 +184,8 @@
       "work_cost": 30,
       "maintenance_cost": 72.0,
       "unlock_tech": "soda_extraction",
-      "profession": "soda_extractor"
+      "profession": "soda_extractor",
+      "flavor": "Natural soda was gathered from dry lake beds and alkaline springs long before factories made it. It serves in washing, in glassmaking and in the preparation of food. A soda quarry is the place where those deposits are concentrated enough to be worked."
     },
     {
       "id": "salt_pond",
@@ -181,7 +194,8 @@
       "color": [ 255, 255, 200 ],
       "work_cost": 30,
       "maintenance_cost": 32.4,
-      "unlock_tech": "salt_extraction"
+      "unlock_tech": "salt_extraction",
+      "flavor": "Where the sun is strong and the sea or a salt lake is near, a shallow pond makes salt by evaporation alone. No fire and no machinery are needed — only a basin, a season and patience. Salt preserves food, and a dependable pond frees the town from distant mines."
     },
     {
       "id": "spring_catchment",
@@ -191,7 +205,8 @@
       "work_cost": 22,
       "maintenance_cost": 46.8,
       "unlock_tech": "masonry",
-      "profession": "water_drawer"
+      "profession": "water_drawer",
+      "flavor": "A spring is a small but dependable gift, easily muddied by people and animals. A catchment built around it guards the water and lets it be drawn in quantity. The masonry is simple, yet it is what turns a trickle into a supply the town can count on."
     },
     {
       // The harbor — the "key" to the water resources of a specific body of water.
@@ -221,7 +236,8 @@
       // resource consumption").
       "no_worker": true,
       // Marker: this improvement opens the water resources of its body of water.
-      "water_body_harbor": true
+      "water_body_harbor": true,
+      "flavor": "A harbor is not a shelter for one ship but a claim on a whole body of water. Once the quay exists, every shoal and landing place on that lake or sea becomes reachable, and each body of water needs its own. The harbor itself needs no worker: it is the place from which other workers set out."
     },
     {
       // Fishing boats — catch fish. They can be built ONLY on hexes with a fish
@@ -238,7 +254,8 @@
       "profession": "fisherman",
       // Marker: a harbor on this same body of water is required for the build.
       "requires_harbor": true,
-      "no_road": true
+      "no_road": true,
+      "flavor": "Fishing boats extend the town beyond the shoreline. They can be used only where a harbor already gives access to the water, for a boat needs somewhere to land and a community to mend it. The catch comes from the water rather than the field, so the boats belong to a different economy than the farm."
     },
     {
       // Irrigation canal: an infrastructure conductor improvement unlocked by
@@ -258,7 +275,8 @@
       "no_worker": true,
       // A road to a canal is NOT laid: this is an infrastructure element,
       // and extending a road network to it makes no sense.
-      "no_road": true
+      "no_road": true,
+      "flavor": "Canals are among the oldest pieces of infrastructure: a dug channel carries water further than anyone can carry a bucket. Once a chain of canals exists, water passes from one field to the next and every farm along it benefits. The canal needs no worker of its own — its work is done by gravity."
     },
     {
       // The woodcutter's camp — a logging improvement. It works in TWO modes
@@ -286,7 +304,8 @@
       "work_cost": 18,
       "maintenance_cost": 90.0,
       "unlock_tech": "wood_processing",
-      "profession": "lumberjack"
+      "profession": "lumberjack",
+      "flavor": "A camp in the forest is among the first workshops of a settled community. Where a valuable tree grows, the camp takes that timber; where the forest is ordinary, it cuts wood by the density of the stand. It does not clear the land for good — it follows the forest as it regrows."
     }
   ]
 }
