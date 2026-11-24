@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://byond26oht575"]
+[gd_scene load_steps=17 format=3 uid="uid://byond26oht575"]
 
 ; The layers of the menu, from the bottom up: the dark plate the panorama lies on (the
 ; picture is wider than the window is high, so it keeps its shape and leaves a band
@@ -14,6 +14,7 @@
 [ext_resource type="Texture2D" path="res://backgrounds/main_menu/smoke_puff.png" id="7_smoke_puff"]
 [ext_resource type="Script" path="res://scripts/main_menu_birds.gd" id="8_birds"]
 [ext_resource type="Texture2D" path="res://backgrounds/main_menu/bird_flap.png" id="9_flap"]
+[ext_resource type="Texture2D" path="res://backgrounds/main_menu/logo_geometric.png" id="10_logo"]
 
 [sub_resource type="Gradient" id="Gradient_vignette"]
 offsets = PackedFloat32Array(0, 0.6, 1)
@@ -183,24 +184,21 @@ texture = SubResource("GradientTexture2D_vignette")
 expand_mode = 1
 stretch_mode = 0
 
-[node name="TitleLabel" type="Label" parent="."]
+[node name="TitleLogo" type="TextureRect" parent="."]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -340.0
-offset_top = 108.0
-offset_right = 340.0
-offset_bottom = 220.0
+offset_left = -360.0
+offset_top = 72.0
+offset_right = 360.0
+offset_bottom = 240.0
 grow_horizontal = 2
 grow_vertical = 0
 mouse_filter = 2
-theme_override_colors/font_color = Color(0.98, 0.95, 0.88, 1)
-theme_override_colors/font_outline_color = Color(0.05, 0.04, 0.03, 0.85)
-theme_override_constants/outline_size = 8
-theme_override_font_sizes/font_size = 64
-horizontal_alignment = 1
-vertical_alignment = 1
+texture = ExtResource("10_logo")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=545885519]
 layout_mode = 1

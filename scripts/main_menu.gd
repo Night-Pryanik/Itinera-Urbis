@@ -95,7 +95,7 @@ const SEA_CHECK := "check"
 const RIVER_COUNT_KEYS: Array[String] = ["num_main_rivers", "num_tributaries"]
 const RIVER_COUNT_SPREAD := 0.3
 
-@onready var title_label = $TitleLabel
+@onready var title_logo: TextureRect = $TitleLogo
 @onready var continue_button = $VBoxContainer/ContinueButton
 @onready var new_game_button = $VBoxContainer/NewGameButton
 @onready var load_game_button = $VBoxContainer/LoadGameButton
@@ -104,13 +104,11 @@ const RIVER_COUNT_SPREAD := 0.3
 @onready var quit_button = $VBoxContainer/QuitButton
 
 # The splash screen keeps the size it was designed for: a large interface scale must not
-# turn the title into a wall of text or push the buttons into the top left corner. The canvas
-# scale is global, so the menu cancels it in the offsets and the font sizes of these nodes.
+# blow up the logo or push the buttons into the top left corner. The canvas scale is global,
+# so the menu cancels it in the offsets of these nodes and the font sizes of the buttons.
 # The settings window is a sibling, not one of them — it still follows the chosen size.
 var _title_offsets: Array[float] = []
 var _menu_offsets: Array[float] = []
-var _title_font_size: int = 0
-var _title_outline: int = 0
 var _button_font_sizes: Dictionary = {}
 var _button_outlines: Dictionary = {}
 
@@ -171,8 +169,6 @@ func _ready():
     # here, before the menu is shown, so a player who enlarged it never sees the old size first.
     UiScale.apply_saved()
     apply_ui_scale_compensation()
-    # The name of the game is the name of the game: it is not translated.
-    title_label.text = "Itinera Urbis:\nHearth to Horizon"
     # The data comes first: the tooltip of "Continue game" names the era of the save,
     # and on a cold start the menu is the first scene — GameData is not loaded yet.
     _check_game_data()
@@ -185,35 +181,28 @@ func _ready():
     about_button.pressed.connect(_on_about)
     quit_button.pressed.connect(_on_quit)
 
-# Divides the offsets and the font sizes of the splash by the interface multiplier, so the
-# title and the buttons keep their physical size however large the in-game interface is made.
-# The first call remembers the values written in the scene; the following ones only scale them.
+# Divides the offsets and button font sizes of the splash by the interface multiplier, so
+# the logo and the buttons keep their physical size however large the in-game interface is
+# made. The first call remembers the values written in the scene; the following ones only
+# scale them.
 func apply_ui_scale_compensation() -> void:
-    if title_label == null or continue_button == null:
+    if title_logo == null or continue_button == null:
         return
     var multiplier: float = maxf(UiScale.current(), 0.01)
     var factor := 1.0 / multiplier
     if _title_offsets.is_empty():
-        _title_offsets = [title_label.offset_left, title_label.offset_top,
-                title_label.offset_right, title_label.offset_bottom]
-        _title_font_size = title_label.get_theme_font_size("font_size")
-        _title_outline = title_label.get_theme_constant("outline_size")
+        _title_offsets = [title_logo.offset_left, title_logo.offset_top,
+                title_logo.offset_right, title_logo.offset_bottom]
         var box := $VBoxContainer as Control
         _menu_offsets = [box.offset_left, box.offset_top, box.offset_right, box.offset_bottom]
         for button in [continue_button, new_game_button, load_game_button,
                 settings_button, about_button, quit_button]:
             _button_font_sizes[button] = button.get_theme_font_size("font_size")
             _button_outlines[button] = button.get_theme_constant("outline_size")
-    title_label.offset_left = _title_offsets[0] * factor
-    title_label.offset_top = _title_offsets[1] * factor
-    title_label.offset_right = _title_offsets[2] * factor
-    title_label.offset_bottom = _title_offsets[3] * factor
-    title_label.add_theme_font_size_override("font_size",
-            maxi(8, roundi(float(_title_font_size) * factor)))
-    # The outline is measured in canvas pixels too: without this the smaller letters keep the
-    # old, now relatively twice as thick black rim.
-    title_label.add_theme_constant_override("outline_size",
-            maxi(1, roundi(float(_title_outline) * factor)))
+    title_logo.offset_left = _title_offsets[0] * factor
+    title_logo.offset_top = _title_offsets[1] * factor
+    title_logo.offset_right = _title_offsets[2] * factor
+    title_logo.offset_bottom = _title_offsets[3] * factor
     var menu_box := $VBoxContainer as Control
     menu_box.offset_left = _menu_offsets[0] * factor
     menu_box.offset_top = _menu_offsets[1] * factor
@@ -223,6 +212,8 @@ func apply_ui_scale_compensation() -> void:
         var size: int = _button_font_sizes[button]
         button.add_theme_font_size_override("font_size",
                 maxi(8, roundi(float(size) * factor)))
+        # The outline is measured in canvas pixels too: without this the smaller letters
+        # keep the old, now relatively twice as thick black rim.
         button.add_theme_constant_override("outline_size",
                 maxi(1, roundi(float(_button_outlines[button]) * factor)))
 
