@@ -252,6 +252,9 @@ func _run() -> void:
     var ru_letters: String = fm.locale_letters("ru")
     check(ru_letters.contains("Ж"), "the letters of Russian are read from its catalog", state)
     check(ru_letters.contains("A"), "the Latin letters are always part of the check", state)
+    # A family that draws the alphabet must not be replaced by the default because it
+    # lacks a symbol of the catalog: the quality star is used all over the interface.
+    check(not ru_letters.contains("★"), "the quality star is not demanded of a font", state)
     check(fm.covers_locale(inter, "ru"), "Inter has the letters of Russian", state)
     check(not fm.covers_locale(FontFile.new(), "ru"),
         "a font without the letters of the language is refused", state)

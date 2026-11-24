@@ -525,13 +525,14 @@ static func _translated_texts(locale: String) -> Array:
     return out
 
 
-# Whether a character has to be drawn as a letter or a digit. Anything below U+00C0 that
-# reaches here is punctuation or a symbol and needs no separate coverage.
+# Only letters and digits are checked: the catalog also holds the quality star, dashes
+# and quotes, and a font may lack those symbols without losing the language. Demanding
+# them would replace the saved font with the default one on every launch.
 static func _is_letter_or_digit(code: int) -> bool:
-    return (code >= 0x30 and code <= 0x39) \
-            or (code >= 0x41 and code <= 0x5A) \
-            or (code >= 0x61 and code <= 0x7A) \
-            or code >= 0xC0
+    if code >= 0x30 and code <= 0x39:
+        return true
+    var server := TextServerManager.get_primary_interface()
+    return server != null and server.is_valid_letter(code)
 
 
 # The same check for a family name, on the face that would become the body font.
