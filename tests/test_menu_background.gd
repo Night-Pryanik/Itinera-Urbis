@@ -56,8 +56,8 @@ func _run() -> void:
             check(plate.color.a >= 0.99,
                 "the plate is opaque (got: %f)" % plate.color.a, state)
 
-    var title = menu.get_node_or_null("TitleLabel") as Label
-    check(title != null, "the menu names the game", state)
+    var title = menu.get_node_or_null("TitleLogo") as TextureRect
+    check(title != null, "the menu carries the title logo", state)
 
     # The items lie on the picture, so their plate is translucent.
     var first_item = menu.get_node_or_null("VBoxContainer/ContinueButton") as Button
@@ -68,8 +68,11 @@ func _run() -> void:
                 % first_item.theme_type_variation, state)
 
     if title != null:
-        check(title.text == "Itinera Urbis:\nHearth to Horizon",
-            "the title is the name of the game (got: %s)" % title.text, state)
+        check(title.texture != null, "the title logo has a texture", state)
+        check(title.stretch_mode == TextureRect.STRETCH_KEEP_ASPECT_CENTERED,
+            "the title logo keeps its shape (got: %d)" % title.stretch_mode, state)
+        check(title.expand_mode == TextureRect.EXPAND_IGNORE_SIZE,
+            "the title logo scales with its rect (got: %d)" % title.expand_mode, state)
         var items = menu.get_node_or_null("VBoxContainer") as Control
         check(items != null, "the menu has its items", state)
         if items != null:
