@@ -71,6 +71,7 @@
     {
       // Heating oil shale without air releases the crude oil the refinery and the tannery take.
       "id": "shale_oil",
+      "name": "Shale Oil",
       "produced_in": [ "tar_distillery", "alchemist_house" ],
       "resources": { "oil_shale": 20, "@smelting_fuel": 10 },
       "result": { "shale_oil": 10 },

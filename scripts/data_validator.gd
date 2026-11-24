@@ -500,6 +500,10 @@ const TERRAIN_FIELDS := {
 const COVER_FIELDS := {
     "id": LEAF,
     "name": LEAF,
+    # The form a cover takes inside "Terrain, Cover", written by the loader from the
+    # catalog of the running language. It is part of the merged data, so the schema has
+    # to know it: otherwise a translated game reports every cover as an unknown field.
+    "name_in_list": LEAF,
     "color": LEAF,
     "icons": LEAF,
     "move_cost_bonus": LEAF,

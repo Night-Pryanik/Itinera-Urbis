@@ -244,11 +244,28 @@ func _run() -> void:
     check(fm.get_stored_font() == "Inter", "the unknown family is rewritten in the settings", state)
 
     # --- 6. The letter check ---
+    # The autoload script is loaded here, not preloaded as a const: a const preload would
+    # compile it before the autoloads are registered, and it refers to LocalizationManager.
+    var font_manager_script = load("res://scripts/font_manager.gd")
+    # The characters come from the catalog itself, so the language is checked by its own
+    # text: Russian brings Cyrillic, the source language brings nothing but Latin.
+    var ru_letters: String = fm.locale_letters("ru")
+    check(ru_letters.contains("Ж"), "the letters of Russian are read from its catalog", state)
+    check(ru_letters.contains("A"), "the Latin letters are always part of the check", state)
     check(fm.covers_locale(inter, "ru"), "Inter has the letters of Russian", state)
     check(not fm.covers_locale(FontFile.new(), "ru"),
         "a font without the letters of the language is refused", state)
-    check(fm.covers_locale(FontFile.new(), "xx"),
-        "a language the game does not know is not checked", state)
+    # A language with no catalog still checks the source letters: its interface has no
+    # translated text, but the player still reads the source wording and the numbers.
+    check(not fm.covers_locale(FontFile.new(), "xx"),
+        "a font without the source letters is refused for a language with no catalog", state)
+
+    # A language with a catalog is checked by the letters of that catalog rather than by
+    # an alphabet listed in code; one without a catalog checks only the source letters.
+    var unknown_letters: String = fm.locale_letters("xx")
+    check(unknown_letters == font_manager_script.SOURCE_LETTERS,
+        "a language with no catalog checks only the source letters, got \"%s\"" % unknown_letters,
+        state)
 
     # --- Clean up ---
     settings.queue_free()

@@ -31,15 +31,51 @@ const DEFAULT_LOCALE := "en"
 # It is exactly what is chosen on the very first launch of the game.
 const SYSTEM_LOCALE := "system"
 
-# The languages available in the game. code is ISO 639-1, as TranslationServer
-# expects it. The list is extended here: to add a language, it is enough to add
-# a line and to put the locale/<code>.po file next to it, registered in project.godot.
-const LANGUAGES := [
-    {"code": "en", "name": "English"},
-    {"code": "ru", "name": "Русский"},
-]
+# The context of the entry that names a language in its own tongue (see
+# language_own_name). The msgid of that entry is the code of the language itself.
+const LANGUAGE_NAME_CONTEXT := "language.name"
 
-# The current game language (a code from LANGUAGES, always a real one, not SYSTEM_LOCALE).
+# Every language the project ships a catalog for, built from the catalogs actually
+# loaded rather than from a table in the code: the code is the locale of the
+# translation, the name is the one the language gives itself (see language_own_name).
+# A missing locale/<code>.po therefore hides the language by itself, and a new one
+# needs no edit here — only a line in project.godot.
+#
+# The list is sorted by code, so the dropdown of the settings does not depend on the
+# order the translations happened to be registered in.
+func described_languages() -> Array:
+    var result: Array = []
+    for code in TranslationServer.get_loaded_locales():
+        if code == DEFAULT_LOCALE or result.any(func(lang): return lang["code"] == code):
+            continue
+        result.append({"code": code, "name": language_own_name(code)})
+    result.sort_custom(func(a, b): return str(a["code"]) < str(b["code"]))
+    return result
+
+
+# The name of a language in that language ("Русский", not "Russian") — so that the list
+# reads the same way whatever the player has chosen before.
+#
+# The name is data, not code: each catalog may carry it under the "language.name"
+# context, with the code of its own language as the msgid (see locale/GLOSSARY.md).
+# Reading it from that catalog — and not from the current one — is what makes the name
+# its own: the Russian entry says «Русский» in a French interface as well.
+#
+# The engine's table gives the English name of a language and knows nothing of the
+# native one, so it is the fallback: a catalog without the entry still gets a readable
+# name, and a language the engine does not know falls back to its code.
+func language_own_name(code: String) -> String:
+    var short := short_language_code(code)
+    for translation in TranslationServer.get_translations():
+        if translation == null or translation.get_locale() != short:
+            continue
+        var own: StringName = translation.get_message(short, LANGUAGE_NAME_CONTEXT)
+        if not str(own).is_empty():
+            return str(own)
+    return TranslationServer.get_language_name(short)
+
+# The current game language (a code described_languages() offers, always a real one,
+# not SYSTEM_LOCALE).
 var current_locale: String = DEFAULT_LOCALE
 
 # Whether the "system language" item is chosen in the settings instead of a specific language.
@@ -103,27 +139,31 @@ static func short_language_code(system_code: String) -> String:
 func is_supported(code: String) -> bool:
     if code.is_empty():
         return false
-    for lang in LANGUAGES:
-        if lang["code"] == code:
-            return true
-    return false
+    if code == DEFAULT_LOCALE:
+        return true
+    return is_translation_loaded(code)
 
 
-# A language is available for selection if it is in LANGUAGES AND its translation
-# is actually loaded (otherwise the player would choose a language that the game
-# would not show anyway).
+# A language is available for selection if its translation is actually loaded: the
+# source language is always there, a target language only while its catalog is (see
+# described_languages).
 func is_translation_loaded(code: String) -> bool:
-    return TranslationServer.get_loaded_locales().has(code)
+    return code == DEFAULT_LOCALE or TranslationServer.get_loaded_locales().has(code)
 
 
-# The list for the settings dropdown: the "system language" first, then
-# the languages whose translation is loaded. If the system language is supported, it
-# is also placed at the bottom of the list — so that the choice is visible in both modes.
+# The list for the settings dropdown: the "system language" first, then the source language
+# and every language whose catalog is loaded, both sorted by code.
+#
+# The source language is listed here although it has no catalog of its own: it is what the
+# game says before any translation is applied, so the player has to be able to return to
+# it. Without this item, a player who chose a target language could only get the source
+# one back by choosing the system language and hoping the system speaks English.
 func available_languages() -> Array:
     var result: Array = [ {"code": SYSTEM_LOCALE, "name": tr("System Language")}]
-    for lang in LANGUAGES:
-        if lang["code"] == DEFAULT_LOCALE or is_translation_loaded(lang["code"]):
-            result.append(lang.duplicate())
+    var entries: Array = [ {"code": DEFAULT_LOCALE, "name": language_own_name(DEFAULT_LOCALE)} ]
+    entries.append_array(described_languages())
+    entries.sort_custom(func(a, b): return str(a["code"]) < str(b["code"]))
+    result.append_array(entries)
     return result
 
 
@@ -135,23 +175,13 @@ func get_locale() -> String:
 # exactly the system chose — otherwise the item looks undetermined.
 func get_language_label(code: String) -> String:
     if code == SYSTEM_LOCALE:
-        return tr("System Language") + " (%s)" % language_display_name(resolve_system_locale())
-    for lang in LANGUAGES:
+        return tr("System Language") + " (%s)" % language_own_name(resolve_system_locale())
+    # The list is asked rather than described_languages(): the source language is not
+    # among the catalogs, and it has to read by its name in the dropdown as well.
+    for lang in available_languages():
         if lang["code"] == code:
             return str(lang["name"])
     return code
-
-
-# The language name in its own language ("English", "Русский") — so that the list
-# is read the same way, whatever the player has chosen before.
-func language_display_name(code: String) -> String:
-    match code:
-        "en":
-            return "English"
-        "ru":
-            return "Русский"
-        _:
-            return code
 
 
 # The entry point from the settings. code is either a language code, or SYSTEM_LOCALE.

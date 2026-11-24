@@ -93,14 +93,18 @@ const STYLE_ITALIC := 2
 # 312 px with the tag applied.
 const WEIGHT_AXIS := 2003265652
 
-# The letters of the interface languages. A font that cannot draw them is unusable: the
-# whole interface would turn into empty boxes (Bebas Neue has no Cyrillic at all). The
-# alphabet is checked whole and not by a sample: a font either has the block or it does
-# not. A language that is not in the table is not checked.
-const LOCALE_LETTERS := {
-    "en": "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
-    "ru": "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя",
-}
+# Upper bound of the distinct characters the letter check pulls out of a catalog. A
+# full translation of the game stays well below it; the cap only keeps a pathological
+# catalog from turning the check into a long scan on every open of the settings.
+const LETTER_SAMPLE_LIMIT := 1200
+
+# The letters and digits of the source language, always part of the check.
+const SOURCE_LETTERS := "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+
+# The characters of a language, once read (see locale_letters). The scan walks every
+# translated message, so its answer is kept: the settings ask for the letters of the same
+# language on every open of the font list.
+static var _letters_cache: Dictionary = {}
 
 # The family that is applied right now ("" — the theme was never touched).
 var current_family: String = ""
@@ -468,16 +472,66 @@ func _redraw_hand_drawn(node: Node) -> void:
         _redraw_hand_drawn(child)
 
 
-# Whether the font can draw the letters of the language. An unknown language — true:
-# there is nothing to check it against.
+# Whether the font can draw the characters of the language (see locale_letters).
+# A language with nothing to check — true.
 static func covers_locale(font: Font, locale: String) -> bool:
-    var letters: String = LOCALE_LETTERS.get(locale, "")
+    var letters: String = locale_letters(locale)
     if letters.is_empty() or font == null:
         return true
     for i in letters.length():
         if not font.has_char(letters.unicode_at(i)):
             return false
     return true
+
+
+# The characters a font has to draw for the given language, as one string without
+# duplicates, taken from the translation itself: every distinct letter and digit of every
+# translated message, plus the letters of the source alphabet. A font that misses them
+# turns the interface into empty boxes (Bebas Neue has no Cyrillic at all), and a language
+# is checked by its own text, so a catalog with Greek, Polish or Vietnamese letters is
+# covered without a table in the code that would have to list each alphabet. Latin letters
+# and digits are never dropped: a translated message may hold no Latin at all, and a font
+# still has to draw the numbers of the interface.
+static func locale_letters(locale: String) -> String:
+    if locale.is_empty():
+        return ""
+    var cached: Variant = _letters_cache.get(locale)
+    if cached != null:
+        return str(cached)
+    var found: Dictionary = {}
+    for ch in SOURCE_LETTERS:
+        found[ch] = true
+    for text in _translated_texts(locale):
+        for i in text.length():
+            var code: int = text.unicode_at(i)
+            if _is_letter_or_digit(code):
+                found[char(code)] = true
+            if found.size() >= LETTER_SAMPLE_LIMIT:
+                break
+        if found.size() >= LETTER_SAMPLE_LIMIT:
+            break
+    var letters := "".join(found.keys())
+    _letters_cache[locale] = letters
+    return letters
+
+
+# The translated text of the catalogs of one language.
+static func _translated_texts(locale: String) -> Array:
+    var out: Array = []
+    for translation in TranslationServer.get_translations():
+        if translation == null or translation.get_locale() != locale:
+            continue
+        out.append_array(translation.get_translated_message_list())
+    return out
+
+
+# Whether a character has to be drawn as a letter or a digit. Anything below U+00C0 that
+# reaches here is punctuation or a symbol and needs no separate coverage.
+static func _is_letter_or_digit(code: int) -> bool:
+    return (code >= 0x30 and code <= 0x39) \
+            or (code >= 0x41 and code <= 0x5A) \
+            or (code >= 0x61 and code <= 0x7A) \
+            or code >= 0xC0
 
 
 # The same check for a family name, on the face that would become the body font.
