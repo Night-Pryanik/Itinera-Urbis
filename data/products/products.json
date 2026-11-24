@@ -1,0 +1,401 @@
+{
+  "resources": [
+    {
+      "id": "pottery",
+      "price": 10,
+      "name": "Pottery",
+      "type": "product",
+      "category": "household_items",
+      "unlock_tech": "pottery",
+      "icon": "pottery.png",
+      "reputation": {
+        "threshold": 200,
+        "trigger": "sell",
+        "reward": { "type": "trade_price", "value": 0.10 }
+      },
+      "brand": {
+        "threshold": 500,
+        "trigger": "sell",
+        "min_quality": "exceptional",
+        "reward": { "type": "brand_product", "product": "porcelain" }
+      },
+      "challenge": {
+        "id": "ceramics_challenge",
+        "threshold": 1000,
+        "trigger": "sell",
+        "min_quality": "exceptional",
+        "name": "A Mark on Fired Clay",
+        "description": "A thousand vessels of clay of exceptional quality sold to the towns — and they are known by the mark of the town.",
+        "reward": { "type": "specialization", "id": "ceramics_specialization" }
+      }
+    },
+    {
+      // The brand good of the pottery line — see the comment at cashmere in
+      // data/products/materials.json.
+      "id": "porcelain",
+      "price": 30,
+      "name": "Porcelain of <city_name>",
+      "type": "product",
+      "category": "household_items",
+      "brand_of": "pottery",
+      "icon": "porcelain.png"
+    },
+    {
+      "id": "amphora",
+      "price": 20,
+      "name": "Amphora",
+      "type": "product",
+      "category": "containers",
+      "unlock_tech": "pottery",
+      "icon": "amphora.png"
+    },
+    {
+      "id": "clay_tablets",
+      "price": 6,
+      "name": "Clay Tablets",
+      "type": "product",
+      "category": "writing_materials",
+      "unlock_tech": "writing",
+      "icon": "clay_tablets.png",
+      "special_yield": { "science": 1 }
+    },
+    {
+      "id": "fabric_clothes",
+      "price": 16,
+      "name": "Cloth Clothes",
+      "type": "product",
+      "category": "clothes",
+      "unlock_tech": "weaving",
+      "icon": "fabric_clothes.png"
+    },
+    {
+      "id": "wool_clothes",
+      "price": 20,
+      "name": "Wool Clothes",
+      "type": "product",
+      "category": "clothes",
+      "unlock_tech": "weaving",
+      "icon": "wool_clothes.png"
+    },
+    {
+      "id": "carpet",
+      "price": 30,
+      "name": "Carpet",
+      "type": "product",
+      "category": "household_items",
+      "unlock_tech": "weaving",
+      "icon": "carpet.png"
+    },
+    {
+      "id": "leather_clothes",
+      "price": 28,
+      "name": "Leather Clothes",
+      "type": "product",
+      "category": "clothes",
+      "unlock_tech": "leatherworking",
+      "icon": "leather_clothes.png"
+    },
+    {
+      "id": "silk_clothes",
+      "price": 90,
+      "name": "Silk Clothes",
+      "type": "product",
+      "category": "clothes",
+      "unlock_tech": "sericulture",
+      "icon": "silk_clothes.png"
+    },
+    {
+      "id": "vegetable_oil",
+      "price": 10,
+      "name": "Vegetable Oil",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "oil_making",
+      "icon": "vegetable_oil.png"
+    },
+    {
+      "id": "ropes",
+      "price": 7,
+      "name": "Ropes and Cables",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "rope_making",
+      "icon": "ropes.png"
+    },
+    {
+      "id": "canvas",
+      "price": 14,
+      "name": "Canvas",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "weaving",
+      "icon": "canvas.png"
+    },
+    {
+      "id": "tar",
+      "price": 6,
+      "name": "Tar",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "tar_burning",
+      "icon": "tar.png"
+    },
+    {
+      "id": "tarred_ropes",
+      "price": 10,
+      "name": "Tarred Ropes",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "tar_burning",
+      "icon": "tarred_ropes.png"
+    },
+    {
+      "id": "soap",
+      "price": 8,
+      "name": "Soap",
+      "type": "product",
+      "category": "household_items",
+      "unlock_tech": "soap_making",
+      "icon": "soap.png"
+    },
+    {
+      "id": "salt",
+      "price": 6,
+      "name": "Salt",
+      "type": "product",
+      "category": "household_items",
+      "unlock_tech": "salt_extraction",
+      "icon": "salt.png"
+    },
+    {
+      "id": "papyrus",
+      "price": 10,
+      "name": "Papyrus",
+      "type": "product",
+      "category": "writing_materials",
+      "unlock_tech": "writing",
+      "icon": "papyrus.png",
+      "special_yield": { "science": 2 }
+    },
+    {
+      "id": "reed_boat",
+      "price": 12,
+      "name": "Reed Boat",
+      "type": "product",
+      "category": "other",
+      "unlock_tech": "fishing",
+      "icon": "reed_boat.png"
+    },
+    {
+      "id": "wooden_boat",
+      "price": 38,
+      "name": "Wooden Boat",
+      "type": "product",
+      "category": "other",
+      "unlock_tech": "shipbuilding",
+      "icon": "wooden_boat.png"
+    },
+    {
+      "id": "parchment",
+      "price": 16,
+      "name": "Parchment",
+      "type": "product",
+      "category": "writing_materials",
+      "unlock_tech": "parchment",
+      "icon": "parchment.png",
+      "special_yield": { "science": 3 }
+    },
+    {
+      "id": "wax_tablets",
+      "price": 12,
+      "name": "Wax Tablets",
+      "type": "product",
+      "category": "writing_materials",
+      "unlock_tech": "beekeeping",
+      "icon": "wax_tablets.png",
+      "special_yield": { "science": 1 }
+    },
+    {
+      "id": "glassware",
+      "price": 15,
+      "name": "Glassware",
+      "type": "product",
+      "category": "household_items",
+      "unlock_tech": "glassmaking",
+      "icon": "glassware.png"
+    },
+    {
+      "id": "glass_bottle",
+      "price": 15,
+      "name": "Glass Bottle",
+      "type": "product",
+      "category": "containers",
+      "unlock_tech": "glassblowing",
+      "icon": "glass_bottle.png"
+    },
+    {
+      "id": "stone_tableware",
+      "price": 20,
+      "name": "Stone Tableware",
+      "type": "product",
+      "category": "household_items",
+      "unlock_tech": "masonry",
+      "icon": "stone_tableware.png"
+    },
+    {
+      "id": "ink",
+      "price": 10,
+      "name": "Ink",
+      "type": "product",
+      "category": "writing_materials",
+      "unlock_tech": "dyeing",
+      "icon": "ink.png"
+    },
+    {
+      "id": "writing_set",
+      "price": 12,
+      "name": "Writing Set",
+      "type": "product",
+      "category": "writing_materials",
+      "unlock_tech": "writing",
+      "icon": "writing_set.png"
+    },
+    {
+      // The top of the writing line: the library gets more science from a bound book
+      // than from any single sheet it is made of.
+      "id": "book",
+      "price": 50,
+      "name": "Book",
+      "type": "product",
+      "category": "writing_materials",
+      "unlock_tech": "bookbinding",
+      "icon": "book.png",
+      "special_yield": { "science": 8 }
+    },
+    {
+      "id": "sponge",
+      "price": 10,
+      "name": "Sponge",
+      "type": "product",
+      "category": "household_items",
+      "unlock_tech": "fishing",
+      "icon": "sponge.png"
+    },
+    {
+      // A by-product of the volcanic stone: the quarry that cuts tuff and basalt knocks
+      // the porous pumice out as well. It is worthless as a building stone and good for
+      // scouring, polishing and washing, therefore it is a household good of the stone
+      // trade and shares the technology of the quarry that yields it.
+      "id": "pumice",
+      "price": 8,
+      "name": "Pumice",
+      "type": "product",
+      "category": "household_items",
+      "unlock_tech": "masonry",
+      "icon": "pumice.png"
+    },
+    {
+      "id": "wooden_barrel",
+      "price": 20,
+      "name": "Wooden Barrel",
+      "type": "product",
+      "category": "containers",
+      "unlock_tech": "wood_processing",
+      "icon": "wooden_barrel.png"
+    },
+    {
+      // Glue boiled from rubber: binds wood, leather and pottery without the
+      // tar used for waterproofing.
+      "id": "glue", "price": 14,
+      "name": "Glue",
+      "type": "product",
+      "category": "household_items",
+      "unlock_tech": "wood_processing",
+      "icon": "glue.png"
+    },
+    {
+      "id": "furniture",
+      "price": 18,
+      "name": "Furniture",
+      "type": "product",
+      "category": "household_items",
+      "unlock_tech": "wood_processing",
+      "icon": "furniture.png"
+    },
+    {
+      "id": "luxury_furniture",
+      "price": 55,
+      "name": "Luxury Furniture",
+      "type": "product",
+      "category": "household_items",
+      "unlock_tech": "wood_processing",
+      "icon": "luxury_furniture.png"
+    },
+    {
+      "id": "fine_ceramics",
+      "price": 26,
+      "name": "Fine Ceramics",
+      "type": "product",
+      "category": "household_items",
+      "unlock_tech": "pottery",
+      "icon": "fine_ceramics.png"
+    },
+    {
+      // Clear potash-lead crystal glass requiring purified potash and controlled lead-oxide
+      // batch chemistry rather than ancient soda-lime glassblowing.
+      "id": "crystal_glassware",
+      "price": 52,
+      "name": "Crystal Glassware",
+      "type": "product",
+      "category": "household_items",
+      "unlock_tech": "chemistry",
+      "icon": "crystal_glassware.png"
+    },
+    {
+      // Heavy cast cauldrons, pots and skillets poured from molten cast iron.
+      "id": "cast_iron_cookware",
+      "price": 36,
+      "name": "Cast-Iron Cookware",
+      "type": "product",
+      "category": "household_items",
+      "unlock_tech": "blast_furnace",
+      "icon": "cast_iron_cookware.png"
+    },
+    {
+      "id": "metal_tableware",
+      "price": 50,
+      "name": "Metal Tableware",
+      "type": "product",
+      "category": "household_items",
+      "unlock_tech": "metallurgy",
+      "icon": "metal_tableware.png"
+    },
+    {
+      "id": "silver_tableware",
+      "price": 95,
+      "name": "Silver Tableware",
+      "type": "product",
+      "category": "household_items",
+      "unlock_tech": "jewelry",
+      "icon": "silver_tableware.png"
+    },
+    {
+      "id": "tallow_candles",
+      "price": 14,
+      "name": "Tallow Candles",
+      "type": "product",
+      "category": "household_items",
+      "unlock_tech": "candle_making",
+      "icon": "tallow_candles.png"
+    },
+    {
+      "id": "wax_candles",
+      "price": 24,
+      "name": "Wax Candles",
+      "type": "product",
+      "category": "household_items",
+      "unlock_tech": "candle_making",
+      "icon": "wax_candles.png"
+    }
+  ]
+}

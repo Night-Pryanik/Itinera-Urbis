@@ -1,0 +1,515 @@
+{
+  "crafts": [
+    {
+      "id": "bread",
+      "name": "Bread",
+      "produced_in": [ "bakery" ],
+      "resources": { "flour": 10 },
+      "result": { "bread": 20 },
+      "time": 5
+    },
+    {
+      // The slaughterhouse butchers the live herd into the meat of the
+      // species and, where the animal bears a usable hide, into hides.
+      // The meats are distinct products on purpose, so that the kinds stay
+      // distinguishable as goods. All the bovines share the "Beef" recipe
+      // through the @bovines group (data/product_groups/crafts.json).
+      //
+      // Every slaughter recipe has the same throughput: 20 heads into 120 units
+      // of meat (24 per second) in 5 seconds, whatever the species, plus the
+      // hide of the animals that bear one. The craft takes time like every other
+      // recipe, and one slaughterhouse fed at 4 heads per second (the pasture
+      // batch in animals.json) runs without idle time. The slaughterhouse works
+      // at its own rate and does not wait for the pasture: the batch is sized to
+      // supply it, but the two buildings are independent of each other.
+      "id": "beef",
+      "name": "Beef",
+      "produced_in": [ "slaughterhouse" ],
+      "resources": { "@bovines": 20 },
+      "result": { "beef": 120, "hide": 20, "tallow": 10 },
+      "time": 5
+    },
+    {
+      "id": "mutton",
+      "name": "Mutton",
+      "produced_in": [ "slaughterhouse" ],
+      "resources": { "live_sheep": 20 },
+      "result": { "mutton": 120, "tallow": 10 },
+      "time": 5
+    },
+    {
+      "id": "goat_meat",
+      "name": "Goat Meat",
+      "produced_in": [ "slaughterhouse" ],
+      "resources": { "live_goats": 20 },
+      "result": { "goat_meat": 120, "hide": 20, "tallow": 10 },
+      "time": 5
+    },
+    {
+      "id": "horse_meat",
+      "name": "Horsemeat",
+      "produced_in": [ "slaughterhouse" ],
+      "resources": { "live_horses": 20 },
+      "result": { "horse_meat": 120, "hide": 20, "tallow": 10 },
+      "time": 5
+    },
+    {
+      "id": "pork",
+      "name": "Pork",
+      "produced_in": [ "slaughterhouse" ],
+      "resources": { "live_pigs": 20 },
+      "result": { "pork": 120, "hide": 20, "tallow": 10 },
+      "time": 5
+    },
+    {
+      "id": "venison",
+      "name": "Venison",
+      "produced_in": [ "slaughterhouse" ],
+      "resources": { "live_deer": 20 },
+      "result": { "venison": 120, "hide": 20, "tallow": 10 },
+      "time": 5
+    },
+    {
+      "id": "camel_meat",
+      "name": "Camel Meat",
+      "produced_in": [ "slaughterhouse" ],
+      "resources": { "live_camel": 20 },
+      "result": { "camel_meat": 120, "hide": 20, "tallow": 10 },
+      "time": 5
+    },
+    {
+      "id": "llama_meat",
+      "name": "Llama Meat",
+      "produced_in": [ "slaughterhouse" ],
+      "resources": { "live_llama": 20 },
+      "result": { "llama_meat": 120, "tallow": 10 },
+      "time": 5
+    },
+    {
+      "id": "alpaca_meat",
+      "name": "Alpaca Meat",
+      "produced_in": [ "slaughterhouse" ],
+      "resources": { "live_alpaca": 20 },
+      "result": { "alpaca_meat": 120, "tallow": 10 },
+      "time": 5
+    },
+    {
+      "id": "chicken_meat",
+      "name": "Chicken",
+      "produced_in": [ "slaughterhouse" ],
+      "resources": { "live_chicken": 20 },
+      "result": { "chicken_meat": 120 },
+      "time": 5
+    },
+    {
+      "id": "turkey_meat",
+      "name": "Turkey",
+      "produced_in": [ "slaughterhouse" ],
+      "resources": { "live_turkey": 20 },
+      "result": { "turkey_meat": 120 },
+      "time": 5
+    },
+    {
+      "id": "duck_meat",
+      "name": "Duck",
+      "produced_in": [ "slaughterhouse" ],
+      "resources": { "live_duck": 20 },
+      "result": { "duck_meat": 120 },
+      "time": 5
+    },
+    {
+      "id": "goose_meat",
+      "name": "Goose",
+      "produced_in": [ "slaughterhouse" ],
+      "resources": { "live_goose": 20 },
+      "result": { "goose_meat": 120 },
+      "time": 5
+    },
+    {
+      "id": "guineafowl_meat",
+      "name": "Guineafowl",
+      "produced_in": [ "slaughterhouse" ],
+      "resources": { "live_guineafowl": 20 },
+      "result": { "guineafowl_meat": 120 },
+      "time": 5
+    },
+    {
+      "id": "ostrich_meat",
+      "name": "Ostrich Meat",
+      "produced_in": [ "slaughterhouse" ],
+      "resources": { "live_ostrich": 20 },
+      "result": { "ostrich_meat": 120, "hide": 20 },
+      "time": 5
+    },
+    {
+      "id": "rabbit_meat",
+      "name": "Rabbit Meat",
+      "produced_in": [ "slaughterhouse" ],
+      "resources": { "live_rabbit": 20 },
+      "result": { "rabbit_meat": 120, "hide": 10 },
+      "time": 5
+    },
+    {
+      "id": "pigeon_meat",
+      "name": "Pigeon",
+      "produced_in": [ "slaughterhouse" ],
+      "resources": { "live_pigeon": 20 },
+      "result": { "pigeon_meat": 120 },
+      "time": 5
+    },
+    {
+      "id": "cheese",
+      "name": "Cheese",
+      "produced_in": [ "dairy" ],
+      "resources": { "raw_milk": 10 },
+      "result": { "cheese": 10 },
+      "time": 5,
+      "unlock_tech": "cheese_making"
+    },
+    {
+      // The prestige good of the cheese line: the brand the city earns by the fame of its cheese
+      // (see the header comment of data/products/food.json). The dairy of the city must already know
+      // how to make cheese at all — the brand is a way of making it, not another building.
+      "id": "aged_cheese",
+      "name": "Aged Cheese",
+      "produced_in": [ "dairy" ],
+      "resources": { "raw_milk": 10 },
+      "result": { "aged_cheese": 10 },
+      "time": 15,
+      "unlock_tech": "cheese_making",
+      "description": "Awards the milk of the city to the cheese the world asks for by the name of the city."
+    },
+    {
+      // Bean curd set from soaked soybeans with gypsum or sea salt; gives soybean growers
+      // a curdled staple alongside animal cheese.
+      "id": "tofu",
+      "name": "Tofu",
+      "produced_in": [ "dairy" ],
+      "resources": [ { "soybean": 20 }, [ { "gypsum": 10 }, { "plaster": 10 }, { "salt": 10 } ] ],
+      "result": { "tofu": 20 },
+      "time": 5.0,
+      "unlock_tech": "cheese_making",
+      "description": "Curdles boiled soybean milk with gypsum or salt and presses it into firm tofu."
+    },
+    {
+      "id": "beer",
+      "name": "Beer",
+      "produced_in": [ "brewer_house", "fermentation_workshop" ],
+      "resources": { "@millable_grains": 20 },
+      "result": { "beer": 10 },
+      "time": 5.0,
+      "unlock_tech": "fermentation",
+      "description": "Brews beer from grain."
+    },
+    {
+      // Hops is a preservative, not a decoration, so it is a recipe of its own and not a
+      // variant of the plain one: grain beer keeps brewing, and both recipes compete for the
+      // brewhouse and for the grain.
+      "id": "hopped_beer",
+      "name": "Hopped Beer",
+      "produced_in": [ "brewer_house", "fermentation_workshop" ],
+      "resources": { "@millable_grains": 20, "hops": 10 },
+      "result": { "hopped_beer": 10 },
+      "time": 6.0,
+      "unlock_tech": "hopping",
+      "description": "Brews beer bittered and preserved with hops."
+    },
+    {
+      "id": "mead",
+      "name": "Mead",
+      "produced_in": [ "brewer_house", "fermentation_workshop" ],
+      "resources": { "honey": 20 },
+      "result": { "mead": 10 },
+      "time": 5.0,
+      "unlock_tech": "mead_making",
+      "description": "Brews mead from honey."
+    },
+    {
+      "id": "sake",
+      "name": "Sake",
+      "produced_in": [ "brewer_house", "fermentation_workshop" ],
+      "resources": { "rice": 20 },
+      "result": { "sake": 10 },
+      "time": 5.0,
+      "unlock_tech": "fermentation",
+      "description": "Brews sake from rice."
+    },
+    {
+      "id": "pulque",
+      "name": "Pulque",
+      "produced_in": [ "brewer_house", "fermentation_workshop" ],
+      "resources": { "agave": 20 },
+      "result": { "pulque": 10 },
+      "time": 5.0,
+      "unlock_tech": "fermentation",
+      "description": "Brews pulque from agave."
+    },
+    {
+      // The same palm sap that the boiler boils to sugar: left to work it sours
+      // into a drink within hours, so the two workshops compete for one harvest.
+      "id": "toddy",
+      "name": "Toddy",
+      "produced_in": [ "brewer_house", "fermentation_workshop" ],
+      "resources": { "palm_sap": 20 },
+      "result": { "toddy": 10 },
+      "time": 5.0,
+      "unlock_tech": "fermentation",
+      "description": "Brews toddy from palm sap."
+    },
+    {
+      "id": "cider",
+      "name": "Cider",
+      "produced_in": [ "brewer_house", "fermentation_workshop" ],
+      "resources": { "apples": 20 },
+      "result": { "cider": 10 },
+      "time": 5.0,
+      "unlock_tech": "fermentation",
+      "description": "Presses the apples and ferments the juice into cider."
+    },
+    {
+      "id": "wine",
+      "name": "Grape Wine",
+      "produced_in": [ "winemaker_house" ],
+      "resources": { "grapes": 20 },
+      "result": { "wine": 10 },
+      "time": 5.0,
+      "unlock_tech": "winemaking",
+      "description": "Makes wine from grapes."
+    },
+    {
+      "id": "fruit_wine",
+      "name": "Fruit Wine",
+      "produced_in": [ "winemaker_house" ],
+      "resources": { "@wine_fruits": 20 },
+      "result": { "fruit_wine": 10 },
+      "time": 5.0,
+      "unlock_tech": "winemaking",
+      "description": "Makes wine from fruit."
+    },
+    {
+      "id": "vegetable_oil",
+      "name": "Vegetable Oil",
+      "produced_in": [ "oilmaker_house", "oil_mill" ],
+      "resources": { "@oil_crops": 20 },
+      "result": { "vegetable_oil": 10 },
+      "time": 5.0,
+      "unlock_tech": "oil_making",
+      "description": "Presses oil from the seeds and fruits of oil crops."
+    },
+    {
+      "id": "fish",
+      "name": "Smoked Fish",
+      "produced_in": [ "smokehouse" ],
+      "resources": { "raw_fish": 10 },
+      "result": { "fish": 10 },
+      "time": 5.0,
+      "unlock_tech": "fishing",
+      "description": "Smokes fish for long storage."
+    },
+    {
+      "id": "tea",
+      "name": "Tea",
+      "produced_in": [ "dryer_house" ],
+      "resources": { "tea_leaves": 20 },
+      "result": { "tea": 10 },
+      "time": 5.0,
+      "unlock_tech": "fermentation",
+      "description": "Dries, rolls, withers and ferments tea leaves."
+    },
+    {
+      "id": "coffee",
+      "name": "Coffee",
+      "produced_in": [ "dryer_house" ],
+      "resources": { "coffee_beans": 20 },
+      "result": { "coffee": 10 },
+      "time": 5.0,
+      "unlock_tech": "fermentation",
+      "description": "Dries and roasts coffee beans."
+    },
+    {
+      "id": "vinegar",
+      "name": "Vinegar",
+      "produced_in": [ "brewer_house", "fermentation_workshop" ],
+      "resources": { "@alcohol": 20 },
+      "result": { "vinegar": 10 },
+      "time": 5.0,
+      "unlock_tech": "fermentation",
+      "description": "Makes vinegar from alcohol."
+    },
+    {
+      "id": "cocoa",
+      "name": "Cocoa",
+      "produced_in": [ "dryer_house" ],
+      "resources": { "cocoa_beans": 20 },
+      "result": { "cocoa": 10 },
+      "time": 5.0,
+      "unlock_tech": "fermentation",
+      "description": "Dries, ferments, roasts and grinds cocoa beans."
+    },
+    {
+      "id": "mate",
+      "name": "Mate",
+      "produced_in": [ "dryer_house" ],
+      "resources": { "yerba_mate_leaves": 20 },
+      "result": { "mate": 10 },
+      "time": 5.0,
+      "unlock_tech": "fermentation",
+      "description": "Dries, rolls, withers and ferments yerba mate leaves."
+    },
+    {
+      "id": "karkadeh",
+      "name": "Karkadeh",
+      "produced_in": [ "dryer_house" ],
+      "resources": { "rosella_sepals": 20 },
+      "result": { "karkadeh": 10 },
+      "time": 5.0,
+      "description": "Dries rosella flower sepals."
+    },
+    {
+      // The syrup of the boiled pods, not a crystallised sugar: the pod is
+      // boiled in water and the sweet pulp is strained out of it. The sugar
+      // boiler is the workshop of the sweet juice, and the pod is boiled in
+      // it like the cane and the sap.
+      "id": "carob_syrup",
+      "name": "Carob Syrup",
+      "produced_in": [ "sugar_boiler" ],
+      "resources": { "carob_pods": 20 },
+      "result": { "carob_syrup": 10 },
+      "time": 5.0,
+      "unlock_tech": "sugar_making",
+      "description": "Boils the crushed pods down to a dark syrup."
+    },
+    {
+      // The pods are milled and the mash is fermented: the drink of the dry
+      // coast, cheaper than the wine of the grape.
+      "id": "carob_wine",
+      "name": "Carob Wine",
+      "produced_in": [ "winemaker_house" ],
+      "resources": { "carob_pods": 20 },
+      "result": { "carob_wine": 10 },
+      "time": 5.0,
+      "unlock_tech": "winemaking",
+      "description": "Ferments the crushed pods into a dark wine."
+    },
+    {
+      // Crushing and boiling are one operation here, so no intermediate juice
+      // good exists. An alternatives slot spends units of any variant at the
+      // rate of the first one, so all variants of the OR-term must ask the same
+      // amount — the iron/meteorite recipes are written the same way.
+      "id": "sugar",
+      "name": "Sugar",
+      "produced_in": [ "sugar_boiler" ],
+      "resources": [ [ { "sugar_cane": 20 }, { "maple_sap": 20 }, { "palm_sap": 20 } ] ],
+      "result": { "sugar": 10 },
+      "time": 5.0,
+      "unlock_tech": "sugar_making",
+      // The copy is neutral on purpose: the boiler takes any sweet juice, so
+      // naming one of them would tie this text to a single plant.
+      "description": "Boils a sweet juice down to sugar."
+    },
+    {
+      // Hopped beer is deliberately omitted: hop oils turn harsh in the still, so
+      // plain beer keeps its own industrial niche alongside rice sake.
+      "id": "grain_spirit",
+      "name": "Grain Spirit",
+      "produced_in": [ "distillery" ],
+      "resources": [ [ { "beer": 20 }, { "sake": 20 } ] ],
+      "result": { "grain_spirit": 10 },
+      "time": 8.0,
+      "unlock_tech": "distillation",
+      "description": "Distils unhopped beer or rice sake into a strong grain spirit."
+    },
+    {
+      "id": "brandy",
+      "name": "Brandy",
+      "produced_in": [ "distillery" ],
+      "resources": { "wine": 20 },
+      "result": { "brandy": 10 },
+      "time": 8.0,
+      "unlock_tech": "distillation",
+      "description": "Distils grape wine into brandy."
+    },
+    {
+      // Split from the cider recipe so that blacklisting winemaking leaves cider
+      // distillation intact.
+      "id": "fruit_brandy",
+      "name": "Fruit Brandy (from wine)",
+      "produced_in": [ "distillery" ],
+      "resources": [ [ { "fruit_wine": 20 }, { "carob_wine": 20 } ] ],
+      "result": { "fruit_brandy": 10 },
+      "time": 8.0,
+      "unlock_tech": "distillation",
+      "description": "Distils fruit wine or carob wine into fruit brandy."
+    },
+    {
+      "id": "fruit_brandy_from_cider",
+      "name": "Fruit Brandy (from cider)",
+      "produced_in": [ "distillery" ],
+      "resources": { "cider": 20 },
+      "result": { "fruit_brandy": 10 },
+      "time": 8.0,
+      "unlock_tech": "distillation",
+      "description": "Distils apple cider into fruit brandy."
+    },
+    {
+      // Palm toddy goes in already fermented, while crushed cane and tapped maple
+      // sap are fermented and distilled in one workshop cycle.
+      "id": "arrack",
+      "name": "Arrack",
+      "produced_in": [ "distillery" ],
+      "resources": [ [ { "toddy": 20 }, { "sugar_cane": 20 }, { "maple_sap": 20 } ] ],
+      "result": { "arrack": 10 },
+      "time": 8.0,
+      "unlock_tech": "distillation",
+      "description": "Distils palm toddy or a fermented sweet juice into arrack."
+    },
+    {
+      "id": "mezcal",
+      "name": "Mezcal",
+      "produced_in": [ "distillery" ],
+      "resources": { "pulque": 20 },
+      "result": { "mezcal": 10 },
+      "time": 8.0,
+      "unlock_tech": "distillation",
+      "description": "Distils fermented agave drink into mezcal."
+    },
+    {
+      "id": "honey_spirit",
+      "name": "Honey Spirit",
+      "produced_in": [ "distillery" ],
+      "resources": { "mead": 20 },
+      "result": { "honey_spirit": 10 },
+      "time": 8.0,
+      "unlock_tech": "distillation",
+      "description": "Distils mead into a strong honey spirit."
+    },
+    {
+      // Fermenting and distilling milk in a single workshop cycle gives herding
+      // cities a spirit line alongside cheese.
+      "id": "arkhi",
+      "name": "Arkhi",
+      "produced_in": [ "distillery" ],
+      "resources": { "raw_milk": 20 },
+      "result": { "arkhi": 10 },
+      "time": 8.0,
+      "unlock_tech": "distillation",
+      "description": "Ferments and distils raw milk into arkhi."
+    },
+    {
+      // Chamomile stands before the table spices so the workshop spends dedicated
+      // herbs before drawing down the citizens' spice shelf.
+      "id": "cordial",
+      "name": "Cordial",
+      "produced_in": [ "distillery" ],
+      "resources": [
+        { "rectified_spirit": 10 },
+        [ { "chamomile": 10 }, { "cinnamon": 10 }, { "nutmeg": 10 }, { "vanilla": 10 } ],
+        { "@sweeteners": 10 }
+      ],
+      "result": { "cordial": 10 },
+      "time": 10.0,
+      "unlock_tech": "distillation",
+      "description": "Infuses rectified spirit with herbs or spices and sweetens it into a cordial."
+    }
+  ]
+}

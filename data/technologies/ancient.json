@@ -1,0 +1,469 @@
+{
+  "technologies": [
+    {
+      "id": "farming",
+      "name": "Farming",
+      "era": "ancient",
+      "science_cost": 0.0,
+      "icon": "farming.png",
+      "description": "Allows you to build farms.",
+      "flavor": "The first farmers noticed that seeds thrown into the ground grew again. Thus began the age of settled life."
+    },
+    {
+      "id": "mining",
+      "name": "Mining",
+      "era": "ancient",
+      "science_cost": 30.0,
+      "icon": "mining.png",
+      "description": "Allows you to build mines.",
+      "flavor": "People learned to draw stone and ore from the depths of the earth, opening a new era in tools."
+    },
+    {
+      "id": "native_metals",
+      "name": "Native Metals",
+      "era": "ancient",
+      "science_cost": 3.0,
+      "icon": "native_metals.png",
+      "prerequisites": [ [ "mining" ] ],
+      "description": "Unlocks the ability to find and gather native metals.\nUnlocks metal ores (gold, silver, copper) and metalloids (antimony and arsenic).\nAllows you to build the forge.",
+      "flavor": "People learned to find and use native metals, which occur in nature in pure form, with no need to smelt them out of ore.",
+      "unlock_effects": [ { "icon": "new_resource.png", "name": "Unlocks the ability to find and gather native metals." } ]
+    },
+    {
+      "id": "metallurgy",
+      "name": "Metallurgy",
+      "era": "ancient",
+      "science_cost": 3.0,
+      "icon": "metallurgy.png",
+      "prerequisites": [ [ "native_metals" ] ],
+      "description": "Allows you to build the smelter and smelt metal out of ore.",
+      "flavor": "Mastering metals revolutionized the crafts: copper tools were tougher than stone."
+    },
+    {
+      "id": "bronze",
+      "name": "Bronze",
+      "era": "ancient",
+      "science_cost": 3.0,
+      "icon": "bronze_tech.png",
+      "prerequisites": [ [ "metallurgy" ] ],
+      "description": "Unlocks recipes for bronze and bronze goods.",
+      "flavor": "People learned to alloy copper with tin to make bronze, a hard metal for tools and weapons. Bronze became a key material for crafts and warfare."
+    },
+    {
+      "id": "iron_processing",
+      "name": "Iron Processing",
+      "era": "ancient",
+      "science_cost": 3.0,
+      "icon": "iron_processing.png",
+      "prerequisites": [ [ "metallurgy" ] ],
+      "description": "Unlocks recipes for iron and iron goods.\nUnlocks the bloomery.",
+      "flavor": "People learned to alloy copper with tin to make bronze, a hard metal for tools and weapons. Bronze became a key material for crafts and warfare."
+    },
+    {
+      "id": "animal_husbandry",
+      "name": "Animal Husbandry",
+      "era": "ancient",
+      "science_cost": 3.0,
+      "icon": "animal_husbandry.png",
+      "description": "Allows you to build pastures.",
+      "flavor": "Taming animals gave people a steady source of meat, milk and hides."
+    },
+    {
+      "id": "pottery",
+      "name": "Ceramics",
+      "era": "ancient",
+      "science_cost": 3.0,
+      "icon": "pottery_tech.png",
+      "description": "Allows you to build the clay pit and the pottery workshop.",
+      "flavor": "Fired clay became humanity's first artificial material, letting people store grain and water."
+    },
+    {
+      "id": "beekeeping",
+      "name": "Beekeeping",
+      "era": "ancient",
+      "science_cost": 3.0,
+      "icon": "beekeeping.png",
+      "description": "Allows you to build the apiary.",
+      "flavor": "People learned to tame bees for honey and wax, the only natural sweeteners and the stuff of candles."
+    },
+    {
+      "id": "fishing",
+      "name": "Fishing",
+      "era": "ancient",
+      "science_cost": 3.0,
+      "icon": "fishing.png",
+      "description": "Allows you to build a dock and fishing boats.",
+      "flavor": "Fishing is one of humanity's oldest trades, and the first way to take food from the water."
+    },
+    {
+      "id": "wood_processing",
+      "name": "Wood Processing",
+      "era": "ancient",
+      "science_cost": 3.0,
+      "icon": "wood_processing.png",
+      "description": "Allows you to build forest plots (logging) and the carpenter's workshop (timber → planks).",
+      "flavor": "Wood is the oldest building material, and with the first axes people learned to fell trees and saw the trunks into planks."
+    },
+    {
+      "id": "irrigation",
+      "name": "Irrigation",
+      "era": "ancient",
+      "science_cost": 3.0,
+      "icon": "irrigation.png",
+      "prerequisites": [ [ "farming" ] ],
+      "description": "Unlocks the ability to grow water-loving crops: rice and taro.\nAllows farms and plantations to pass fresh water along a chain (up to 3 hexes).\nAllows you to drain marshes.",
+      "flavor": "Managing water flows became the key to claiming new lands: irrigation did more than water the fields, it drained waterlogged ground and turned marshes into fertile plains.",
+      "unlock_effects": [ { "icon": "new_resource.png", "name": "Unlocks the ability to grow water-loving crops: rice and taro." } ]
+    },
+    {
+      "id": "wheel",
+      "name": "Wheel",
+      "era": "ancient",
+      "science_cost": 3.0,
+      "icon": "wheel.png",
+      "prerequisites": [ [ "pottery" ] ],
+      "description": "Reduces the effect of distance from the city on the work cost of building improvements by 30%.\nUnlocks the Cart Road (road level 2): up to 30 units/sec per section instead of 10.",
+      "flavor": "The wheel is one of humanity's greatest inventions, and it changed trade and war."
+    },
+    {
+      "id": "plow",
+      "name": "Plow",
+      "era": "ancient",
+      "science_cost": 3.0,
+      "icon": "plow.png",
+      "prerequisites": [ [ "animal_husbandry" ] ],
+      "description": "+50% to resource production on farms.",
+      "flavor": "A plow yoked to oxen made it possible to work heavy soils and raised yields."
+    },
+    {
+      "id": "masonry",
+      "name": "Masonry",
+      "era": "ancient",
+      "science_cost": 3.0,
+      "icon": "masonry.png",
+      "prerequisites": [ [ "mining" ] ],
+      "description": "Allows you to build the quarry and the mason's workshop.",
+      "flavor": "The skill of laying stone made it possible to build sturdy buildings that outlived centuries.",
+      "unlock_effects": [ { "icon": "spring_catchment.png", "name": "Unlocks spring catchments for collecting mineral spring water." } ]
+    },
+    {
+      "id": "cheese_making",
+      "name": "Cheese Making",
+      "era": "ancient",
+      "science_cost": 3.0,
+      "icon": "cheese_making.png",
+      "prerequisites": [ [ "animal_husbandry", "fermentation" ] ],
+      "description": "Allows you to build the dairy: raw milk → cheese.",
+      "flavor": "Cheese kept milk for months, becoming an important winter supply."
+    },
+    {
+      "id": "leatherworking",
+      "name": "Leatherworking",
+      "era": "ancient",
+      "science_cost": 3.0,
+      "icon": "leatherworking.png",
+      "prerequisites": [ [ "animal_husbandry" ] ],
+      "description": "Allows you to build the tanner's house: hides → leather.",
+      "flavor": "Tanning gave people a tough, flexible material for clothing, footwear and gear."
+    },
+    {
+      "id": "writing",
+      "name": "Writing",
+      "era": "ancient",
+      "science_cost": 3.0,
+      "icon": "writing.png",
+      "prerequisites": [ [ "pottery" ] ],
+      "description": "Allows you to build libraries.",
+      "flavor": "Clay tablets became the first carrier of information, letting people pass knowledge across the centuries."
+    },
+    {
+      "id": "weaving",
+      "name": "Weaving",
+      "era": "ancient",
+      "science_cost": 3.0,
+      "icon": "weaving.png",
+      "prerequisites": [ [ "animal_husbandry" ] ],
+      "description": "Allows you to build the weaver's house and weave clothes and carpets from fibers.",
+      "flavor": "The loom turned animal and plant fibers into cloth for garments and carpets."
+    },
+    {
+      "id": "oil_making",
+      "name": "Oil Making",
+      "era": "ancient",
+      "science_cost": 3.0,
+      "icon": "oil_making.png",
+      "prerequisites": [ [ "farming" ] ],
+      "description": "Allows you to build the oilmaker's house: seeds, fruits and other parts of oil crops → vegetable oil.",
+      "flavor": "Vegetable oil became an important food and a source of light."
+    },
+    {
+      // Either alkali opens the craft; oil making is required on both routes.
+      // The prerequisites format cannot factor out the shared AND term, so oil making
+      // appears twice and the tree draws two identical parent arrows.
+      "id": "soap_making",
+      "name": "Soap Making",
+      "era": "ancient",
+      "science_cost": 3.0,
+      "icon": "soap_making.png",
+      "prerequisites": [ [ "oil_making", "soda_extraction" ], [ "oil_making", "potash_making" ] ],
+      "description": "Allows you to build the soapmaker's house: vegetable oil or tallow with soda or potash → soap.",
+      "flavor": "By mixing fat with lye, people got soap, the first step toward hygiene and medicine."
+    },
+    {
+      "id": "fermentation",
+      "name": "Fermentation",
+      "era": "ancient",
+      "science_cost": 3.0,
+      "icon": "fermentation.png",
+      "prerequisites": [ [ "farming" ] ],
+      "description": "Allows you to build the brewer's house. Unlocks recipes for brewing beer, pulque, sake and toddy.",
+      "flavor": "Fermentation let people turn grain and fruit into alcohol, drunk in rituals and in daily life."
+    },
+    {
+      "id": "mead_making",
+      "name": "Mead Making",
+      "era": "ancient",
+      "science_cost": 3.0,
+      "icon": "mead_making.png",
+      "prerequisites": [ [ "beekeeping", "fermentation" ] ],
+      "description": "Unlocks recipes for brewing mead.",
+      "flavor": "Mead is the oldest alcohol, brewed from honey and water."
+    },
+    {
+      "id": "jewelry",
+      "name": "Jewelry",
+      "era": "ancient",
+      "science_cost": 3.0,
+      "icon": "jewelry.png",
+      "prerequisites": [ [ "native_metals" ] ],
+      "description": "Unlocks recipes for making jewelry out of metals.",
+      "flavor": "Working precious stones and metals turned the craft into art."
+    },
+    {
+      "id": "winegrowing",
+      "name": "Winegrowing",
+      "era": "ancient",
+      "science_cost": 3.0,
+      "icon": "winegrowing.png",
+      "prerequisites": [ [ "farming" ] ],
+      "description": "Allows you to build the vineyard.",
+      "flavor": "The grape is one of the oldest crops, from which people learned to make wine, a drink for feasts and rituals."
+    },
+    {
+      "id": "winemaking",
+      "name": "Winemaking",
+      "era": "ancient",
+      "science_cost": 3.0,
+      "icon": "winemaking.png",
+      "prerequisites": [ [ "winegrowing", "fermentation" ] ],
+      "description": "Allows you to build the winemaker's house: grapes → wine.",
+      "flavor": "Wine was made from grapes: it was a drink for feasts and rituals, and it also kept the perishable grapes from spoiling."
+    },
+    {
+      "id": "plantations",
+      "name": "Plantations",
+      "era": "ancient",
+      "science_cost": 3.0,
+      "icon": "plantations.png",
+      "prerequisites": [ [ "irrigation" ] ],
+      "description": "Specialized farming: growing cash crops. Allows you to build plantations.",
+      "flavor": "Plantations made it possible to grow olives and citrus in bulk, providing valuable goods and oils."
+    },
+    {
+      "id": "tobacco_curing",
+      "name": "Tobacco Curing",
+      "era": "ancient",
+      "science_cost": 3.0,
+      "icon": "tobacco_curing.png",
+      "prerequisites": [ [ "plantations" ] ],
+      "description": "Allows you to build the tobacco workshop: tobacco leaf → tobacco.",
+      "flavor": "Raw leaf is harsh and spoils quickly. Cured and cut, it keeps for years, so curing is what turned a harvested leaf into a stored good."
+    },
+    {
+      "id": "soda_extraction",
+      "name": "Soda Extraction",
+      "era": "ancient",
+      "science_cost": 3.0,
+      "icon": "soda.png",
+      "prerequisites": [ [ "mining" ] ],
+      "description": "Allows you to build the quarry for soda extraction.",
+      "flavor": "People noticed that the white crust on the shores of salt lakes cleanses and bleaches wonderfully. So began the extraction of soda, a valuable mineral without which neither glassmaking nor soapmaking is possible."
+    },
+    {
+      // Either alkali opens the craft: a city without soda lakes reaches glass through
+      // ash-burned potash. Pottery is named only in the soda branch — potash already
+      // implies it through limestone burning, and a repeated term would draw a duplicate edge.
+      "id": "glassmaking",
+      "name": "Glassmaking",
+      "era": "ancient",
+      "science_cost": 3.0,
+      "icon": "glass_making.png",
+      "prerequisites": [ [ "soda_extraction", "pottery" ], [ "potash_making" ] ],
+      "description": "Allows you to build the glassmaker's house: sand with soda or potash → glass.",
+      "flavor": "For centuries potters watched sand and alkali turn in their kilns into a shining crust of glass. Then one day someone had the idea of doing it on purpose. Glassmaking became more than an accident: it became a deliberate craft. The new material changed the world: beads, amulets, and later tableware and windows. Transparency became a symbol of enlightenment."
+    },
+    {
+      "id": "rope_making",
+      "name": "Rope Making",
+      "era": "ancient",
+      "science_cost": 3.0,
+      "icon": "rope_making.png",
+      "prerequisites": [ [ "weaving" ] ],
+      "description": "Allows you to build the ropemaker's house: fibers → ropes.",
+      "flavor": "Ropes became an important material for building, sailing and farming, letting people bind, haul and hoist loads."
+    },
+    {
+      // One technology covers both feedstocks of the trade. The alternatives in
+      // "prerequisites" say that neither side of the craft presupposes the other:
+      // a town reaches tar through whichever of its own resources it has.
+      "id": "tar_burning",
+      "name": "Tar Burning",
+      "era": "ancient",
+      "science_cost": 3.0,
+      "icon": "tar_burning.png",
+      "prerequisites": [ [ "wood_processing" ], [ "mining" ] ],
+      "description": "Allows you to build the tar pit and the tar distillery: resin or bitumen → tar.",
+      "flavor": "Tar sealed ships, ropes and leather, and it came both from a burning pine heap and from the bituminous ground."
+    },
+    {
+      "id": "salt_extraction",
+      "name": "Salt Extraction",
+      "era": "ancient",
+      "science_cost": 3.0,
+      "icon": "salt_extraction.png",
+      "prerequisites": [ [ "mining" ] ],
+      "description": "Unlocks salt extraction from mines and salt lakes, and salt ponds that evaporate brine from seawater or salt springs.",
+      "flavor": "Salt became an important product for preserving food."
+    },
+    {
+      "id": "sericulture",
+      "name": "Sericulture",
+      "era": "ancient",
+      "science_cost": 3.0,
+      "icon": "sericulture.png",
+      "prerequisites": [ [ "plantations" ] ],
+      "description": "Allows you to build the silkmaker's house: cocoons → silk.",
+      "flavor": "Silk became a valuable material for clothing and trade, opening new possibilities for crafts and the economy."
+    },
+    {
+      "id": "limestone_burning",
+      "name": "Mineral Firing",
+      "era": "ancient",
+      "science_cost": 3.0,
+      "icon": "limestone_burning.png",
+      "prerequisites": [ [ "pottery", "masonry" ] ],
+      "description": "Allows you to build kilns: limestone → lime, alunite → alum.",
+      "flavor": "Roasting minerals opens new possibilities for crafts: limestone yields lime, while roasted alunite is leached and crystallized to obtain alum for treating hides and fixing dyes."
+    },
+    {
+      "id": "currency",
+      "name": "Money",
+      "era": "ancient",
+      "science_cost": 4.0,
+      "icon": "currency.png",
+      "prerequisites": [ [ "writing" ] ],
+      "description": "Allows you to build the Market city building.",
+      "flavor": "The idea of value and exchange led to money, the basis of trade and city growth."
+    },
+    {
+      "id": "canals",
+      "name": "Canals",
+      "era": "ancient",
+      "science_cost": 4.0,
+      "icon": "canals.png",
+      "prerequisites": [ [ "irrigation", "masonry" ] ],
+      "description": "Allows you to build canals to bring water to remote areas.",
+      "flavor": "Canals let people manage water flows, improving irrigation and opening new routes for trade."
+    },
+    {
+      "id": "dyeing",
+      "name": "Dyeing",
+      "era": "ancient",
+      "science_cost": 4.0,
+      "icon": "dyeing.png",
+      "prerequisites": [ [ "weaving" ], [ "pottery" ] ],
+      "description": "Allows you to extract various dyes from organic and inorganic materials.",
+      "flavor": "Dyeing cloth and pottery with various dyes is one of the oldest crafts."
+    },
+    {
+      "id": "perfume_making",
+      "name": "Perfumery",
+      "era": "ancient",
+      "science_cost": 3.0,
+      "icon": "perfume_making.png",
+      "prerequisites": [ [ "oil_making", "dyeing" ] ],
+      "description": "Allows you to build the perfumer's house: fragrant resins and oil → perfume.",
+      "flavor": "The perfumer's workshop held both goods at once: the resin ground with charcoal for the temple, and the resin dissolved in oil for the body. The people of the warm south had mixed the tears of the boswellia tree with oil long before anyone thought of distilling them."
+    },
+    {
+      "id": "sugar_making",
+      "name": "Sugar Making",
+      "era": "ancient",
+      "science_cost": 3.0,
+      "icon": "sugar_making.png",
+      "prerequisites": [ [ "plantations" ] ],
+      "description": "Allows you to build the sugar boiler: sweet juice → sugar.",
+      "flavor": "India first boiled cane juice down to crystals that kept well, and the craft travelled with Arab growers to the warm edges of the Mediterranean."
+    },
+    {
+      // Either feedstock opens the craft: a pastoral city dips tallow candles from its herds,
+      // while a city with apiaries moulds clean beeswax tapers without needing livestock.
+      "id": "candle_making",
+      "name": "Candle Making",
+      "era": "ancient",
+      "science_cost": 3.0,
+      "icon": "candle_making.png",
+      "prerequisites": [ [ "animal_husbandry" ], [ "beekeeping" ] ],
+      "description": "Allows you to build the chandler's house: tallow → tallow candles, wax → wax candles.",
+      "flavor": "An oil lamp spills when carried into a gallery or held beside a ledger. A wick drawn repeatedly through melted tallow or rolled in warm beeswax carries its own fuel in solid form: tallow burns cheaply down in the mine shafts, while clear beeswax lights scriptoriums, temples and benches without stinging smoke."
+    },
+    {
+      "id": "brass_working",
+      "name": "Brass",
+      "era": "ancient",
+      "science_cost": 3.0,
+      "icon": "brass_working.png",
+      "prerequisites": [ [ "metallurgy" ] ],
+      "description": "Unlocks calamine mining and the cementation of copper with calamine into brass, along with brass tools and brass jewelry.",
+      "flavor": "Long before anyone caught metallic zinc in a vessel, smelters sealed copper with crushed calamine and charcoal in a closed crucible and drew out a golden metal that neither rusted like iron nor needed scarce tin. From Persian birinj and Mediterranean orichalcum to the cast plaques of West Africa and the astrolabes of astronomers, brass became the alloy of fine scales, vessels and enduring ornament."
+    },
+    {
+      // Potash opens a slower, costlier alkali route bound to specific broadleaf hardwoods,
+      // keeping natural soda lakes superior for everyday glass and soap while enabling
+      // potassium-based crafts (nitrary saltpeter, lead crystal and cobalt smalt).
+      "id": "potash_making",
+      "name": "Potash",
+      "era": "ancient",
+      "science_cost": 4.0,
+      "icon": "potash_making.png",
+      "prerequisites": [ [ "limestone_burning", "wood_processing" ] ],
+      "description": "Unlocks potash leached from broadleaf hardwood ashes in the kiln, potash-based forest glass and salted-out soap, and cobalt smalt.",
+      "flavor": "Not every forest yields a strong lye: resinous pines leave a thin ash, so ash-burners sought out beech, maple, oak, chestnut and walnut, burned great stacks of seasoned timber, leached the ashes through water and calcined the liquor in hot pots into white potash. Costlier and slower to win than the crust of a soda lake, it freed inland workshops from distant natron and gave glassmakers, dyers and nitre-boilers an alkali of their own."
+    },
+    {
+      // A settled city stands on a surplus it can count. Either livelihood that keeps people
+      // in one place — the field or the herd — teaches the tally, so neither branch of the
+      // early economy is forced first. The tax itself is collected only once the tech is learned
+      // (see "The treasury of the city" in CityData.gd).
+      "id": "taxation",
+      "name": "Taxation",
+      "era": "ancient",
+      "science_cost": 3.0,
+      "icon": "taxation.png",
+      "prerequisites": [ [ "farming" ], [ "animal_husbandry" ] ],
+      "description": "Allows you to collect taxes from the citizens and to build the tax yard.\nA staffed tax yard adds +5% to the poll tax.",
+      "flavor": "A granary means a surplus, and a surplus means an argument about whose it is. The tally of the fields and the herd turned a shared store into a due: a share set aside before the grain is divided, kept by those who count it and defended by those who no longer plough. Every settled people found the same answer — the levy in grain, in heads, in days of work — and with it the first office of the city.",
+      "unlock_effects": [ { "icon": "coin_stack.png", "name": "Tax Yard: +5% to the poll tax per yard" } ]
+    },
+    {
+      "id": "peat_cutting",
+      "name": "Peat Cutting",
+      "era": "ancient",
+      "science_cost": 3.0,
+      "icon": "peat_cutting.png",
+      "prerequisites": [ [ "mining" ], [ "irrigation" ] ],
+      "description": "Allows you to build peat pits on swamp bogs to cut and dry peat for domestic hearths and workshop kilns.",
+      "flavor": "Where cold water stands year after year, fallen moss and sedge do not rot away: they pack layer upon layer into dark, fibrous earth. Cut into wet bricks with a flat spade and stacked in the wind through summer, bog turf kept northern hearths warm and fired pots, brew-kettles and smokehouses wherever timber grew sparse."
+    }
+  ]
+}

@@ -1,0 +1,1411 @@
+﻿# The map preview of a new game.
+#
+# The square IS the world: its AREA is proportional to the chosen map size against the
+# largest allowed one, so a map twice as large reads as twice as much map. The side therefore
+# follows the square root of that ratio. That is the whole point of the control — a number in
+# a dropdown says nothing about how much map it is.
+#
+# The picture is the world itself, up to the climate: the generator's own stages run here in
+# their own order on the real map grid, from the seed the caller pins, and that same seed is
+# handed to the world generation (CityData.world_seed). The coast, the islands, the relief and
+# the climate belts on the picture are therefore the ones the player is about to get, not a
+# sample of the settings. The blocks of hexes are averaged down to the cells of the picture: a
+# cell takes the majority kind of the hexes it covers, and a tie goes to the higher ground.
+#
+# What the picture does not show is what the world rolls after the climate: the resources are
+# not drawn at all, the towns are a sunflower spiral rather than the placement of the generator,
+# and the rivers are schematic courses over the real coast. The late guarantees of the starting
+# area (the terrain of the guaranteed food plant) may still turn a hex or two of the starting
+# ring into mountains after this picture is drawn.
+#
+# The towns stand only on land reachable from the city: one that would fall into the sea, a lake
+# or an island moves to the nearest free cell of that land, so the picture keeps the count of the
+# setting. The gold point in the middle is the player's city: MainMap puts it at half the rows and
+# half the columns, so that mark is exact. The numbers are printed under the square.
+#
+# The belts are the belts of the world even for a random climate: the equator is rolled by the
+# same stage that rolls it for the world, so there is something to promise now.
+extends Control
+
+const MapGenerator = preload("res://scripts/map_generator.gd")
+
+const PANEL_COLOR := Color(0.12, 0.12, 0.12)
+const PANEL_BORDER_COLOR := Color(0.28, 0.28, 0.28)
+const FRAME_COLOR := Color(0.16, 0.16, 0.16)
+const FRAME_BORDER_COLOR := Color(0.26, 0.26, 0.26)
+const MAP_BORDER_COLOR := Color(0.32, 0.37, 0.41)
+const LAND_COLOR := Color(0.30, 0.33, 0.29)
+const DEEP_SEA_COLOR := Color(0.10, 0.20, 0.32)
+const SHALLOW_SEA_COLOR := Color(0.18, 0.36, 0.50)
+const BEACH_COLOR := Color(0.60, 0.54, 0.38)
+# A lake is inland water and a wetland is land the player can walk on: the two must not read as
+# one dark patch, so the lake keeps a blue of its own and the wetland a dark green.
+const LAKE_COLOR := Color(0.30, 0.50, 0.60)
+const WETLAND_COLOR := Color(0.16, 0.28, 0.26)
+# The rock of a mountain top, mixed into the colour of its belt.
+const MOUNTAIN_ROCK := Color(0.58, 0.57, 0.55)
+# The light of the relief: a unit vector from the north-west, high enough to keep every slope lit.
+const RELIEF_LIGHT := Vector3(-0.5, -0.5, 0.7071)
+const TOWN_COLOR := Color.WHITE
+const TOWN_OUTLINE_COLOR := Color.BLACK
+const CITY_COLOR := Color(0.95, 0.78, 0.35)
+const RIVER_COLOR := Color(0.36, 0.62, 0.90)
+# A dark bank around the river line separates it from the belt underneath. The blue alone
+# disappears on the green of the temperate zone and on the blue of the boreal one.
+const RIVER_OUTLINE_COLOR := Color(0.04, 0.10, 0.16, 0.85)
+const TITLE_COLOR := Color(0.90, 0.90, 0.90)
+const CAPTION_COLOR := Color(0.62, 0.62, 0.62)
+
+# The codes of the belts in the order they run from the pole to the equator: the order breaks a tie
+# of the belt votes of a cell, and a tie has to fall to the higher latitude as it falls to the
+# higher ground.
+const BELT_ORDER: Array[int] = [0, 1, 2, 3, 4]
+
+# The colours of the belts on the picture, from the pole to the equator. They are picked for the
+# picture and not for the game: the five belts have to be told apart at a glance, and the towns
+# (pale) and the city (gold) have to stay readable on every one of them.
+const BELT_COLORS: Array[Color] = [
+    Color(0.60, 0.80, 1.00),   # polar: light blue — tundra zone
+    Color(0.25, 0.45, 0.95),   # cold: blue — boreal zone
+    Color(0.40, 0.75, 0.35),   # mild: green — temperate zone
+    Color(1.00, 0.60, 0.20),   # subtropical: orange — savanna
+    Color(1.00, 0.90, 0.20),   # tropical: yellow — tropical zone
+]
+
+# The kinds of a cell of the picture. The codes are what build() puts into the byte array and
+# what the palette above turns into colours. The land codes are the relief families of the
+# generator; the deserts count as a plain, because the climate prunes them into the plain of
+# their zone anyway.
+const CELL_LAND := 0
+const CELL_DEEP_SEA := 1
+const CELL_SHALLOW_SEA := 2
+const CELL_BEACH := 3
+const CELL_LAKE := 4
+const CELL_HILL := 5
+const CELL_MOUNTAIN := 6
+const CELL_WETLAND := 7
+
+# The same relief, cut into the stages the caller can run one at a time with a frame between them:
+# the picture of a huge map is the generator's own work on the whole map, and building it in one go
+# freezes the window of the new game for the whole of it.
+const RELIEF_STAGES: Array[String] = [
+    "counts", "hexes", "sea", "relief", "after_relief", "climate", "corridor"
+]
+
+# The kinds of a cell in the order a tie of their votes falls to: the higher ground wins, and the
+# water of a cell that reads as water is picked apart in the same way.
+const KIND_ORDER: Array[int] = [CELL_MOUNTAIN, CELL_HILL, CELL_WETLAND, CELL_LAND]
+const WATER_ORDER: Array[int] = [CELL_DEEP_SEA, CELL_SHALLOW_SEA, CELL_LAKE]
+
+const PADDING := 14.0
+const CAPTION_HEIGHT := 116.0
+const BUSY_VEIL_COLOR := Color(0.05, 0.06, 0.07, 0.55)
+const BUSY_TEXT_COLOR := Color(0.95, 0.93, 0.85)
+const MIN_SIDE := 30.0
+const TITLE_FONT_SIZE := 17
+const CAPTION_FONT_SIZE := 12
+const LEGEND_FONT_SIZE := 11
+const LEGEND_SWATCH := Vector2(12.0, 10.0)
+const LEGEND_GAP := 5.0
+# The legend of the belts is laid out in rows of this many items: the names of the five belts do
+# not fit on one line of the panel.
+const LEGEND_ROW_ITEMS := 3
+const LEGEND_ROW_STEP := 16.0
+const TOWN_RADIUS := 3.0
+const CITY_RADIUS := 4.5
+# The river line keeps a visible width on a small map and a proportional one on a large map.
+const RIVER_WIDTH_RATIO := 0.009
+const RIVER_MIN_WIDTH := 1.5
+# The bank is drawn wider than the water; both widths grow together so the outline keeps its
+# share of the line on every map size.
+const RIVER_OUTLINE_RATIO := 1.75
+# A distributary is a branch of the course it leaves, so it is drawn a little thinner.
+const DELTA_WIDTH_RATIO := 0.6
+# The preview uses the same rule as the world: a branch goes to the nearest sea cell and is
+# dropped if reaching it would take much more than a straight walk over the picture's cells.
+const DELTA_MIN_CELLS := 2
+const DELTA_DETOUR_LIMIT := 1.35
+const DELTA_EXTRA_CELLS := 1
+# Town dots keep a gap, so a town moved off the sea does not land on one already drawn.
+const MIN_TOWN_GAP := 7.0
+# The city keeps a ring of its own: the nearest town stands clear of it instead of touching
+# the gold point, whatever the count.
+const CITY_CLEAR := CITY_RADIUS + TOWN_RADIUS + 2.0
+const GOLDEN_ANGLE := 2.399963229
+
+# The picture is drawn on a grid of its own: one cell of the picture is a block of hexes of
+# the world. Beyond this many cells a cell of the picture is thinner than the pixel it lands
+# on, so a finer grid would cost time and show nothing.
+const GRID_MAX := 120
+
+# The caption and the legend of the picture are drawn on a layer of their own.
+#
+# The picture of the world is a texture and it wants the nearest sampling: a smoothed cell would
+# blur the coast into a gradient. The same filter on the text breaks the letters, because the
+# atlas of the font is a texture as well and the window scales the interface by a fraction — the
+# glyphs come out streaked and stretched. The layer samples the atlas the way the rest of the
+# interface does.
+class CaptionLayer extends Control:
+    var render: Callable
+
+    func _draw() -> void:
+        if render.is_valid():
+            render.call(self)
+
+# The largest map the preview can show. The game hands its own limit over, so the picture
+# and the dropdown cannot drift apart.
+var max_map_size := 200
+
+var map_size := 60
+var town_count := 16
+
+var _picture: Dictionary = {}
+var _texture: ImageTexture = null
+# The picture of a huge map is built in stages, a frame apart (see WorldPreview.RELIEF_STAGES):
+# until it lands, the panel says so over the picture of the settings the player has left behind.
+var _busy := false
+var _panel := StyleBoxFlat.new()
+var _caption_layer: CaptionLayer
+
+func _init() -> void:
+    _panel.bg_color = PANEL_COLOR
+    _panel.border_color = PANEL_BORDER_COLOR
+    _panel.set_border_width_all(1)
+    _panel.set_corner_radius_all(6)
+    # The picture is a grid of cells of the world, not a photograph: a smoothed cell would blur
+    # the coast into a gradient and the bays would be lost.
+    texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+    _caption_layer = CaptionLayer.new()
+    _caption_layer.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
+    _caption_layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+    _caption_layer.set_anchors_preset(Control.PRESET_FULL_RECT)
+    _caption_layer.render = Callable(self, "_draw_caption")
+    add_child(_caption_layer)
+
+# The whole picture of the world the settings describe: the relief the generator builds, and the
+# schematic rivers over it.
+static func build(size: int, sea: Dictionary, preview_seed: int = 20261026,
+        rivers: Dictionary = {}, climate: String = ClimateLayout.CLIMATE_RANDOM) -> Dictionary:
+    var picture := build_relief(size, sea, preview_seed, climate)
+    picture["rivers"] = build_rivers(picture, size, rivers, preview_seed)
+    return picture
+
+# The expensive half of the picture: the hexes of the world (see relief_tiles) averaged down to
+# the cells of the picture. The caller caches it by (size, sea, seed, climate), because the
+# rivers, the towns and the resource density do not change it.
+static func build_relief(size: int, sea: Dictionary, preview_seed: int = 20261026,
+        climate: String = ClimateLayout.CLIMATE_RANDOM) -> Dictionary:
+    return build_picture(relief_tiles(size, sea, preview_seed, climate), size)
+
+# The second half of the relief: the hexes averaged down to the cells of the picture. It is apart
+# from the hexes themselves because a huge map is built in stages (see begin_relief), and the stages
+# end here.
+#
+# A cell of the picture takes the majority kind of the hexes it covers; a tie goes to the higher
+# ground, so a mountain ridge is not averaged away into a plain. The beach is drawn where the
+# world has beach hexes and the cell touches the water of the picture.
+static func build_picture(tiles: Array, size: int) -> Dictionary:
+    var grid := mini(maxi(size, 1), GRID_MAX)
+    var city := int(size / 2.0)
+
+    var cells := PackedByteArray()
+    cells.resize(grid * grid)
+    var belts := PackedByteArray()
+    belts.resize(grid * grid)
+    var water := PackedByteArray()
+    water.resize(grid * grid)
+    var fallback := PackedByteArray()
+    fallback.resize(grid * grid)
+    # The votes of a cell are counted per kind and per belt, and the kinds and the belts are a
+    # handful: the counters are arrays, not dictionaries, and they are reused by every cell of the
+    # picture. The kind of a terrain is resolved once per terrain, not once per hex.
+    var votes := PackedInt32Array()
+    votes.resize(CELL_WETLAND + 1)
+    var belt_votes := PackedInt32Array()
+    belt_votes.resize(ClimateLayout.BELTS.size())
+    var kind_of_terrain: Dictionary = {}
+    var sea_cells := 0
+    for cell_y in range(grid):
+        var row_from := int(float(cell_y) * float(size) / float(grid))
+        var row_to := maxi(row_from + 1, int(float(cell_y + 1) * float(size) / float(grid)))
+        for cell_x in range(grid):
+            var col_from := int(float(cell_x) * float(size) / float(grid))
+            var col_to := maxi(col_from + 1, int(float(cell_x + 1) * float(size) / float(grid)))
+            votes.fill(0)
+            belt_votes.fill(0)
+            var total := 0
+            var wet := 0
+            var beach_votes := 0
+            for row in range(row_from, row_to):
+                for col in range(col_from, col_to):
+                    var tile: Dictionary = tiles[row][col]
+                    var terrain := str(tile["terrain"])
+                    var code: int = kind_of_terrain.get(terrain, -1)
+                    if code < 0:
+                        code = _cell_code(terrain)
+                        kind_of_terrain[terrain] = code
+                    votes[code] += 1
+                    total += 1
+                    if code == CELL_DEEP_SEA or code == CELL_SHALLOW_SEA:
+                        sea_cells += 1
+                    if _is_water_code(code):
+                        wet += 1
+                    elif code == CELL_BEACH:
+                        beach_votes += 1
+                    belt_votes[ClimateLayout.belt_code(str(tile.get("temperature", "")))] += 1
+            var index := cell_y * grid + cell_x
+            water[index] = 1 if wet * 2 >= total else 0
+            fallback[index] = _majority(votes, KIND_ORDER)
+            if water[index] == 1:
+                cells[index] = _majority(votes, WATER_ORDER)
+            elif beach_votes > 0:
+                cells[index] = CELL_BEACH
+            else:
+                cells[index] = fallback[index]
+            belts[index] = _majority(belt_votes, BELT_ORDER)
+
+    # A beach only outlines a coast the picture actually draws: a block of hexes can hold beach
+    # hexes of an inlet thinner than one cell, and that sand would float on dry land.
+    for index in range(grid * grid):
+        if cells[index] == CELL_BEACH and not _touches(water, grid, index, 1):
+            cells[index] = fallback[index]
+
+    # The city sits at the same row and column, so one number names its cell.
+    var city_cell := clampi(int(float(city) * float(grid) / float(size)), 0, grid - 1)
+    return {
+        "grid": grid,
+        "cells": cells,
+        "belts": belts,
+        "water": water,
+        "city_belt": str(tiles[city][city].get("temperature", "")),
+        "reachable": _reachable_cells(cells, grid, city_cell * grid + city_cell),
+        "sea_share": float(sea_cells) / float(maxi(size * size, 1)),
+    }
+
+# The hexes of the world as the picture draws them: the generator's own stages, in the order the
+# world runs them, from the pinned seed. The corridor is laid after the climate, as the world lays
+# it, because a punched hex becomes the plain of its own zone. The covers and the resources the
+# world rolls in between are not drawn here and change no terrain, so the picture does not pay for
+# them. The global generator is randomized again afterwards: nothing may depend on the state the
+# picture leaves, and the world seeds itself before its first stage as well.
+static func relief_tiles(size: int, sea: Dictionary, preview_seed: int,
+        climate: String) -> Array:
+    var state := begin_relief(size, sea, preview_seed, climate)
+    for stage in range(RELIEF_STAGES.size()):
+        run_relief_stage(state, stage)
+    return finish_relief(state)
+
+# The start of a relief: the dice of the preview are pinned to its seed, and the generator is put
+# together. The state goes through run_relief_stage and ends in one of two ways — finish_relief for
+# a relief that is done, abort_relief for one that is dropped halfway. Either way the generator is
+# freed and the global dice are let go, so a build that never finishes leaves nothing behind.
+static func begin_relief(size: int, sea: Dictionary, preview_seed: int,
+        climate: String) -> Dictionary:
+    seed(preview_seed)
+    var generator := MapGenerator.new()
+    generator.log_stages = false
+    return {
+        "generator": generator,
+        "size": size,
+        "sea": sea,
+        "climate": climate,
+        "counts": {},
+        "tiles": [],
+        "mask": PackedByteArray(),
+    }
+
+# One stage of a relief: the same order the world runs its stages in (see MainMap._initialize_map).
+static func run_relief_stage(state: Dictionary, stage: int) -> void:
+    var generator = state["generator"]
+    var size: int = state["size"]
+    var city := int(size / 2.0)
+    match RELIEF_STAGES[stage]:
+        "counts":
+            state["counts"] = generator.make_terrain_counts(size, size)
+        "hexes":
+            state["tiles"] = generator.init_tile_data(size, size)
+        "sea":
+            state["mask"] = generator.apply_sea_mask(state["tiles"], size, size, city, city,
+                    state["sea"], false)
+        "relief":
+            generator.generate_relief(state["tiles"], size, size, city, city, state["counts"])
+        "after_relief":
+            generator.post_process_relief(state["tiles"], size, size, state["mask"], city, city)
+        "climate":
+            generator.apply_climate(state["tiles"], size, size, state["climate"])
+        "corridor":
+            generator.ensure_outward_corridor(state["tiles"], size, size, city, city)
+
+# The end of a relief: the hexes of the world, and the dice of the game randomized again — nothing
+# may depend on the state the picture leaves, and the world seeds itself before its first stage.
+static func finish_relief(state: Dictionary) -> Array:
+    var tiles: Array = state["tiles"]
+    _drop_relief(state)
+    return tiles
+
+# A relief abandoned halfway, because the settings moved on while it was being built.
+static func abort_relief(state: Dictionary) -> void:
+    _drop_relief(state)
+
+static func _drop_relief(state: Dictionary) -> void:
+    var generator = state.get("generator", null)
+    if generator != null:
+        generator.free()
+    state.clear()
+    randomize()
+
+# The schematic main rivers over the water of the picture (see _build_rivers).
+static func build_rivers(picture: Dictionary, size: int, cfg: Dictionary,
+        seed_value: int) -> Array:
+    var deltas: Array = []
+    var rivers := _build_rivers(int(picture.get("grid", 0)),
+            picture.get("water", PackedByteArray()), picture.get("cells", PackedByteArray()),
+            size, cfg, seed_value, deltas)
+    # The distributaries are kept apart from the main courses: the count of the main rivers is
+    # the number the player chose, and a fork is not another river.
+    picture["deltas"] = deltas
+    return rivers
+
+# The kind of a hex of the world on the picture. The unique lakes are water like any lake: they
+# are impassable, and a town does not stand on them.
+static func _cell_code(terrain_id: String) -> int:
+    match terrain_id:
+        "sea":
+            return CELL_DEEP_SEA
+        "shallow_sea":
+            return CELL_SHALLOW_SEA
+        "beach":
+            return CELL_BEACH
+        "lake":
+            return CELL_LAKE
+    var data: Dictionary = GameData.terrains.get(terrain_id, {})
+    if bool(data.get("unique", false)) and int(data.get("move_cost", 1)) >= 999:
+        return CELL_LAKE
+    match GameData.terrain_family(terrain_id):
+        "hill":
+            return CELL_HILL
+        "mountain":
+            return CELL_MOUNTAIN
+        "swamp", "marsh":
+            return CELL_WETLAND
+    return CELL_LAND
+
+static func _is_water_code(code: int) -> bool:
+    return code == CELL_DEEP_SEA or code == CELL_SHALLOW_SEA or code == CELL_LAKE
+
+# The majority of the votes; the order of the list breaks a tie, so the caller puts the kind it
+# wants to survive a tie first.
+static func _majority(votes: PackedInt32Array, order: Array) -> int:
+    var best: int = order[order.size() - 1]
+    var best_count := -1
+    for code in order:
+        var count: int = votes[code]
+        if count > best_count:
+            best = code
+            best_count = count
+    return best
+
+# The land a town can stand on: the cells of the picture connected to the cell of the city over
+# land. The world places a town only where it can reach the player's city by land, so an island
+# carries no town on the picture either.
+static func _reachable_cells(cells: PackedByteArray, grid: int, city_cell: int) -> PackedByteArray:
+    var reachable := PackedByteArray()
+    reachable.resize(grid * grid)
+    var start := _nearest_land_cell(cells, grid, city_cell)
+    if start < 0:
+        return reachable
+    reachable[start] = 1
+    var queue := PackedInt32Array([start])
+    var head := 0
+    while head < queue.size():
+        var index := queue[head]
+        head += 1
+        for neighbour in _neighbours(grid, index):
+            if reachable[neighbour] == 1 or not _is_land_cell(cells, neighbour):
+                continue
+            reachable[neighbour] = 1
+            queue.append(neighbour)
+    return reachable
+
+# The land cell closest to the city over the picture. The city is drawn in the middle, but on a
+# small map the sea can reach its cell, and the towns still belong to the shore it stands on.
+static func _nearest_land_cell(cells: PackedByteArray, grid: int, from: int) -> int:
+    var seen := PackedByteArray()
+    seen.resize(cells.size())
+    seen[from] = 1
+    var queue := PackedInt32Array([from])
+    var head := 0
+    while head < queue.size():
+        var index := queue[head]
+        head += 1
+        if _is_land_cell(cells, index):
+            return index
+        for neighbour in _neighbours(grid, index):
+            if seen[neighbour] == 1:
+                continue
+            seen[neighbour] = 1
+            queue.append(neighbour)
+    return -1
+
+static func _is_land_cell(cells: PackedByteArray, index: int) -> bool:
+    return cells[index] == CELL_LAND or cells[index] == CELL_BEACH \
+            or cells[index] == CELL_HILL or cells[index] == CELL_MOUNTAIN \
+            or cells[index] == CELL_WETLAND
+
+# The four cells around a cell of the picture. The picture is a square grid of blocks of
+# hexes, so the sides of a block are what a neighbour means here.
+static func _neighbours(grid: int, index: int) -> PackedInt32Array:
+    var result := PackedInt32Array()
+    var x := index % grid
+    var y := int(float(index) / float(grid))
+    if x > 0:
+        result.append(index - 1)
+    if x < grid - 1:
+        result.append(index + 1)
+    if y > 0:
+        result.append(index - grid)
+    if y < grid - 1:
+        result.append(index + grid)
+    return result
+
+# Whether a cell of the picture has a neighbour of the given kind (0 — land, 1 — water). The
+# beach and the shallow band are both a rim along the coast, so both ask this question: the
+# beach about the water next to the land, the shallows about the land next to the water.
+static func _touches(water: PackedByteArray, grid: int, index: int, kind: int) -> bool:
+    for neighbour in _neighbours(grid, index):
+        if water[neighbour] == kind:
+            return true
+    return false
+
+# The schematic main rivers, one path per river in the chosen count. A river starts on land
+# that lies far enough from the water to be as long as the setting asks and flows to the coast:
+# the path is the cheapest way there, and the cost rises over the high ground the noise
+# describes. A straight shortest path would read as a drawn line rather than a river, so the
+# noise is what makes the route wander.
+#
+# The drawn rivers are recorded in a map of the cells they cover, and a later river keeps clear
+# of it: no two rivers cross and no two mouths meet. A source whose course cannot stay clear is
+# skipped, so a crowded map can end up with fewer rivers than asked.
+#
+# Only the main rivers are drawn as courses: the tributaries depend on the main rivers and on
+# the terrain the picture does not have, and the count of the setting that matters on the picture
+# is the count of the rivers the player will look for. A main river that mouths into a lake or
+# the sea may also fork into distributaries; those are returned separately, as short branches.
+static func _build_rivers(grid: int, water: PackedByteArray, cells: PackedByteArray, size: int,
+        cfg: Dictionary, seed_value: int, delta_result: Array) -> Array:
+    var count := maxi(0, int(cfg.get("num_main_rivers", 3)))
+    if count == 0 or grid <= 0 or water.size() != grid * grid:
+        return []
+
+    var rng := RandomNumberGenerator.new()
+    rng.seed = seed_value
+
+    var distances := _water_distances(grid, water)
+    var weights := _river_weights(grid, water, seed_value)
+    # The setting counts hexes, the path counts cells of the picture: on a large map one cell
+    # covers several hexes, so the same river is fewer cells long.
+    var min_cells := maxi(2, ceili(float(maxi(1, int(cfg.get("min_river_length", 8))))
+            * float(grid) / float(maxi(size, 1))))
+
+    # A source at least min_cells from the water gives a river of that length or longer. When
+    # the map has no such source — a narrow strip of land, a long minimum — the shore cells
+    # themselves are still tried, and the rivers come out shorter than asked.
+    var sources := PackedInt32Array()
+    var any_sources := PackedInt32Array()
+    for index in range(grid * grid):
+        if water[index] == 1 or distances[index] < 2:
+            continue
+        any_sources.append(index)
+        if distances[index] >= min_cells:
+            sources.append(index)
+    if sources.is_empty():
+        sources = any_sources
+    if sources.is_empty():
+        return []
+
+    var blocked := PackedByteArray()
+    blocked.resize(grid * grid)
+    var mouths := PackedByteArray()
+    mouths.resize(grid * grid)
+    var origins: Array[int] = []
+    # Sources keep their distance from each other, so the rivers spread over the map instead of
+    # gathering in one bay.
+    var separation := maxi(1, roundi(float(grid) / 6.0))
+
+    var result: Array = []
+    # The rivers already drawn, each with its segments bucketed: an attempt compares its curve
+    # with them, and the buckets are the same for every attempt.
+    var drawn: Array = []
+    for _i in range(count):
+        var river := _next_river(grid, water, distances, weights, blocked, mouths, drawn,
+                sources, origins, separation, seed_value, rng)
+        if river.is_empty():
+            break
+        var path: PackedInt32Array = river["path"]
+        origins.append(path[0])
+        _ink_river(grid, blocked, mouths, water, river["points"], path)
+        result.append(river["points"])
+        drawn.append({"points": river["points"],
+                "buckets": _segment_buckets(grid, river["points"])})
+        _build_delta(grid, water, cells, weights, distances, path,
+                blocked, mouths, drawn, rng, cfg, seed_value, delta_result)
+    return result
+
+# One main river: a free source and the cheapest course to a free coast cell that stays clear
+# of the rivers already drawn. Sources away from the ones taken are tried first; a source whose
+# course cannot avoid the others is skipped and another one is tried.
+static func _next_river(grid: int, water: PackedByteArray, distances: PackedInt32Array,
+        weights: PackedFloat32Array, blocked: PackedByteArray, mouths: PackedByteArray,
+        drawn: Array, sources: PackedInt32Array, origins: Array[int], separation: int,
+        seed_value: int, rng: RandomNumberGenerator) -> Dictionary:
+    for attempt in range(80):
+        var source: int = sources[rng.randi() % sources.size()]
+        if blocked[source] == 1:
+            continue
+        if attempt < 40 and _near_origin(source, origins, grid, separation):
+            continue
+        var path := _river_path(grid, water, distances, weights, blocked, mouths, source)
+        if path.is_empty():
+            continue
+        var points := _river_points(grid, water, distances, path, seed_value, blocked, mouths,
+                drawn)
+        if points.is_empty():
+            continue
+        return {"path": path, "points": points}
+    return {}
+
+# Records a drawn river: the cells its line covers are blocked, and the water cell at its mouth
+# is claimed, so no later river runs over it or mouths into the same spot.
+static func _ink_river(grid: int, blocked: PackedByteArray, mouths: PackedByteArray,
+        water: PackedByteArray, points: PackedVector2Array, path: PackedInt32Array) -> void:
+    for index in range(points.size() - 1):
+        var steps := maxi(1, ceili(points[index].distance_to(points[index + 1]) * 4.0))
+        for step in range(steps + 1):
+            var point := points[index].lerp(points[index + 1], float(step) / float(steps))
+            blocked[clampi(int(floor(point.y)), 0, grid - 1) * grid
+                    + clampi(int(floor(point.x)), 0, grid - 1)] = 1
+    for neighbour in _neighbours(grid, path[path.size() - 1]):
+        if water[neighbour] == 1:
+            mouths[neighbour] = 1
+            break
+
+# Whether a preview branch goes to the sea directly. The square grid has four neighbours, so
+# the shortest course between two cells is their Manhattan distance.
+static func _delta_is_direct_cells(path: PackedInt32Array, grid: int) -> bool:
+    var steps: int = path.size() - 1
+    if steps < DELTA_MIN_CELLS:
+        return false
+    var first: int = path[0]
+    var last: int = path[path.size() - 1]
+    var straight: int = absi(last % grid - first % grid) + absi(last / grid - first / grid)
+    return float(steps) <= float(straight) * DELTA_DETOUR_LIMIT + DELTA_EXTRA_CELLS
+
+
+# The distributaries of one course. A selected river forks a few cells before the shore: each
+# branch takes the nearest free water, a lake as well as the sea, and the shortest land route to
+# the cell beside it. The fork is a shared point with the parent, so the crossing test skips the
+# first segment of the branch; further downstream a branch still has to stay clear of every
+# drawn course.
+static func _build_delta(grid: int, water: PackedByteArray, cells: PackedByteArray,
+        weights: PackedFloat32Array, distances: PackedInt32Array, path: PackedInt32Array,
+        blocked: PackedByteArray, mouths: PackedByteArray,
+        drawn: Array, rng: RandomNumberGenerator, cfg: Dictionary, seed_value: int,
+        delta_result: Array) -> void:
+    var chance := clampf(float(cfg.get("delta_chance", 0.0)), 0.0, 1.0)
+    if chance <= 0.0 or path.size() < 5 or rng.randf() >= chance:
+        return
+    var mouth_cell: int = path[path.size() - 1]
+    var forks: Array = []
+    for back in [3, 5, 7]:
+        var index: int = path.size() - 1 - back
+        if index < 0:
+            continue
+        var cell: int = path[index]
+        if water[cell] == 0 and cell not in forks:
+            forks.append(cell)
+    if forks.is_empty():
+        return
+    var mouth_x := mouth_cell % grid
+    var mouth_y := mouth_cell / grid
+    var candidates: Array = []
+    for dy in range(-3, 4):
+        for dx in range(-3, 4):
+            var x := mouth_x + dx
+            var y := mouth_y + dy
+            if x < 0 or x >= grid or y < 0 or y >= grid:
+                continue
+            var water_cell := y * grid + x
+            if water[water_cell] == 0 or mouths[water_cell] == 1:
+                continue
+            var kind: int = cells[water_cell]
+            if kind != CELL_DEEP_SEA and kind != CELL_SHALLOW_SEA and kind != CELL_LAKE:
+                continue
+            for coast in _neighbours(grid, water_cell):
+                if water[coast] == 0 and blocked[coast] == 0:
+                    candidates.append({"water": water_cell, "coast": coast})
+                    break
+    if candidates.size() < 2:
+        return
+
+    var wanted: int = rng.randi_range(1, 2)
+    var added := 0
+    for fork_cell in forks:
+        if added >= wanted:
+            break
+        # Try the water cells nearest to this fork first: a branch takes the closest shore it
+        # can reach, and a candidate that needs a long detour is skipped.
+        var ordered: Array = []
+        for candidate in candidates:
+            var target: int = candidate["water"]
+            if mouths[target] == 1:
+                continue
+            var coast: int = candidate["coast"]
+            var distance: int = absi(coast % grid - fork_cell % grid) \
+                    + absi(coast / grid - fork_cell / grid)
+            ordered.append({"candidate": candidate, "distance": distance})
+        ordered.sort_custom(func(a, b): return a["distance"] < b["distance"])
+        for entry in ordered:
+            var candidate: Dictionary = entry["candidate"]
+            var target: int = candidate["water"]
+            var coast: int = candidate["coast"]
+            var branch_path := _delta_path(grid, water, weights, blocked, fork_cell, coast)
+            if not _delta_is_direct_cells(branch_path, grid):
+                continue
+            # The fork cell is on the parent course, so it is blocked like any drawn river. The
+            # branch is allowed to leave from it, but must not cross the parent further on.
+            var branch_blocked := blocked.duplicate()
+            branch_blocked[fork_cell] = 0
+            var points := _river_points(grid, water, distances, branch_path, seed_value,
+                    branch_blocked, mouths, drawn, target)
+            if points.is_empty():
+                continue
+            mouths[target] = 1
+            _ink_river(grid, blocked, mouths, water, points, branch_path)
+            delta_result.append(points)
+            drawn.append({"points": points, "buckets": _segment_buckets(grid, points)})
+            added += 1
+            break
+
+# The cheapest land route from the fork of a delta to the cell beside one of its mouths. The
+# source sits on the parent course and is therefore blocked; only its neighbours are searched.
+static func _delta_path(grid: int, water: PackedByteArray, weights: PackedFloat32Array,
+        blocked: PackedByteArray, source: int, goal: int) -> PackedInt32Array:
+    var cell_count := grid * grid
+    var best := PackedFloat32Array()
+    best.resize(cell_count)
+    best.fill(INF)
+    var came_from := PackedInt32Array()
+    came_from.resize(cell_count)
+    came_from.fill(-1)
+    best[source] = 0.0
+    came_from[source] = source
+    var settled := PackedByteArray()
+    settled.resize(cell_count)
+    var heap_cells: Array = [source]
+    var heap_costs: Array = [0.0]
+    while not heap_cells.is_empty():
+        var index: int = _heap_pop(heap_cells, heap_costs)
+        if settled[index] == 1:
+            continue
+        settled[index] = 1
+        if index == goal:
+            break
+        for neighbour in _neighbours(grid, index):
+            if water[neighbour] == 1 or blocked[neighbour] == 1:
+                continue
+            var cost := best[index] + weights[neighbour] + 0.1
+            if cost >= best[neighbour]:
+                continue
+            best[neighbour] = cost
+            came_from[neighbour] = index
+            _heap_push(heap_cells, heap_costs, neighbour, cost)
+    if came_from[goal] < 0:
+        return PackedInt32Array()
+    var path := PackedInt32Array()
+    var current := goal
+    while current != source:
+        path.append(current)
+        current = came_from[current]
+    path.append(source)
+    path.reverse()
+    return path
+
+# The distance in cells from every cell of the picture to the nearest water cell, -1 beyond
+# the last one. The water is the goal, so the land next to it is 1 and every step inland adds 1.
+static func _water_distances(grid: int, water: PackedByteArray) -> PackedInt32Array:
+    var distances := PackedInt32Array()
+    distances.resize(grid * grid)
+    distances.fill(-1)
+    var queue := PackedInt32Array()
+    for index in range(grid * grid):
+        if water[index] == 1:
+            distances[index] = 0
+            queue.append(index)
+    var head := 0
+    while head < queue.size():
+        var index := queue[head]
+        head += 1
+        var next := distances[index] + 1
+        for neighbour in _neighbours(grid, index):
+            if distances[neighbour] >= 0:
+                continue
+            distances[neighbour] = next
+            queue.append(neighbour)
+    return distances
+
+static func _near_origin(source: int, origins: Array[int], grid: int,
+        separation: int) -> bool:
+    var source_row := int(float(source) / float(grid))
+    var source_col := source % grid
+    for origin in origins:
+        if absi(source_col - origin % grid) <= separation \
+                and absi(source_row - int(float(origin) / float(grid))) <= separation:
+            return true
+    return false
+
+# The cost of a cell in the river search. The noise is smooth rather than independent per cell:
+# independent values only jitter the path, while ridges several cells wide make the cheapest way
+# bend around them and the river gets a course instead of a straight line. The noise depends on
+# the preview seed, so the same picture keeps the same rivers.
+static func _river_weights(grid: int, water: PackedByteArray,
+        seed_value: int) -> PackedFloat32Array:
+    var noise := FastNoiseLite.new()
+    noise.seed = seed_value
+    noise.noise_type = FastNoiseLite.TYPE_SIMPLEX_SMOOTH
+    noise.frequency = 4.0 / float(maxi(grid, 1))
+    noise.fractal_type = FastNoiseLite.FRACTAL_FBM
+    noise.fractal_octaves = 2
+
+    var weights := PackedFloat32Array()
+    weights.resize(grid * grid)
+    for index in range(grid * grid):
+        if water[index] == 1:
+            continue
+        var row := index / grid
+        var col := index % grid
+        var value := (noise.get_noise_2d(float(col), float(row)) + 1.0) * 0.5
+        weights[index] = 1.0 + 7.0 * value
+    return weights
+
+# The cheapest way from the source to a free coast cell. The cells of the rivers already drawn
+# are walls, like the water, so a new river goes around them and finds another mouth — main
+# rivers do not meet. A coast cell is a goal only while one of its water neighbours has no river
+# mouthing into it. The distance field is a lower bound on the length of the path, so a source
+# taken far enough from the water gives a river of at least that length.
+static func _river_path(grid: int, water: PackedByteArray, distances: PackedInt32Array,
+        weights: PackedFloat32Array, blocked: PackedByteArray, mouths: PackedByteArray,
+        source: int) -> PackedInt32Array:
+    var cell_count := grid * grid
+    var best := PackedFloat32Array()
+    best.resize(cell_count)
+    best.fill(INF)
+    var came_from := PackedInt32Array()
+    came_from.resize(cell_count)
+    came_from.fill(-1)
+    best[source] = 0.0
+    came_from[source] = source
+
+    var settled := PackedByteArray()
+    settled.resize(cell_count)
+    var heap_cells: Array = [source]
+    var heap_costs: Array = [0.0]
+    var goal := -1
+    while not heap_cells.is_empty():
+        var index: int = _heap_pop(heap_cells, heap_costs)
+        if settled[index] == 1:
+            continue
+        settled[index] = 1
+        if distances[index] == 1 and _free_mouth(grid, index, mouths, water):
+            goal = index
+            break
+        for neighbour in _neighbours(grid, index):
+            if water[neighbour] == 1 or blocked[neighbour] == 1:
+                continue
+            var cost := best[index] + weights[neighbour] \
+                    + 0.1 * float(distances[neighbour])
+            if cost >= best[neighbour]:
+                continue
+            best[neighbour] = cost
+            came_from[neighbour] = index
+            _heap_push(heap_cells, heap_costs, neighbour, cost)
+    if goal < 0:
+        return PackedInt32Array()
+
+    var path := PackedInt32Array()
+    var current := goal
+    while current != source:
+        path.append(current)
+        current = came_from[current]
+    path.append(source)
+    path.reverse()
+    return path
+
+# Whether a coast cell still has a water neighbour without a river mouthing into it.
+static func _free_mouth(grid: int, cell: int, mouths: PackedByteArray,
+        water: PackedByteArray) -> bool:
+    for neighbour in _neighbours(grid, cell):
+        if water[neighbour] == 1 and mouths[neighbour] == 0:
+            return true
+    return false
+
+# A binary min-heap over two parallel arrays: the search pops the cheapest cell first.
+static func _heap_push(cells: Array, costs: Array, cell: int, cost: float) -> void:
+    cells.append(cell)
+    costs.append(cost)
+    var index := cells.size() - 1
+    while index > 0:
+        var parent := (index - 1) / 2
+        if costs[parent] <= costs[index]:
+            break
+        _heap_swap(cells, costs, parent, index)
+        index = parent
+
+static func _heap_pop(cells: Array, costs: Array) -> int:
+    var top: int = cells[0]
+    var last := cells.size() - 1
+    cells[0] = cells[last]
+    costs[0] = costs[last]
+    cells.remove_at(last)
+    costs.remove_at(last)
+    var index := 0
+    while true:
+        var left := index * 2 + 1
+        var right := left + 1
+        var smallest := index
+        if left < cells.size() and costs[left] < costs[smallest]:
+            smallest = left
+        if right < cells.size() and costs[right] < costs[smallest]:
+            smallest = right
+        if smallest == index:
+            break
+        _heap_swap(cells, costs, index, smallest)
+        index = smallest
+    return top
+
+static func _heap_swap(cells: Array, costs: Array, first: int, second: int) -> void:
+    var cell: int = cells[first]
+    cells[first] = cells[second]
+    cells[second] = cell
+    var cost: float = costs[first]
+    costs[first] = costs[second]
+    costs[second] = cost
+
+# The path as a curve on the picture. The last point stops just short of the first water cell,
+# so the mouth touches the shore and the line stays on the land it was drawn on.
+#
+# The cell path is a staircase, and a staircase does not read as a river. Every point of the path
+# is pushed aside across the course, by a wave that holds its side for a few cells and by an
+# amount the distance to the water allows: the river keeps to the shore near the mouth and may
+# swing wider inland. Corner cutting then smooths the staircase into a course. The bend is cut
+# down when the curve would cross a water cell or a river already drawn, so the line never
+# leaves the land and never crosses another river. An empty result means no course was clear.
+static func _river_points(grid: int, water: PackedByteArray, distances: PackedInt32Array,
+        path: PackedInt32Array, seed_value: int, blocked: PackedByteArray,
+        mouths: PackedByteArray, drawn: Array, mouth_target: int = -1) -> PackedVector2Array:
+    var mouth := _cell_center(grid, path[path.size() - 1])
+    if mouth_target >= 0:
+        # A distributary mouths into the sea cell it claimed; the parent course picks any free
+        # water beside its last land cell.
+        mouth = mouth.lerp(_cell_center(grid, mouth_target), 0.45)
+    else:
+        for neighbour in _neighbours(grid, path[path.size() - 1]):
+            if water[neighbour] == 1 and mouths[neighbour] == 0:
+                mouth = mouth.lerp(_cell_center(grid, neighbour), 0.45)
+                break
+
+    var fork_skip := 1 if mouth_target >= 0 else 0
+    for factor in [1.0, 0.55, 0.25]:
+        var bent := PackedVector2Array()
+        for index in range(path.size()):
+            bent.append(_bent_point(grid, path, index, distances, seed_value, factor))
+        bent.append(mouth)
+        var curve := _smooth_curve(bent)
+        if _clear_of(grid, water, curve) and _clear_of(grid, blocked, curve) \
+                and _self_clear(grid, curve) \
+                and _clear_of_drawn(grid, drawn, curve, fork_skip * 4):
+            return curve
+
+    var plain := PackedVector2Array()
+    for index in range(path.size()):
+        plain.append(_cell_center(grid, path[index]))
+    plain.append(mouth)
+    if _clear_of(grid, water, plain) and _clear_of(grid, blocked, plain) \
+            and _clear_of_drawn(grid, drawn, plain, fork_skip):
+        return plain
+    return PackedVector2Array()
+
+static func _bent_point(grid: int, path: PackedInt32Array, index: int,
+        distances: PackedInt32Array, seed_value: int, factor: float) -> Vector2:
+    var point := _cell_center(grid, path[index])
+    var capacity := clampf(float(distances[path[index]] - 1) * 0.45, 0.0, 2.0)
+    if capacity <= 0.0 or index == 0:
+        return point
+    var previous := _cell_center(grid, path[maxi(index - 1, 0)])
+    var next := _cell_center(grid, path[mini(index + 1, path.size() - 1)])
+    var direction := next - previous
+    if direction.length() < 0.001:
+        return point
+    var side := _hash01(seed_value, index / 4) * 2.0 - 1.0
+    return point + Vector2(-direction.y, direction.x).normalized() * capacity * side * factor
+
+# Three rounds of corner cutting: every segment is replaced by its quarter points, so the
+# corners of the staircase become curves and the line keeps the general course of the path.
+static func _smooth_curve(points: PackedVector2Array) -> PackedVector2Array:
+    if points.size() < 3:
+        return points
+    var smoothed := points
+    for _iteration in range(3):
+        var next := PackedVector2Array([smoothed[0]])
+        for index in range(smoothed.size() - 1):
+            next.append(smoothed[index].lerp(smoothed[index + 1], 0.25))
+            next.append(smoothed[index].lerp(smoothed[index + 1], 0.75))
+        next.append(smoothed[smoothed.size() - 1])
+        smoothed = next
+    return smoothed
+
+static func _cell_center(grid: int, cell: int) -> Vector2:
+    return Vector2(float(cell % grid) + 0.5, float(cell / grid) + 0.5)
+
+static func _hash01(seed_value: int, value: int) -> float:
+    var hash := (value * 73856093) ^ (seed_value * 19349663)
+    hash = (hash ^ (hash >> 13)) * 1274126177
+    hash = hash ^ (hash >> 16)
+    return float(hash & 0xFFFF) / 65535.0
+
+# The segments of a line grouped by the cell of their middle. Comparing two lines segment by
+# segment would cost the square of their length, while two segments can meet only if they lie
+# in the same cell or in neighbouring ones.
+static func _segment_buckets(grid: int, points: PackedVector2Array) -> Dictionary:
+    var buckets: Dictionary = {}
+    for index in range(points.size() - 1):
+        var middle := (points[index] + points[index + 1]) * 0.5
+        var key := clampi(int(floor(middle.y)), 0, grid - 1) * grid \
+                + clampi(int(floor(middle.x)), 0, grid - 1)
+        if buckets.has(key):
+            buckets[key].append(index)
+        else:
+            buckets[key] = PackedInt32Array([index])
+    return buckets
+
+# Whether any segment of `points` meets the bucketed line. The curves are sampled finer than a
+# cell and a crossing slips between the samples, so the segments themselves are compared. The
+# segments of one line meet at their shared ends, hence `skip`: the segments that follow the
+# tested one within a few samples are the same line, not a crossing.
+static func _meets(grid: int, buckets: Dictionary, line: PackedVector2Array,
+        points: PackedVector2Array, skip: int) -> bool:
+    for index in range(points.size() - 1):
+        var middle := (points[index] + points[index + 1]) * 0.5
+        var row := clampi(int(floor(middle.y)), 0, grid - 1)
+        var col := clampi(int(floor(middle.x)), 0, grid - 1)
+        for offset_row in range(-1, 2):
+            for offset_col in range(-1, 2):
+                var r := row + offset_row
+                var c := col + offset_col
+                if r < 0 or r >= grid or c < 0 or c >= grid:
+                    continue
+                var key := r * grid + c
+                if not buckets.has(key):
+                    continue
+                for other in buckets[key]:
+                    if skip > 0 and other < index + skip:
+                        continue
+                    if Geometry2D.segment_intersects_segment(points[index],
+                            points[index + 1], line[other], line[other + 1]) != null:
+                        return true
+    return false
+
+# A bend that turns the river on itself reads as a crossing as well, so the river is compared
+# with itself.
+static func _self_clear(grid: int, points: PackedVector2Array) -> bool:
+    return not _meets(grid, _segment_buckets(grid, points), points, points, 3)
+
+# Whether the curve runs into a river already drawn. The blocked cells keep the courses apart
+# as well, but they are a sampled mask, and the lines themselves are what the player sees.
+static func _clear_of_drawn(grid: int, drawn: Array, points: PackedVector2Array,
+        skip: int = 0) -> bool:
+    for river in drawn:
+        if _meets(grid, river["buckets"], river["points"], points, skip):
+            return false
+    return true
+
+# Whether the whole polyline lies outside the masked cells. The segments are sampled finer than
+# a cell, because a corner cut can pass over a cell without touching its centre.
+static func _clear_of(grid: int, mask: PackedByteArray,
+        points: PackedVector2Array) -> bool:
+    for index in range(points.size() - 1):
+        var steps := maxi(1, ceili(points[index].distance_to(points[index + 1]) * 4.0))
+        for step in range(steps + 1):
+            var point := points[index].lerp(points[index + 1],
+                    float(step) / float(steps))
+            var cell := clampi(int(floor(point.y)), 0, grid - 1) * grid \
+                    + clampi(int(floor(point.x)), 0, grid - 1)
+            if mask[cell] == 1:
+                return false
+    return true
+
+func set_world(size: int, towns: int, picture: Dictionary) -> void:
+    map_size = size
+    town_count = towns
+    _picture = picture
+    _texture = _make_texture(picture)
+    set_busy(false)
+    queue_redraw()
+    _caption_layer.queue_redraw()
+
+func set_busy(busy: bool) -> void:
+    if _busy == busy:
+        return
+    _busy = busy
+    queue_redraw()
+    _caption_layer.queue_redraw()
+
+# The room the picture is drawn in.
+func _area() -> Rect2:
+    return Rect2(PADDING, PADDING,
+            size.x - PADDING * 2.0, size.y - PADDING * 2.0 - CAPTION_HEIGHT)
+
+func _draw() -> void:
+    draw_style_box(_panel, Rect2(Vector2.ZERO, size))
+
+    var area := _area()
+    if area.size.x <= 0.0 or area.size.y <= 0.0:
+        return
+
+    # The frame is the largest map the game can build. The chosen world sits inside it, so
+    # the empty room around a small map is the measure of how much smaller it is.
+    var frame := _square(area, max_map_size)
+    draw_rect(frame, FRAME_COLOR)
+    draw_rect(frame, FRAME_BORDER_COLOR, false, 1.0)
+
+    var square := _square(area, map_size)
+    draw_rect(square, LAND_COLOR)
+    if _texture != null:
+        draw_texture_rect(_texture, square, false)
+    draw_rect(square, MAP_BORDER_COLOR, false, 1.0)
+    _draw_rivers(square)
+    _draw_towns(square)
+    _draw_city(square)
+    if _busy:
+        draw_rect(square, BUSY_VEIL_COLOR)
+
+func _square(area: Rect2, side_in_hexes: int) -> Rect2:
+    var full := minf(area.size.x, area.size.y)
+    var side := maxf(full * sqrt(float(side_in_hexes) / float(max_map_size)), MIN_SIDE)
+    return Rect2(area.position + (area.size - Vector2(side, side)) * 0.5, Vector2(side, side))
+
+# The towns are spread on a sunflower spiral: even density without a random seed, so the
+# picture does not change while the player drags the number up and down. The spiral starts
+# outside the city, which is why the middle of the map stays clear. A town stands on land the
+# city reaches; one that would fall into the sea or on an island moves to the nearest free cell
+# of that land, so the picture keeps the count of the setting.
+func _draw_towns(square: Rect2) -> void:
+    if town_count <= 0:
+        return
+    var centre := square.get_center()
+    var reach := maxf(square.size.x * 0.5 - TOWN_RADIUS * 2.0, CITY_CLEAR)
+    var span := reach - CITY_CLEAR
+    var placed: Array[Vector2] = []
+    for index in town_count:
+        var distance := CITY_CLEAR + sqrt((float(index) + 0.5) / float(town_count)) * span
+        var angle := float(index) * GOLDEN_ANGLE
+        var point := centre + Vector2(cos(angle), sin(angle)) * distance
+        if _is_town_land(square, point) and _clear_of_towns(point, placed):
+            placed.append(point)
+            draw_circle(point, TOWN_RADIUS + 1.0, TOWN_OUTLINE_COLOR)
+            draw_circle(point, TOWN_RADIUS, TOWN_COLOR)
+            continue
+        var cell := _nearest_free_cell(square, point, placed)
+        if cell < 0:
+            continue
+        var spot := _cell_point(square, cell)
+        placed.append(spot)
+        draw_circle(spot, TOWN_RADIUS + 1.0, TOWN_OUTLINE_COLOR)
+        draw_circle(spot, TOWN_RADIUS, TOWN_COLOR)
+
+func _clear_of_towns(point: Vector2, placed: Array[Vector2]) -> bool:
+    for other in placed:
+        if point.distance_to(other) < MIN_TOWN_GAP:
+            return false
+    return true
+
+# The nearest cell of the city's land that can take a town: clear of the city's ring and of the
+# towns already placed. The search crosses water, because the point it starts from may lie in
+# the sea or on an island.
+func _nearest_free_cell(square: Rect2, point: Vector2, placed: Array[Vector2]) -> int:
+    var grid: int = _picture.get("grid", 0)
+    var reachable: PackedByteArray = _picture.get("reachable", PackedByteArray())
+    if grid <= 0 or reachable.size() != grid * grid or square.size.x <= 0.0:
+        return -1
+    var centre := square.get_center()
+    var start := _cell_at(square, point, grid)
+    var seen := PackedByteArray()
+    seen.resize(grid * grid)
+    seen[start] = 1
+    var queue := PackedInt32Array([start])
+    var head := 0
+    while head < queue.size():
+        var index := queue[head]
+        head += 1
+        if reachable[index] == 1:
+            var spot := _cell_point(square, index)
+            if spot.distance_to(centre) >= CITY_CLEAR and _clear_of_towns(spot, placed):
+                return index
+        for neighbour in _neighbours(grid, index):
+            if seen[neighbour] == 1:
+                continue
+            seen[neighbour] = 1
+            queue.append(neighbour)
+    return -1
+
+# Whether a point of the square stands on land a town can stand on. The picture is a grid of
+# blocks of the world, so the answer is the reachable mask built with the picture.
+func _is_town_land(square: Rect2, point: Vector2) -> bool:
+    var grid: int = _picture.get("grid", 0)
+    var reachable: PackedByteArray = _picture.get("reachable", PackedByteArray())
+    if grid <= 0 or reachable.size() != grid * grid:
+        return true
+    if square.size.x <= 0.0 or square.size.y <= 0.0:
+        return true
+    return reachable[_cell_at(square, point, grid)] == 1
+
+static func _cell_at(square: Rect2, point: Vector2, grid: int) -> int:
+    var x := clampi(int((point.x - square.position.x) / square.size.x * float(grid)), 0, grid - 1)
+    var y := clampi(int((point.y - square.position.y) / square.size.y * float(grid)), 0, grid - 1)
+    return y * grid + x
+
+func _cell_point(square: Rect2, index: int) -> Vector2:
+    var grid: int = _picture.get("grid", 1)
+    var cell := Vector2(float(index % grid) + 0.5, float(int(float(index) / float(grid))) + 0.5)
+    return square.position + cell * (square.size / float(grid))
+
+# The rivers go under the towns and the city, so a settlement stays readable on the bank it
+# stands on.
+func _draw_rivers(square: Rect2) -> void:
+    var grid: int = _picture.get("grid", 0)
+    var rivers: Array = _picture.get("rivers", [])
+    if grid <= 0 or rivers.is_empty() or square.size.x <= 0.0:
+        return
+    var width := maxf(RIVER_MIN_WIDTH, square.size.x * RIVER_WIDTH_RATIO)
+    var outline_width := width * RIVER_OUTLINE_RATIO
+    var delta_width := width * DELTA_WIDTH_RATIO
+    var delta_outline := delta_width * RIVER_OUTLINE_RATIO
+    var deltas: Array = _picture.get("deltas", [])
+    for branch in deltas:
+        if branch.size() < 2:
+            continue
+        var branch_points := PackedVector2Array()
+        for point in branch:
+            branch_points.append(square.position + point * (square.size / float(grid)))
+        draw_polyline(branch_points, RIVER_OUTLINE_COLOR, delta_outline, true)
+        draw_polyline(branch_points, RIVER_COLOR, delta_width, true)
+    for path in rivers:
+        if path.size() < 2:
+            continue
+        var points := PackedVector2Array()
+        for point in path:
+            points.append(square.position + point * (square.size / float(grid)))
+        # The bank goes down first, the water on top of it: the outline shows on both sides of
+        # the line, which is what keeps the river readable over a belt of a similar colour.
+        draw_polyline(points, RIVER_OUTLINE_COLOR, outline_width, true)
+        draw_polyline(points, RIVER_COLOR, width, true)
+
+# The player's city stands in the middle of the map. A dark ring behind it keeps the gold
+# readable on the water, and the towns around it stay pale.
+func _draw_city(square: Rect2) -> void:
+    var centre := square.get_center()
+    draw_circle(centre, CITY_RADIUS + 1.5, Color(0.0, 0.0, 0.0, 0.5))
+    draw_circle(centre, CITY_RADIUS, CITY_COLOR)
+
+func _draw_caption(layer: Control) -> void:
+    var font := layer.get_theme_font("font", "Label")
+    var width := layer.size.x
+    var top := layer.size.y - CAPTION_HEIGHT
+    var title_y := top + float(TITLE_FONT_SIZE) + 6.0
+    layer.draw_string(font, Vector2(0.0, title_y), "%d × %d" % [map_size, map_size],
+            HORIZONTAL_ALIGNMENT_CENTER, width, TITLE_FONT_SIZE, TITLE_COLOR)
+    var caption := tr("Hexes: %s · Towns: %d") % [_grouped(map_size * map_size), town_count]
+    layer.draw_string(font, Vector2(0.0, title_y + float(CAPTION_FONT_SIZE) + 7.0), caption,
+            HORIZONTAL_ALIGNMENT_CENTER, width, CAPTION_FONT_SIZE, CAPTION_COLOR)
+    layer.draw_string(font, Vector2(0.0, title_y + float(CAPTION_FONT_SIZE) * 2.0 + 13.0),
+            _facts_caption(), HORIZONTAL_ALIGNMENT_CENTER, width, CAPTION_FONT_SIZE,
+            CAPTION_COLOR)
+    _draw_legend(layer, font, title_y + float(CAPTION_FONT_SIZE) * 3.0 + 18.0)
+    if _busy:
+        _draw_busy_label(layer, font)
+
+# The word over the picture of the settings the player has left behind: the new picture is being
+# built, and the window is still answering.
+func _draw_busy_label(layer: Control, font: Font) -> void:
+    var area := _area()
+    if area.size.x <= 0.0 or area.size.y <= 0.0:
+        return
+    var centre := _square(area, map_size).get_center()
+    layer.draw_string(font, Vector2(0.0, centre.y + float(TITLE_FONT_SIZE) * 0.35),
+            tr("Generating relief..."), HORIZONTAL_ALIGNMENT_CENTER, layer.size.x, TITLE_FONT_SIZE,
+            BUSY_TEXT_COLOR)
+
+# What the picture cannot show itself: how much of the map the water takes and in which belt the
+# city stands. The two share one line, so the caption keeps its height.
+func _facts_caption() -> String:
+    var facts := _sea_caption()
+    var climate := _climate_caption()
+    if climate.is_empty():
+        return facts
+    return "%s · %s" % [facts, climate]
+
+# The belt of the city: the one number that says in which climate the player starts.
+func _climate_caption() -> String:
+    var belt := str(_picture.get("city_belt", ""))
+    if belt.is_empty():
+        return ""
+    return tr("Climate: %s") % _belt_label(belt)
+
+# The legend of the picture: a swatch of every belt and its name, then one row of the kinds that
+# own a colour whatever the belt. The land is tinted with the colours of the belts, so the player
+# has to know which colour is which; the hills and the mountains are that same colour lit by the
+# slope, so they need no swatch of their own. The names of the five belts do not fit on one line
+# of the panel, so they are laid out in rows of three.
+func _draw_legend(layer: Control, font: Font, first_baseline: float) -> void:
+    var belts: PackedByteArray = _picture.get("belts", PackedByteArray())
+    if belts.is_empty():
+        return
+    var labels: Array[String] = []
+    var swatches: Array[Color] = []
+    for code in range(ClimateLayout.BELTS.size()):
+        labels.append(_belt_label(ClimateLayout.BELTS[code]))
+        swatches.append(BELT_COLORS[code])
+    var row := 0
+    var index := 0
+    while index < labels.size():
+        var count := mini(LEGEND_ROW_ITEMS, labels.size() - index)
+        _draw_legend_row(layer, font, labels.slice(index, index + count),
+                swatches.slice(index, index + count),
+                first_baseline + float(row) * LEGEND_ROW_STEP)
+        index += count
+        row += 1
+    var kinds: Array[String] = [tr("Sea"), tr("Shallows"), tr("Beach"), tr("Lake"), tr("Wetland")]
+    var kind_colors: Array[Color] = [DEEP_SEA_COLOR, SHALLOW_SEA_COLOR, BEACH_COLOR, LAKE_COLOR,
+            WETLAND_COLOR]
+    _draw_legend_row(layer, font, kinds, kind_colors,
+            first_baseline + float(row) * LEGEND_ROW_STEP)
+
+func _draw_legend_row(layer: Control, font: Font, labels: Array[String], swatches: Array[Color],
+        baseline: float) -> void:
+    var widths: Array[float] = []
+    var total := 0.0
+    for label in labels:
+        var width := font.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1,
+                LEGEND_FONT_SIZE).x
+        widths.append(width)
+        total += LEGEND_SWATCH.x + LEGEND_GAP + width + LEGEND_GAP
+    var x := (layer.size.x - total + LEGEND_GAP) * 0.5
+    for offset in range(labels.size()):
+        layer.draw_rect(Rect2(Vector2(x, baseline - float(LEGEND_FONT_SIZE) + 1.0), LEGEND_SWATCH),
+                swatches[offset])
+        x += LEGEND_SWATCH.x + LEGEND_GAP
+        layer.draw_string(font, Vector2(x, baseline), labels[offset], HORIZONTAL_ALIGNMENT_LEFT, -1,
+                LEGEND_FONT_SIZE, CAPTION_COLOR)
+        x += widths[offset] + LEGEND_GAP
+
+# The name of a belt: the names the dropdown of the climate uses, and the polar belt, which is
+# not a choice of the player but a part of every map.
+func _belt_label(belt: String) -> String:
+    match belt:
+        ClimateLayout.TEMPERATURE_POLAR:
+            return tr("Tundra")
+        ClimateLayout.TEMPERATURE_COLD:
+            return tr("Boreal")
+        ClimateLayout.TEMPERATURE_MILD:
+            return tr("Temperate")
+        ClimateLayout.TEMPERATURE_SUBTROPICAL:
+            return tr("Subtropics")
+        ClimateLayout.TEMPERATURE_TROPICAL:
+            return tr("Tropics")
+    return belt
+
+# The share of the map the water takes: the one number that says what the sea settings do to
+# the world before the world is built.
+func _sea_caption() -> String:
+    var share: float = _picture.get("sea_share", 0.0)
+    if share <= 0.0:
+        return tr("No sea")
+    # A sea thinner than half a percent still takes room on the picture: the number must not
+    # read 0 while there is water.
+    return tr("Sea: %d%%") % maxi(1, roundi(share * 100.0))
+
+func _make_texture(picture: Dictionary) -> ImageTexture:
+    var grid: int = picture.get("grid", 0)
+    var cells: PackedByteArray = picture.get("cells", PackedByteArray())
+    var belts: PackedByteArray = picture.get("belts", PackedByteArray())
+    if grid <= 0 or cells.size() != grid * grid:
+        return null
+    var heights := PackedFloat32Array()
+    heights.resize(grid * grid)
+    for index in range(cells.size()):
+        heights[index] = _cell_height(cells[index])
+    var rgb := PackedByteArray()
+    rgb.resize(grid * grid * 3)
+    for index in range(cells.size()):
+        var color := _cell_color(cells[index], belts, heights, grid, index)
+        rgb[index * 3] = clampi(int(color.r * 255.0), 0, 255)
+        rgb[index * 3 + 1] = clampi(int(color.g * 255.0), 0, 255)
+        rgb[index * 3 + 2] = clampi(int(color.b * 255.0), 0, 255)
+    return ImageTexture.create_from_image(
+            Image.create_from_data(grid, grid, false, Image.FORMAT_RGB8, rgb))
+
+# The height a kind of cell stands at on the relief of the picture. The families are not a
+# heightfield of the world — the world has no heights — so the picture gives each family one, and
+# the slope between two neighbours is what the light shades.
+static func _cell_height(code: int) -> float:
+    match code:
+        CELL_MOUNTAIN:
+            return 2.0
+        CELL_HILL:
+            return 1.0
+        CELL_LAKE, CELL_SHALLOW_SEA:
+            return -1.0
+        CELL_DEEP_SEA:
+            return -2.0
+    return 0.0
+
+# The colour of a cell of the picture: the water and the sand keep colours of their own, and the
+# land is the colour of its belt lit by the slope of the relief around it. A wetland is flat and
+# dark instead: it is waterlogged ground, not a slope, and the light would read it as a hill.
+static func _cell_color(code: int, belts: PackedByteArray, heights: PackedFloat32Array,
+        grid: int, index: int) -> Color:
+    match code:
+        CELL_DEEP_SEA:
+            return DEEP_SEA_COLOR
+        CELL_SHALLOW_SEA:
+            return SHALLOW_SEA_COLOR
+        CELL_BEACH:
+            return BEACH_COLOR
+        CELL_LAKE:
+            return LAKE_COLOR
+    var belt := LAND_COLOR
+    if index < belts.size():
+        belt = BELT_COLORS[clampi(belts[index], 0, BELT_COLORS.size() - 1)]
+    if code == CELL_WETLAND:
+        return (belt * 0.85).lerp(WETLAND_COLOR, 0.35)
+    var x := index % grid
+    var y := index / grid
+    var gx := heights[y * grid + mini(x + 1, grid - 1)] - heights[y * grid + maxi(x - 1, 0)]
+    var gy := heights[mini(y + 1, grid - 1) * grid + x] - heights[maxi(y - 1, 0) * grid + x]
+    var normal := Vector3(-gx, -gy, 2.0).normalized()
+    var shade := clampf(0.62 + 0.55 * maxf(0.0, normal.dot(RELIEF_LIGHT)), 0.5, 1.18)
+    var color := belt * shade
+    if code == CELL_MOUNTAIN:
+        color = color.lerp(MOUNTAIN_ROCK, 0.30)
+    return color
+
+# A thin space between the thousands, so that a huge map does not read as one long number.
+static func _grouped(value: int) -> String:
+    var text := str(value)
+    var result := ""
+    var digits := 0
+    for index in range(text.length() - 1, -1, -1):
+        result = text[index] + result
+        digits += 1
+        if digits % 3 == 0 and index > 0:
+            result = "\u00A0" + result
+    return result

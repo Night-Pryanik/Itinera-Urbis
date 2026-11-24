@@ -1,0 +1,91 @@
+{
+  "resources": [
+    {
+      "id": "tea_field",
+      "price": 6,
+      "name": "Tea",
+      "type": "raw",
+      "category": "aux_plants",
+      "group": "stimulating_plants",
+      "subgroup": "stimulating_drinks",
+      "allowed_terrain": [ "mountain" ],
+      "allowed_cover": [ "none" ],
+      // The tea bush is a plant of the warm highlands: it grows on the mountains of
+      // the savanna and the tropics, never on the bare mountains of the cold belts.
+      "allowed_climate_zones": [ "savanna_dry", "savanna_wet", "tropical_dry", "tropical_wet" ],
+      "improved_by": "plantation",
+      "tech_required": "plantations",
+      "produces": { "tea_leaves": 10 },
+      "icon": "tea.png",
+      "color": [ 200, 255, 200 ]
+    },
+    {
+      "id": "coffee_field",
+      "price": 7,
+      "name": "Coffee",
+      "type": "raw",
+      "category": "aux_plants",
+      "group": "stimulating_plants",
+      "subgroup": "stimulating_drinks",
+      "allowed_terrain": [ "plain", "hill", "mountain" ],
+      "allowed_cover": [ "none" ],
+      "allowed_climate_zones": ["tropical_dry", "tropical_wet", "savanna_dry", "savanna_wet"],
+      "improved_by": "plantation",
+      "tech_required": "plantations",
+      "produces": { "coffee_beans": 10 },
+      "icon": "coffee.png",
+      "color": [ 200, 255, 200 ]
+    },
+    {
+      "id": "cacao_tree",
+      "price": 8,
+      "name": "Cocoa",
+      "type": "raw",
+      "category": "aux_plants",
+      "group": "stimulating_plants",
+      "subgroup": "stimulating_drinks",
+      "allowed_terrain": [ "plain", "hill", "mountain" ],
+      "allowed_cover": [ "tropical_rainforest", "tropical_rainforest_sparse" ],
+      "allowed_climate_zones": [ "tropical_dry", "tropical_wet" ],
+      "improved_by": "plantation",
+      "tech_required": "plantations",
+      "produces": { "cocoa_beans": 10 },
+      "icon": "cocoa.png",
+      "color": [ 200, 255, 200 ]
+    },
+    {
+      "id": "yerba_mate_tree",
+      "price": 9,
+      "name": "Yerba mate",
+      "type": "raw",
+      "category": "aux_plants",
+      "group": "stimulating_plants",
+      "subgroup": "stimulating_drinks",
+      "allowed_terrain": [ "plain", "hill" ],
+      "allowed_cover": [ "none" ],
+      "allowed_climate_zones": ["savanna_dry", "savanna_wet", "tropical_dry", "tropical_wet"],
+      "improved_by": "plantation",
+      "tech_required": "plantations",
+      "produces": { "yerba_mate_leaves": 10 },
+      "icon": "mate.png",
+      "color": [ 200, 255, 200 ]
+    },
+    {
+      "id": "rosella_field",
+      "price": 6,
+      "name": "Rosella",
+      "type": "raw",
+      "category": "aux_plants",
+      "group": "stimulating_plants",
+      "subgroup": "stimulating_drinks",
+      "allowed_terrain": [ "plain", "hill" ],
+      "allowed_cover": [ "none" ],
+      "allowed_climate_zones": ["savanna_dry", "savanna_wet", "tropical_dry", "tropical_wet"],
+      "improved_by": "plantation",
+      "tech_required": "plantations",
+      "produces": { "rosella_sepals": 10 },
+      "icon": "karkadeh.png",
+      "color": [ 200, 255, 200 ]
+    }
+  ]
+}

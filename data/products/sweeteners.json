@@ -1,0 +1,20 @@
+{
+  // Sweeteners are eaten but they are not the city's food supply: only the
+  // "food" category is pooled as Food in storage (data/categories.json), so a
+  // sweetener keeps its own shelf and is consumed through the @sweeteners rule
+  // (data/consumption/consumption_all.json).
+  "resources": [
+    { "id": "honey", "price": 16, "name": "Honey", "type": "product", "category": "sweeteners", "icon": "honey.png" },
+    { "id": "sugar", "price": 14, "name": "Sugar", "type": "product", "category": "sweeteners", "icon": "sugar.png" },
+    {
+      // The syrup of the boiled pods, not a crystallised sugar: the pod is
+      // boiled in water and the sweet pulp is strained out of it.
+      "id": "carob_syrup",
+      "price": 12,
+      "name": "Carob Syrup",
+      "type": "product",
+      "category": "sweeteners",
+      "icon": "carob_syrup.png"
+    }
+  ]
+}

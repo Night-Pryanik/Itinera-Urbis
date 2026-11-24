@@ -1,0 +1,100 @@
+{
+  "resources": [
+    {
+      "id": "basalt", "price": 4,
+      "name": "Basalt",
+      "type": "product",
+      "category": "construction_material",
+      "icon": "basalt.png"
+    },
+    { "id": "tuff", "price": 5, "name": "Tuff", "type": "product", "category": "construction_material", "icon": "tuff.png" },
+    {
+      "id": "sandstone", "price": 4,
+      "name": "Sandstone",
+      "type": "product",
+      "category": "construction_material",
+      "icon": "sandstone.png"
+    },
+    {
+      "id": "marble", "price": 14,
+      "name": "Marble",
+      "type": "product",
+      "category": "construction_material",
+      "icon": "marble.png"
+    },
+    {
+      "id": "granite", "price": 10,
+      "name": "Granite",
+      "type": "product",
+      "category": "construction_material",
+      "icon": "granite.png"
+    },
+    {
+      "id": "limestone", "price": 4,
+      "name": "Limestone",
+      "type": "product",
+      "category": "construction_material",
+      "icon": "limestone.png"
+    },
+    {
+      "id": "soapstone", "price": 12,
+      "name": "Soapstone",
+      "type": "product",
+      "category": "construction_material",
+      "icon": "soapstone.png"
+    },
+    {
+      // The product "Wood". It is produced in the "Sawmill" (sawmill) from
+      // wood by the recipe "Saw Boards" (crafts.json).
+      // Wood is the raw material for producing boards, not a building material.
+      // That is why it is not part of the "Processed Building Materials" group.
+      // Nevertheless, it can be used in craft recipes instead of boards.
+      // In the future it is planned to add the ability to use wood
+      // instead of boards when constructing buildings.
+    },
+    {
+      "id": "bricks", "price": 6,
+      "name": "Bricks",
+      "type": "product",
+      "category": "construction_material",
+      "icon": "bricks.png"
+    },
+    {
+      "id": "processed_building_stone", "price": 16,
+      "name": "Processed Building Stone",
+      "type": "product",
+      "category": "construction_material",
+      "unlock_tech": "masonry",
+      "icon": "processed_building_stone.png"
+    },
+    {
+      // The product "Boards". It is produced in the "Sawmill" (sawmill)
+      // from wood by the recipe "Saw Boards" (crafts.json).
+      "id": "planks", "price": 4,
+      "name": "Planks",
+      "type": "product",
+      "category": "construction_material",
+      "unlock_tech": "wood_processing",
+      "icon": "planks.png"
+    },
+    {
+      // Lime mixed with volcanic tuff or quartz sand; serves both as a processed masonry material
+      // and as a binding supply for the mason's workshop.
+      "id": "mortar", "price": 18,
+      "name": "Lime Mortar",
+      "type": "product",
+      "category": "construction_material",
+      "unlock_tech": "limestone_burning",
+      "icon": "mortar.png"
+    },
+    {
+      // Calcined gypsum or alabaster powder used for casting moulds, stucco and coagulating tofu.
+      "id": "plaster", "price": 14,
+      "name": "Gypsum Plaster",
+      "type": "product",
+      "category": "construction_material",
+      "unlock_tech": "limestone_burning",
+      "icon": "plaster.png"
+    }
+  ]
+}

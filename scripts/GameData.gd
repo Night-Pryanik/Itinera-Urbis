@@ -1,0 +1,2211 @@
+@tool
+extends Node
+
+const HUD_MESSAGE_NORMAL := 0
+const HUD_MESSAGE_IMPORTANT := 1
+
+# Separates the base recipe (or the base good) from the additional ingredients in a generated
+# id: "gold_jewelry+lazurite_ore". See "Additional ingredients of a recipe" below.
+const GENERATED_SEPARATOR := "+"
+
+var terrains: Dictionary = {}
+var covers: Dictionary = {}
+# The id of a VANILLA entity -> the icon file names it is drawn with, for the entities drawn
+# by several pictures. The mods of the running game may change the pictures of a record in
+# their own data; this map stays the one of the game itself, because it is what a tileset
+# addresses (see IconRegistry.set_entity_pictures).
+var vanilla_entities: Dictionary = {}
+var climate_zones: Dictionary = {} # id -> the climate zone (data/climate.json)
+var raw_resources: Dictionary = {}
+var products: Dictionary = {}
+var improvements: Dictionary = {}
+var crafts: Array = []
+# The additional ingredients of recipes (data/craft_extras.json), by the product they spend:
+# id -> { kind, amount, name, unlock_tech }. The id IS the product id — a good
+# either is an additional ingredient or it is not, there is no second registry of names.
+var craft_extras: Dictionary = {}
+# The kinds of the additional ingredients in the order of the file: [ { id, name } ]. The order
+# is what the radio buttons of the building panel follow.
+var craft_extra_kinds: Array = []
+# The recipes built on the fly by get_craft(), by id (see "Additional ingredients of a recipe").
+# The data is read once per load, so a generated recipe is as stable as a plain one; the cache
+# is dropped together with the data.
+var _craft_cache: Dictionary = {}
+var buildings: Array = []
+var categories: Array = []
+var technologies: Array = []
+var groups: Array = []
+var eras: Array = []
+var product_groups: Dictionary = {}
+var product_group_declarations: Dictionary = {} # id -> the products as written; the validator reads the nesting from here
+var product_group_names: Dictionary = {}
+var product_group_icons: Dictionary = {} # id -> the icon file name of the group ("" — not set)
+var modifiers: Dictionary = {}
+var price_modifiers: Dictionary = {} # resource_id -> { factor: the price multiplier }
+var special_actions: Dictionary = {} # id -> special action data
+var qualities: Dictionary = {} # data about resource quality levels
+var map_config: Dictionary = {} # the world map configuration (data/map_config.json)
+var professions: Dictionary = {} # id -> profession data (data/professions.json)
+var consumption_rules: Array = [] # consumption entries (data/consumption.json)
+var city_names: Array = [] # city name variants (locale/city_names_<code>.json)
+var game_balance: Dictionary = {} # the game balance (data/game_balance.json)
+# The specializations of the city (data/specializations.json): the branches in the order of the
+# file and the config block with the thresholds of the population (see CityData, "THE
+# SPECIALIZATIONS OF THE CITY").
+var specializations: Array = []
+var specialization_config: Dictionary = {}
+# The challenges of the era (data/challenges.json): the one-off tasks whose condition is checked in
+# the code (see ChallengeManager).
+var challenges: Array = []
+# The diversity bonuses of data/bonuses.json (see data_loader.gd).
+var diversity_bonuses: Array = []
+# The road levels (data/roads.json). roads_by_level — level -> level data:
+# a road network segment stores a level number, therefore exactly such an index is needed.
+var roads: Array = []
+var roads_by_level: Dictionary = {}
+# The fact that the data is already loaded. It is needed so as not to read data/*.json
+# twice in a row: the main menu checks the data with the validator
+# (scripts/data_validator.gd) on entry, and a new game loads them again.
+# An analogue of SaveManager.is_loaded.
+var data_loaded: bool = false
+# Where each entity came from: "collection:id" → { "file": String, "line": int }.
+# It is read by the runtime validator (scripts/data_validator.gd) in order to point a problem
+# at a specific file and line, and not make it look for the typo manually.
+var entity_sources: Dictionary = {}
+# The merged tree of data/*.json as it was read, before it is taken apart into the collections
+# above. The validator walks it for the field whitelist (data_validator._validate_schema):
+# the assembled collections do not keep every key the author wrote.
+var raw_data: Dictionary = {}
+# What the blacklists of the mods removed: collection -> {id: true} (data_loader
+# ._apply_blacklist). The entities are gone from the collections, and this is the only
+# memory of them — the validator tells a removed entity from a typo by it.
+var blacklisted: Dictionary = {}
+# The mods of the current game: their identifiers and the data folders to lay over the
+# vanilla data. ModManager pushes both here when the set changes (a new game, a loaded
+# save), so load_all_data() needs no knowledge of the mod storage.
+var active_mod_ids: Array = []
+var active_mod_dirs: Array = []
+
+# Emitted when the static game data is (re)loaded — a new game, a loaded save,
+# or a language change. UI that caches layout derived from the data (the tech tree)
+# must invalidate the cache so the next rebuild() recomputes it.
+signal data_reloaded
+
+func load_all_data():
+    var loader = load("res://scripts/data_loader.gd").new()
+    loader.load_all_data(active_mod_dirs)
+    _assign_from(loader)
+    loader.free()
+    data_loaded = true
+    _sync_icon_registry()
+    data_reloaded.emit()
+
+# The icons a mod ships live in its own folder, so the registry is told which mods are
+# running before anything asks it for a texture. The registry is looked up through the tree
+# root and not by name: an autoload declared before this one is not always resolved in this
+# script (the same reason mod_manager.gd looks GameData up this way).
+#
+# The pictures of the VANILLA entities go with it: the table of the tilesets is built from
+# them and from res://icons, so a file named after an entity is resolved through the game's
+# own data. A mod changes the pictures of an entity in its own data record, and a set has no
+# business with that (see mods/README.md §4.5).
+func _sync_icon_registry() -> void:
+    var loop := Engine.get_main_loop()
+    if not (loop is SceneTree):
+        return
+    var registry = (loop as SceneTree).root.get_node_or_null("IconRegistry")
+    if registry != null:
+        registry.set_entity_pictures(vanilla_entities)
+        registry.set_mod_dirs(active_mod_dirs)
+
+# A detached copy of the data: vanilla plus the given mods. It is what the mod list
+# validates when a checkbox is switched on — the check must see the game exactly
+# as the chosen set would build it, and it must not disturb the running game.
+#
+# The caller owns the returned node and must free() it.
+func build_probe(mod_dirs: Array):
+    var probe = get_script().new()
+    var loader = load("res://scripts/data_loader.gd").new()
+    loader.load_all_data(mod_dirs)
+    probe._assign_from(loader)
+    probe.active_mod_dirs = mod_dirs.duplicate()
+    # The collections are copies of the loader's data, not references to the node: the
+    # loader can go right away, the probe is freed by the caller.
+    loader.free()
+    return probe
+
+func _assign_from(loader) -> void:
+    terrains = loader.terrains
+    covers = loader.covers
+    vanilla_entities = loader.vanilla_entities
+    climate_zones = loader.climate_zones
+    raw_resources = loader.raw_resources
+    products = loader.products
+    improvements = loader.improvements
+    crafts = loader.crafts
+    craft_extras = loader.craft_extras
+    craft_extra_kinds = loader.craft_extra_kinds
+    _craft_cache.clear()
+    buildings = loader.buildings
+    categories = loader.categories
+    technologies = loader.technologies
+    groups = loader.groups
+    eras = loader.eras
+    product_groups = loader.product_groups
+    product_group_declarations = loader.product_group_declarations
+    product_group_names = loader.product_group_names
+    product_group_icons = loader.product_group_icons
+    modifiers = loader.modifiers
+    special_actions = loader.special_actions
+    qualities = loader.qualities
+    map_config = loader.map_config
+    professions = loader.professions
+    consumption_rules = loader.consumption_rules
+    city_names = loader.city_names
+    game_balance = loader.game_balance
+    specializations = loader.specializations
+    specialization_config = loader.specialization_config
+    challenges = loader.challenges
+    diversity_bonuses = loader.diversity_bonuses
+    roads = loader.roads
+    roads_by_level = loader.roads_by_level
+    entity_sources = loader.entity_sources
+    raw_data = loader.raw_data
+    blacklisted = loader.blacklisted
+    _build_live_maps()
+
+# The two directions of the "raw animal -> live herd product" link. A raw resource of an
+# animal (cows) produces the live_* product (live_cows) on the pastures; the breeding and
+# the trade need the id of the live product by the raw resource (the herd to start a new
+# breeding) and back (a purchased herd of an unknown species registers the species itself).
+# The link is derived from the data: the live product is the produced good of the category
+# "livestock", so the maps never diverge from data/resources and data/products.
+var live_product_of_raw: Dictionary = {}
+var raw_resource_of_live_product: Dictionary = {}
+
+func _build_live_maps() -> void:
+    live_product_of_raw.clear()
+    raw_resource_of_live_product.clear()
+    for res_id in raw_resources:
+        var raw: Dictionary = raw_resources[res_id]
+        for pid in raw.get("produces", {}):
+            if products.has(pid) and str(products[pid].get("category", "")) == "livestock":
+                live_product_of_raw[str(res_id)] = str(pid)
+                raw_resource_of_live_product[str(pid)] = str(res_id)
+
+func live_product_of(res_id: String) -> String:
+    return str(live_product_of_raw.get(res_id, ""))
+
+func raw_of_live_product(pid: String) -> String:
+    return str(raw_resource_of_live_product.get(pid, ""))
+
+# === TERRAIN FAMILIES AND CLIMATE ZONES ===
+#
+# A terrain of the map is a VARIETY of a family: the same plain is a tundra plain at the poles, a
+# boreal plain in the cold belt, a steppe or a prairie in the mild one, a savanna in the
+# subtropical one and a tropical plain near the equator (data/terrains/terrains.json → "family",
+# data/climate.json).
+# The family is what the rules mean by "a plain" where the climate does not matter: a resource
+# allowed on the terrain "plain" grows on all six varieties of it.
+#
+# The wetland family "swamp" works the same way — the swamp of a belt is a variety of it — with one
+# difference: its vegetation is the pool of the variety, not the one of the climate zone.
+
+# The relief families of the map: the land the Voronoi spreads, which the climate turns into the
+# varieties of its belt (a plain becomes a tundra plain, a boreal plain, a steppe, a prairie, a
+# savanna or a tropical plain).
+const RELIEF_FAMILIES := ["plain", "hill", "mountain"]
+
+# The families that are not a relief: the wetlands. The climate divides them into varieties too
+# (a tundra bog, a taiga bog, a carr, a reed bed for the swamp; a frozen mudflat and a reedy
+# shore for the marsh), and every rule that names "swamp" or "marsh" reaches all of its varieties.
+const WETLAND_FAMILIES := ["swamp", "marsh"]
+
+# The family of a terrain ("plain", "hill", "mountain", "swamp"), or an empty string for the water,
+# the marsh and the deserts, which are no variety of a family.
+func terrain_family(terrain_id: String) -> String:
+    var family := str(terrains.get(terrain_id, {}).get("family", ""))
+    if family != "":
+        return family
+    # A raw family name answers for itself: the generator always turns the relief into the varieties,
+    # but a default of `tile.get("terrain", "plain")`, a hand-built map and a mod's helper may name
+    # the family directly — and "a plain" is exactly what they mean.
+    return terrain_id if RELIEF_FAMILIES.has(terrain_id) or WETLAND_FAMILIES.has(terrain_id) else ""
+
+# Whether a terrain satisfies a reference of the data: the reference may name either a terrain id
+# or a family. Used by the rules that accept both (allowed_terrain, result_terrain, source_terrains).
+func terrain_matches(terrain_id: String, reference: String) -> bool:
+    if terrain_id == reference:
+        return true
+    var family := terrain_family(terrain_id)
+    return family != "" and family == reference
+
+# The zone of the map by its id. An empty dictionary — the zone is unknown (a data problem that
+# data_validator reports): the caller decides what to fall back to.
+func get_climate_zone(zone_id: String) -> Dictionary:
+    return climate_zones.get(zone_id, {})
+
+# The terrain a family of a zone is made of: "plain" + the tropical zone → "tropical_plain".
+# An empty string — the zone does not map that family (data_validator reports it).
+func zone_terrain(zone_id: String, family: String) -> String:
+    var zone: Dictionary = get_climate_zone(zone_id)
+    return str(zone.get("terrain", {}).get(family, ""))
+
+# The name of a hex as the player reads it: the terrain, which already carries its climate zone
+# ("Boreal, Plain", "Tropical, Hills" — data/terrains/terrains.json; the swamp and the mountains
+# are the same in every belt, so their name carries none), and the cover on top of it —
+# "Tropical, Hills, Tropical Forest". A hex without a cover keeps the bare name of the terrain.
+func terrain_display_name(terrain_id: String, cover_id: String = "none") -> String:
+    var name := str(terrains.get(terrain_id, {}).get("name", terrain_id))
+    if cover_id == "" or cover_id == "none":
+        return name
+    var cover_name := str(covers.get(cover_id, {}).get("name", cover_id))
+    # Russian writes the parts of such a list after the first in lowercase ("Тропики, холмы,
+    # тропический лес"), English keeps the case of every part ("Tropical, Hills, Tropical Forest"),
+    # so the rule follows the language of the game.
+    if TranslationServer.get_locale().begins_with("ru"):
+        cover_name = cover_name.to_lower()
+    return "%s, %s" % [name, cover_name]
+
+# === ROAD LEVELS (data/roads.json) ===
+#
+# The level is an integer, starting from 1. A road network segment stores exactly
+# the level number, therefore roads_by_level is the working index.
+
+# The data of the level by its number. An empty dictionary — if the level is not in the data:
+# the caller decides itself what to do (usually this is a data error, and it is caught by
+# data_validator.gd, and not by a silent substitution "to the level below").
+func get_road_by_level(level: int) -> Dictionary:
+    return roads_by_level.get(level, {})
+
+# The name of the level for the player (already translated by data_loader).
+func get_road_name(level: int) -> String:
+    var road: Dictionary = get_road_by_level(level)
+    if road.is_empty():
+        return str(level)
+    return str(road.get("name", level))
+
+# The base price of ONE segment of this level in labour, before the multipliers.
+func get_road_work_cost(level: int) -> int:
+    return int(get_road_by_level(level).get("work_cost", 0))
+
+# The "maximum speed" of the level: how many units of resource per second this
+# segment is able to carry (NOT the speed of units — see the header of data/roads.json).
+func get_road_max_speed(level: int) -> int:
+    return int(get_road_by_level(level).get("max_speed", 0))
+
+# Is the level unlocked for the player. A level without unlock_tech is always available; otherwise
+# the corresponding technology is needed. An unknown level is considered locked:
+# showing the player a road that is not in the data is worse than not showing it.
+#
+# The unlock_tech field in JSON is sometimes null (the trail has no technology), therefore
+# the value is read via _road_unlock_tech: `null or ""` in GDScript does NOT give
+# a string, and a naive is_empty() check would let null into CityData.
+func is_road_level_unlocked(level: int) -> bool:
+    var road: Dictionary = get_road_by_level(level)
+    if road.is_empty():
+        return false
+    var tech_id := _road_unlock_tech(level)
+    if tech_id.is_empty():
+        return true
+    return CityData.is_tech_unlocked(tech_id)
+
+# The id of the technology that unlocks the level; "" — the level is available from the start.
+func _road_unlock_tech(level: int) -> String:
+    var raw = get_road_by_level(level).get("unlock_tech", null)
+    if raw == null or not (raw is String):
+        return ""
+    return str(raw)
+
+# All the levels by ascending number — the order of selection in the control panel.
+# The sorting is needed, because in the JSON the levels go in order, and one cannot rely
+# on the order of the keys of a dictionary.
+func get_road_levels() -> Array:
+    var levels: Array = roads_by_level.keys()
+    levels.sort()
+    return levels
+
+# The researched levels by ascending — exactly those the player can choose.
+func get_unlocked_road_levels() -> Array:
+    var result: Array = []
+    for level in get_road_levels():
+        if is_road_level_unlocked(int(level)):
+            result.append(int(level))
+    return result
+
+# The most advanced researched level — the one that is offered by default.
+# There should not be a level in the data, but if the data files are not loaded yet,
+# we return 1: the trail is always available and nothing breaks.
+func get_max_unlocked_road_level() -> int:
+    var levels: Array = get_unlocked_road_levels()
+    if levels.is_empty():
+        return 1
+    return int(levels.back())
+
+# Returns a random city name from the pool of the current language.
+# If the list is empty or not loaded — it returns a neutral default name.
+func get_random_city_name() -> String:
+    if city_names.is_empty():
+        return tr("City")
+    return city_names[randi() % city_names.size()]
+
+# Returns the name of the group by its key (with or without the "@" symbol).
+# If the key is not a group, it returns an empty string.
+func get_product_group_name(key: String) -> String:
+    var gkey = key.trim_prefix("@")
+    if product_group_names.has(gkey):
+        return product_group_names[gkey]
+    return ""
+
+# The icon of the product group for the "Trade" card + the source of this icon.
+# The priority of the choice:
+#   1. the own "icon" field of the group (data/product_groups/) — the data
+#      author has explicitly chosen a pictogram for the group;
+#   2. the icon of the FIRST member of the group that has an icon set (the old order,
+#      backward compatibility for the groups without their own "icon").
+# The second branch is needed, because the first member of a group is often not a
+# representative of the group: for "Alcohol" it is beer, although the group is grain
+# beverages.
+#
+# It returns { "icon": String, "source_pid": String, "own": bool }:
+#   icon      — the icon file name ("" — there is no icon, the caller hides the node);
+#   source_pid — the id of the product whose icon is used ("" for the own icon of the group);
+#   own       — true, if the icon is set by the group itself. The card shows
+#               the source in the tooltip: without it the player does not understand why
+#               a jug is drawn for "Alcohol".
+func get_product_group_icon_info(key: String) -> Dictionary:
+    var gkey = key.trim_prefix("@")
+    if not product_groups.has(gkey):
+        return {"icon": "", "source_pid": "", "own": false}
+    var own_icon: String = str(product_group_icons.get(gkey, ""))
+    if not own_icon.is_empty():
+        return {"icon": own_icon, "source_pid": "", "own": true}
+    for pid in product_groups[gkey]:
+        var icon: String = str(products.get(pid, {}).get("icon", ""))
+        if not icon.is_empty():
+            return {"icon": icon, "source_pid": str(pid), "own": false}
+    return {"icon": "", "source_pid": "", "own": false}
+
+# Only the icon file name of the group — for the places where the source of the icon is not needed.
+func get_product_group_icon(key: String) -> String:
+    return str(get_product_group_icon_info(key).get("icon", ""))
+
+
+# Returns the list of the human-readable names of the products that are members of the group.
+# If the key is not a group, it returns an empty array.
+func get_product_group_member_names(key: String) -> Array:
+    var gkey = key.trim_prefix("@")
+    if not product_groups.has(gkey):
+        return []
+    var names = []
+    for prod_id in product_groups[gkey]:
+        names.append(get_product_name(prod_id))
+    return names
+
+# Is the resource key a group one (does it start with "@")?
+func is_group_key(key: String) -> bool:
+    return key.begins_with("@")
+
+# Formats the resource entry of a recipe: for the group keys it returns
+# "Group name - amount", otherwise "Product name - amount".
+func format_resource_input(key: String, amount: float) -> String:
+    if is_group_key(key):
+        var group_name = get_product_group_name(key)
+        if group_name != "":
+            return "%s - %d" % [group_name, int(amount)]
+        # The group was not found — we show the key without the "@"
+        return "%s - %d" % [key.trim_prefix("@"), int(amount)]
+    return "%s - %d" % [get_product_name(key), int(amount)]
+
+# Formats the name of the resource for display in the interface (the costs, the stocks).
+# For the group resources it returns only the name of the group (without the list of members).
+func format_resource_name(key: String) -> String:
+    if is_group_key(key):
+        var group_name = get_product_group_name(key)
+        if group_name != "":
+            return group_name
+        return key.trim_prefix("@")
+    # The sale pool can contain both the products and the raw resources.
+    var resource_data := get_resource_data(key)
+    return resolve_display_tags(str(resource_data.get("name", key)))
+
+func get_special_yield(product_id: String) -> Dictionary:
+    return products.get(product_id, {}).get("special_yield", {})
+
+# The products the city counts per craft cycle rather than per stockpile: the virtual yields
+# the goods panel does not read (science, the share of the collected tax, the seigniorage of
+# the struck coin). They are declared by the "virtual" field of data/products/pseudo.json and
+# are drawn as an amount of the recipe instead of an icon of the storage.
+func is_virtual_product(product_id: String) -> bool:
+    return bool(products.get(product_id, {}).get("virtual", false))
+
+# --- THE PRICES OF THE RESOURCES ---
+# The base price is set in the JSON (the "price" field of the resource/product). The final price
+# can change dynamically through the multipliers: for example, the famine raises the prices
+# of the food, an excess supply or an erosion of the market — lowers them. The multipliers
+# are multiplied by each other, the total = base × the product of all the active ones.
+# The details are in docs.md, the section "Resource prices".
+
+# Returns the data of the resource/product (raw material or product) by id.
+func get_resource_data(res_id: String) -> Dictionary:
+    if raw_resources.has(res_id):
+        return raw_resources[res_id]
+    if products.has(res_id):
+        return products[res_id]
+    return {}
+
+# The base price from the JSON (the "price" field). If the field is absent — 0.
+func get_base_price(res_id: String) -> float:
+    return float(get_resource_data(res_id).get("price", 0.0))
+
+# The product of all the active price multipliers of the resource (with no active ones — 1.0).
+func get_price_multiplier(res_id: String) -> float:
+    var total := 1.0
+    var mods: Dictionary = price_modifiers.get(res_id, {})
+    for factor in mods:
+        total *= float(mods[factor])
+    return total
+
+# The final price of the resource at the current moment: base × the active multipliers.
+func get_price(res_id: String) -> float:
+    return get_base_price(res_id) * get_price_multiplier(res_id)
+
+# A price in the tooltips: whole coins without a fractional part, the fractional ones (after the
+# dynamic market multipliers) — with one digit.
+func format_coins(value: float) -> String:
+    if value == floor(value):
+        return str(int(value))
+    return "%.1f" % value
+
+# Enables the price multiplier (factor — the name of the factor, e.g. "famine" or
+# "market_glut"). The effect is applied to a particular resource by its id; in order to
+# spread it to a group, apply it to all the members of the group.
+func apply_price_modifier(res_id: String, factor: String, multiplier: float):
+    if not price_modifiers.has(res_id):
+        price_modifiers[res_id] = {}
+    price_modifiers[res_id][factor] = multiplier
+
+# Disables one factor-multiplier of the price of the resource.
+func remove_price_modifier(res_id: String, factor: String):
+    if price_modifiers.has(res_id):
+        price_modifiers[res_id].erase(factor)
+        if price_modifiers[res_id].is_empty():
+            price_modifiers.erase(res_id)
+
+# Resets ALL the dynamic price multipliers (the prices return to the base ones).
+func clear_price_modifiers():
+    price_modifiers.clear()
+
+func get_building_additional_yield(building_id: String) -> Dictionary:
+    for building in buildings:
+        if building.get("id", "") == building_id:
+            return building.get("additional_yield", {})
+    return {}
+
+# Normalizes the additional_cost field into an array of dictionaries {resource: amount}.
+# It supports two forms:
+#   1) an object:         { "flour": 3.0, "wood": 10.0 }        → [ { "flour": 3.0, "wood": 10.0 } ]
+#   2) an array of batches: [ { "flour": 3.0 }, { "gold": 50.0 } ]  → as is
+# The logic of the AND-combination of the batches: the resources from EACH batch are needed at the same time.
+# It returns an empty array for null/invalid values.
+func parse_additional_cost(raw) -> Array:
+    var result: Array = []
+    if raw == null:
+        return result
+    if raw is Dictionary:
+        if raw.is_empty():
+            return result
+        return [raw]
+    if raw is Array:
+        for item in raw:
+            if item is Dictionary and not item.is_empty():
+                result.append(item)
+        return result
+    return result
+
+# --- ALTERNATIVE INGREDIENTS IN RECIPES ---
+#
+# The "resources" field of a recipe (data/crafts/*.json) allows a variant of the
+# ingredient slot by analogy with the prerequisites of the technologies and the
+# additional spawn conditions of the resources:
+#
+#   1) an object (the classical form):       { "iron": 20, "coal": 10 }
+#   2) an array of terms:                    [ {"iron": 20}, {"coal": 10} ]
+#   3) a term as an array of objects (OR):   [ [ {"iron": 20}, {"meteorite_iron": 20} ], {"coal": 10} ]
+#
+# A term is ALWAYS a dictionary (one key) or an array of dictionaries. An array of
+# dictionaries within one term means OR: ANY of the listed variants is enough.
+# The terms of the outer level (the element of the array) are joined by AND —
+# all of them are needed simultaneously. The keys of the dictionaries are allowed the
+# same as in the classical form: a product, a raw material, or an @-group.
+#
+# The normalized form is ALWAYS an array of OR-groups: [ [ {"iron": 20} ], [ {"coal": 10} ] ] —
+# the terms with one alternative remain one-element arrays, therefore the consumer
+# does not need to distinguish the forms. An empty array (a recipe without the
+# ingredients) is returned as an empty array.
+#
+# parse_craft_resources() — the normalizer itself; craft_alternatives() — a convenience
+# wrapper for the places where the OR-logic has to be applied manually (the container of
+# the craft, the planned demand, the trade pools of the towns).
+#
+# The amount of an OR-group is the FIRST variant's amount: the craft container asks
+# that many units and takes them from any variant of the group, so a variant cannot
+# carry a dose of its own — the variants of one group have to be written with EQUAL
+# amounts (all the OR-groups in the data are). Which variant is spent is decided by
+# the storage: within a tick they are consumed greedily in the order of the list,
+# and if the first one holds less than the tick asks, the remainder is taken from the
+# next, so a partial stock is never wasted — one batch may mix the variants.
+#
+# The normalization is deliberately in GameData and not in CraftContainer: besides the
+# container the alternatives are read by the planned demand, the trade pools of the
+# towns and the UI of the recipes — a single source of the form guarantees that they all
+# understand the data identically.
+
+# Brings the "resources" field of a recipe to the normalized form: an array of OR-groups.
+# See the comment above the function for the admissible forms.
+func parse_craft_resources(raw) -> Array:
+    var out: Array = []
+    if raw is Dictionary:
+        # The classical form: every key is an independent term.
+        for res_key in raw.keys():
+            var amount := int(raw[res_key])
+            if amount <= 0:
+                continue
+            out.append([_ingredient_variant(str(res_key), amount)])
+        return out
+    if not (raw is Array):
+        return out
+    for term in raw:
+        var variants: Array = []
+        if term is Dictionary:
+            variants = _ingredient_variants_of_dict(term)
+        elif term is Array:
+            # A term as an array: an explicit OR of the dictionaries.
+            # (A bare string in a term is unusable: it has no amount of its own;
+            # it is shown by the validator as a data format problem and is
+            # silently skipped here.)
+            for variant in term:
+                if variant is Dictionary:
+                    variants.append_array(_ingredient_variants_of_dict(variant))
+                    # A bare string has no amount of its own — we show it in the
+                    # validator window (see data_validator, kind "resource"), and
+                    # here we skip: a variant without the amount is unusable.
+                    pass
+        if variants.is_empty():
+            continue
+        out.append(variants)
+    return out
+
+# One dictionary of the term → an array of single-key variants (usually one element).
+# The empty/non-positive amounts are discarded: they are not an ingredient.
+func _ingredient_variants_of_dict(dict_term: Dictionary) -> Array:
+    var variants: Array = []
+    for res_key in dict_term.keys():
+        var amount := int(dict_term[res_key])
+        if amount <= 0:
+            continue
+        variants.append(_ingredient_variant(str(res_key), amount))
+    return variants
+
+# A single variant of the ingredient: { "key": "pid|@group", "amount": N }.
+func _ingredient_variant(key: String, amount: int) -> Dictionary:
+    return { "key": key, "amount": amount }
+
+# The alternatives of the ingredients of the recipe (the normalized form).
+# A convenience wrapper over parse_craft_resources for the consumers of the logic.
+func craft_alternatives(recipe: Dictionary) -> Array:
+    return parse_craft_resources(recipe.get("resources", null))
+
+# --- ADDITIONAL INGREDIENTS OF A RECIPE (the generated result) ---
+#
+# A recipe may accept additional ingredients: the player picks ONE concrete good of the declared
+# kinds in the building panel, and the result is a good that exists nowhere in the data. The
+# kinds are declared by the recipe ("extra_kinds": ["gemstone"]), the goods of those kinds — by
+# data/craft_extras.json.
+#
+# A good carries at most ONE addition: "gold_jewelry+lazurite_ore" is the base recipe plus that
+# good, and a good with two of them does not exist. The mechanic is not tied to any category —
+# a recipe of any good may accept an addition, be it jewelry, clothing or furniture. The chosen
+# good is a part of the recipe id, so a combination has one canonical id. get_craft() builds such
+# a recipe on the fly — the addition becomes an ordinary AND-term of "resources", the result
+# becomes a generated product id — so every consumer of a recipe (the container, the planned
+# demand and supply, the panel) needs no knowledge of the mechanic.
+#
+# The generated good is materialised into `products` on first use: it inherits the category, the
+# icon and the unlock technology of its base and joins every goods group the base is in — without
+# that the population would never consume it (data/consumption/*.json addresses goods by group)
+# and it would pile up in the storage forever.
+#
+# The name is the base name plus the addition in the nominative case and without a preposition:
+# "Gold Jewelry (+Lazurite)". The format is deliberately NOT translated: it is a plus sign and
+# punctuation only, which is what keeps it short in every language. The good inside it is the
+# data name and is already localized.
+#
+# The price pays for every part of the good in full, at the quality of the units that went into
+# it: the base at the level of the base and the addition at the level of the addition, and the
+# sum is multiplied by the synergy coefficient of data/game_balance.json. There is no per-good
+# premium — a cheap dye cannot make a garment dearer than the dye is worth, and the value of an
+# addition follows its own price in the data.
+#   (base price × its level multiplier + the addition per unit × its level multiplier)
+#   × (1 + craft_extra_synergy)
+# The addition is declared per craft cycle, so its price is divided by the output of the base
+# recipe. See "THE QUALITY KEY OF A STORAGE ROW" below for how the two levels are kept apart.
+
+# The recipe by id, or an empty dictionary. An id with GENERATED_SEPARATOR is a base recipe plus
+# the additional ingredient; any other id is looked up as always.
+func get_craft(recipe_id: String) -> Dictionary:
+    if _craft_cache.has(recipe_id):
+        return _craft_cache[recipe_id]
+    var recipe := find_craft(recipe_id)
+    if recipe.is_empty() and recipe_id.find(GENERATED_SEPARATOR) >= 0:
+        var parsed := parse_generated_id(recipe_id)
+        if not parsed.is_empty():
+            var base := find_craft(str(parsed["base"]))
+            if not base.is_empty():
+                recipe = build_recipe_with_extra(base, str(parsed["extra"]), recipe_id)
+    _craft_cache[recipe_id] = recipe
+    return recipe
+
+# The recipe exactly as it is written in the data (no generated form).
+func find_craft(recipe_id: String) -> Dictionary:
+    for c in crafts:
+        if str(c.get("id", "")) == recipe_id:
+            return c
+    return {}
+
+# Splits a generated id into the base and the addition. An empty dictionary — the id is not
+# generated (no separator, or more than one addition) or names an addition that does not exist.
+func parse_generated_id(pid: String) -> Dictionary:
+    var at := pid.find(GENERATED_SEPARATOR)
+    if at <= 0 or at >= pid.length() - 1:
+        return {}
+    var extra := pid.substr(at + 1)
+    if extra.find(GENERATED_SEPARATOR) >= 0 or not craft_extras.has(extra):
+        return {}
+    return {"base": pid.substr(0, at), "extra": extra}
+
+# The id of a good with the given addition. An empty or unknown addition — the base id itself.
+func make_generated_id(base: String, extra: String) -> String:
+    if extra.is_empty() or not craft_extras.has(extra):
+        return base
+    return base + GENERATED_SEPARATOR + extra
+
+# The base recipe with the addition merged into it: it is an AND-term of "resources" (the
+# alternatives of the base are kept as they are) and the result is the generated good.
+func build_recipe_with_extra(base: Dictionary, extra: String, recipe_id: String) -> Dictionary:
+    var base_result: Dictionary = base.get("result", {})
+    if base_result.is_empty() or extra.is_empty():
+        return base
+    var terms: Array = []
+    var raw = base.get("resources", null)
+    if raw is Dictionary:
+        for key in raw:
+            terms.append({str(key): int(raw[key])})
+    elif raw is Array:
+        terms = raw.duplicate(true)
+    terms.append({extra: int(craft_extras[extra].get("amount", 1))})
+
+    var result: Dictionary = {}
+    for pid in base_result:
+        var generated := make_generated_id(str(pid), extra)
+        materialise_generated(generated)
+        result[generated] = int(base_result[pid])
+
+    var out := base.duplicate(true)
+    out["id"] = recipe_id
+    out["resources"] = terms
+    out["result"] = result
+    # The pseudo-output of the "science" recipe is not a good and takes no addition.
+    out.erase("display_result")
+    out["extra"] = extra
+    out["name"] = get_generated_name(str(base_result.keys()[0]), extra)
+    return out
+
+# Creates the record of a generated good, if it is not there yet. Returns false for an id that
+# is not a generated good of a known base.
+func materialise_generated(pid: String) -> bool:
+    if products.has(pid):
+        return true
+    var parsed := parse_generated_id(pid)
+    if parsed.is_empty():
+        return false
+    var base_pid := str(parsed["base"])
+    if not products.has(base_pid):
+        return false
+    var extra := str(parsed["extra"])
+    var base: Dictionary = products[base_pid]
+    products[pid] = {
+        "id": pid,
+        "name": get_generated_name(base_pid, extra),
+        "type": "product",
+        "category": base.get("category", "other"),
+        "icon": base.get("icon", ""),
+        "unlock_tech": base.get("unlock_tech", ""),
+        "price": get_generated_price(base_pid, extra),
+        "base": base_pid,
+        "extra": extra,
+    }
+    _register_generated_in_groups(pid, base_pid)
+    return true
+
+# The name of a generated good: the base name plus the addition in brackets.
+func get_generated_name(base_pid: String, extra: String) -> String:
+    return "%s (+%s)" % [get_product_name(base_pid), get_extra_name(extra)]
+
+# The name of an additional ingredient as it is written inside the brackets: the override of the
+# registry if there is one (the stone is "Lazurite", not "Lazurite Ore"), otherwise the name of
+# the good itself.
+func get_extra_name(product_id: String) -> String:
+    var own := str(craft_extras.get(product_id, {}).get("name", ""))
+    if not own.is_empty():
+        return own
+    return get_product_name(product_id)
+
+func get_product_name(pid: String) -> String:
+    if products.has(pid):
+        return resolve_display_tags(str(products[pid].get("name", pid)))
+    if raw_resources.has(pid):
+        return resolve_display_tags(str(raw_resources[pid].get("name", pid)))
+    return pid
+
+# --- THE CITY IN A NAME OF A GOOD -------------------------------------------------
+#
+# A display name in data/*.json carries the tag "<city_name>" where the phrase has to read the name
+# of the city, and the phrase itself belongs to the data: "Cheese of <city_name>" in the source
+# language, «Сыр <city_name>» in the Russian one. The code substitutes the name and nothing else, so
+# every language keeps its own word order in the catalog and no rule of naming lives in the code.
+#
+# The substitution happens at display time, never when the files are read: the data is loaded before
+# the city is named (main_menu picks the name after GameData.load_all_data), and a loaded save knows
+# its name later still.
+const TAG_CITY_NAME := "<city_name>"
+
+func resolve_display_tags(text: String) -> String:
+    if not text.contains(TAG_CITY_NAME):
+        return text
+    var city_name := _city_name()
+    if city_name.is_empty():
+        return _text_left_by_an_unnamed_city(text)
+    return text.replace(TAG_CITY_NAME, city_name)
+
+func _city_name() -> String:
+    var city = get_node_or_null("/root/CityData")
+    return str(city.city_name) if city != null else ""
+
+# A city that has no name yet leaves the place of the tag empty, and the phrase is tidied after it:
+# the spaces collapse, a separator the tag hung on falls away, and the word that came to the front is
+# capitalised again. This state is not reachable in the game — the name is picked before the city
+# exists — it only keeps a raw "<city_name>" out of the interface.
+func _text_left_by_an_unnamed_city(text: String) -> String:
+    var out := " ".join(text.replace(TAG_CITY_NAME, " ").split(" ", false))
+    while out.length() > 0 and out[0] in " -–—:,;":
+        out = out.substr(1)
+    while out.length() > 0 and out[out.length() - 1] in " -–—:,;":
+        out = out.substr(0, out.length() - 1)
+    if out.length() > 0 and out[0] == out[0].to_lower():
+        out = out[0].to_upper() + out.substr(1)
+    return out
+
+# The label of a recipe: the name of the good it gives when that good is named after the city,
+# otherwise the name of the recipe. The city is a name of a good, not of a workshop, and the row of a
+# building has to say whose cheese the slot is aging.
+func get_craft_display_name(recipe: Dictionary) -> String:
+    var result = recipe.get("result", {})
+    if result is Dictionary and result.size() == 1:
+        for pid in result:
+            if is_named_by_city(str(pid)):
+                return get_product_name(str(pid))
+    return str(recipe.get("name", ""))
+
+# Whether a good carries the name of the city: a prestige good of a brand tier ("brand_of") or any
+# good whose own name in the data asks for the name of the city.
+func is_named_by_city(pid: String) -> bool:
+    if is_brand_good(pid):
+        return true
+    return str(products.get(pid, {}).get("name", "")).contains(TAG_CITY_NAME)
+
+# The prestige good a recipe works: its own result or one of its ingredients, when that good is the
+# brand of another ("brand_of"). A blade forged of the bar that carries the name of the city is the
+# work of the brand as much as the bar itself. An empty string means the recipe touches no prestige
+# good, so the fame of a good has nothing to say about it.
+func get_brand_product_of_craft(recipe: Dictionary) -> String:
+    var result = recipe.get("result", null)
+    if result is Dictionary:
+        for pid in result.keys():
+            if is_brand_good(str(pid)):
+                return str(pid)
+    for term in craft_alternatives(recipe):
+        if not (term is Array):
+            continue
+        for variant in term:
+            if not (variant is Dictionary):
+                continue
+            var key := str(variant.get("key", ""))
+            # A goods group ("@tools") names no single good: the brand of the city is worked by its
+            # own identifier or not at all.
+            if not key.begins_with("@") and is_brand_good(key):
+                return key
+    return ""
+
+func is_brand_good(pid: String) -> bool:
+    return not str(products.get(pid, {}).get("brand_of", "")).is_empty()
+
+# The icon file of a good or of a raw resource ("" — not set).
+func get_product_icon(pid: String) -> String:
+    if products.has(pid):
+        return str(products[pid].get("icon", ""))
+    if raw_resources.has(pid):
+        return str(raw_resources[pid].get("icon", ""))
+    return ""
+
+# The price of one unit at the ORDINARY quality of both parts. It is what a good with an
+# additional ingredient costs before any quality is taken into account, and it is the reference
+# the tooltips count the coefficients of the stages from.
+func get_generated_price(base_pid: String, extra: String) -> int:
+    return int(round(get_price_with_extra(base_pid, extra, "", "")))
+
+# The price of one unit of a good whose base and addition carry their own quality levels. The two
+# levels are independent: a fine garment with a common dye is worth more than the common one but
+# less than the same garment with a fine dye.
+func get_price_with_extra(base_pid: String, extra: String, base_qid: String, extra_qid: String) -> float:
+    var total := get_price(base_pid) * get_quality_price_multiplier(base_qid)
+    total += get_extra_price_part(base_pid, extra, extra_qid)
+    return total * get_craft_extra_synergy_multiplier()
+
+# What the addition costs per ONE unit of the result at the ordinary level of quality. The addition
+# is declared per craft cycle, while the price is per unit — hence the division by the output of
+# the base recipe.
+func get_extra_base_price_part(base_pid: String, extra: String) -> float:
+    if extra.is_empty():
+        return 0.0
+    var batch := float(_generated_batch(base_pid))
+    var record: Dictionary = craft_extras.get(extra, {})
+    return get_price(extra) * float(record.get("amount", 1)) / batch
+
+# What the addition costs per ONE unit of the result at its own quality level.
+func get_extra_price_part(base_pid: String, extra: String, extra_qid: String) -> float:
+    return get_extra_base_price_part(base_pid, extra) * get_quality_price_multiplier(extra_qid)
+
+# The coefficient that makes a good with an additional ingredient worth more than its parts sold
+# apart (data/game_balance.json, craft_extra_synergy).
+func get_craft_extra_synergy_multiplier() -> float:
+    return 1.0 + float(game_balance.get("craft_extra_synergy", 0.0))
+
+# How many units of the good one craft cycle of its own recipe yields. The recipe is looked up by
+# the product id (the recipe and its product share the name for the crafted goods); a good with
+# no recipe of its own is priced as if it were produced one unit at a time.
+func _generated_batch(base_pid: String) -> int:
+    var produced := int(find_craft(base_pid).get("result", {}).get(base_pid, 0))
+    return maxi(1, produced)
+
+# How much more expensive a generated good is than its plain base at the ordinary quality of
+# both: 86.25 / 20 = 4.31. It is the actual ratio of the two prices — the base, the addition and
+# the synergy — and not a number declared anywhere. The player compares the good with the
+# addition against the plain one, and the ratio is the answer to that comparison.
+func get_generated_price_multiplier(pid: String) -> float:
+    var parsed := parse_generated_id(pid)
+    if parsed.is_empty():
+        return 1.0
+    var base_price := get_price(str(parsed["base"]))
+    if base_price <= 0.0:
+        return 1.0
+    return get_price_for_quality(pid, "") / base_price
+
+# The row that explains the price of a good with an additional ingredient in the tooltips of the
+# "Resources" and "Trade" tabs:
+#   { "glyph": "+", "tail": " = x4.31 (20 → 86)", "text": "+ = x4.31 (20 → 86)" }
+# The glyph is the plus sign that opens the addition in the name ("Wool Clothes (+Woad)"), so the
+# row reads as the price of that bracket. The two prices are the ORDINARY prices of the plain and
+# the generated good — the compact form of the "Trade" tab, which lists many members at once; the
+# full chain of levels is in the row tooltip (format_price_build_up_rows). An empty dictionary for
+# a plain good: nothing to explain.
+func format_extra_price_row(pid: String) -> Dictionary:
+    var parsed := parse_generated_id(pid)
+    if parsed.is_empty():
+        return {}
+    # The same unrounded price the build-up rows count their coefficients from, so that the two
+    # tabs cannot quote two different coefficients for one good.
+    var price := get_price_for_quality(pid, "")
+    var base_price := get_price(str(parsed["base"]))
+    if price <= 0.0 or base_price <= 0.0:
+        return {}
+    var tail := " = x%.2f (%d → %d)" % [
+        price / base_price, int(round(base_price)), int(round(price))]
+    return {"glyph": GENERATED_SEPARATOR, "tail": tail, "text": GENERATED_SEPARATOR + tail}
+
+# The generated good joins every goods group of its base: a group is how the rest of the game
+# addresses "any jewelry", and a jewelry with an addition is jewelry.
+func _register_generated_in_groups(pid: String, base_pid: String) -> void:
+    for group_key in product_groups:
+        var members: Array = product_groups[group_key]
+        if base_pid in members and not (pid in members):
+            members.append(pid)
+
+# The generated variants of a good: the goods with an additional ingredient whose base it is,
+# sorted. A generated good IS its base with an addition, so a rule that names the plain good
+# ("the city sells gold jewelry to a town") applies to the generated one too.
+func get_generated_variants(base_pid: String) -> Array:
+    var out: Array = []
+    for pid in products:
+        if str(products[pid].get("base", "")) == base_pid:
+            out.append(str(pid))
+    out.sort()
+    return out
+
+# The units of a key the storage holds: a group — the sum over its members, a concrete good —
+# itself plus its generated variants. This is the amount a town deal may draw on: a contract on
+# the plain good must not tear while the shelves are full of the generated one.
+func get_good_stock(key: String, storage: Dictionary) -> int:
+    if is_group_key(key):
+        return int(get_storage_amount(key, storage))
+    var total := int(storage.get(key, 0))
+    for pid in get_generated_variants(key):
+        total += int(storage.get(pid, 0))
+    return total
+
+# The additions a recipe offers, grouped by kind in the order of data/craft_extras.json:
+#   [ { "kind": "gemstone", "name": "Gemstones",
+#       "items": [ { "product", "name", "icon", "amount", "in_stock", "selectable" } ] } ]
+# The technology gate is the caller's business: GameData does not know what is researched.
+#
+# in_stock / selectable are the state of the radio button. A good that is not in the warehouse
+# cannot be chosen — the cycle would only stall waiting for it. It stays in the list, so that the
+# player sees what the recipe accepts and what is missing. The addition that is ALREADY chosen
+# stays selectable even with an empty shelf: otherwise a good that has run out could not be
+# unchosen, and the slot would be stuck with it.
+func get_recipe_extra_options(recipe_id: String) -> Array:
+    var kinds: Array = get_craft(recipe_id).get("extra_kinds", [])
+    var out: Array = []
+    if kinds.is_empty():
+        return out
+    var chosen := str(parse_generated_id(recipe_id).get("extra", ""))
+    for kind_entry in craft_extra_kinds:
+        var kind_id := str(kind_entry.get("id", ""))
+        if not (kind_id in kinds):
+            continue
+        var items: Array = []
+        for product_id in craft_extras:
+            var record: Dictionary = craft_extras[product_id]
+            if str(record.get("kind", "")) != kind_id:
+                continue
+            var in_stock := int(CityData.city_storage.get(str(product_id), 0))
+            items.append({
+                "product": str(product_id),
+                "name": get_extra_name(str(product_id)),
+                "icon": get_product_icon(str(product_id)),
+                "amount": int(record.get("amount", 1)),
+                "unlock_tech": str(record.get("unlock_tech", "")),
+                "in_stock": in_stock,
+                "selectable": in_stock > 0 or str(product_id) == chosen,
+            })
+        if not items.is_empty():
+            out.append({
+                "kind": kind_id,
+                "name": str(kind_entry.get("name", kind_id)),
+                "items": items,
+            })
+    return out
+
+# Is the ingredient key available in the pool set (Dictionary of the id → true)?
+# The mirror of TownEconomy.is_available — in GameData, so that the normalization of the
+# alternatives does not depend on the trade module. The group key is available, if at least
+# ONE member is in the pool (the same semantics as in get_storage_amount).
+func is_key_available(key: String, pool: Dictionary) -> bool:
+    if pool.has(key):
+        return true
+    if not is_group_key(key):
+        return false
+    for member in product_groups.get(key.substr(1), []):
+        if pool.has(str(member)):
+            return true
+    return false
+
+# How many units of the resource/group are there in the storage?
+# For an ordinary key (for example, "flour") it returns storage.get(key, 0).
+# For a group key (for example, "@millable_grains") — the sum over all the members
+# of the group from product_groups. This is "any product from the group", as in the recipes.
+# If the group is not found — it returns 0.
+func get_storage_amount(key: String, storage: Dictionary) -> float:
+    if is_group_key(key):
+        var group_key = key.trim_prefix("@")
+        var group_products = product_groups.get(group_key, [])
+        if group_products.is_empty():
+            return 0.0
+        var total := 0.0
+        for prod_id in group_products:
+            total += float(storage.get(prod_id, 0))
+        return total
+    return float(storage.get(key, 0))
+
+# --- THE HELPERS FOR WORKING WITH THE QUALITY OF THE RESOURCES ---
+# The data is loaded from data/qualities.json into the qualities field.
+
+# Returns the list of the ids of the quality levels in the order from the worst to the best.
+func get_quality_levels() -> Array:
+    var levels = []
+    for q in qualities.get("quality_levels", []):
+        if q is Dictionary and q.has("id"):
+            levels.append(q["id"])
+    return levels
+
+# Returns the data of the quality level by id (or an empty dictionary).
+func get_quality_data(quality_id: String) -> Dictionary:
+    for q in qualities.get("quality_levels", []):
+        if q is Dictionary and q.get("id", "") == quality_id:
+            return q
+    return {}
+
+# Returns the human-readable name of the quality level.
+func get_quality_name(quality_id: String) -> String:
+    return get_quality_data(quality_id).get("name", quality_id)
+
+# Returns the numeric weight of the quality level (for the weighted average).
+func get_quality_value(quality_id: String) -> int:
+    return int(get_quality_data(quality_id).get("value", 1))
+
+# Returns the string of stars for the quality level (for example, "★★★").
+func get_quality_stars(quality_id: String) -> String:
+    return get_quality_data(quality_id).get("stars", "")
+
+# --- THE COLOUR OF THE QUALITY LEVEL (data/qualities.json, the color field) ---
+# The colour is set as an [R, G, B] array in the range 0…255 — the same entry format as for
+# the covers (data/covers.json), the improvements and the resources. It paints the stars in the tooltip
+# of the quality breakdown, the rows of the price ladder in the row tooltip, and the percentages of the share
+# of the level in the row of the list (resources_tab._update_quality_label).
+# A soft default: the color field is absent (old data) or it is not an array of three
+# numbers — a light grey, so that the interface does not go haywire on broken data.
+const QUALITY_COLOR_FALLBACK := Color(0.8, 0.8, 0.8)
+
+func get_quality_color(quality_id: String) -> Color:
+    var c = get_quality_data(quality_id).get("color", null)
+    if c is Array and c.size() == 3:
+        return Color(float(c[0]) / 255.0, float(c[1]) / 255.0, float(c[2]) / 255.0)
+    return QUALITY_COLOR_FALLBACK
+
+# --- THE PRICE BY QUALITY (data/qualities.json, the price_multiplier field) ---
+# The multiplier is multiplied by the price of one unit of the product: the better quality is more expensive.
+# A multiplier, and not a fixed addition in coins — so that the markup is
+# proportional over the whole price scale (1…150), see the header of qualities.json.
+
+# The price multiplier of the quality level. For "common", an unknown id and any
+# level without the field — 1.0 (a soft default: the quality does not break the price, even
+# if the field was forgotten or the data is old).
+func get_quality_price_multiplier(quality_id: String) -> float:
+    var m = float(get_quality_data(quality_id).get("price_multiplier", 1.0))
+    if m <= 0.0:
+        return 1.0
+    return m
+
+# --- THE QUALITY KEY OF A STORAGE ROW ---
+# The storage keeps a breakdown {quality key: count}. For a plain good the key IS the level of its
+# units ("fine"). A good with an additional ingredient carries TWO levels — the base part and the
+# addition — because its price is the sum of the parts, each at its own level, and "fine base +
+# common dye" and "fine base + fine dye" are different units at different prices. Its key is
+# "base|extra" ("fine|common").
+#
+# The level of the good ITSELF — what the craft rule gives the result and what the rest of the
+# game reads (consumption, the breakdown tooltips) — is derived from the pair by the very rule the
+# container applies to the consumed ingredients: the base level, raised by the addition by
+# one level at most and never lowered by it. So the pair is the whole truth about a unit, and the
+# level is a reading of it.
+#
+# A key of such a good whose two levels are equal is shortened to the plain level: such a
+# unit costs exactly what the plain good of that level costs.
+const QUALITY_KEY_SEPARATOR := "|"
+
+# The key of the units of a good by the levels of its parts. An empty extra level — a plain good.
+func make_quality_key(base_qid: String, extra_qid: String = "") -> String:
+    if extra_qid.is_empty() or extra_qid == base_qid:
+        return base_qid
+    return base_qid + QUALITY_KEY_SEPARATOR + extra_qid
+
+# The two levels of a key: [base, extra]. The extra is "" for a plain good.
+func split_quality_key(quality_key: String) -> Array:
+    var at := quality_key.find(QUALITY_KEY_SEPARATOR)
+    if at <= 0 or at >= quality_key.length() - 1:
+        return [quality_key, ""]
+    return [quality_key.substr(0, at), quality_key.substr(at + 1)]
+
+# The level of the good itself (see the header of the block): the base level of a good with an
+# additional ingredient, raised by the level of that addition by one at most.
+func quality_key_level(quality_key: String) -> String:
+    var parts := split_quality_key(quality_key)
+    var base_qid := str(parts[0])
+    var extra_qid := str(parts[1])
+    if extra_qid.is_empty():
+        return base_qid
+    var levels := get_quality_levels()
+    if levels.is_empty():
+        return base_qid
+    var base_index := _level_index(base_qid, levels)
+    var extra_index := _level_index(extra_qid, levels)
+    return str(levels[maxi(base_index, mini(extra_index, base_index + 1))])
+
+# The index of a level in the ordered list (worst first). An unknown id falls back to the worst.
+func _level_index(quality_id: String, levels: Array) -> int:
+    return maxi(0, levels.find(quality_id))
+
+# The current price of one unit of the product taking the quality into account. A plain good is
+# the price (base × the dynamic market multipliers) × the quality multiplier. A good with an
+# additional ingredient is the sum of its parts at the two levels of the key (see
+# get_price_with_extra) — its quality is already inside that sum and is NOT applied a second
+# time. The fractional result: the rounding is done by the caller (WHOLE coins are needed, see
+# get_price_breakdown_for_quality).
+func get_price_for_quality(res_id: String, quality_key: String) -> float:
+    var parts := split_quality_key(quality_key)
+    var parsed := parse_generated_id(res_id)
+    if parsed.is_empty():
+        return get_price(res_id) * get_quality_price_multiplier(str(parts[0]))
+    var base_qid := str(parts[0])
+    var extra_qid := str(parts[1])
+    if extra_qid.is_empty():
+        extra_qid = base_qid
+    return get_price_with_extra(str(parsed["base"]), str(parsed["extra"]), base_qid, extra_qid)
+
+# The breakdown of the price of one unit of the product by quality for the tooltip:
+#   { "base": int, "multiplier": float, "total": int }
+# The base (the current price with the dynamic market multipliers) is rounded to a
+# whole number ONCE, the total is round(base × the quality multiplier). All the numbers in
+# the tooltip are whole, except for the multiplier itself — it is shown as a separate
+# addend: "Price: 4 * 1.30 (★★) = 5".
+# A good with an additional ingredient has no single quality multiplier — its price is a sum of
+# parts — so the multiplier reported for it is the ratio of the two prices, which is what the row
+# reads as.
+# For a product without a price (for example, the pseudo-resource science) — zeros.
+func get_price_breakdown_for_quality(res_id: String, quality_key: String) -> Dictionary:
+    var base := int(round(get_price(res_id)))
+    if base <= 0:
+        return {"base": 0, "multiplier": 1.0, "total": 0}
+    if parse_generated_id(res_id).is_empty():
+        var mult := get_quality_price_multiplier(str(split_quality_key(quality_key)[0]))
+        return {"base": base, "multiplier": mult, "total": int(round(float(base) * mult))}
+    var price := get_price_for_quality(res_id, quality_key)
+    return {"base": base, "multiplier": price / float(base), "total": int(round(price))}
+
+# The tail of the row of the price of the quality level for the row tooltip of the "Resources" tab —
+#   " = x1.30 = 5", that is, everything EXCEPT the stars.
+# The stars are returned separately not for the sake of beauty, but because of the design
+# requirement: in the row tooltip the stars are painted in the colour of the level (data/qualities.json, color), and
+# the price calculation itself — in the price colour of the palette (ui_helpers.price_text_color()), and by one Label with
+# one colour for the whole row this cannot be expressed.
+# An empty string if there is nothing to show: the product has no price or the level
+# is not in the scale (without the stars there is nothing to assemble the row from).
+func format_quality_price_tail(res_id: String, quality_id: String) -> String:
+    var parts := get_quality_price_tail_parts(res_id, quality_id)
+    if parts.is_empty():
+        return ""
+    return str(parts["prefix"]) + str(parts["amount"])
+
+# The two halves of the ladder tail: the coefficient part and the amount itself. They are
+# returned apart because the tooltip paints the amount in its own colour, and the boundary
+# must come from the code that formats the row rather than from parsing the glued tail.
+#   { "prefix": " = x1.30 = ", "amount": "5" }
+# An empty dictionary if there is nothing to show (no price, no such level).
+func get_quality_price_tail_parts(res_id: String, quality_id: String) -> Dictionary:
+    if quality_id.is_empty() or not get_quality_levels().has(quality_id):
+        return {}
+    var d = get_price_breakdown_for_quality(res_id, quality_id)
+    if int(d["total"]) <= 0:
+        return {}
+    return {
+        "prefix": " = x%s = " % "%.2f" % float(d["multiplier"]),
+        "amount": str(int(d["total"])),
+    }
+
+# The row of the price of the quality level for the row tooltip of the "Resources" tab:
+#   "★★ = x1.30 = 5"
+# It is assembled from the stars of the level and the tail above — both parts are taken from the data, so
+# that the text of the row and its parts (the stars separately, the calculation separately) cannot
+# diverge.
+# The "Price:" label in the row is not needed: the level is already named by the stars, and above
+# the block of the ladder there is already the base "Price: N" of the same product.
+# The row is assembled for ANY level of the scale, including the lowest one
+# ("★ = x1.00 = 4"): the ladder is read as one table, where the multiplier is visible
+# for each level, and not starting from the middle. Previously the bottom level
+# was discarded, and for a storage where only the common quality lies, there was no block
+# at all — it was not visible that the multiplier 1.0 is also a multiplier.
+# An empty string if there is nothing to show: the product has no price or the level
+# is not in the scale (without the stars there is nothing to assemble the row from).
+func format_quality_price_line(res_id: String, quality_id: String) -> String:
+    var tail := format_quality_price_tail(res_id, quality_id)
+    if tail == "":
+        return ""
+    return get_quality_stars(quality_id) + tail
+
+# The prices by the quality levels that are REALLY in the storage, for the row tooltip
+# of the "Resources" tab. Only the levels that are present in
+# quality_breakdown ({quality_id: count} — the breakdown of the storage from
+# CityData.city_quality_detail, see CityData.get_quality_breakdown): the price of the
+# "exceptional" level, which is not in the storage, is pointless to show — that
+# is misleading.
+# The levels are output from the worst to the best (the order of data/qualities.json).
+# It returns an array of records:
+#   { "qid":   quality_id,
+#     "stars": "★★",        ← the stars of the level, painted in its colour
+#     "tail":  " = x1.30 = 5" ← the price calculation itself, painted in gold,
+#     "amount": "5",        ← the amount inside the tail, painted apart from the calculation
+#     "text":  "★★ = x1.30 = 5" }
+# The stars and the tail are returned SEPARATELY, because the row tooltip paints them in different
+# colours (the stars — the colour of the level from data/qualities.json, the calculation — gold), and
+# text remains a whole ready row for those whom one colour is enough. The amount is returned apart
+# for the same reason: the row tooltip paints the number itself in its own colour.
+# The caller needs qid in order to paint the stars in the colour of the level
+# (get_quality_color) — in this way the text of the row and its colour cannot diverge.
+# An empty array: the product has no price (for example, science) or the id is not set.
+func format_quality_price_scale_rows(res_id: String, quality_breakdown: Dictionary = {}) -> Array:
+    var rows: Array = []
+    if res_id.is_empty() or get_base_price(res_id) <= 0.0:
+        return rows
+    var totals := quality_level_totals(quality_breakdown)
+    for qid in get_quality_levels():
+        # The level is not in the storage — the price is not shown (including count == 0).
+        if int(totals.get(qid, 0)) <= 0:
+            continue
+        var parts := get_quality_price_tail_parts(res_id, str(qid))
+        if parts.is_empty():
+            continue
+        var stars := get_quality_stars(str(qid))
+        var tail := str(parts["prefix"]) + str(parts["amount"])
+        rows.append({"qid": str(qid), "stars": stars, "tail": tail,
+                "amount": str(parts["amount"]), "text": stars + tail})
+    return rows
+
+# The stages of the price of one unit of a generated good at one quality key. The price is a SUM
+# of parts, and the row tooltip has to show each part apart from the total (see
+# format_price_build_up_rows):
+#   base      — the price of the PLAIN good at the ordinary level, in coins;
+#   quality   — the base part at the level of the base of the key;
+#   additions — the addition at the level of the additions of the key;
+#   synergy   — the sum of the two after the synergy coefficient;
+#   total     — what the unit really costs.
+# Each stage is { "price": coins, "mult": the coefficient against the base }; the addition also
+# carries "base" (its price per unit of the result at the ordinary level) and "quality_mult" (its
+# own quality coefficient), because the price of the addition follows its own price in the data and
+# not the price of the base. The coefficients of the two parts ADD UP to the coefficient of their
+# sum: the price of such a good is a sum of parts, not a chain of surcharges, so there is nothing to
+# multiply.
+# An empty dictionary for a plain good: it has a single stage, and its ladder row IS the price.
+func get_price_stages(pid: String, quality_key: String) -> Dictionary:
+    var parsed := parse_generated_id(pid)
+    if parsed.is_empty():
+        return {}
+    var base_pid := str(parsed["base"])
+    var base_price := get_price(base_pid)
+    if base_price <= 0.0:
+        return {}
+    var parts := split_quality_key(quality_key)
+    var base_qid := str(parts[0])
+    var extra_qid := str(parts[1])
+    if extra_qid.is_empty():
+        extra_qid = base_qid
+    var quality_price := get_price(base_pid) * get_quality_price_multiplier(base_qid)
+    var extras_base := get_extra_base_price_part(base_pid, str(parsed["extra"]))
+    var extras_quality_mult := get_quality_price_multiplier(extra_qid)
+    var extras_price := extras_base * extras_quality_mult
+    var synergy := get_craft_extra_synergy_multiplier()
+    var total := (quality_price + extras_price) * synergy
+    return {
+        "base": base_price,
+        "quality": {"price": quality_price, "mult": quality_price / base_price},
+        "additions": {
+            "price": extras_price, "mult": extras_price / base_price,
+            "base": extras_base, "quality_mult": extras_quality_mult,
+        },
+        "synergy": {"price": total, "mult": synergy},
+        "total": {"price": total, "mult": total / base_price},
+    }
+
+# The rows of the price build-up of a generated good for the row tooltip of the "Resources" tab —
+# the ladder drawn under "Base prices: good: X, addition: Y", one block per quality key that lies
+# in the storage:
+#   [ { "kind": "quality",   "qid": "fine",    "marker": "★★",  "tail": "x1.30" },
+#     { "kind": "additions", "qid": "perfect", "marker": "★★★", "tail": "x2.30" },
+#     { "kind": "synergy",   "qid": "",        "marker": "",    "tail": "x1.15" },
+#     { "kind": "total",     "qid": "fine",    "marker": "★★",
+#       "tail": "(16 x 1.30 + 5 x 2.30) x 1.15 ≈ 37" } ]
+# The marker is the level of the units the coefficient belongs to; the craft coefficient has no
+# level of its own, so its row carries no marker.
+# The keys, not the levels, drive the rows: a fine garment with a common dye and the same garment
+# with a fine dye are two different units at two different prices, and each gets its own block.
+# Every row carries the coefficient that multiplies the price of its part: the level coefficient of
+# the base, the quality coefficient of the addition (the addition is a good of its own, so its price
+# grows with its own quality) and the coefficient of the recipe. The total row cannot express the
+# price as one coefficient, so it spells the formula out: the price of the base at its level plus
+# the price of the addition at its own level, times the craft coefficient. The coefficients are
+# rounded for display, so the result is approximate; the player can check it with a calculator.
+# The rows carry no " = " prefix: the UI glues the calculation after the name of the stage.
+# An empty array for a plain good — its ladder row already IS the price at that level.
+func format_price_build_up_rows(pid: String, quality_breakdown: Dictionary) -> Array:
+    var out: Array = []
+    if parse_generated_id(pid).is_empty():
+        return out
+    for key in _quality_keys_in_order(quality_breakdown):
+        var stages := get_price_stages(pid, str(key))
+        if stages.is_empty():
+            continue
+        var parts := split_quality_key(str(key))
+        var base_qid := str(parts[0])
+        var extra_qid := str(parts[1])
+        if extra_qid.is_empty():
+            extra_qid = base_qid
+        out.append(_price_stage_row("quality", base_qid, float(stages["quality"]["mult"])))
+        out.append(_price_stage_row("additions", extra_qid,
+                float(stages["additions"]["quality_mult"])))
+        out.append(_price_stage_row("synergy", "", float(stages["synergy"]["mult"])))
+        out.append(_price_total_row(quality_key_level(str(key)), stages))
+    return out
+
+# The quality keys of a breakdown that hold units, from the worst to the best: by the level of the
+# good itself first, so that the blocks of the tooltip follow the ladder. Within one level the
+# order is by the level of the base and then by the level of the additions — it is stable, so the
+# rows do not jump when the storage changes.
+func _quality_keys_in_order(quality_breakdown: Dictionary) -> Array:
+    var levels := get_quality_levels()
+    var keys: Array = []
+    for key in quality_breakdown:
+        if int(quality_breakdown[key]) <= 0:
+            continue
+        keys.append(str(key))
+    keys.sort_custom(func(a, b):
+        var a_level := _level_index(quality_key_level(a), levels)
+        var b_level := _level_index(quality_key_level(b), levels)
+        if a_level != b_level:
+            return a_level < b_level
+        var a_parts := split_quality_key(a)
+        var b_parts := split_quality_key(b)
+        var a_base := _level_index(str(a_parts[0]), levels)
+        var b_base := _level_index(str(b_parts[0]), levels)
+        if a_base != b_base:
+            return a_base < b_base
+        return _level_index(str(a_parts[1]), levels) < _level_index(str(b_parts[1]), levels))
+    return keys
+
+# One row of the ladder: the stars of the level the stage belongs to (empty for the craft
+# coefficient) and the coefficient of the stage.
+func _price_stage_row(kind: String, level: String, mult: float) -> Dictionary:
+    return {
+        "kind": kind,
+        "qid": level,
+        "marker": get_quality_stars(level) if kind != "synergy" else "",
+        "tail": "x%.2f" % mult,
+    }
+
+# The last row of the block: the level of the good itself and the formula that turns the rows above
+# into coins. Each addend is the price of its part at the quality of that part — the base of the good
+# and the addition are two independent goods with prices of their own — and the workmanship
+# multiplies their sum. The coefficients are rounded for display, so the result is approximate.
+# The amount is returned apart from the tail, so the caller can paint the number in its own colour.
+func _price_total_row(level: String, stages: Dictionary) -> Dictionary:
+    var total := int(round(float(stages["total"]["price"])))
+    return {
+        "kind": "total",
+        "qid": level,
+        "marker": get_quality_stars(level),
+        "tail": tr("(%s x %s + %s x %s) x %s ≈ %d") % [
+            format_coins(float(stages["base"])), "%.2f" % float(stages["quality"]["mult"]),
+            format_coins(float(stages["additions"]["base"])),
+            "%.2f" % float(stages["additions"]["quality_mult"]),
+            "%.2f" % float(stages["synergy"]["mult"]),
+            total,
+        ],
+        "amount": str(total),
+    }
+
+# --- THE SHARE OF THE LEVEL IN THE STORAGE (the percentages in the row of the list and in the breakdown tooltip) ---
+# The percent of count from the sum of the whole breakdown: the shares are computed from the TOTAL amount
+# of the product in the storage, therefore in the sum they show ~100% (and not the share of the best
+# level from the others — which is why the row "★ (67%)" was read as "two thirds
+# of the storage is good").
+# The percentages are rounded separately, therefore the sum may differ by
+# one unit (33%/33%/33%): "patching" them up to exactly 100% would mean lying about
+# the fractional shares. With an empty or zero breakdown — 0.
+func get_quality_share_percent(count: int, quality_breakdown: Dictionary) -> int:
+    var total := 0
+    for qid in quality_breakdown:
+        total += int(quality_breakdown[qid])
+    if total <= 0:
+        return 0
+    return int(round(float(count) / float(total) * 100.0))
+
+# The breakdown of the storage as a string for the row of the resource list:
+#   "(33%/67%)" — the share of each level that is really in the storage, in the colour
+# of that level (data/qualities.json, color). The levels from the worst to the best, as
+# in data/qualities.json; the levels with a zero count are skipped.
+# It returns BBCode (the [color=…] tags) for a Label with bbcode_enabled:
+# in one text all the levels are visible, and each percentage is painted in the colour of its
+# level. An empty string if the breakdown is empty or contains only zeros.
+func format_quality_share_text(quality_breakdown: Dictionary) -> String:
+    var parts: Array = []
+    var totals := quality_level_totals(quality_breakdown)
+    for qid in get_quality_levels():
+        var count := int(totals.get(qid, 0))
+        if count <= 0:
+            continue
+        parts.append("[color=#%s]%d%%[/color]" % [
+            get_quality_color(str(qid)).to_html(false),
+            get_quality_share_percent(count, totals)
+        ])
+    if parts.is_empty():
+        return ""
+    return "(" + "/".join(parts) + ")"
+
+# The units of a breakdown summed by the level of the good itself: {"fine": 7, "common": 2}.
+# A good with an additional ingredient carries two levels per row (see "THE QUALITY KEY OF A
+# STORAGE ROW"), while the player reads the storage by the level of the good — the shares, the
+# ladder and the quality tooltip are built from this sum, so that such a row shows up on the
+# ladder of its level.
+func quality_level_totals(quality_breakdown: Dictionary) -> Dictionary:
+    var out := {}
+    for key in quality_breakdown:
+        var count := int(quality_breakdown[key])
+        if count <= 0:
+            continue
+        var level := quality_key_level(str(key))
+        out[level] = int(out.get(level, 0)) + count
+    return out
+
+# Randomly chooses the quality level by the spawn_weight weights.
+func roll_quality() -> String:
+    var levels = get_quality_levels()
+    if levels.is_empty():
+        return "common"
+    var total := 0.0
+    for qid in levels:
+        total += float(get_quality_data(qid).get("spawn_weight", 1))
+    if total <= 0.0:
+        return levels[0]
+    var roll = randf() * total
+    var accum := 0.0
+    var chosen: String = levels[levels.size() - 1]
+    for qid in levels:
+        accum += float(get_quality_data(qid).get("spawn_weight", 1))
+        if roll < accum:
+            chosen = qid
+            break
+    return chosen
+
+# Returns the default priority of choosing raw materials (from qualities.json).
+func get_quality_priority_default() -> String:
+    return qualities.get("priority_default", "best")
+
+# Returns the list of the available priorities of choosing raw materials.
+func get_quality_priority_options() -> Array:
+    return qualities.get("priority_options", ["best", "worst", "random"])
+
+# Returns the human-readable name of the priority of choosing raw materials.
+func get_quality_priority_name(priority: String) -> String:
+    var names: Dictionary = qualities.get("priority_names", {})
+    return names.get(priority, priority)
+
+# --- THE PROFESSIONS AND THE CONSUMPTION ---
+
+# Returns the data of the profession by id (or an empty dictionary).
+func get_profession(prof_id: String) -> Dictionary:
+    return professions.get(prof_id, {})
+
+# Returns the name of the profession in the singular nominative form ("Farmer").
+# If the id is not found — it returns the id itself as a fallback.
+func get_profession_name(prof_id: String) -> String:
+    if prof_id.is_empty():
+        return ""
+    return professions.get(prof_id, {}).get("name", prof_id)
+
+# Returns the profession associated with the improvement (the id from data/improvements.json).
+# If the improvement is not set or it has no profession — it returns "".
+# The label is derived from the improvement and is not displayed in the interface as a
+# separate row: it is used by the consumption calculation and by the planned map of
+# the "Resources" tab.
+func get_profession_for_improvement(imp_id: String) -> String:
+    if imp_id.is_empty() or imp_id == null:
+        return ""
+    return improvements.get(imp_id, {}).get("profession", "")
+
+# Returns the data of the building by id (or an empty dictionary, if the building is not found).
+func get_building_data(building_id: String) -> Dictionary:
+    if building_id.is_empty() or building_id == null:
+        return {}
+    for b in buildings:
+        if b.get("id", "") == building_id:
+            return b
+    return {}
+
+# Coins per simulation tick charged for a built entity, regardless of its worker, recipe or
+# resource: the value is the upkeep of the structure itself, from the data record.
+# A modded entity without the field is free to maintain.
+func get_building_maintenance_cost(building_id: String) -> float:
+    return maxf(0.0, float(get_building_data(building_id).get("maintenance_cost", 0.0)))
+
+func get_improvement_maintenance_cost(imp_id: String) -> float:
+    if imp_id.is_empty():
+        return 0.0
+    return maxf(0.0, float(improvements.get(imp_id, {}).get("maintenance_cost", 0.0)))
+
+# Returns the profession of the citizen working in the building (the "profession" field in
+# data/buildings.json). Empty — the building has no profession: it works by the general
+# slot model, without the expense of supplies and without a bonus (see docs.md,
+# "Professions and resource consumption").
+func get_profession_for_building(building_id: String) -> String:
+    return get_building_data(building_id).get("profession", "")
+
+# Returns true if the improvement is infrastructure one — it does not require a worker
+# to perform its functions. The flag is set by the "no_worker": true field in
+# data/improvements.json (for example, a harbor, the harbor_access scheme).
+# It is used by worker_manager (an exception from the auto-assignment), by the control
+# panel (without the start/pause buttons) and by the tooltip (a special status).
+func is_no_worker_improvement(imp_id: String) -> bool:
+    if imp_id.is_empty() or imp_id == null:
+        return false
+    return improvements.get(imp_id, {}).get("no_worker", false)
+
+# The human-readable name of the improvement by id (or the id itself, if the improvement is not
+# in the registry). The name is already translated by the data loader (data_loader.
+# _localize_display_fields), therefore an additional tr() is not needed here.
+func get_improvement_display_name(imp_id: String) -> String:
+    if imp_id.is_empty():
+        return ""
+    return improvements.get(imp_id, {}).get("name", imp_id)
+
+# The human-readable name of the building by id (or the id itself, if the building is not in the registry).
+func get_building_display_name(building_id: String) -> String:
+    if building_id.is_empty():
+        return ""
+    return get_building_data(building_id).get("name", building_id)
+
+# --- THE SOURCES OF THE FLOW: IDENTIFIER → LABEL ---
+#
+# The sources of income/expense (the professions, the buildings, the improvements, the service rows)
+# are addressed in the planned maps and the accumulators of the treasury by an IDENTIFIER, and not by
+# a name. The name is only a label in the interface, and it is resolved here, at the point
+# of the drawing. In this way the keys do not depend on the language (LocalizationManager.set_locale
+# re-reads the data, but does not reset the accumulators — a change of language in the middle
+# of the accumulation window should not split one source in two) and do not merge when
+# the names coincide.
+#
+# The prefix separates the namespaces: the id "smelter" exists both for a profession
+# (data/professions.json) and for a building (data/buildings.json), and in the planned
+# maps both go into one dictionary — without the prefix the rows would merge.
+#   "@prof:<id>" — a profession (including the pseudo-profession "all");
+#   "@bld:<id>"  — a city building;
+#   "@imp:<id>"  — an improvement on a hex;
+#   "@pop_food"  — the feeding of the population (there is no separate entity in the data);
+#   "@town_trade" — the purchases from the towns (the treasury pays, see town_trade_manager).
+#   "@scouting" / "@claim" — the one-off treasury costs (scouting, claiming a chunk).
+# The service sources store the English text in the key, like TAX_INCOME_TYPE:
+# tr() cannot be called in a constant expression, the translation is applied by the resolver.
+const SRC_PREFIX_PROFESSION := "@prof:"
+const SRC_PREFIX_BUILDING := "@bld:"
+const SRC_PREFIX_IMPROVEMENT := "@imp:"
+const SRC_POP_FOOD := "@pop_food"
+const SRC_TOWN_TRADE := "@town_trade"
+const SRC_SCOUTING := "@scouting"
+const SRC_CLAIMING := "@claim"
+const SRC_OUTPOST := "@outpost"
+
+    # The source identifier for a data entity. An empty id gives an empty key —
+    # a record without a source does not go into the plans (the callers check this before writing).
+func profession_source_id(prof_id: String) -> String:
+    return SRC_PREFIX_PROFESSION + prof_id
+
+func building_source_id(building_id: String) -> String:
+    return SRC_PREFIX_BUILDING + building_id
+
+func improvement_source_id(imp_id: String) -> String:
+    return SRC_PREFIX_IMPROVEMENT + imp_id
+
+# The source label for the interface: identifier → human-readable name.
+# An unknown source is returned as is — a missing entry in the data
+# should be visible as "smelter", and not to be silent with an empty string.
+func get_source_display_name(source_id: String) -> String:
+    if source_id.is_empty():
+        return ""
+    if source_id == SRC_POP_FOOD:
+        return tr("Population food")
+    if source_id == SRC_TOWN_TRADE:
+        return tr("Trade with towns")
+    if source_id == SRC_SCOUTING:
+        return tr("Scouting")
+    if source_id == SRC_CLAIMING:
+        return tr("Claiming land chunks")
+    if source_id == SRC_OUTPOST:
+        return tr("Outposts")
+    if source_id.begins_with(SRC_PREFIX_PROFESSION):
+        return get_profession_name(source_id.substr(SRC_PREFIX_PROFESSION.length()))
+    if source_id.begins_with(SRC_PREFIX_BUILDING):
+        return get_building_display_name(source_id.substr(SRC_PREFIX_BUILDING.length()))
+    if source_id.begins_with(SRC_PREFIX_IMPROVEMENT):
+        return get_improvement_display_name(source_id.substr(SRC_PREFIX_IMPROVEMENT.length()))
+    return source_id
+
+# Normalized list of building ids a consumption rule is restricted to. An empty array
+# means the rule applies everywhere the profession works — on map improvements and in
+# every building assigned to that profession.
+func _rule_buildings(rule: Dictionary) -> Array:
+    var result: Array = []
+    var raw = rule.get("buildings", null)
+    if raw is String:
+        if not str(raw).is_empty():
+            result.append(str(raw))
+    elif raw is Array:
+        for item in raw:
+            var bid := str(item)
+            if not bid.is_empty() and not result.has(bid):
+                result.append(bid)
+    return result
+
+func _rule_matches_building(rule: Dictionary, building_id: String) -> bool:
+    var scoped := _rule_buildings(rule)
+    if scoped.is_empty():
+        return true
+    return not building_id.is_empty() and scoped.has(building_id)
+
+# Subset of a rule's "buildings" that actually employ prof_id. Keeps multi-profession
+# building-scoped rules (e.g. millstones for mills and the oilmaker's house) from
+# attributing one profession's buildings to another in reverse-index queries.
+func _rule_buildings_for_profession(rule: Dictionary, prof_id: String) -> Array:
+    var result: Array = []
+    if prof_id.is_empty() or prof_id == "all":
+        return result
+    for raw_bid in _rule_buildings(rule):
+        var bid := str(raw_bid)
+        if get_profession_for_building(bid) == prof_id:
+            result.append(bid)
+    return result
+
+# True when prof_id also works in a building or map improvement outside listed_buildings,
+# so UI tooltips should qualify the profession name with the listed buildings.
+func profession_has_unlisted_workplace(prof_id: String, listed_buildings: Array) -> bool:
+    if prof_id.is_empty() or prof_id == "all" or listed_buildings.is_empty():
+        return false
+    for b in buildings:
+        if not (b is Dictionary):
+            continue
+        var bid := str(b.get("id", ""))
+        if not bid.is_empty() and str(b.get("profession", "")) == prof_id and not listed_buildings.has(bid):
+            return true
+    for imp_id in improvements:
+        var imp = improvements[imp_id]
+        if imp is Dictionary and str(imp.get("profession", "")) == prof_id:
+            return true
+    return false
+
+# Normalized per-member overrides from rule["members"] restricted to products present in
+# group_members: { pid: { "interval": float, "production_bonus": float } }. Missing fields
+# inherit the rule's base interval and production_bonus.
+func _rule_member_overrides(rule: Dictionary, group_members: Array) -> Dictionary:
+    var out: Dictionary = {}
+    var raw = rule.get("members", null)
+    if not (raw is Dictionary) or raw.is_empty():
+        return out
+    var base_interval := float(rule.get("interval", 0.0))
+    var base_bonus := float(rule.get("production_bonus", 0.0))
+    for raw_pid in group_members:
+        var pid := str(raw_pid)
+        if not raw.has(pid):
+            continue
+        var spec = raw[pid]
+        if not (spec is Dictionary):
+            continue
+        var iv := float(spec.get("interval", base_interval)) if spec.has("interval") else base_interval
+        var bn := float(spec.get("production_bonus", base_bonus)) if spec.has("production_bonus") else base_bonus
+        out[pid] = {
+            "interval": iv,
+            "production_bonus": bn,
+        }
+    return out
+
+# Effective consumption interval for a single member of a group entry (falls back to the
+# entry's base interval when the member carries no override).
+func get_entry_member_interval(entry: Dictionary, pid: String) -> float:
+    var overrides = entry.get("member_overrides", null)
+    if overrides is Dictionary and overrides.has(pid):
+        var spec: Dictionary = overrides[pid]
+        return float(spec.get("interval", entry.get("interval", 0.0)))
+    return float(entry.get("interval", 0.0))
+
+# Effective production_bonus for a single member of a group entry (falls back to the
+# entry's base bonus when the member carries no override).
+func get_entry_member_bonus(entry: Dictionary, pid: String) -> float:
+    var overrides = entry.get("member_overrides", null)
+    if overrides is Dictionary and overrides.has(pid):
+        var spec: Dictionary = overrides[pid]
+        return float(spec.get("production_bonus", entry.get("production_bonus", 0.0)))
+    return float(entry.get("production_bonus", 0.0))
+
+# Group members ordered from highest tier to lowest: higher production_bonus first, then
+# longer interval (slower wear), preserving the declared order on ties.
+func get_entry_members_ordered_by_tier(entry: Dictionary) -> Array:
+    var members: Array = entry.get("group_members", [])
+    if members.size() <= 1:
+        return members.duplicate()
+    var indexed: Array = []
+    for i in range(members.size()):
+        var pid := str(members[i])
+        indexed.append({
+            "pid": pid,
+            "bonus": get_entry_member_bonus(entry, pid),
+            "interval": get_entry_member_interval(entry, pid),
+            "index": i,
+        })
+    indexed.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
+        var ba := float(a["bonus"])
+        var bb := float(b["bonus"])
+        if not is_equal_approx(ba, bb):
+            return ba > bb
+        var ia := float(a["interval"])
+        var ib := float(b["interval"])
+        if not is_equal_approx(ia, ib):
+            return ia > ib
+        return int(a["index"]) < int(b["index"])
+    )
+    var ordered: Array = []
+    for item in indexed:
+        ordered.append(str(item["pid"]))
+    return ordered
+
+# Min/max per-second consumption rate (for one consumer) and production_bonus across all
+# members of a tiered group entry. Returns {} when the entry has no member overrides.
+func get_entry_rate_bonus_bounds(entry: Dictionary) -> Dictionary:
+    var overrides = entry.get("member_overrides", null)
+    if not (overrides is Dictionary) or overrides.is_empty():
+        return {}
+    var members: Array = entry.get("group_members", [])
+    var amount := int(entry.get("amount", 0))
+    if members.is_empty() or amount <= 0:
+        return {}
+    var rate_min := INF
+    var rate_max := -INF
+    var bonus_min := INF
+    var bonus_max := -INF
+    for raw_pid in members:
+        var pid := str(raw_pid)
+        var iv := get_entry_member_interval(entry, pid)
+        var rate := float(amount) if iv <= 0.0 else float(amount) / iv
+        var bn := get_entry_member_bonus(entry, pid)
+        rate_min = minf(rate_min, rate)
+        rate_max = maxf(rate_max, rate)
+        bonus_min = minf(bonus_min, bn)
+        bonus_max = maxf(bonus_max, bn)
+    return {
+        "rate_min": rate_min,
+        "rate_max": rate_max,
+        "bonus_min": bonus_min,
+        "bonus_max": bonus_max,
+    }
+
+# Per-member consumption stats for a group tooltip when the group's consumption rule
+# defines "members": { pid: { "per_sec": float, "production_bonus": float } }. Returns {}
+# for plain groups so their composition tooltips stay unchanged.
+func get_group_member_consumption_specs(group_key: String) -> Dictionary:
+    var gkey := group_key if is_group_key(group_key) else ("@" + group_key)
+    for rule in consumption_rules:
+        if not (rule is Dictionary) or str(rule.get("resource", "")) != gkey:
+            continue
+        var entry := _build_consumption_entry(gkey, rule)
+        if entry.is_empty():
+            continue
+        var overrides: Dictionary = entry.get("member_overrides", {})
+        if overrides.is_empty():
+            continue
+        var amount := int(entry.get("amount", 0))
+        var out: Dictionary = {}
+        for raw_pid in entry.get("group_members", []):
+            var pid := str(raw_pid)
+            var iv := get_entry_member_interval(entry, pid)
+            var per_sec := float(amount) if iv <= 0.0 else float(amount) / iv
+            out[pid] = {
+                "per_sec": per_sec,
+                "production_bonus": get_entry_member_bonus(entry, pid),
+            }
+        return out
+    return {}
+
+# Assembles the consumption record from the rule of data/consumption.json.
+# res_key — the "resource" field of the rule ("product_id" or "@group_id").
+# For a group the members are resolved through product_groups; if the group is not found
+# or amount <= 0 — an empty dictionary is returned (the record is skipped).
+func _build_consumption_entry(res_key: String, rule: Dictionary) -> Dictionary:
+    var amount := int(rule.get("amount", 0))
+    if amount <= 0:
+        print("GameData: a consumption rule without a correct amount is skipped: ", rule)
+        return {}
+    # The citizens consume the goods of a group as a basket; a professional
+    # rotates over the members instead. An explicit value in the data wins.
+    var consumers: Array = rule.get("profession", [])
+    var default_all: bool = is_group_key(res_key) and (consumers.has("all") if consumers is Array else false)
+    var entry := {
+        "amount": amount,
+        "interval": float(rule.get("interval", 0)),
+        "production_bonus": float(rule.get("production_bonus", 0.0)),
+        # Only group records use it; on a single product it has no effect.
+        "consume_all": bool(rule.get("consume_all", default_all)),
+        "buildings": _rule_buildings(rule),
+        "member_overrides": {}
+    }
+    if is_group_key(res_key):
+        var gkey = res_key.trim_prefix("@")
+        # The key of an "@"-group is always the id from data/product_groups/. A search by
+        # the human-readable name is intentionally absent here: such a fallback would silently
+        # substitute the data of a similar group and would break the addressing.
+        var members: Array = product_groups.get(gkey, [])
+        if members.is_empty():
+            print("GameData: the group '", res_key, "' from data/consumption.json was not found — the record is skipped.")
+            return {}
+        entry["product_id"] = "" # a group record is not bound to a product
+        entry["product_name"] = get_product_group_name(res_key)
+        entry["is_group"] = true
+        entry["group_members"] = members.duplicate()
+        entry["display_key"] = res_key
+        # The icon of the group — its own, if it is set in data/product_groups/,
+        # otherwise the first icon among the members (GameData.get_product_group_icon_info).
+        # Previously there was a separate walk of the members here, duplicating the rule.
+        entry["icon"] = get_product_group_icon(res_key)
+        entry["member_overrides"] = _rule_member_overrides(rule, members)
+    else:
+        # A non-existent product: previously the record was created anyway, with
+        # an identifier as the label and an empty icon, and it quietly hung in the
+        # interface without ever writing anything off. Now it is visible in the console —
+        # plus the same error is shown by data_validator as a data problem.
+        if not products.has(res_key):
+            print("GameData: the product '", res_key, "' from data/consumption.json was not found — the record is skipped.")
+            return {}
+        entry["product_id"] = res_key
+        entry["product_name"] = get_product_name(res_key)
+        entry["is_group"] = false
+        entry["group_members"] = []
+        entry["display_key"] = res_key
+        entry["icon"] = products.get(res_key, {}).get("icon", "")
+    return entry
+
+# Returns the consumption records that CONSUME the given resource — the reverse of
+# get_profession_consumption.
+#
+# The argument may be either form of the address of a resource:
+#   * the id of a product ("reed_boat") — the form a row of a recipe or of a cost
+#     names the resource by;
+#   * "@<group_id>" ("@boats") — the group reference itself.
+# A rule of the registry that names a group consumes ANY member of it, so a product
+# query also matches the group rules whose group contains the product. This is what
+# makes the marking visible in the recipes: a recipe lists concrete products, while
+# the rule that spends them most often speaks about the group.
+#
+# A group query matches only the rules that name the group itself. Its members are
+# deliberately NOT expanded into their own rules: the question "can this row be spent
+# by somebody" is answered for the row the player sees, and a group row stands for
+# the group, not for every product that happens to share a rule with it.
+#
+# Every row:
+#   { "profession_id": String, "profession_name": String, — who consumes it
+#     "amount": int, "interval": float,                — the norm per one consumer
+#     "production_bonus": float,
+#     "via_group": String }                             — "@<group_id>" when the
+#                                                         resource is consumed as a
+#                                                         member of a group, else ""
+# The pseudo-profession "all" is a legitimate consumer here: it is what the player
+# sees as "the whole city" (the name is taken from professions.json).
+func get_consumption_consumers(res_key: String) -> Array:
+    var result: Array = []
+    if res_key.is_empty():
+        return result
+
+    # The addresses a query stands for: the key itself, plus, for a single product,
+    # every group that contains it.
+    var queries: Array = [res_key]
+    var via_group := {}
+    if not is_group_key(res_key):
+        for group_id in product_groups:
+            var members: Array = product_groups[group_id]
+            if not members.has(res_key):
+                continue
+            var group_key := "@%s" % str(group_id)
+            queries.append(group_key)
+            via_group[group_key] = group_key
+
+    # The pairs already listed. The resource is consumed by the same profession only
+    # once: the rule of the registry wins over the legacy record of the resource, and
+    # among the equal ones the own rule wins over the group one (the concrete case is
+    # more informative than the general one).
+    var covered := {}
+    for query in queries:
+        for rule in consumption_rules:
+            if not (rule is Dictionary):
+                continue
+            if str(rule.get("resource", "")) != query:
+                continue
+            var amount := int(rule.get("amount", 0))
+            if amount <= 0:
+                continue
+            var interval := float(rule.get("interval", 0))
+            var bonus := float(rule.get("production_bonus", 0.0))
+            var via := str(via_group.get(query, ""))
+            var bounds: Dictionary = {}
+            if not via.is_empty():
+                # Concrete product resolved through a group rule: use its own tier values if set.
+                var raw_members = rule.get("members", null)
+                if raw_members is Dictionary and raw_members.has(res_key):
+                    var mspec = raw_members[res_key]
+                    if mspec is Dictionary:
+                        if mspec.has("interval"):
+                            interval = float(mspec.get("interval", interval))
+                        if mspec.has("production_bonus"):
+                            bonus = float(mspec.get("production_bonus", bonus))
+            elif is_group_key(query):
+                var built := _build_consumption_entry(query, rule)
+                if not built.is_empty():
+                    bounds = get_entry_rate_bonus_bounds(built)
+            var scoped := _rule_buildings(rule)
+            for prof_id in rule.get("profession", []):
+                var pair := str(prof_id)
+                if covered.has(pair):
+                    continue
+                var prof_buildings: Array = []
+                if not scoped.is_empty():
+                    prof_buildings = _rule_buildings_for_profession(rule, pair)
+                    if prof_buildings.is_empty():
+                        continue
+                covered[pair] = true
+                var rec := {
+                    "profession_id": pair,
+                    "profession_name": get_profession_name(pair),
+                    "amount": amount,
+                    "interval": interval,
+                    "production_bonus": bonus,
+                    "via_group": via,
+                    "buildings": prof_buildings
+                }
+                if not bounds.is_empty():
+                    rec["rate_min"] = float(bounds["rate_min"])
+                    rec["rate_max"] = float(bounds["rate_max"])
+                    rec["bonus_min"] = float(bounds["bonus_min"])
+                    rec["bonus_max"] = float(bounds["bonus_max"])
+                result.append(rec)
+
+    # The legacy records "from the resource": a product carries its own consumption
+    # inline. A single product has no group rule of its own, so it is queried for the
+    # product key only.
+    if products.has(res_key):
+        var prod: Dictionary = products[res_key]
+        if prod.has("consumption"):
+            var cons: Dictionary = prod["consumption"]
+            var amount2 := int(cons.get("amount", 0))
+            var interval2 := float(cons.get("interval", 0))
+            var bonus2 := float(cons.get("production_bonus", 0.0))
+            if amount2 > 0:
+                for prof_id in cons.get("profession", []):
+                    var pair2 := str(prof_id)
+                    if covered.has(pair2):
+                        continue
+                    covered[pair2] = true
+                    result.append({
+                        "profession_id": pair2,
+                        "profession_name": get_profession_name(pair2),
+                        "amount": amount2,
+                        "interval": interval2,
+                        "production_bonus": bonus2,
+                        "via_group": "",
+                        "buildings": []
+                    })
+    return result
+
+# The professions that consume a resource across all of their workplaces (i.e. by an
+# unrestricted dedicated rule, not through the pseudo-profession "all"). The resource is
+# addressed by its display_key — the bare id of a product ("coca_leaf") or the "@id" of a
+# group ("@boats"). Both the registry and the legacy product-side rules are included.
+#
+# Such a profession has priority: its citizens are excluded from the headcount of "all"
+# for the same resource (see worker_manager._resident_consumer_count), so a resource
+# declared for both a profession and all residents is written off only once. Rules scoped
+# to specific buildings exclude only citizens working in those buildings (see
+# get_resource_consumer_buildings).
+func get_resource_consumer_professions(display_key: String) -> Array:
+    var result: Array = []
+    if display_key.is_empty():
+        return result
+    # A rule with an unresolvable resource is skipped by _build_consumption_entry,
+    # therefore it must not exclude anybody from the "all" headcount either.
+    var valid: bool
+    if is_group_key(display_key):
+        valid = not product_groups.get(display_key.trim_prefix("@"), []).is_empty()
+    else:
+        valid = products.has(display_key)
+    if not valid:
+        return result
+    for rule in consumption_rules:
+        if not (rule is Dictionary):
+            continue
+        if str(rule.get("resource", "")) != display_key:
+            continue
+        if int(rule.get("amount", 0)) <= 0 or float(rule.get("interval", 0)) <= 0.0:
+            continue
+        if not _rule_buildings(rule).is_empty():
+            continue
+        for prof_id in rule.get("profession", []):
+            var pid := str(prof_id)
+            if pid.is_empty() or pid == "all" or result.has(pid):
+                continue
+            result.append(pid)
+    # The legacy "from the resource" rules live on the product itself and always
+    # address a bare product id.
+    if not is_group_key(display_key) and products.has(display_key):
+        var prod: Dictionary = products[display_key]
+        if prod.has("consumption"):
+            var cons: Dictionary = prod["consumption"]
+            if int(cons.get("amount", 0)) > 0 and float(cons.get("interval", 0)) > 0.0:
+                for prof_id in cons.get("profession", []):
+                    var pid := str(prof_id)
+                    if pid.is_empty() or pid == "all" or result.has(pid):
+                        continue
+                    result.append(pid)
+    return result
+
+# The building ids whose working citizens consume display_key through a building-scoped
+# rule and are not already covered by get_resource_consumer_professions(display_key).
+# Used by worker_manager._resident_consumer_count so citizens of the same profession in
+# other buildings still take part in an "all" rule for that resource.
+func get_resource_consumer_buildings(display_key: String) -> Array:
+    var result: Array = []
+    if display_key.is_empty():
+        return result
+    var valid: bool
+    if is_group_key(display_key):
+        valid = not product_groups.get(display_key.trim_prefix("@"), []).is_empty()
+    else:
+        valid = products.has(display_key)
+    if not valid:
+        return result
+    var unrestricted := get_resource_consumer_professions(display_key)
+    for rule in consumption_rules:
+        if not (rule is Dictionary):
+            continue
+        if str(rule.get("resource", "")) != display_key:
+            continue
+        if int(rule.get("amount", 0)) <= 0 or float(rule.get("interval", 0)) <= 0.0:
+            continue
+        var scoped := _rule_buildings(rule)
+        if scoped.is_empty():
+            continue
+        var rule_profs: Array = rule.get("profession", [])
+        for raw_bid in scoped:
+            var bid := str(raw_bid)
+            var bprof := get_profession_for_building(bid)
+            if bprof.is_empty() or bprof == "all" or unrestricted.has(bprof):
+                continue
+            if rule_profs.has(bprof) and not result.has(bid):
+                result.append(bid)
+    return result
+
+# Returns the array of the consumption records for a profession. When building_id is
+# empty (map improvements or profession-wide queries), rules restricted to specific
+# buildings via "buildings" are omitted; when building_id is given, both unrestricted
+# rules and rules whose "buildings" includes building_id are returned.
+# Sources (in priority order):
+#   1) the registry data/consumption/*.json —
+#      { "resource": "<id>|@<group>", "profession": ["<id>"], "buildings": ["<id>"],
+#        "amount": N, "interval": S, "production_bonus": B }.
+#   2) the legacy product-side "consumption" field in data/products/*.json.
+# Duplicates are filtered by display_key (registry records take priority). Each record:
+#   { "product_id": String, "product_name": String,
+#     "amount": int, "interval": float, "production_bonus": float,
+#     "is_group": bool, "group_members": Array[String], "consume_all": bool,
+#     "buildings": Array, "display_key": String, "icon": String }
+func get_profession_consumption(prof_id: String, building_id: String = "") -> Array:
+    var result: Array = []
+    if prof_id.is_empty():
+        return result
+    var covered := {} # display_key -> true (protection from a double write-off)
+    for rule in consumption_rules:
+        if not (rule is Dictionary):
+            continue
+        var target_list: Array = rule.get("profession", [])
+        if not (prof_id in target_list):
+            continue
+        if not _rule_matches_building(rule, building_id):
+            continue
+        var res_key = str(rule.get("resource", ""))
+        if res_key.is_empty():
+            continue
+        var entry = _build_consumption_entry(res_key, rule)
+        if entry.is_empty():
+            continue
+        if covered.has(entry["display_key"]):
+            continue
+        covered[entry["display_key"]] = true
+        result.append(entry)
+    for pid in products:
+        var prod = products[pid]
+        if not prod.has("consumption"):
+            continue
+        if covered.has(pid):
+            continue
+        var cons: Dictionary = prod["consumption"]
+        var target_list: Array = cons.get("profession", [])
+        if not (prof_id in target_list):
+            continue
+        result.append({
+            "product_id": pid,
+            "product_name": get_product_name(pid),
+            "amount": int(cons.get("amount", 0)),
+            "interval": float(cons.get("interval", 0)),
+            "production_bonus": float(cons.get("production_bonus", 0.0)),
+            "is_group": false,
+            "group_members": [],
+            "display_key": pid,
+            "icon": prod.get("icon", ""),
+            "consume_all": false,
+            "buildings": [],
+            "member_overrides": {}
+        })
+    return result
+
+# Returns only the building-scoped consumption records of prof_id (those with a non-empty
+# "buildings" list) that are not shadowed by an unrestricted rule for the same resource.
+# Planned-consumption and Trade-tab maps scale these records by working buildings in
+# entry["buildings"] rather than by the total headcount of the profession.
+func get_profession_building_scoped_consumption(prof_id: String) -> Array:
+    var result: Array = []
+    if prof_id.is_empty() or prof_id == "all":
+        return result
+    var unrestricted_keys := {}
+    for entry in get_profession_consumption(prof_id):
+        unrestricted_keys[str(entry.get("display_key", ""))] = true
+    for rule in consumption_rules:
+        if not (rule is Dictionary):
+            continue
+        var target_list: Array = rule.get("profession", [])
+        if not (prof_id in target_list):
+            continue
+        if _rule_buildings(rule).is_empty():
+            continue
+        var res_key := str(rule.get("resource", ""))
+        if res_key.is_empty():
+            continue
+        var entry := _build_consumption_entry(res_key, rule)
+        if entry.is_empty():
+            continue
+        if unrestricted_keys.has(str(entry["display_key"])):
+            continue
+        result.append(entry)
+    return result
+
+# Returns all the resources that are consumed by a profession (without the details of
+# amount/interval) — it is used to count "how many such and such resources a profession
+# needs" in the summary tooltips.
+# It returns a dictionary: display_key -> { "name": String, "is_group": bool,
+#   "group_members": Array, "amount": int, "interval": float,
+#   "production_bonus": float }.
+# The key of a single product is its id; of a group resource it is "@<group_id>".
+# If different resources are required with a different frequency, the first encountered one is taken.
+func get_profession_consumption_summary(prof_id: String, building_id: String = "") -> Dictionary:
+    var result: Dictionary = {}
+    for entry in get_profession_consumption(prof_id, building_id):
+        var dkey = entry.get("display_key", entry.get("product_id", ""))
+        if result.has(dkey):
+            continue
+        result[dkey] = {
+            "name": entry.get("product_name", ""),
+            "is_group": bool(entry.get("is_group", false)),
+            "group_members": entry.get("group_members", []),
+            "amount": int(entry.get("amount", 0)),
+            "interval": float(entry.get("interval", 0)),
+            "production_bonus": float(entry.get("production_bonus", 0.0))
+        }
+    return result

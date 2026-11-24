@@ -1,0 +1,139 @@
+{
+  "resources": [
+    {
+      "id": "glass_jewelry",
+      "price": 22,
+      "name": "Glass Jewelry",
+      "type": "product",
+      "category": "luxury",
+      "unlock_tech": "glassmaking",
+      "icon": "glass_jewelry.png"
+    },
+    {
+      "id": "gold_jewelry",
+      "price": 140,
+      "name": "Gold Jewelry",
+      "type": "product",
+      "category": "luxury",
+      "unlock_tech": "metallurgy",
+      "icon": "gold_jewelry.png"
+    },
+    {
+      "id": "copper_jewelry",
+      "price": 28,
+      "name": "Copper Jewelry",
+      "type": "product",
+      "category": "luxury",
+      "unlock_tech": "metallurgy",
+      "icon": "copper_jewelry.png"
+    },
+    {
+      "id": "silver_jewelry",
+      "price": 90,
+      "name": "Silver Jewelry",
+      "type": "product",
+      "category": "luxury",
+      "unlock_tech": "metallurgy",
+      "icon": "silver_jewelry.png"
+    },
+    {
+      "id": "bronze_jewelry",
+      "price": 40,
+      "name": "Bronze Jewelry",
+      "type": "product",
+      "category": "luxury",
+      "unlock_tech": "bronze",
+      "icon": "bronze_jewelry.png"
+    },
+    {
+      "id": "brass_jewelry",
+      "price": 48,
+      "name": "Brass Jewelry",
+      "type": "product",
+      "category": "luxury",
+      "unlock_tech": "brass_working",
+      "icon": "brass_jewelry.png"
+    },
+    {
+      "id": "iron_jewelry",
+      "price": 55,
+      "name": "Iron Jewelry",
+      "type": "product",
+      "category": "luxury",
+      "unlock_tech": "iron_processing",
+      "icon": "iron_jewelry.png"
+    },
+    {
+      "id": "steel_jewelry",
+      "price": 82,
+      "name": "Steel Jewelry",
+      "type": "product",
+      "category": "luxury",
+      "unlock_tech": "steel_making",
+      "icon": "steel_jewelry.png"
+    },
+    {
+      "id": "lazurite_jewelry",
+      "price": 120,
+      "name": "Lazurite Jewelry",
+      "type": "product",
+      "category": "luxury",
+      "unlock_tech": "jewelry",
+      "icon": "lazurite_jewelry.png"
+    },
+    {
+      "id": "malachite_jewelry",
+      "price": 120,
+      "name": "Malachite Jewelry",
+      "type": "product",
+      "category": "luxury",
+      "unlock_tech": "jewelry",
+      "icon": "malachite_jewelry.png"
+    },
+    {
+      "id": "nephrite_jewelry",
+      "price": 120,
+      "name": "Nephrite Jewelry",
+      "type": "product",
+      "category": "luxury",
+      "unlock_tech": "jewelry",
+      "icon": "nephrite_jewelry.png"
+    },
+    {
+      "id": "porphyry_jewelry",
+      "price": 120,
+      "name": "Porphyry Jewelry",
+      "type": "product",
+      "category": "luxury",
+      "unlock_tech": "jewelry",
+      "icon": "porphyry_jewelry.png"
+    },
+    {
+      "id": "amber_jewelry",
+      "price": 120,
+      "name": "Amber Jewelry",
+      "type": "product",
+      "category": "luxury",
+      "unlock_tech": "jewelry",
+      "icon": "amber_jewelry.png"
+    },
+    {
+      "id": "pearl_jewelry",
+      "price": 200,
+      "name": "Pearl Jewelry",
+      "type": "product",
+      "category": "luxury",
+      "unlock_tech": "jewelry",
+      "icon": "pearl_jewelry.png"
+    },
+    {
+      "id": "coral_jewelry",
+      "price": 200,
+      "name": "Coral Jewelry",
+      "type": "product",
+      "category": "luxury",
+      "unlock_tech": "jewelry",
+      "icon": "coral_jewelry.png"
+    }
+  ]
+}

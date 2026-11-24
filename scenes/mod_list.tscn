@@ -1,0 +1,168 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/mod_list.gd" id="1_ml"]
+
+[node name="ModList" type="VBoxContainer"]
+custom_minimum_size = Vector2(860, 0)
+theme_override_constants/separation = 8
+script = ExtResource("1_ml")
+
+[node name="HintLabel" type="Label" parent="."]
+layout_mode = 2
+text = "Choose the mods for this game. Each save keeps its own set."
+theme_type_variation = &"MutedLabel"
+
+[node name="Panes" type="HBoxContainer" parent="."]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 12
+
+[node name="AvailablePane" type="VBoxContainer" parent="Panes"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 1.2
+theme_override_constants/separation = 4
+
+[node name="Title" type="Label" parent="Panes/AvailablePane"]
+layout_mode = 2
+theme_type_variation = &"SectionHeading"
+text = "Available mods"
+
+[node name="Hint" type="Label" parent="Panes/AvailablePane"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+theme_type_variation = &"MutedLabel"
+theme_override_font_sizes/font_size = 12
+text = "Check a mod to add it to the game."
+autowrap_mode = 3
+
+[node name="ScrollArea" type="Control" parent="Panes/AvailablePane"]
+clip_contents = true
+custom_minimum_size = Vector2(0, 300)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Frame" type="Panel" parent="Panes/AvailablePane/ScrollArea"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_type_variation = &"SurfaceInset"
+
+[node name="Scroll" type="ScrollContainer" parent="Panes/AvailablePane/ScrollArea"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 6.0
+offset_top = 6.0
+offset_right = -6.0
+offset_bottom = -6.0
+grow_horizontal = 2
+grow_vertical = 2
+horizontal_scroll_mode = 0
+vertical_scroll_mode = 2
+
+[node name="List" type="VBoxContainer" parent="Panes/AvailablePane/ScrollArea/Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="SelectedPane" type="VBoxContainer" parent="Panes"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Title" type="Label" parent="Panes/SelectedPane"]
+layout_mode = 2
+theme_type_variation = &"SectionHeading"
+text = "Load order"
+
+[node name="Hint" type="Label" parent="Panes/SelectedPane"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+theme_type_variation = &"MutedLabel"
+theme_override_font_sizes/font_size = 12
+text = "A mod lower in the list overrides the mods above it."
+autowrap_mode = 3
+
+[node name="Body" type="HBoxContainer" parent="Panes/SelectedPane"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 6
+
+[node name="ScrollArea" type="Control" parent="Panes/SelectedPane/Body"]
+clip_contents = true
+custom_minimum_size = Vector2(0, 300)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Frame" type="Panel" parent="Panes/SelectedPane/Body/ScrollArea"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_type_variation = &"SurfaceInset"
+
+[node name="Scroll" type="ScrollContainer" parent="Panes/SelectedPane/Body/ScrollArea"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 6.0
+offset_top = 6.0
+offset_right = -6.0
+offset_bottom = -6.0
+grow_horizontal = 2
+grow_vertical = 2
+horizontal_scroll_mode = 0
+vertical_scroll_mode = 2
+
+[node name="OrderList" type="VBoxContainer" parent="Panes/SelectedPane/Body/ScrollArea/Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="OrderButtons" type="VBoxContainer" parent="Panes/SelectedPane/Body"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="UpButton" type="Button" parent="Panes/SelectedPane/Body/OrderButtons"]
+custom_minimum_size = Vector2(72, 30)
+layout_mode = 2
+tooltip_text = "Move the mod up"
+text = "Up"
+
+[node name="DownButton" type="Button" parent="Panes/SelectedPane/Body/OrderButtons"]
+custom_minimum_size = Vector2(72, 30)
+layout_mode = 2
+tooltip_text = "Move the mod down"
+text = "Down"
+
+[node name="Spacer" type="Control" parent="Panes/SelectedPane/Body/OrderButtons"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ProblemsPanel" type="PanelContainer" parent="."]
+visible = false
+layout_mode = 2
+theme_type_variation = &"SurfaceProblem"
+
+[node name="ProblemsMargin" type="MarginContainer" parent="ProblemsPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 6
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 6
+
+[node name="ProblemsLabel" type="Label" parent="ProblemsPanel/ProblemsMargin"]
+layout_mode = 2
+text = ""
+autowrap_mode = 3

@@ -1,0 +1,66 @@
+name: Tests
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+    inputs:
+      only:
+        description: Test name filter (empty runs the full suite)
+        type: string
+        required: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tests-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  godot-tests:
+    name: Godot tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      GODOT_VERSION: 4.7-stable
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Fast Python checks
+        run: |
+          python3 tools/validate_json.py
+          python3 tools/check_indentation.py
+
+      - name: Install Godot
+        run: |
+          archive="Godot_v${GODOT_VERSION}_linux.x86_64"
+          curl --fail --location --retry 3 --output "$RUNNER_TEMP/godot.zip" \
+            "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}/${archive}.zip"
+          unzip -q "$RUNNER_TEMP/godot.zip" -d "$RUNNER_TEMP/godot"
+          echo "GODOT=$RUNNER_TEMP/godot/$archive" >> "$GITHUB_ENV"
+
+      - name: Import project
+        run: '"$GODOT" --headless --path . --import'
+
+      - name: Run tests
+        env:
+          TEST_FILTER: ${{ inputs.only }}
+        run: |
+          if [[ -n "$TEST_FILTER" ]]; then
+            python3 tools/run_tests.py --all --only "$TEST_FILTER"
+          else
+            python3 tools/run_tests.py --all
+          fi
+
+      - name: Upload test logs
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: godot-test-logs
+          path: tools/test_logs/
+          if-no-files-found: ignore

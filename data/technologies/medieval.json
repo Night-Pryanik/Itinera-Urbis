@@ -1,0 +1,171 @@
+{
+  "technologies": [
+    {
+      "id": "hopping",
+      "name": "Hopping",
+      "era": "medieval",
+      "science_cost": 4.0,
+      "prerequisites": [ [ "fermentation" ], [ "plantations" ] ],
+      "icon": "hopping.png",
+      "description": "Unlocks the recipe for hopped beer.",
+      "flavor": "Hops made beer keep. Grain alone gave a drink that soured within days; a bittering charge of hops held it back, and beer became a good that could be stored and shipped."
+    },
+    {
+      "id": "horse_collar",
+      "name": "Horse Collar",
+      "era": "medieval",
+      "science_cost": 5.0,
+      "prerequisites": [ [ "draft_animals", "plow" ] ],
+      "icon": "horse_collar.png",
+      "description": "+20% to resource production on farms and animal mills.\nReduces the effect of distance from the city on the work cost of building improvements by 20%.",
+      "flavor": "An ancient throat-and-girth strap pressed against a horse's windpipe the moment it leaned into a heavy load; the harder the animal pulled, the less it could breathe. Developed along the northern frontiers of China from earlier breast-strap harness and carried west across the steppe to medieval farms and roads, the padded rigid collar shifted the pull onto the shoulders, turning the horse into a fast, tireless draft partner for plow, mill and wagon alike."
+    },
+    {
+      "id": "road_administration",
+      "name": "Road Administration",
+      "era": "medieval",
+      "science_cost": 5.0,
+      "prerequisites": [ [ "road_paving", "cartography" ] ],
+      "icon": "road_administration.png",
+      "description": "Unlocks Great Highways (road level 4): up to 80 units/sec per section.",
+      "flavor": "A map shows where one road meets the next. Surveyors set the width, crews clear the ditches, and each stretch has someone responsible for its upkeep."
+    },
+    {
+      "id": "crop_rotation",
+      "name": "Crop Rotation",
+      "era": "medieval",
+      "science_cost": 5.0,
+      "prerequisites": [ [ "plow", "calendar" ] ],
+      "icon": "crop_rotation.png",
+      "description": "+25% to resource production on farms and plantations.",
+      "flavor": "A field sown with the same grain year after year gives less with every harvest until the earth lies spent. Alternating winter and spring cereals with pulses, fodder and rested fallow — practiced across Chinese bean-and-millet fields, the irrigated gardens of the Islamic world and the three-field manors of medieval Europe — returned strength to the soil and raised more from the same land."
+    },
+    {
+      "id": "windmill",
+      "name": "Windmill",
+      "era": "medieval",
+      "science_cost": 5.0,
+      "prerequisites": [ [ "mechanics", "rope_making" ] ],
+      "icon": "windmill_tech.png",
+      "description": "Allows you to build the windmill (2 production slots): wind-driven canvas sails turn the millstones without needing fresh water or animal feed.",
+      "flavor": "Where rivers ran dry in summer or never crossed the plain at all, millers looked up instead of down. First on vertical axles behind wind-catching walls in Sistan and Khorasan, then on pivoting timber posts and stone towers whose cloth sails could be turned to face any breeze, the windmill brought tireless grinding to dry uplands and open coasts alike."
+    },
+    {
+      "id": "blast_furnace",
+      "name": "Blast Furnace",
+      "era": "medieval",
+      "science_cost": 6.0,
+      "prerequisites": [ [ "steel_making", "water_power", "limestone_burning" ] ],
+      "icon": "blast_furnace_tech.png",
+      "description": "Allows you to build the blast furnace and upgrade bloomeries into it, smelting iron ore with limestone or lime flux into cast iron.\nUnlocks finery iron and steel refined from cast iron, along with cast-iron tools and cast-iron cookware.",
+      "flavor": "A bloomery never truly melted its iron: it coaxed a spongy lump from the ore one batch at a time and halted to pull it from the hearth. Raise the shaft, feed it limestone to run the stony gangue off as liquid slag and drive the bellows without pause, and the metal pours from the tap-hole like bright water — brittle under the hammer, yet matchless in the mould and ready to be fined in bulk into bar iron and steel. Cast in China since antiquity and towering beside the millstreams of medieval Europe, the blast furnace turned iron from a smith's batch into an industry."
+    },
+    {
+      "id": "coal_mining",
+      "name": "Coal Mining",
+      "era": "medieval",
+      "science_cost": 5.0,
+      "prerequisites": [ [ "hoisting_mechanisms", "iron_processing" ] ],
+      "icon": "coal_mining.png",
+      "description": "Reveals coal seams in hills and mountains and allows mines to extract coal for domestic fuel, kilns and boilers.",
+      "flavor": "Black stone that burns hotter and longer than firewood cropped out along hillsides and river cuts from northern China to Britain and the Meuse valley. Once miners drove deeper galleries with iron picks and windlasses, mineral coal fed city hearths, glasshouses, brew-kettles, stills, dye-vats and pottery kilns — though its biting, sulfurous smoke still spoiled bare iron in the furnace.",
+      "unlock_effects": [ { "icon": "new_resource.png", "name": "Reveals coal seams and allows you to mine coal." } ]
+    },
+    {
+      "id": "coking",
+      "name": "Coking",
+      "era": "medieval",
+      "science_cost": 6.0,
+      "prerequisites": [ [ "coal_mining", "blast_furnace" ] ],
+      "icon": "coking.png",
+      "description": "Allows you to build the coke oven to bake coal into metallurgical coke, substituting for charcoal across smelters, forges and glassworks and unlocking heavier coke smelting in the blast furnace.",
+      "flavor": "Raw coal ruins hot iron with sulfur and chokes a furnace with thick tarry smoke, yet the remedy lay in the charcoal burner's own craft. Baked slowly with little air until its volatile fumes burned off, stone coal turned into hard, porous grey coke — first charged into the iron furnaces of Song China when the surrounding hills ran short of timber, bearing heavier ore burdens than fragile wood charcoal ever could."
+    },
+    {
+      "id": "distillation",
+      "name": "Distillation",
+      "era": "medieval",
+      "science_cost": 5.0,
+      "icon": "distillation.png",
+      "prerequisites": [ [ "fermentation", "alchemy" ] ],
+      "description": "Allows you to build the distillery and unlocks distillation across the workshops: strong spirits, rectified spirit, floral water, fragrant oils, turpentine, rosin, varnish, white naphtha, mercury, zinc, sublimed sal ammoniac, sulfuric, hydrochloric and nitric acids, and aqua regia.",
+      "flavor": "To boil a liquid and to catch its breath in a cold vessel is to take the spirit of a thing and leave the thing behind. The still stood in the workshops of Alexandria and in the courts of the caliphate, and the physicians of Song China distilled the liquor of the millet. What came out of the alembic was worth more than what was poured into it."
+    },
+    {
+      // The press multiplies one setting of type: the workshop pulls sheet after
+      // sheet from the same forme and binds them while the ink dries.
+      "id": "printing",
+      "name": "Printing",
+      "era": "medieval",
+      "science_cost": 5.0,
+      "prerequisites": [ [ "paper", "bookbinding", "screw_press" ] ],
+      "icon": "printing.png",
+      "description": "Adds one production slot to the bookbinder's workshop and unlocks type metal in the smelter.",
+      "flavor": "A page cut in wood or cast in metal gives as many copies as the press can pull, and no copy argues with another. The woodblock came first in China, movable type followed there and in Korea, where the letters were cast in bronze; Gutenberg set the same idea in lead and gave it the screw press and paper. A scribe copies a book in a year, a workshop prints it in a season."
+    },
+    {
+      "id": "gunpowder",
+      "name": "Gunpowder",
+      "era": "medieval",
+      "science_cost": 6.0,
+      "icon": "gunpowder.png",
+      "prerequisites": [ [ "distillation" ] ],
+      "description": "Unlocks gunpowder in the alchemist's house, boosting ore and stone extraction in mines and quarries, and nitrary saltpeter leached from lime and potash.",
+      "flavor": "Alchemists searching for elixirs in Tang and Song China ground saltpeter with sulfur and charcoal and named the sudden roar fire-medicine. Carried west along the trade roads through Persian, Arab and European workshops, the black grain did more than reshape battlefields: tamped into a drilled hole, it split in a breath the granite and vein-rock that picks and wedges had worried for weeks."
+    },
+    {
+      "id": "wedge_oil_press",
+      "name": "Wedge Oil Press",
+      "era": "medieval",
+      "science_cost": 5.0,
+      "prerequisites": [ [ "oil_making", "screw_press" ] ],
+      "icon": "wedge_oil_press.png",
+      "description": "Unlocks the oil mill."
+    },
+    {
+      "id": "vat_fermentation",
+      "name": "Vat Fermentation",
+      "era": "medieval",
+      "science_cost": 5.0,
+      "prerequisites": [ [ "fermentation" ] ],
+      "icon": "vat_fermentation.png",
+      "description": "Unlocks the fermentation workshop."
+    },
+    {
+      "id": "treadle_loom",
+      "name": "Treadle Loom",
+      "era": "medieval",
+      "science_cost": 5.0,
+      "prerequisites": [ [ "weaving" ] ],
+      "icon": "treadle_loom.png",
+      "description": "Unlocks the weaver's workshop.",
+      "flavor": "The weaver works the shuttle with both hands while the feet raise and lower the heddles. Treadle looms were long established in East Asia and reached Europe in the eleventh to thirteenth centuries, probably through the Islamic world."
+    },
+    {
+      "id": "rope_twisting",
+      "name": "Rope Twisting",
+      "era": "medieval",
+      "science_cost": 5.0,
+      "prerequisites": [ [ "rope_making" ] ],
+      "icon": "rope_twisting.png",
+      "description": "Unlocks the ropewalk.",
+      "flavor": "Yarns were spun up into strands and then laid together with a counter-twist. A long covered lane let a ropery stretch the strands from end to end and walk back as they combined, making ropes far longer and thicker than a household shed could twist. Ropewalks became a familiar part of medieval shipbuilding and dockyard work."
+    },
+    {
+      "id": "compass",
+      "name": "Compass",
+      "era": "medieval",
+      "science_cost": 6.0,
+      "prerequisites": [ [ "cartography", "precision_instruments", "steel_making" ] ],
+      "icon": "compass.png",
+      "description": "Fishing boats: +25% production.\nScouting: up to 7 tiles per area, up to 2 simultaneous expeditions, -30% distance surcharge on scouting cost, and +25% maximum map scroll distance from the city.\nAllows sea trade with coastal towns through harbors without a road.",
+      "flavor": "A magnetized steel needle balanced in a graduated bowl keeps a steady bearing under fog, clouds, and forest canopy alike. Described in Song-dynasty Chinese manuals for both land surveyors and mariners and carried across the Indian Ocean and Mediterranean, the magnetic compass turned open water and trackless wilderness into charted routes.",
+      "unlock_effects": [
+        {
+          "icon": "harbor.png",
+          "name": "Allows sea trade with coastal towns through harbors without a road"
+        }
+      ]
+    }
+  ]
+}

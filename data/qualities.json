@@ -1,0 +1,81 @@
+{
+    // Resource quality tiers.
+    // Levels are listed from worst to best.
+    // value — the numeric weight used to compute a weighted average in production.
+    // stars — textual representation with stars (for the map and tooltips).
+    // color — the COLOUR of the level as an [R, G, B] array in the range 0…255
+    //         (the same entry format as for covers, improvements and resources).
+    //         It paints the stars in the quality breakdown tooltip and the
+    //         per-quality price lines in the row tooltip, and in the list row —
+    //         the percentages of the share of each level in storage (see
+    //         resources_tab._update_quality_label). The palette is "like in RPGs":
+    //         grey (common) → green (fine) → purple
+    //         (exceptional, "epic") → gold (perfect,
+    //         "legendary"). Grey on the common level does not clash with the
+    //         quantity number, and the other three colours are distinguishable
+    //         even on the dark tooltip background. The field is optional: without
+    //         it the level is drawn with a soft light-grey default (GameData.
+    //         get_quality_color).
+    // spawn_weight — relative weight when a resource quality is determined
+    //               randomly as it spawns on the map.
+    // price_multiplier — the MULTIPLIER of the price of one unit of goods of this
+    //               quality (1.0 = base price, unchanged). It is multiplied,
+    //               not added to: the same addition in coins would
+    //               break the price scale (feed costing 1 and an ornament
+    //               costing 140 would get +30% against +0.2%).
+    //               The values are chosen so that neighbouring levels give
+    //               DIFFERENT final prices: at 1.30/1.75/2.30 the levels
+    //               differ for 265 of 268 goods (only
+    //               three goods costing 1 coin merge). Closer values
+    //               (1.15/1.35/1.60) merged for 43 goods — quality
+    //               stopped being worth the difference.
+    //               The final price is rounded to a WHOLE number of coins
+    //               (see GameData.get_price_breakdown_for_quality).
+    "quality_levels": [
+        {
+            "id": "common",
+            "name": "Common",
+            "value": 1,
+            "stars": "★",
+            "color": [ 160, 160, 160 ],
+            "spawn_weight": 50,
+            "price_multiplier": 1.0
+        },
+        {
+            "id": "fine",
+            "name": "Fine",
+            "value": 2,
+            "stars": "★★",
+            "color": [ 90, 200, 110 ],
+            "spawn_weight": 30,
+            "price_multiplier": 1.3
+        },
+        {
+            "id": "exceptional",
+            "name": "Exceptional",
+            "value": 3,
+            "stars": "★★★",
+            "color": [ 186, 120, 255 ],
+            "spawn_weight": 15,
+            "price_multiplier": 1.75
+        },
+        {
+            "id": "perfect",
+            "name": "Perfect",
+            "value": 4,
+            "stars": "★★★★",
+            "color": [ 255, 215, 0 ],
+            "spawn_weight": 5,
+            "price_multiplier": 2.3
+        }
+    ],
+    // Priorities for choosing raw materials for production (button in the building panel).
+    // best — best quality first, worst — worst quality first, random — at random.
+    "priority_default": "best",
+    "priority_options": ["best", "worst", "random"],
+    "priority_names": {
+        "best": "Best quality",
+        "worst": "Worst quality",
+        "random": "Random"
+    }
+}

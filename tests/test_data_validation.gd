@@ -1,0 +1,1298 @@
+# Runtime game-data validator test (headless):
+#   godot --headless --path . --script res://tests/test_data_validation.gd
+#
+# Checks seven things:
+#   1) DETECTOR (main). On synthetic data, exactly one breakage is introduced
+#      into each kind of check, and the test requires finding each one — with
+#      the right kind of check, identifier and reference owner.
+#      The data is synthetic on purpose: the test must not break when the
+#      author fixes the real data/*.json.
+#   2) FALSE POSITIVES. Five places where the validator must stay silent:
+#      produced_in == "*" (the service marker "in any building", see
+#      CityData.can_craft_in), category on a RAW RESOURCE (there it is a map
+#      generation filter with its own set of values — animals/plants/metals/minerals,
+#      not the categories from data/categories.json), "product without a source"
+#      on a goods item that is produced by a display_result, by a map
+#      resource's produces, or by a lumberjack hut, Cyrillic in the
+#      name/description fields (the charset check applies only to id fields;
+#      name/description are free-form and may contain any script, so a Cyrillic
+#      name here is a deliberate fixture) and underscores with digits in an id,
+#      plus the unlock of a branch that waits for the challenge tier of a good —
+#      whether the block spells that id out or leaves it to be derived.
+#   3) THE COVER SOURCE OF WOOD is computed from the data, not hardcoded
+#      as a list: remove the hut or zero out wood_yield — the cover source of
+#      wood disappears, and the validator must notice this.
+#   4) THE FIELD WHITELIST. Every key of data/*.json must be described by the
+#      model (data_validator.SCHEMA): a field of a record, a field of a nested
+#      object, a field of an element of an array, an unknown collection in the
+#      root and a constant of the wrong block of the balance are each reported,
+#      while the fields the model does describe stay silent.
+#   4b) THE FREE KEYS OF THE DICTIONARIES. The keys of an id map ({"wheat": 1})
+#      are identifiers, not fields: the whitelist cannot see a typo in them at
+#      all. Every map that names a registry (produces, additional_cost,
+#      cover_chance, terrain_config, production_multiplier, priority_names)
+#      must report a key that is not the id of a declared record, and must stay
+#      silent when the registry is empty.
+#   5) Real data/*.json: the validator does not crash, problems correctly
+#      point at the owning product, and non-ASCII in identifiers is absent
+#      (the only exception to the rule "the list of problems on real data is
+#      not checked" — see the comment in _test_real_data).
+#   6) File and line reference (see _check_file_and_line).
+#
+# Real data/*.json is run at the end against invariants, not against an
+# expected list: its author will fix it, and the test would fail on exactly the
+# thing the validator was written for. Its problem list is printed for reference.
+extends SceneTree
+
+# Hang watchdog: without it, an aborted _initialize() coroutine looks from the
+# outside like eternal silence. Details — in tests/watchdog.gd.
+const WATCHDOG = preload("res://tests/watchdog.gd")
+
+const DataValidator = preload("res://scripts/data_validator.gd")
+
+
+func _initialize():
+    WATCHDOG.arm(self)
+    var state = {"failed": false}
+
+    if WATCHDOG.wants_case("detector"):
+        _test_detector(state)
+    if WATCHDOG.wants_case("no_false_positives_on_synthetic"):
+        _test_no_false_positives_on_synthetic(state)
+    if WATCHDOG.wants_case("lumberjack_depends_on_data"):
+        _test_lumberjack_depends_on_data(state)
+    if WATCHDOG.wants_case("schema_whitelist"):
+        _test_schema_whitelist(state)
+    if WATCHDOG.wants_case("dict_keys"):
+        _test_dict_keys(state)
+    if WATCHDOG.wants_case("blacklisted_modifier_buildings"):
+        _test_blacklisted_modifier_buildings(state)
+    if WATCHDOG.wants_case("real_data"):
+        _test_real_data(state)
+    if WATCHDOG.wants_case("localization"):
+        _test_localization(state)
+
+    WATCHDOG.report_skipped()
+    if state["failed"]:
+        print("VALIDATION TEST FAILED")
+        quit(1)
+    else:
+        print("VALIDATION TEST OK")
+        quit(0)
+
+
+# --- 1) Each kind of check catches its own breakage -----------------------
+
+func _test_detector(state: Dictionary):
+    var gd = _make_data()
+
+    # Expected set of breakages: kind of check → [identifier, owner].
+    # Order and count are checked exactly: an extra or missing problem is
+    # also a validator bug.
+    var expected := {
+        "produced_in": [["ghost_mill", "bad_produced_in"]],
+        "result": [["ghost_product", "bad_result"]],
+        "improved_by": [["ghost_farm", "bad_improved_by"]],
+        "unlock_improvement": [["ghost_farm", "bad_unlock_improvement"]],
+        "unlock_tech": [
+            ["ghost_tech", "bad_building_tech"],
+            ["ghost_tech", "bad_improvement_tech"],
+            ["ghost_tech", "bad_product_tech"],
+            ["ghost_tech", "bad_craft_tech"],
+        ],
+        "profession": [
+            ["ghost_prof", "bad_building_prof"],
+            ["ghost_prof", "bad_improvement_prof"],
+            ["ghost_prof", "wheat"],
+        ],
+        "category": [["ghost_category", "bad_category"]],
+        "group_member": [["ghost_member", "bad_group"]],
+        "resource_group": [["@ghost_group", "bad_group_ref"]],
+        "resource": [["ghost_raw", "bad_resource_ref"]],
+        # Consumption rules. The reference owner is the rule itself, and it is
+        # identified by the value "resource" (see data_validator
+        # _validate_consumption), so source_id equals ref_id.
+        "consumption_resource": [["ghost_product", "ghost_product"], ["jewelry", "jewelry"], ["ghost_member", "@food"]],
+        "consumption_group": [["@ghost_group", "@ghost_group"], ["@tools", "@tools"]],
+        "consumption_building": [["ghost_building", "wheat"]],
+        "consumption_member": [["tools", "@food"], ["flour", "wheat"]],
+        "prerequisite": [["ghost_tech", "bad_tech_prereq"]],
+        # A branch that waits for a challenge no era task and no product tier carries. The two
+        # branches that wait for the tiers of "cheese" and "wool" must stay silent here, including
+        # the tier whose id the data never writes.
+        "specialization_challenge": [["ghost_challenge", "ghost_branch"]],
+        # The goods a bonus is scoped to. A group addressed as "@<id>" is expanded by the code over
+        # its members, so a reference to one binds as a reference to a good does; a group of the data
+        # written without its "@" is the good that does not exist.
+        "specialization_group": [["@ghost_group", "goods_branch"]],
+        "specialization_product": [["grains", "goods_branch"]],
+        # The same reference read from a recipe: a work behind a task of the fame that is declared
+        # nowhere is closed forever, and the row of the building only shows it as unavailable.
+        "recipe_challenge": [["ghost_challenge", "bad_craft_challenge"]],
+        # A good that calls itself a brand, though no rung of the fame grants it.
+        "brand_ungranted": [["ungranted_brand", "ungranted_brand"]],
+        # The "product without a source" problem has no missing identifier:
+        # the fault is not in a reference but in its absence. So ref_id and
+        # source_id are both the id of the owning product itself.
+        "product_source": [["no_source_product", "no_source_product"]],
+        # Identifier problems. The id_charset problem has no missing
+        # reference (the identifier itself is at fault), so ref_id and
+        # source_id are both the id of the corrupted declaration.
+        #
+        # The Cyrillic "сarmine" gives TWO problems of different kinds at once:
+        # it is outside the alphabet (id_charset) AND indistinguishable from
+        # "carmine" (id_lookalike).
+        # This is not a duplicate but two different statements about one
+        # character, and both are useful: the first says "replace it with
+        # Latin", the second — "you now have two different resources".
+        "id_charset": [["сoal_typo", "сoal_typo"], ["сarmine", "сarmine"]],
+        # For id_lookalike, ref_id is the Latin "twin" (what the author
+        # thinks they are referring to), source_id is the corrupted declaration.
+        "id_lookalike": [["carmine", "сarmine"]],
+        # cover_belt: ref_id is the belt as the data spells it, source_id is the cover that lists it.
+        "cover_belt": [["troppical", "bad_belt_cover"]],
+    }
+
+    var problems: Array = DataValidator.new().validate(gd)
+
+    for kind in expected:
+        for pair in expected[kind]:
+            var ref_id: String = str(pair[0])
+            var source_id: String = str(pair[1])
+            var found := _find(problems, kind, ref_id, source_id)
+            check(not found.is_empty(),
+                "problem not found: kind=%s, ref=%s, source=%s" % [kind, ref_id, source_id],
+                state)
+
+    # Each breakage must produce exactly one problem of its own kind, not a
+    # "neighboring" one — otherwise the message points at the wrong field.
+    check(problems.size() == _expected_problem_count(expected),
+        "expected %d problems, got %d: %s" % [
+            _expected_problem_count(expected), problems.size(),
+            _str_messages(problems)], state)
+
+    # The message must name both the missing identifier and the reference
+    # owner — otherwise the player will not understand what to fix.
+    var sample := _find(problems, "group_member", "ghost_member", "bad_group")
+    check(sample.has("message"), "the problem has no message field", state)
+    check(str(sample.get("message", "")).contains("ghost_member"),
+        "the message does not contain the sought identifier: %s" % str(sample.get("message", "")), state)
+    check(str(sample.get("message", "")).contains("bad_group"),
+        "the message does not contain the reference owner's id: %s" % str(sample.get("message", "")), state)
+    check(str(sample.get("where", "")).contains("bad_group"),
+        "the where field does not contain the reference owner's id: %s" % str(sample.get("where", "")), state)
+
+    gd.free()
+
+
+# --- 2) Two places where the validator must stay silent -------------------
+
+func _test_no_false_positives_on_synthetic(state: Dictionary):
+    var gd = _make_data()
+    var problems: Array = DataValidator.new().validate(gd)
+
+    check(_find(problems, "produced_in", "*", "wildcard_recipe").is_empty(),
+        "the service marker \"*\" in produced_in must not be considered a breakage", state)
+    check(_find(problems, "category", "animals", "wildcard_raw").is_empty(),
+        "a raw resource's category (\"animals\") must not be checked against data/categories.json", state)
+
+    # --- False positives of the "product without a source" check ---
+    #
+    # A naive version of this check would complain about three ordinary ways
+    # to obtain a goods item, each of which occurs in the real data/.
+    check(_find(problems, "product_source", "science", "science").is_empty(),
+        "a product only from display_result (\"Science\") must not be considered without a source",
+        state)
+    check(_find(problems, "product_source", "wood", "wood").is_empty(),
+        "a lumberjack hut product (a cover's wood_yield) must not be considered without a source",
+        state)
+    check(_find(problems, "product_source", "wheat", "wheat").is_empty(),
+        "a product from a map resource's produces must not be considered without a source", state)
+    check(_find(problems, "product_source", "flour", "flour").is_empty(),
+        "a product from a recipe's result must not be considered without a source", state)
+    # A RAW RESOURCE (whose produces is checked for values, not for
+    # "where it comes from") must not fall under the check: it is taken from
+    # the map by generation, so it has a source by definition.
+    check(_find(problems, "product_source", "wheat_field", "wheat_field").is_empty(),
+        "a raw resource must not be checked for having a source", state)
+
+    # --- False positives of the identifier checks ---
+    #
+    # ONLY the "id" fields are checked. Name and description must stay
+    # untouched: the charset check applies only to id fields, while
+    # name/description are free-form and may contain any script — a Cyrillic
+    # name here is a deliberate fixture. Translation is applied on top of the
+    # English text (data_loader, DISPLAY_FIELDS). If the check ran over every
+    # string in a record, it would reject the whole project.
+    check(_find(problems, "id_charset", "wildcard_raw", "wildcard_raw").is_empty(),
+        "Cyrillic in a name (\"Корова\") must not be considered an identifier error",
+        state)
+    # Underscores and digits in an id are the project norm (wheat_field,
+    # bad_group_ref), not an error: the rule allows a-z, 0-9 and "_".
+    check(_find(problems, "id_charset", "wheat_field", "wheat_field").is_empty(),
+        "an underscore in an id must not be considered an invalid character", state)
+    check(_find(problems, "id_charset", "bad_group_ref", "bad_group_ref").is_empty(),
+        "underscores and digits in a recipe's id must not be considered an error", state)
+    # A lone id without a "Cyrillic twin" is not a pair but an ordinary declaration.
+    check(_find(problems, "id_lookalike", "wheat", "wheat").is_empty(),
+        "a lone id without a homoglyph pair must not produce problems", state)
+
+    # --- False positives of the consumption rule checks ---
+    #
+    # A registry rule must be able to reference both a single product and an
+    # @-group and a pseudo-profession. Here the set has products, groups and
+    # professions, and all three references are valid — the validator must not
+    # be noisy about them. Without this check, a naive implementation would
+    # look for an "id" in GameData.professions and complain about every rule
+    # at once.
+    check(_find(problems, "consumption_resource", "tools", "tools").is_empty(),
+        "a consumption rule for an existing product must not be considered a breakage",
+        state)
+    check(_find(problems, "consumption_group", "@jewelry", "@jewelry").is_empty(),
+        "a consumption rule for an existing @-group must not be considered a breakage",
+        state)
+    check(_find(problems, "consumption_building", "bakery", "tools").is_empty(),
+        "a consumption rule scoped to an existing building must not be considered a breakage",
+        state)
+    check(_find(problems, "consumption_member", "tools", "@jewelry").is_empty(),
+        "a per-member override for a real member of the rule's @-group must stay silent",
+        state)
+    # A forgotten "@": the name is a group, and the hint must name the group.
+    var hint_group := _find(problems, "consumption_resource", "jewelry", "jewelry")
+    check(not hint_group.is_empty(),
+        "a forgotten \"@\" in a consumption rule is not reported", state)
+    check(str(hint_group.get("where", "")).contains("@jewelry"),
+        "the hint of a forgotten \"@\" does not contain the group name: %s" % str(hint_group.get("where", "")), state)
+    # An extra "@": the name is a product, and the hint must name the product.
+    var hint_product := _find(problems, "consumption_group", "@tools", "@tools")
+    check(not hint_product.is_empty(),
+        "an extra \"@\" in a consumption rule is not reported", state)
+    check(str(hint_product.get("where", "")).contains("tools"),
+        "the hint of an extra \"@\" does not contain the product name: %s" % str(hint_product.get("where", "")), state)
+    # A name that does not exist in either namespace — no hint, just a plain broken reference.
+    var no_hint := _find(problems, "consumption_resource", "ghost_product", "ghost_product")
+    check(not str(no_hint.get("where", "")).contains("Maybe you meant"),
+        "a plain broken reference must not carry a hint: %s" % str(no_hint.get("where", "")), state)
+
+    # --- False positives of the challenge references of a specialization ---
+    #
+    # The tier of a good is a challenge of its own even though no challenges.json mentions it: the id
+    # lives in the product block, and where the block does not spell it out the code derives it from
+    # the product. A branch that waits for such a tier is an ordinary unlocking, not a breakage — the
+    # real data is built exactly this way, so a validator that missed the derived half of the id space
+    # would call four correct branches broken.
+    check(_find(problems, "specialization_challenge", "cheese_challenge", "cheese_branch").is_empty(),
+        "the tier of \"cheese\" writes its id in the product block, and the validator must read it",
+        state)
+    check(_find(problems, "specialization_challenge", "wool_challenge", "wool_branch").is_empty(),
+        "the tier of \"wool\" carries no id and the code derives it from the product — a branch that " +
+        "waits for that derived id is not a breakage", state)
+    check(_find(problems, "specialization_challenge", "era_chunks", "wool_branch").is_empty(),
+        "a branch unlocked by a task of the era must not be considered a breakage", state)
+    # The goods a bonus is scoped to. A group is expanded by the code over its members, so a
+    # reference to one binds exactly as a reference to a good does — and a group written without its
+    # "@" is the same mistake the consumption rules make.
+    check(_find(problems, "specialization_product", "cheese", "cheese_branch").is_empty(),
+        "a bonus for an existing good must not be considered a breakage", state)
+    check(_find(problems, "specialization_group", "@grains", "cheese_branch").is_empty(),
+        "a bonus for an existing @-group must not be considered a breakage", state)
+    check(not _find(problems, "specialization_group", "@ghost_group", "goods_branch").is_empty(),
+        "a bonus that names a group declared nowhere is not reported", state)
+    var extra_at := _find(problems, "specialization_product", "grains", "goods_branch")
+    check(not extra_at.is_empty(),
+        "a group of the data written without \"@\" in a bonus is not reported", state)
+    check(str(extra_at.get("where", "")).contains("@grains"),
+        "the hint of the extra \"@\" does not name the group: %s" % str(extra_at.get("where", "")),
+        state)
+    # The fame block itself is a valid record: a trigger the code knows and a reward naming a branch
+    # that exists must not add a problem of their own kind.
+    check(_find(problems, "fame_trigger", "sell", "cheese").is_empty(),
+        "\"sell\" is a trigger the code implements", state)
+    check(_find(problems, "fame_reward", "wool_branch", "wool").is_empty(),
+        "a reward that names an existing branch must not be considered a breakage", state)
+    # The same reference read from a recipe, and a prestige good the rung of the brand does grant.
+    check(_find(problems, "recipe_challenge", "wool_challenge", "cashmere_loom").is_empty(),
+        "a recipe may wait for the derived id of a ladder, exactly as a branch does", state)
+    check(_find(problems, "brand_ungranted", "cashmere", "cashmere").is_empty(),
+        "the good that the rung of the brand grants is not an unattached brand", state)
+
+    # Explicitly empty fields (null) are not references. None of these entities
+    # must end up in the result under any kind of check.
+    for entity_id in ["null_fields", "null_product", "null_improvement", "null_building"]:
+        for problem in problems:
+            check(str(problem.get("source_id", "")) != entity_id,
+                "an explicitly empty field (null) on \"%s\" is taken for a broken reference: %s" % [
+                    entity_id, str(problem.get("message", ""))], state)
+            check(str(problem.get("ref_id", "")) != "<null>",
+                "the identifier \"<null>\" in the message — null was not converted to an empty string", state)
+
+    # Data WITHOUT a source index (entity_sources empty) — problems are still
+    # found, they just stay without a file reference. The absence of the
+    # index must not crash the validator: this makes the check usable for
+    # any data with the same fields.
+    for problem in problems:
+        check(str(problem.get("file", "")).is_empty(),
+            "without a source index, no file must be specified: %s" % [
+                str(problem.get("message", ""))], state)
+        check(int(problem.get("line", 0)) == 0,
+            "without a source index, the line must not be non-zero", state)
+        check(str(problem.get("location", "")).is_empty(),
+            "without a source index, location must be empty", state)
+        # The file-and-line string is location itself, and the check above
+        # already required it to be empty. Here we catch something else: the
+        # file path must not leak into message through some other template.
+        # We check against the PATH itself, not against words like "File:": the
+        # words belong to the translation and change with the language, while
+        # res://data/ does not.
+        check(not str(problem.get("message", "")).contains("res://data/"),
+            "the message must not contain a file path without an index: %s" % [
+                str(problem.get("message", ""))], state)
+
+    gd.free()
+
+
+# --- 3) The cover source of wood is computed from the data -----------------
+#
+# In the synthetic set wood has no source in produces: its only source is the
+# link "cover → hut → product", which is hardwired in the code. That link can
+# be closed in two ways: a hardcoded list of exceptions in the validator (then
+# it would stay silent forever about a removed hut or a zeroed wood_yield) or by
+# reading the data. The test requires the latter: wood must "lose its source"
+# when the data stops producing it — otherwise the check would lie to the
+# author that everything is fine.
+func _test_lumberjack_depends_on_data(state: Dictionary):
+    # Zeroed the cover's yield — the hut has nothing to produce.
+    var gd = _make_data()
+    gd.covers["forest"]["wood_yield"] = 0
+    var problems: Array = DataValidator.new().validate(gd)
+    check(not _find(problems, "product_source", "wood", "wood").is_empty(),
+        "after zeroing wood_yield on all covers, wood loses its source, " +
+        "and the validator must notice this", state)
+    gd.free()
+
+    # Removed the hut itself — production is gone too.
+    var gd2 = _make_data()
+    gd2.improvements.erase("lumberjack_hut")
+    var problems2: Array = DataValidator.new().validate(gd2)
+    check(not _find(problems2, "product_source", "wood", "wood").is_empty(),
+        "after removing the lumberjack hut, wood loses its source, " +
+        "and the validator must notice this", state)
+    gd2.free()
+
+    # The other side: intact data — the source exists, there is no problem.
+    var gd3 = _make_data()
+    var problems3: Array = DataValidator.new().validate(gd3)
+    check(_find(problems3, "product_source", "wood", "wood").is_empty(),
+        "with intact data (the hut exists, wood_yield > 0) wood has a source", state)
+    gd3.free()
+
+
+# --- 4) The field whitelist ----------------------------------------------
+#
+# The check walks the merged JSON tree (GameData.raw_data), not the assembled collections, so the
+# fixture is a tree of its own. Every case is one key the model does not describe: a field of a
+# record, a field two arrays deep, a field of an element of an array, a collection the loader does
+# not read, and a constant that is not in its block of the balance. The records that follow the
+# model must stay silent — a whitelist that reports them is worse than no whitelist at all.
+func _test_schema_whitelist(state: Dictionary):
+    var gd = _make_data()
+    gd.raw_data = {
+        "crafts": [
+            # A record of the model: every key is described.
+            {"id": "good_recipe", "name": "Good", "produced_in": ["bakery"],
+                    "resources": {"flour": 1}, "result": {"bread": 1}, "time": 5.0,
+                    "unlock_tech": "t_fire"},
+        ],
+        "resources": [
+            # Two breakages of one record: a typo in the name of a field ("producs" instead of
+            # "produces") and a nested key two arrays deep (breeding is array<array<object>>).
+            {"id": "wheat_field", "name": "Wheat", "type": "raw",
+                    "producs": {"wheat": 1},
+                    "breeding": [[{"terrain": "plain", "cover": "none", "terain": "hill"}]]},
+        ],
+        "technologies": [
+            {"id": "t_fire", "name": "Fire",
+                    "unlock_effects": [{"icon": "a.png", "name": "A", "icn": "b.png"}]},
+        ],
+        # The breakage: a collection the loader does not read.
+        "era_bonus": [{"id": "x"}],
+        # The breakage: a constant that is not in its block (the block itself is right).
+        "game_balance": {
+            "city": {"food_per_citizen": 1, "food_per_citizn": 2},
+            "breeding": {"breeding_quality_interval_seconds": 900},
+        },
+    }
+    # The origin of two of them: a record by its own id, a collection by "@key:<name>".
+    gd.entity_sources = {
+        "resources:wheat_field": {"file": "res://data/resources/plants/food_plants.json", "line": 7},
+        "@key:era_bonus": {"file": "res://data/bonuses.json", "line": 27},
+    }
+
+    var problems: Array = _only_unknown_fields(DataValidator.new().validate(gd))
+
+    # Exactly the five breakages of the fixture, and not a word about the record that follows the
+    # model. A pair is "field, owner": an extra problem is a false positive, a missing one a hole.
+    var expected := [
+        ["producs", "wheat_field"],
+        ["terain", "wheat_field"],
+        ["icn", "t_fire"],
+        ["era_bonus", ""],
+        ["food_per_citizn", ""],
+    ]
+    check(problems.size() == expected.size(),
+        "the whitelist must report %d problems, got %d: %s" % [
+            expected.size(), problems.size(), _str_messages(problems)], state)
+    for pair in expected:
+        check(not _find(problems, "unknown_field", str(pair[0]), str(pair[1])).is_empty(),
+            "problem not found: field=%s, owner=%s" % [str(pair[0]), str(pair[1])], state)
+
+    # The path inside the record is kept: a nested key has to be findable, "terain" alone would
+    # read as a field of the record itself.
+    var nested := _find(problems, "unknown_field", "terain", "wheat_field")
+    check(str(nested.get("field", "")) == "breeding[0][0].terain",
+        "the path of a nested field is wrong: %s" % str(nested.get("field", "")), state)
+
+    # The allowed list is the point of the message: the author sees the right spelling instead of
+    # guessing it from a 26-field record.
+    var typo := _find(problems, "unknown_field", "producs", "wheat_field")
+    check((typo.get("allowed", []) as Array).has("produces"),
+        "the allowed fields of the resource do not contain \"produces\"", state)
+    check(str(typo.get("where", "")).contains("produces"),
+        "the allowed fields are not in the text: %s" % str(typo.get("where", "")), state)
+
+    # The file and the line: a record by its own declaration, a collection by "@key:<name>".
+    check(str(typo.get("location", "")).contains("res://data/resources/plants/food_plants.json"),
+        "the record is not pointed at its own file: %s" % str(typo.get("location", "")), state)
+    check(int(typo.get("line", 0)) == 7,
+        "the record is not pointed at its own line: %d" % int(typo.get("line", 0)), state)
+    var collection := _find(problems, "unknown_field", "era_bonus", "")
+    check(str(collection.get("location", "")).contains("res://data/bonuses.json"),
+        "an unknown collection is not pointed at the file that declares it: %s" % [
+            str(collection.get("location", ""))], state)
+
+    # The block of the balance is named: the author has to know where the constant belongs, and
+    # "in «game_balance»" does not say it.
+    var balance := _find(problems, "unknown_field", "food_per_citizn", "")
+    check(str(balance.get("headline", "")).contains("city"),
+        "the block of the balance is not named: %s" % str(balance.get("headline", "")), state)
+
+    # Data without the tree (a GameData assembled by hand) skips the check instead of crashing:
+    # there is nothing to walk, and the cross-reference checks keep working.
+    var bare = _make_data()
+    check(_only_unknown_fields(DataValidator.new().validate(bare)).is_empty(),
+        "data without the tree must not produce whitelist problems", state)
+    bare.free()
+
+    gd.free()
+
+
+# --- 4b) The free keys of the dictionaries --------------------------------
+#
+# An id map ({"wheat": 1}) is the second way the data is addressed by name, and the whitelist is
+# blind to it: the key name is free, so any spelling is a legal field, and the game looks the key up
+# by name and finds nothing. Every map that names its registry is exercised here — one key of each
+# is wrong, and one record of each is right and must stay silent.
+func _test_dict_keys(state: Dictionary):
+    var gd = _make_data()
+    gd.raw_data = {
+        "resources": [
+            {"id": "wheat_field", "name": "Wheat Field", "type": "raw",
+                    "produces": {"wheat": 2, "wheatt": 1}},
+            {"id": "wheat", "name": "Wheat", "type": "product", "special_yield": {"wheat": 1}},
+        ],
+        "buildings": [
+            {"id": "granary", "name": "Granary",
+                    "additional_cost": [{"wheat": 10}, {"@no_group": 5}],
+                    "additional_yield": {"sciense": 1}},
+        ],
+        "product_groups": [{"id": "planks_group", "name": "Planks"}],
+        "covers": [{"id": "forest", "name": "Forest"}],
+        "terrains": [
+            {"id": "plain", "name": "Plain", "cover_chance": {"forest": 0.5, "forrest": 0.1}},
+        ],
+        "improvements": [{"id": "farm", "name": "Farm"}],
+        "modifiers": {"fresh_water": {"production_multiplier": {"farm": 1.5, "frm": 1.2}}},
+        "map_config": {"terrain_config": {"plain": {"density": 0.3}, "desert": {"density": 0.1}}},
+        "priority_options": ["best", "worst"],
+        "priority_names": {"best": "Best", "bets": "Bets"},
+    }
+    # A record is addressed by its own id; a config block has no id at all, therefore it is
+    # addressed by the key of the collection ("@key:<name>", see data_loader).
+    gd.entity_sources = {
+        "resources:wheat_field": {"file": "res://data/resources/plants/food_plants.json", "line": 7},
+        "@key:map_config": {"file": "res://data/map_config.json", "line": 33},
+    }
+
+    var problems: Array = _only_unknown_keys(DataValidator.new().validate(gd))
+
+    # The seven maps of the fixture, one wrong key each. "farm" in the multiplier, "wheat" in
+    # produces, "planks_group" behind the "@" and "best" among the priorities are right — a check
+    # that reports them would be noise on every data set that has a correct file.
+    var expected := [
+        ["wheatt", "wheat_field", "produces", "product"],
+        ["@no_group", "granary", "additional_cost[1]", "group"],
+        ["sciense", "granary", "additional_yield", "product"],
+        ["forrest", "plain", "cover_chance", "cover"],
+        ["frm", "", "fresh_water.production_multiplier", "improvement"],
+        ["desert", "", "terrain_config", "terrain"],
+        ["bets", "", "priority_names", "priority_option"],
+    ]
+    check(problems.size() == expected.size(),
+        "the key check must report %d problems, got %d: %s" % [
+            expected.size(), problems.size(), _str_messages(problems)], state)
+    for item in expected:
+        var problem := _find(problems, "unknown_key", str(item[0]), str(item[1]))
+        check(not problem.is_empty(),
+            "problem not found: key=%s, owner=%s" % [str(item[0]), str(item[1])], state)
+        if problem.is_empty():
+            continue
+        # The field is the path of the MAP: the key itself is in ref_id, where the window
+        # highlights it. Without the path the author has to guess which map of the record is meant.
+        check(str(problem.get("field", "")) == str(item[2]),
+            "the path of the map is wrong for \"%s\": %s" % [str(item[0]), str(problem.get("field", ""))], state)
+        # The kind of the entity the key had to name: "@no_group" is a goods group, and the
+        # message says so ("Unknown goods group"), not "Unknown product".
+        check(str(problem.get("target", "")) == str(item[3]),
+            "the target of \"%s\" is wrong: %s" % [str(item[0]), str(problem.get("target", ""))], state)
+
+    # The owner of a record is named in the message: "field produces" alone does not say which of
+    # the three hundred resources has the typo. A config block has no name, and the message must not
+    # show empty quotes in its place — it names the field instead.
+    var produces_problem := _find(problems, "unknown_key", "wheatt", "wheat_field")
+    check(str(produces_problem.get("headline", "")).contains("wheatt"),
+        "the key is not named in the headline: %s" % str(produces_problem.get("headline", "")), state)
+    check(str(produces_problem.get("where", "")).contains("Wheat Field"),
+        "the owner of the key is not named: %s" % str(produces_problem.get("where", "")), state)
+    check(str(produces_problem.get("source_kind", "")) == "product",
+        "the owner of a key is not a product: %s" % str(produces_problem.get("source_kind", "")), state)
+    # The kind of the entity that is missing, in the language of the run: the title is the same
+    # label the other checks use ("Terrain", "Местности").
+    var terrain_problem := _find(problems, "unknown_key", "desert", "")
+    var terrain_title := str(DataValidator.entity_forms("terrain")["title"])
+    check(str(terrain_problem.get("headline", "")).contains(terrain_title),
+        "the kind of the missing entity is not named: %s" % str(terrain_problem.get("headline", "")), state)
+    check(str(terrain_problem.get("where", "")).contains("terrain_config"),
+        "the field of a nameless owner is not named: %s" % str(terrain_problem.get("where", "")), state)
+    check(not str(terrain_problem.get("message", "")).contains("«»"),
+        "the message of a nameless owner has empty quotes: %s" % str(terrain_problem.get("message", "")), state)
+
+    # The file and the line: a record by its own declaration, a config block by its collection.
+    check(int(produces_problem.get("line", 0)) == 7,
+        "the key is not pointed at the record that owns it: %d" % int(produces_problem.get("line", 0)), state)
+    check(str(terrain_problem.get("location", "")).contains("res://data/map_config.json"),
+        "the key of a config block is not pointed at its file: %s" % str(terrain_problem.get("location", "")), state)
+
+    # An empty registry is not a broken key. A tree without the "covers" collection (the collection
+    # name is misspelled, the file is not loaded) reports the collection once, and NOT every key of
+    # every cover_chance — otherwise one typo would bury the report under hundreds of records.
+    var no_covers: Dictionary = gd.raw_data.duplicate(true)
+    no_covers.erase("covers")
+    gd.raw_data = no_covers
+    for problem in _only_unknown_keys(DataValidator.new().validate(gd)):
+        check(str(problem.get("field", "")) != "cover_chance",
+            "a key of an empty registry is reported: %s" % str(problem.get("message", "")), state)
+
+    # Data without the tree skips the check instead of crashing.
+    var bare = _make_data()
+    check(_only_unknown_keys(DataValidator.new().validate(bare)).is_empty(),
+        "data without the tree must not produce key problems", state)
+    bare.free()
+
+    gd.free()
+
+
+func _test_blacklisted_modifier_buildings(state: Dictionary) -> void:
+    var gd = _make_data()
+    gd.raw_data = {
+        "buildings": [{"id": "dairy", "name": "Dairy"}],
+        "modifiers": {"tech_modifiers": [{
+            "tech_id": "t_wheel",
+            "building_production_slots": {"dairy": 1, "removed_house": 1, "typo_house": 1},
+            "building_production_multiplier": {"dairy": 1.25, "removed_house": 1.25, "typo_house": 1.25},
+        }]},
+    }
+    gd.blacklisted = {"buildings": {"removed_house": true}}
+    var validator := DataValidator.new()
+    var problems: Array = validator.validate(gd)
+    check(_only_unknown_fields(problems).is_empty(),
+            "tech modifier slot maps belong to the schema", state)
+    var keys: Array = _only_unknown_keys(problems)
+    check(keys.size() == 2, "only the two misspelled modifier targets are reported", state)
+    for problem in keys:
+        check(str(problem.get("ref_id", "")) == "typo_house",
+                "blacklisted and existing modifier targets are valid", state)
+
+    gd.raw_data["buildings"] = []
+    gd.blacklisted["buildings"]["dairy"] = true
+    keys = _only_unknown_keys(validator.validate(gd))
+    check(keys.size() == 2, "typos remain visible when all buildings are blacklisted", state)
+    for problem in keys:
+        check(str(problem.get("ref_id", "")) == "typo_house",
+                "a fully blacklisted building collection still allows removed targets", state)
+
+    gd.raw_data["buildings"] = [{"id": "dairy"}]
+    gd.blacklisted.clear()
+    keys = _only_unknown_keys(validator.validate(gd))
+    check(keys.size() == 4, "missing targets without a blacklist are reported", state)
+
+    gd.blacklisted = {"buildings": {"removed_house": true}, "resources": {"removed_boat": true}}
+    gd.crafts.append({"id": "broken_recipe", "produced_in": ["typo_house"]})
+    gd.consumption_rules.append({"resource": "flour", "profession": ["farmer"],
+            "buildings": ["removed_house", "typo_house"]})
+    gd.product_groups["boats_bl"] = ["flour"]
+    gd.product_group_names["boats_bl"] = "Boats"
+    gd.consumption_rules.append({"resource": "@boats_bl", "profession": ["farmer"],
+            "members": {"flour": {"interval": 20}, "removed_boat": {"interval": 10}}})
+    var bl_problems: Array = validator.validate(gd)
+    check(not _find(bl_problems, "produced_in", "typo_house", "broken_recipe").is_empty(),
+            "a misspelled recipe building is still reported", state)
+    check(_find(bl_problems, "consumption_building", "removed_house", "flour").is_empty(),
+            "a consumption rule scoped to a blacklisted building stays silent", state)
+    check(not _find(bl_problems, "consumption_building", "typo_house", "flour").is_empty(),
+            "a misspelled consumption rule building is reported", state)
+    check(_find(bl_problems, "consumption_resource", "removed_boat", "@boats_bl").is_empty()
+            and _find(bl_problems, "consumption_member", "removed_boat", "@boats_bl").is_empty(),
+            "a blacklisted product in consumption members stays silent", state)
+    gd.free()
+
+
+# --- 5) Real data: the validator does not crash ---------------------------
+
+func _test_real_data(state: Dictionary):
+    var gd = load("res://scripts/GameData.gd").new()
+    gd.load_all_data()
+
+    check(gd.data_loaded, "GameData.load_all_data() did not set data_loaded", state)
+
+    var problems: Array = DataValidator.new().validate(gd)
+    print("Problems in res://data from the reference check: %d" % problems.size())
+    for problem in problems:
+        print("  - ", str(problem.get("message", "")))
+
+    # We do not check specific ids from the real data: its author will fix
+    # them, and the test would fail on exactly the thing the validator was
+    # written for. We check invariants that must hold for any data content.
+
+    # EXCEPTION to the rule above: non-ASCII in an id means zero problems on
+    # the real data, and this statement is checked. It is safe here because it
+    # is not about someone else's breakage that needs fixing, but about a
+    # regression of the check itself: an id typo that uses a Cyrillic homoglyph
+    # of "c" is indistinguishable from the Latin "c" and does not break
+    # references, so nothing else catches it. If the test stayed silent here, a
+    # single typo with such a homoglyph could slip into a release unnoticed and
+    # surface a month later as "resource not found".
+    var non_ascii_problems: Array = []
+    for problem in problems:
+        var kind := str(problem.get("kind", ""))
+        if kind == "id_charset" or kind == "id_lookalike":
+            non_ascii_problems.append(problem)
+    check(non_ascii_problems.is_empty(),
+        "res://data identifiers contain invalid characters or homoglyphs: %s" \
+                % _str_messages(non_ascii_problems), state)
+
+    # produced_in == "*" on the pseudo-recipe "empty" (data/crafts/pseudo.json)
+    # is not a breakage.
+    for problem in problems:
+        check(not (problem.get("kind") == "produced_in" and problem.get("ref_id") == "*"),
+            "the validator complains about \"*\" in produced_in", state)
+
+    # The field whitelist must describe the real data EXACTLY. This is the second exception to
+    # the rule above, and it is safe for the same reason: a field outside the model is either a
+    # typo in data/*.json or a field the model forgot to list, and both are ours to fix before
+    # the game ships — the data itself is not "someone else's breakage" here.
+    var unknown_fields: Array = _only_unknown_fields(problems)
+    check(unknown_fields.is_empty(),
+        "res://data has fields outside the data model: %s" % _str_messages(unknown_fields), state)
+
+    # The same for the free keys of the dictionaries: a key that names nothing is a typo in
+    # data/*.json, and it is invisible to every other check — the field is legal, the record is
+    # valid, and the game just finds nothing behind the key.
+    var unknown_keys: Array = _only_unknown_keys(problems)
+    check(unknown_keys.is_empty(),
+        "res://data has dictionary keys that name nothing: %s" % _str_messages(unknown_keys), state)
+
+    # A branch the city can never take. The reference of an "unlock" reaches outside its own file into
+    # two collections, and the ids of the second half of them are not written anywhere as a list — so
+    # a plain read of the data cannot tell a correct branch from a typo, and the game only answers that
+    # the specialization stays unavailable. This is ours to keep exact for the same reason the
+    # whitelist above is: nothing here is third-party content waiting to be fixed.
+    var ghost_challenge_unlocks: Array = []
+    for problem in problems:
+        if problem.get("kind") == "specialization_challenge":
+            ghost_challenge_unlocks.append(problem)
+    check(ghost_challenge_unlocks.is_empty(),
+        "a specialization of res://data waits for a challenge that declares itself nowhere: %s" \
+                % _str_messages(ghost_challenge_unlocks), state)
+
+    # The category is checked only on products: for every problem of kind
+    # "category" the owner must be a product, not a raw resource.
+    var products: Dictionary = gd.products
+    for problem in problems:
+        if problem.get("kind") != "category":
+            continue
+        var owner_id := str(problem.get("source_id", ""))
+        check(products.has(owner_id),
+            "a category problem on a non-product \"%s\" — a raw resource is being checked against a foreign set of categories" % owner_id,
+            state)
+
+    # Both message strings are filled in for every problem.
+    for problem in problems:
+        var msg := str(problem.get("message", ""))
+        check(not msg.is_empty(), "a problem without message text", state)
+        check(not str(problem.get("headline", "")).is_empty(),
+            "a problem without headline", state)
+        check(not str(problem.get("where", "")).is_empty(),
+            "a problem without where", state)
+
+    # The "product without a source" problem points at the product itself —
+    # so its owner must be in GameData.products, not a raw resource or a building.
+    for problem in problems:
+        if problem.get("kind") != "product_source":
+            continue
+        var owner_id := str(problem.get("source_id", ""))
+        check(products.has(owner_id),
+            "a product_source problem on a non-product \"%s\"" % owner_id, state)
+        check(problem.get("target") == "product",
+            "product_source has a wrong target: %s" % str(problem.get("target", "")), state)
+
+    _check_file_and_line(state, problems)
+
+    # count_by_kind must be consistent with the list itself.
+    var counts := DataValidator.new().count_by_kind(problems)
+    var total := 0
+    for kind in counts:
+        total += int(counts[kind])
+    check(total == problems.size(),
+        "count_by_kind disagrees with the number of problems: %d != %d" % [total, problems.size()], state)
+
+    gd.free()
+
+
+# --- 5) File and line reference -------------------------------------------
+#
+# A problem must name not only the entity but also the FILE in which the
+# entity is declared, and the line. The meaning of such a line is "look here",
+# so what is checked is not the number itself but that the owner's declaration
+# really lies on that line: otherwise the number would be plausible and wrong,
+# and worse than its absence.
+func _check_file_and_line(state: Dictionary, problems: Array):
+    # We read each file from different problems only once.
+    var lines_by_file := {}
+    for problem in problems:
+        var file_path := str(problem.get("file", ""))
+        var line := int(problem.get("line", 0))
+        var source_id := str(problem.get("source_id", ""))
+
+        check(not file_path.is_empty(),
+            "the problem %s has no file specified" % str(problem.get("message", "")), state)
+        check(line > 0,
+            "the problem %s has no line specified" % str(problem.get("message", "")), state)
+
+        if file_path.is_empty() or line <= 0:
+            continue
+
+        check(file_path.begins_with("res://data/"),
+            "the problem's file is outside the data folder: %s" % file_path, state)
+        var location := str(problem.get("location", ""))
+        check(location.contains(file_path),
+            "location does not contain the file path: %s" % location, state)
+        check(location.contains(str(line)),
+            "location does not contain the line number: %s" % location, state)
+        check(str(problem.get("message", "")).contains(file_path),
+            "message does not contain the file path — it will be lost in the log", state)
+
+        if not lines_by_file.has(file_path):
+            lines_by_file[file_path] = _read_lines(file_path)
+        var lines: Array = lines_by_file[file_path]
+        check(line <= lines.size(),
+            "line %d is beyond the end of file %s (%d lines)" % [line, file_path, lines.size()], state)
+        if line > lines.size():
+            continue
+        var decl := str(lines[line - 1])
+        # An owner without an identifier — a config block (map_config, priority_names) — has no
+        # id to look for on the line: the file and the line are all it can be pointed at.
+        if source_id.is_empty():
+            continue
+        check(decl.contains("\"%s\"" % source_id),
+            "line %d of file %s is not the declaration of \"%s\": %s" % [
+                line, file_path, source_id, decl.strip_edges()], state)
+
+
+# --- 6) Localization of problem texts -------------------------------------
+#
+# The problem wording is translated (data_validator.gd → locale/<code>.po), and
+# exactly what was done for that translation is checked:
+#   * the two languages produce DIFFERENT texts, not English everywhere;
+#   * the English text contains no Cyrillic (so the catalog is filled in);
+#   * localize_problems() rebuilds already-collected texts when the language
+#     changes, WITHOUT re-running the check: the problem structure does not
+#     depend on the language.
+#
+# Identifiers (ghost_mill, produced_in) stay as-is in the text — they are
+# machine names, not translatable words.
+func _test_localization(state: Dictionary):
+    var original := TranslationServer.get_locale()
+    var gd = _make_data()
+    var problems: Array = DataValidator.new().validate(gd)
+
+    # Texts are collected during validate() — in the language active at that
+    # moment. So we switch the language BEFORE reading, and localize_problems()
+    # rebuilds the already-collected messages without re-running the check.
+    TranslationServer.set_locale("en")
+    DataValidator.localize_problems(problems)
+    var en_sample := _find(problems, "produced_in", "ghost_mill", "bad_produced_in")
+    check(not en_sample.is_empty(),
+        "the synthetic data must produce a produced_in problem", state)
+    var en_message := str(en_sample.get("message", ""))
+    var en_headline := str(en_sample.get("headline", ""))
+    var en_title := DataValidator.check_title("produced_in")
+    var en_forms := DataValidator.entity_forms("building")
+
+    TranslationServer.set_locale("ru")
+    DataValidator.localize_problems(problems)
+    var ru_message := str(en_sample.get("message", ""))
+    var ru_headline := str(en_sample.get("headline", ""))
+    var ru_title := DataValidator.check_title("produced_in")
+    var ru_forms := DataValidator.entity_forms("building")
+
+    check(ru_message != en_message,
+        "the problem text must differ between languages: en=%s ru=%s" % [
+            en_message, ru_message], state)
+    check(ru_headline != en_headline,
+        "the first line of the problem must be translated: en=%s ru=%s" % [
+            en_headline, ru_headline], state)
+    check(ru_message.contains("не существует"),
+        "the Russian text does not contain the expected wording: %s" % ru_message, state)
+
+    # There must be no Cyrillic in the English text. We check headline, not
+    # message: message gets the entity name from the data, and in this test it
+    # is deliberately Russian (see _test_no_false_positives_on_synthetic —
+    # Cyrillic in a name is legitimate and must not be considered an id error).
+    check(not _has_cyrillic(en_headline),
+        "the English text must not contain Cyrillic: %s" % en_headline, state)
+
+    # The check group title is also user-facing text.
+    check(ru_title != en_title,
+        "the check title must be translated: en=%s ru=%s" % [
+            en_title, ru_title], state)
+    check(not _has_cyrillic(en_title),
+        "the English check title must not contain Cyrillic: %s" % en_title,
+        state)
+
+    # Cases: the same entity in three grammatical forms. In Russian these are
+    # three different words, whereas English uses a single form.
+    for role in ["title", "ref", "source"]:
+        check(not _has_cyrillic(str(en_forms[role])),
+            "the English form %s must not be Cyrillic: %s" % [
+                role, str(en_forms[role])], state)
+    check(str(ru_forms["ref"]) != str(ru_forms["source"]),
+        "the Russian ref and source forms must not coincide: %s / %s" % [
+            str(ru_forms["ref"]), str(ru_forms["source"])], state)
+
+    # The whitelist message is translated as well — the headline and the list of the allowed
+    # fields, which is the part the author acts on.
+    gd.raw_data = {"crafts": [{"id": "bad_field", "name": "Bad", "producs": {}}]}
+    var whitelist: Array = _only_unknown_fields(DataValidator.new().validate(gd))
+    check(whitelist.size() == 1,
+        "the whitelist fixture must give exactly one problem, got %d" % whitelist.size(), state)
+    TranslationServer.set_locale("en")
+    DataValidator.localize_problems(whitelist)
+    var en_field := str((whitelist[0] as Dictionary).get("headline", ""))
+    TranslationServer.set_locale("ru")
+    DataValidator.localize_problems(whitelist)
+    var ru_field := str((whitelist[0] as Dictionary).get("headline", ""))
+    check(ru_field != en_field,
+        "the whitelist text must differ between languages: en=%s ru=%s" % [
+            en_field, ru_field], state)
+    check(ru_field.contains("Неизвестное поле"),
+        "the Russian whitelist text does not contain the expected wording: %s" % ru_field, state)
+
+    # The key message is translated as well — both halves: the missing entity (the headline is the
+    # one of a broken reference) and the explanation of where the value under the key goes.
+    gd.raw_data = {
+        "resources": [{"id": "wheat_field", "name": "Wheat Field", "produces": {"wheatt": 1}}],
+    }
+    var keys: Array = _only_unknown_keys(DataValidator.new().validate(gd))
+    check(keys.size() == 1,
+        "the key fixture must give exactly one problem, got %d" % keys.size(), state)
+    TranslationServer.set_locale("en")
+    DataValidator.localize_problems(keys)
+    var en_key := str((keys[0] as Dictionary).get("where", ""))
+    var en_key_title := DataValidator.check_title("unknown_key")
+    var en_key_forms := DataValidator.entity_forms("priority_option")
+    TranslationServer.set_locale("ru")
+    DataValidator.localize_problems(keys)
+    var ru_key := str((keys[0] as Dictionary).get("where", ""))
+    var ru_key_title := DataValidator.check_title("unknown_key")
+    var ru_key_forms := DataValidator.entity_forms("priority_option")
+    check(ru_key != en_key,
+        "the key text must differ between languages: en=%s ru=%s" % [en_key, ru_key], state)
+    check(ru_key.contains("словар"),
+        "the Russian key text does not contain the expected wording: %s" % ru_key, state)
+    check(not _has_cyrillic(en_key),
+        "the English key text must not contain Cyrillic: %s" % en_key, state)
+    check(ru_key_title != en_key_title,
+        "the key check title must be translated: en=%s ru=%s" % [en_key_title, ru_key_title], state)
+    check(not _has_cyrillic(en_key_title),
+        "the English key title must not contain Cyrillic: %s" % en_key_title, state)
+    # The new entity kind brings three grammatical forms, and all three are user-facing.
+    for role in ["title", "ref", "source"]:
+        check(not _has_cyrillic(str(en_key_forms[role])),
+            "the English form %s of the priority option must not be Cyrillic: %s" % [
+                role, str(en_key_forms[role])], state)
+        check(str(ru_key_forms[role]) != str(en_key_forms[role]),
+            "the form %s of the priority option is not translated: %s" % [
+                role, str(ru_key_forms[role])], state)
+
+    TranslationServer.set_locale(original)
+    gd.free()
+
+
+# Cyrillic in a string is a sign that the message stayed Russian where it
+# should be English (or vice versa).
+func _has_cyrillic(text: String) -> bool:
+    var regex := RegEx.new()
+    regex.compile("[\u0400-\u04FF]")
+    return regex.search(text) != null
+
+
+# --- HELPERS --------------------------------------------------------------
+
+# Synthetic data set: a "good" base + one breakage of each kind.
+# A separate GameData instance is created (not the autoload) — all public
+# fields the validator reads are accessible on it.
+func _make_data() -> Node:
+    var gd = load("res://scripts/GameData.gd").new()
+
+    gd.categories = [
+        {"id": "food", "name": "Food"},
+        {"id": "other", "name": "Other"},
+    ]
+    gd.professions = {
+        "farmer": {"id": "farmer", "name": "Farmer"},
+        "blacksmith": {"id": "blacksmith", "name": "Blacksmith"},
+    }
+    gd.technologies = [
+        {"id": "t_fire", "name": "Fire"},
+        {"id": "t_wheel", "name": "Wheel"},
+        # Prerequisites in both allowed formats: a flat list and a
+        # list of OR-groups [[ "a", "b" ], [ "c" ]].
+        {"id": "t_flat_prereq", "name": "Flat", "prerequisites": ["t_fire"]},
+        {"id": "t_group_prereq", "name": "Grouped", "prerequisites": [["t_fire", "t_wheel"]]},
+    ]
+    gd.improvements = {
+        "farm": {"id": "farm", "name": "Farm"},
+        "quarry": {"id": "quarry", "name": "Quarry"},
+        # The lumberjack hut carries no produces of its own in this set
+        # (see the LUMBERJACK_* constants in data_validator.gd). As long as the
+        # hut and a cover with wood_yield exist, the product "wood" has a source.
+        "lumberjack_hut": {"id": "lumberjack_hut", "name": "Lumberjack Hut"},
+    }
+    gd.covers = {
+        "forest": {"id": "forest", "name": "Forest", "wood_yield": 2},
+        "plain": {"id": "plain", "name": "Plain"},
+    }
+    gd.products = {
+        "wheat": {"id": "wheat", "name": "Wheat", "category": "food"},
+        "flour": {"id": "flour", "name": "Flour", "category": "food"},
+        "tools": {"id": "tools", "name": "Tools", "category": "other"},
+        # Produced by the lumberjack hut from a cover's wood_yield. The only
+        # source of wood in the set: it is in neither produces nor recipes.
+        "wood": {"id": "wood", "name": "Wood", "category": "other"},
+        # Pseudo-product: exists only in display_result, there is no real result.
+        "science": {"id": "science", "name": "Science", "category": "other"},
+        # A product with the same id as the raw resource clay_deposit: this is
+        # the ordinary situation "a raw resource is extracted, a product is
+        # used" — the validator must tell them apart by collection, not by id.
+        "clay": {"id": "clay", "name": "Clay", "category": "other"},
+        # The two goods the fame branch is walked on below. Their challenge tiers differ in one
+        # thing only: the first writes its own id, the second leaves it to be derived from the
+        # product — both are the way the data is written in res://data, and both must resolve when a
+        # specialization names them.
+        "cheese": {"id": "cheese", "name": "Cheese", "category": "food",
+                "challenge": {"id": "cheese_challenge", "trigger": "sell", "threshold": 100,
+                        "reward": {"type": "specialization", "id": "cheese_branch"}}},
+        "wool": {"id": "wool", "name": "Wool", "category": "other",
+                # The rung of the brand grants a prestige good of its own, and the good says which
+                # base it is the brand of. The pair is what opens the work of the brand, so the
+                # reference of the good and the reward of the rung must agree — here they do, and the
+                # validator stays silent about both.
+                "brand": {"trigger": "sell", "threshold": 20,
+                        "reward": {"type": "brand_product", "product": "cashmere"}},
+                "challenge": {"trigger": "produce", "threshold": 50,
+                        "reward": {"type": "specialization", "id": "wool_branch"}}},
+        "cashmere": {"id": "cashmere", "name": "Cashmere", "category": "other",
+                "brand_of": "wool"},
+    }
+    gd.raw_resources = {
+        "wheat_field": {"id": "wheat_field", "name": "Wheat Field", "type": "raw",
+                "category": "plants", "improved_by": "farm",
+                "produces": {"wheat": 10, "tools": 1}},
+        "clay_deposit": {"id": "clay_deposit", "name": "Clay", "type": "raw",
+                "category": "plants", "improved_by": "quarry", "produces": {"clay": 10}},
+    }
+    gd.product_groups = {
+        "grains": ["wheat"],
+        "food": ["wheat", "flour"],
+        "jewelry": ["tools"],
+    }
+    gd.product_group_names = {
+        "grains": "Grains",
+        "food": "Food",
+        "jewelry": "Jewelry",
+    }
+    gd.buildings = [
+        {"id": "bakery", "name": "Bakery"},
+    ]
+
+    # --- breakages ---
+    # A product whose id uses a Cyrillic homoglyph of "c": visually
+    # indistinguishable from the Latin one, but not byte-identical to it. There
+    # is no Latin "coal_typo" in the set, so this is a lone typo (id_charset),
+    # not a pair (id_lookalike).
+    gd.products["сoal_typo"] = {"id": "сoal_typo", "name": "Typo",
+            "category": "other"}
+    # Homoglyph pair: the Latin "carmine" and the Cyrillic "сarmine" are
+    # declared at the same time. The Latin spelling of references is fine (it
+    # is the one that exists), so the ordinary broken-reference checks skip this
+    # case entirely.
+    gd.products["carmine"] = {"id": "carmine", "name": "Carmine", "category": "other"}
+    gd.products["сarmine"] = {"id": "сarmine", "name": "Carmine (typo)",
+            "category": "other"}
+    # A good that calls itself the prestige form of another although no rung of the fame grants it:
+    # the game cannot tell which ladder opens its work, so the recipes of the good stand unopened.
+    gd.products["ungranted_brand"] = {"id": "ungranted_brand", "name": "Brand of Nobody",
+            "category": "other", "brand_of": "wool"}
+    # produced_in → a non-existent building
+    gd.buildings.append({"id": "bad_building_tech", "name": "House", "unlock_tech": "ghost_tech"})
+    # profession on a building
+    gd.buildings.append({"id": "bad_building_prof", "name": "Workshop",
+            "profession": "ghost_prof"})
+    # unlock_tech on an improvement
+    gd.improvements["bad_improvement_tech"] = {"id": "bad_improvement_tech",
+            "name": "Bad Pit", "unlock_tech": "ghost_tech"}
+    # profession on an improvement
+    gd.improvements["bad_improvement_prof"] = {"id": "bad_improvement_prof",
+            "name": "Bad Ploughland", "profession": "ghost_prof"}
+    # improved_by on a raw resource
+    gd.raw_resources["bad_improved_by"] = {"id": "bad_improved_by", "name": "Rye",
+            "type": "raw", "improved_by": "ghost_farm"}
+    # unlock_improvement on a product
+    gd.products["bad_unlock_improvement"] = {"id": "bad_unlock_improvement",
+            "name": "Grain", "category": "food", "unlock_improvement": "ghost_farm"}
+    # unlock_tech on a product
+    gd.products["bad_product_tech"] = {"id": "bad_product_tech", "name": "Salt",
+            "category": "food", "unlock_tech": "ghost_tech"}
+    # A product that NEITHER the map NOR a recipe produces: it is in no one's
+    # produces, no one's result/display_result/additional_yield. The only
+    # breakage of the new product_source check.
+    gd.products["no_source_product"] = {"id": "no_source_product", "name": "Alchemy",
+            "category": "other"}
+    # category on a product
+    gd.products["bad_category"] = {"id": "bad_category", "name": "Honey",
+            "category": "ghost_category"}
+    # A cover restricted to a temperature belt the generator never rolls. Nothing refers to the
+    # cover wrongly — only the spelling of the belt is wrong, and that is what silently keeps it
+    # off the map.
+    gd.covers["bad_belt_cover"] = {"id": "bad_belt_cover", "name": "Bad Reef",
+            "temperature_belts": ["troppical"]}
+    # a non-existent member of an @-group
+    gd.product_groups["bad_group"] = ["wheat", "ghost_member"]
+    gd.product_group_names["bad_group"] = "Bad Group"
+    # technology prerequisites (an OR-group with one non-existent id)
+    gd.technologies.append({"id": "bad_tech_prereq", "name": "Bad Technology",
+            "prerequisites": [["t_wheel", "ghost_tech"]]})
+# False-positive traps.
+    gd.crafts = [
+        # Valid recipes — the validator stays silent about them.
+        {"id": "good_recipe", "name": "Good Recipe", "produced_in": ["bakery"],
+                "resources": {"wood": 2, "@grains": 5}, "result": {"flour": 3},
+                "unlock_tech": "t_fire"},
+        # A work of the brand, gated by the ladder of the good it comes from. The id is the derived
+        # one — the block of "wool" writes none — and the reference is right, so the validator says
+        # nothing about it.
+        {"id": "cashmere_loom", "name": "Cashmere Cloth", "produced_in": ["bakery"],
+                "resources": {"wool": 2}, "result": {"cashmere": 1},
+                "unlock_challenge": "wool_challenge"},
+        # Pseudo-output: result is empty, the goods item "appears" only in
+        # display_result — like "Science" in data/crafts/pseudo.json.
+        {"id": "pseudo_recipe", "name": "Pseudo Recipe", "produced_in": ["bakery"],
+                "resources": {}, "result": {}, "display_result": {"science": 1}},
+        # "*" is the service marker "in any building".
+        {"id": "wildcard_recipe", "name": "Empty Recipe", "produced_in": ["*"],
+                "resources": {}, "result": {}},
+        # A reference to a raw resource in result is not considered a breakage
+        # (a recipe may also require a raw resource — "clay"), but a
+        # non-existent one is.
+        {"id": "raw_result_ok", "name": "Recipe with a raw resource in result",
+                "produced_in": ["bakery"], "resources": {}, "result": {"clay": 1}},
+        {"id": "bad_produced_in", "name": "Recipe in a ghost building",
+                "produced_in": ["ghost_mill"], "resources": {}, "result": {}},
+        {"id": "bad_result", "name": "Recipe with a ghost product",
+                "produced_in": ["bakery"], "resources": {}, "result": {"ghost_product": 1}},
+        {"id": "bad_craft_tech", "name": "Recipe behind a ghost technology",
+                "produced_in": ["bakery"], "resources": {}, "result": {"flour": 1},
+                "unlock_tech": "ghost_tech"},
+        {"id": "bad_group_ref", "name": "Recipe with a ghost group",
+                "produced_in": ["bakery"], "resources": {"@ghost_group": 5}, "result": {}},
+        {"id": "bad_resource_ref", "name": "Recipe with a ghost resource",
+                "produced_in": ["bakery"], "resources": {"ghost_raw": 5}, "result": {}},
+        # Donor: provides ALL the products with deliberate breakages in other
+        # fields (improvements / technologies / categories) and a product with
+        # explicitly empty fields. Without it, each of those records would also
+        # land in the product_source problems, and one deliberate breakage
+        # would give two problems at once — but the test requires exactly one
+        # breakage of each kind.
+        {"id": "donor_recipe", "name": "Donor", "produced_in": ["bakery"],
+                "resources": {}, "result": {
+                    "bad_unlock_improvement": 1, "bad_product_tech": 1,
+                    "bad_category": 1, "null_product": 1,
+                    "cheese": 1, "wool": 1, "cashmere": 1, "ungranted_brand": 1,
+                    "сoal_typo": 1, "сarmine": 1, "carmine": 1}},
+        # A recipe that waits for a task of the fame no era declares and no good carries: the gate is
+        # never paid, and the row stands in the building forever.
+        {"id": "bad_craft_challenge", "name": "Recipe behind a ghost challenge",
+                "produced_in": ["bakery"], "resources": {}, "result": {},
+                "unlock_challenge": "ghost_challenge"},
+    ]
+    # The "animals" category on a raw resource is a map generation filter, not
+    # a category from categories.json. It is checked on a raw resource below.
+    gd.raw_resources["wildcard_raw"] = {"id": "wildcard_raw", "name": "Корова",
+            "type": "raw", "category": "animals"}
+
+    # --- Consumption rules (data/consumption.json) ---
+    #
+    # Good records must stay silent: a product without "@", an existing
+    # @-group, a real profession. Bad ones — one per each new kind of check.
+    # The real prototype of the bad records is a forgotten "@": the author
+    # writes a group id where a resource is needed (in data/consumption.json
+    # this once happened with "jewelry", which does not exist as a product —
+    # only the group "@jewelry" does).
+    gd.consumption_rules = [
+        # Good records (building-scoped and per-member tiered).
+        {"resource": "tools", "profession": ["farmer"], "buildings": ["bakery"]},
+        {"resource": "@jewelry", "profession": ["blacksmith"],
+                "members": {"tools": {"interval": 20, "production_bonus": 0.2}}},
+        # Bad: non-existent @-group, non-existent product, forgotten/extra "@",
+        # non-existent profession/building, and invalid members overrides.
+        {"resource": "@ghost_group", "profession": ["farmer"]},
+        {"resource": "ghost_product", "profession": ["farmer"]},
+        {"resource": "jewelry", "profession": ["blacksmith"]},
+        {"resource": "@tools", "profession": ["farmer"]},
+        {"resource": "wheat", "profession": ["ghost_prof"], "buildings": ["ghost_building"],
+                "members": {"flour": {"production_bonus": 0.1}}},
+        {"resource": "@food", "profession": ["farmer"],
+                "members": {"wheat": {"interval": 15}, "tools": {"interval": 30},
+                        "ghost_member": {"interval": 10}}},
+    ]
+
+    # --- The specializations of the city and the challenges of the era ---
+    #
+    # A branch unlocked by a challenge points outside the specialization file, and the target lives in
+    # one of two collections: a task of the era (data/challenges.json) or the challenge tier of a good
+    # (data/products/*.json), which the loader keeps inside the product record. Only the second of
+    # these is easy to miss: the tier of "cheese" is spelled "cheese_challenge" by the manager, which
+    # derives the id from the product when the block does not carry one — so a reference to a tier that
+    # exists reads as a reference to a challenge that does not.
+    gd.challenges = [
+        {"id": "era_chunks", "name": "One Region",
+                "condition": "buy_all_available_chunks_in_one_era",
+                "reward": {"type": "specialization", "id": "wool_branch"}},
+    ]
+    gd.specializations = [
+        # Both shapes of the unlock: one condition and a list of them.
+        {"id": "cheese_branch", "name": "Cheese Branch",
+                "unlock": {"type": "challenge", "id": "cheese_challenge"},
+                # The goods a bonus is scoped to: one good and one group addressed as "@<id>".
+                "bonuses": [
+                    {"type": "trade_sell_price", "value": 0.15, "products": ["cheese"]},
+                    {"type": "building_production", "value": 0.2, "products": ["@grains"]},
+                ]},
+        {"id": "wool_branch", "name": "Wool Branch",
+                "unlock": [{"type": "challenge", "id": "wool_challenge"}]},
+        # The breakage: no task of the era and no tier of a good carries this id.
+        {"id": "ghost_branch", "name": "Ghost Branch",
+                "unlock": {"type": "challenge", "id": "ghost_challenge"}},
+        # The two mistakes of the goods list: a group declared nowhere, and a group of the data
+        # written without its "@".
+        {"id": "goods_branch", "name": "Goods Branch",
+                "bonuses": [
+                    {"type": "trade_sell_price", "value": 0.1, "products": ["@ghost_group"]},
+                    {"type": "internal_market_price", "value": 0.1, "products": ["grains"]},
+                ]},
+    ]
+
+    # Explicitly empty fields (null). In data/*.json, for example,
+    # "improved_by": null is written this way on nuggets — it means "no
+    # improvement", not a reference to a non-existent improvement. str(null)
+    # in GDScript gives "<null>", so without separate handling the validator
+    # would complain about every empty field (a regression found by this very
+    # test).
+    gd.raw_resources["null_fields"] = {"id": "null_fields", "name": "Empty Raw Resource",
+            "type": "raw", "improved_by": null, "unlock_tech": null, "category": null}
+    gd.products["null_product"] = {"id": "null_product", "name": "Empty Product",
+            "category": "food", "unlock_improvement": null, "unlock_tech": null}
+    gd.improvements["null_improvement"] = {"id": "null_improvement",
+            "name": "Empty Improvement", "profession": null, "unlock_tech": null}
+    gd.buildings.append({"id": "null_building", "name": "Empty Building",
+            "profession": null, "unlock_tech": null})
+
+    return gd
+
+
+func _find(problems: Array, kind: String, ref_id: String, source_id: String) -> Dictionary:
+    for problem in problems:
+        if str(problem.get("kind", "")) == kind \
+                and str(problem.get("ref_id", "")) == ref_id \
+                and str(problem.get("source_id", "")) == source_id:
+            return problem
+    return {}
+
+
+# Only the problems of the field whitelist. The fixture of the whitelist is laid on top of the
+# synthetic set of _make_data(), whose own breakages are not the subject of that case.
+func _only_unknown_fields(problems: Array) -> Array:
+    var result: Array = []
+    for problem in problems:
+        if str(problem.get("kind", "")) == "unknown_field":
+            result.append(problem)
+    return result
+
+
+# Only the problems of the free keys of the dictionaries — the same reason as above.
+func _only_unknown_keys(problems: Array) -> Array:
+    var result: Array = []
+    for problem in problems:
+        if str(problem.get("kind", "")) == "unknown_key":
+            result.append(problem)
+    return result
+
+
+# The data file's lines as-is (with comments) — line numbers in the validator's
+# messages are counted against the source text, not one stripped of comments.
+func _read_lines(file_path: String) -> Array:
+    var file := FileAccess.open(file_path, FileAccess.READ)
+    if file == null:
+        return []
+    return Array(file.get_as_text().split("\n"))
+
+
+func _expected_problem_count(expected: Dictionary) -> int:
+    var total := 0
+    for kind in expected:
+        total += (expected[kind] as Array).size()
+    return total
+
+
+func _str_messages(problems: Array) -> String:
+    var lines: Array = []
+    for problem in problems:
+        lines.append(str(problem.get("message", "")))
+    return "; ".join(lines)
+
+
+func check(cond: bool, msg: String, state: Dictionary):
+    if not cond:
+        push_error("ASSERT: " + msg)
+        print("ASSERT FAILED: ", msg)
+        state["failed"] = true

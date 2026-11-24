@@ -1,0 +1,40 @@
+{
+  "resources": [
+    {
+      // Science — a virtual product. It is not stored in the warehouse,
+      // it goes directly into research.
+      "id": "science",
+      "name": "Science",
+      "type": "product",
+      "category": "other",
+      "unlock_tech": "writing",
+      "icon": "science.png",
+      "virtual": true
+    },
+    {
+      // Coinage — a virtual yield of the Tax Yard. It is not a good: one unit
+      // of the yard's coinage share means +1% of the poll tax.
+      "id": "coinage",
+      "name": "Coinage",
+      "type": "product",
+      "category": "other",
+      "unlock_tech": "taxation",
+      "icon": "coin_stack.png",
+      "virtual": true
+    },
+    {
+      // Seigniorage — a virtual yield of the Mint. It is not a good and it never
+      // enters the warehouse: the Mint melts metal into coins, and the difference
+      // between the face value of the struck coins and the metal spent on them is
+      // paid straight into the treasury. One unit of the yield of a strike recipe
+      // is one coin per craft cycle.
+      "id": "seigniorage",
+      "name": "Seigniorage",
+      "type": "product",
+      "category": "other",
+      "unlock_tech": "coinage",
+      "icon": "coin_stack.png",
+      "virtual": true
+    }
+  ]
+}

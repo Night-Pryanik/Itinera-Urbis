@@ -1,0 +1,905 @@
+# Headless test of the fame of a good and the challenges of the era:
+#   godot --headless --path . --script res://tests/test_challenges.gd
+#
+# Checks:
+#   1. The data: the tiers of a good form an ascending ladder over one counter, every trigger and
+#      every reward type is one the code implements, a prestige good is a good of its own that
+#      points back at the base one, and every identifier a branch or a recipe borrows exists.
+#   2. The counters: a sale is booked by quality, "min_quality" narrows the ladder rung to that
+#      level and above, "produce" and "sell" are different counters, and an unknown trigger counts
+#      nothing instead of guessing.
+#   3. The ladder: every rung is paid once, a big sale pays the rungs it crossed all at once, and
+#      the reward of a rung arrives — the price of the good, the recipe of the prestige one, the
+#      specialization branch.
+#   4. The picks: a challenge whose reward is a specialization gives one choice, a challenge that
+#      gives anything else gives none, and the choices of the milestones stay untouched.
+#   5. The gates: the recipe of a prestige good is closed before its rung and open after it, and
+#      the branch stands in the list of the unavailable ones with the reason it waits.
+#   6. The save: the counters, the rungs paid and the price of the fame come back from the record
+#      the manager writes.
+#   7. The tasks of the era: the window of the era is judged when it closes, the free claiming of
+#      the new Region is not a purchase, and a task of another era is not offered. The outcome is
+#      told the player: the reward stops the world in a window of its own, the loss only fills the
+#      line of the HUD and the journal.
+#   8. The live scene: the tab of the city window opens and lists both the tasks of the era and the
+#      ladders of the goods, each group folded under a name of its own and opened by a click on it —
+#      a ladder by its challenge, a group of tasks by the group. The rungs are named by their tier
+#      alone, and the names and descriptions of the data are the text itself, not a key of the
+#      catalog.
+#
+# The expectations are derived from the data (the thresholds, the rewards, the goods), never from
+# the numbers of the file: a balance edit must not break the test.
+extends SceneTree
+
+const WATCHDOG = preload("res://tests/watchdog.gd")
+
+# The good the ladder is walked on. Any good with the three rungs would do; the test reads the
+# thresholds from its record instead of assuming them.
+const LADDER_GOOD := "cheese"
+
+# The ways a tier counts a good (ChallengeManager.TRIGGER_SELL / TRIGGER_PRODUCE).
+const TRIGGERS := ["sell", "produce"]
+
+# The rewards the code applies (see ChallengeManager.apply_reward).
+const REWARDS := ["trade_price", "brand_product", "specialization", "effect_stub"]
+
+var _cdata = null
+var _gdata = null
+var _main_map = null
+var _mgr = null
+
+# The tiers the manager announced, collected through its signal.
+var _events: Array = []
+
+func _initialize():
+    WATCHDOG.arm(self)
+    _run()
+
+func _run() -> void:
+    var state: Dictionary = {"failed": false}
+    _main_map = load("res://scenes/MainMap.tscn").instantiate()
+    get_root().add_child(_main_map)
+    # CityData.setup() runs in the _ready of the map and resets the city to a new game; the
+    # autoloads join the tree on the first frame.
+    await process_frame
+    await process_frame
+    _cdata = get_root().get_node("CityData")
+    _gdata = get_root().get_node("GameData")
+    _mgr = _main_map.get("challenge_manager")
+
+    if _mgr == null:
+        push_error("FALL: the map carries no challenge manager")
+        print("CHALLENGES TEST FAILED")
+        quit(1)
+        return
+    _mgr.fame_tier_completed.connect(
+            func(tier_id: String, tier: String, _reward: Dictionary):
+                _events.append([tier_id, tier]))
+
+    _test_data(state)
+    _test_counters(state)
+    _test_ladder(state)
+    _test_picks(state)
+    _test_gates(state)
+    _test_brand_work(state)
+    _test_save(state)
+    _test_save_multiple_trade_rewards(state)
+    await _test_era(state)
+    await _test_tab(state)
+
+    if state["failed"]:
+        print("CHALLENGES TEST FAILED")
+        quit(1)
+    else:
+        print("CHALLENGES TEST OK")
+        quit(0)
+
+# --- 1. THE DATA ---
+
+func _test_data(state: Dictionary) -> void:
+    var ladders := 0
+    for pid in _gdata.products:
+        var product: Dictionary = _gdata.products[pid]
+        var blocks := _tiers(product)
+        if blocks.is_empty():
+            continue
+        ladders += 1
+        var previous := 0
+        for tier in _mgr.TIERS:
+            if not blocks.has(tier):
+                continue
+            var block: Dictionary = blocks[tier]
+            var threshold := int(block.get("threshold", 0))
+            check(threshold > 0, "%s: the rung %s must name a positive threshold" % [pid, tier],
+                    state)
+            # The rungs share one counter, so a ladder whose rung asks for less than the one below
+            # it would be paid before the player ever heard of it.
+            check(threshold >= previous,
+                    "%s: the rung %s must not ask for less than the rung below it" % [pid, tier],
+                    state)
+            previous = threshold
+            check(TRIGGERS.has(str(block.get("trigger", "sell"))),
+                    "%s: the rung %s counts a trigger the code does not implement" % [pid, tier],
+                    state)
+            for reward in _mgr.rewards_of(block):
+                check(REWARDS.has(str(reward.get("type", ""))),
+                        "%s: the rung %s rewards a type the code does not apply" % [pid, tier],
+                        state)
+                if str(reward.get("type", "")) == _mgr.REWARD_BRAND_PRODUCT:
+                    _check_brand_product(state, pid, str(reward.get("product", "")))
+                if str(reward.get("type", "")) == _mgr.REWARD_SPECIALIZATION:
+                    check(not _cdata.get_specialization(str(reward.get("id", ""))).is_empty(),
+                            "%s: the rung %s rewards an unknown specialization" % [pid, tier], state)
+            # The words of a rung are the text of the data. A key of the catalog in their place
+            # shows untranslated in every language the project does not ship.
+            for field in ["name", "description"]:
+                var text := str(block.get(field, ""))
+                check(text == "" or text.contains(" "),
+                        "%s: the rung %s carries a key of the catalog in \"%s\", not the text"
+                                % [pid, tier, field], state)
+        var challenge: Dictionary = blocks.get(_mgr.TIER_CHALLENGE, {})
+        check(str(challenge.get("name", "")).length() > 0,
+                "%s: the ladder has no challenge to be titled by" % pid, state)
+    check(ladders >= 1, "at least one good must carry the ladder of the fame", state)
+
+    check(not _gdata.challenges.is_empty(), "data/challenges.json declares no era challenge", state)
+    for record in _gdata.challenges:
+        if not (record is Dictionary):
+            continue
+        var id := str(record.get("id", ""))
+        check(_mgr.KNOWN_CONDITIONS.has(str(record.get("condition", ""))),
+                "the era challenge %s names a condition the code does not check" % id, state)
+        check(record.has("reward"), "the era challenge %s rewards nothing" % id, state)
+        check(str(record.get("name", "")) != "", "the era challenge %s is unnamed" % id, state)
+
+    # A prestige branch is opened by a rung of the fame; the reference is the only way the player
+    # can ever take it.
+    for spec in _gdata.specializations:
+        var unlock = spec.get("unlock", null)
+        var conditions: Array = [] if unlock == null else (
+            [unlock] if unlock is Dictionary else (unlock if unlock is Array else []))
+        for condition in conditions:
+            if not (condition is Dictionary):
+                continue
+            if str(condition.get("type", "")) != "challenge":
+                continue
+            check(not _mgr.fame_record_of(str(condition.get("id", ""))).is_empty(),
+                    "the specialization %s waits for a challenge no good declares"
+                            % str(spec.get("id", "")), state)
+
+const _KNOWN_REWARDS := ["trade_price", "brand_product", "specialization", "effect_stub"]
+
+# The three rungs of a good, in the order of the ladder.
+func _tiers(product: Dictionary) -> Dictionary:
+    var out := {}
+    for tier in _mgr.TIERS:
+        var block = product.get(tier, null)
+        if block is Dictionary:
+            out[tier] = block
+    return out
+
+func _check_brand_product(state: Dictionary, pid: String, brand_id: String) -> void:
+    var brand: Dictionary = _gdata.products.get(brand_id, {})
+    check(not brand.is_empty(), "the prestige good %s of %s is not declared" % [brand_id, pid],
+            state)
+    if brand.is_empty():
+        return
+    # The prestige good is a good of its own, not a grade of the base one: what ties it to the
+    # ladder is the reference back, and the name the city puts on it. The rung of the fame may stand
+    # on another good of the same line — the fame of the steel is the fame of the blade, while the
+    # brand the city earns is the bar the blade is forged of — so the brand is judged against the
+    # good it names, not against the good of the rung.
+    var base := str(brand.get("brand_of", ""))
+    check(not base.is_empty() and _gdata.products.has(base),
+            "the prestige good %s must be the brand of a declared good (names \"%s\")"
+                    % [brand_id, base], state)
+    if base.is_empty():
+        return
+    check(float(brand.get("price", 0.0)) > float(_gdata.products[base].get("price", 0.0)),
+            "the prestige good %s must be dearer than the good it is made of" % brand_id, state)
+
+    # The phrase of a brand name lives in the data, with the tag <city_name> where the city
+    # belongs, and the catalog carries the phrase of its own language. It names the prestige
+    # good itself, and not the good of the rung: the fame of porcelain is earned on pottery,
+    # while the city signs "Porcelain of …". What is judged here is therefore the
+    # substitution and the shape of the phrase: the word of the good, the city standing
+    # where the tag stands, no brackets, no tag left standing.
+    var saved_city := str(_cdata.city_name)
+    _cdata.city_name = ""
+    var without_city := str(_gdata.get_product_name(brand_id))
+    _cdata.city_name = "Testfeld"
+    var shown := str(_gdata.get_product_name(brand_id))
+    check(not without_city.is_empty() and shown.contains(without_city) and shown.contains("Testfeld"),
+            "the prestige good %s must be shown by its own good and by the city: %s"
+                    % [brand_id, shown], state)
+    check(not shown.contains("(") and not shown.contains(")"),
+            "the name of a brand carries no brackets: %s" % shown, state)
+    var recipe := _craft_of(brand_id)
+    if not recipe.is_empty():
+        check(_gdata.get_craft_display_name(recipe) == shown,
+                "the row of the building must carry the name of the brand, not the name of the " +
+                "workshop: %s" % str(recipe.get("name", "")), state)
+    check(not without_city.contains(_gdata.TAG_CITY_NAME) and not without_city.contains("Testfeld"),
+            "a city without a name must leave neither the tag nor a hole in the phrase: %s"
+                    % without_city, state)
+    _cdata.city_name = saved_city
+
+# --- 2. THE COUNTERS ---
+
+func _test_counters(state: Dictionary) -> void:
+    _reset_all()
+    var product: Dictionary = _gdata.products[LADDER_GOOD]
+    var reputation: Dictionary = product["reputation"]
+    var brand: Dictionary = product["brand"]
+
+    _mgr.record_sale(LADDER_GOOD, {"common": 40})
+    _mgr.record_sale(LADDER_GOOD, {"fine": 10})
+    check(_mgr.tier_counter(product, reputation) == 50,
+            "a rung without a quality filter counts every unit given away", state)
+    check(_mgr.tier_counter(product, brand) == 0,
+            "a rung that waits for a quality must not count the units below it", state)
+
+    _mgr.record_sale(LADDER_GOOD, {"exceptional": 7})
+    check(_mgr.tier_counter(product, brand) == 7,
+            "the units of the awaited quality must count", state)
+    check(_mgr.tier_counter(product, reputation) == 57,
+            "one counter is shared by the rungs of a good", state)
+
+    # The second trigger is a different ledger: what the city made is not what it sold.
+    _mgr.record_production(LADDER_GOOD, 25, "common")
+    check(_mgr.tier_counter(product, {"trigger": "produce"}) == 25,
+            "the trigger \"produce\" counts what the city made", state)
+    check(_mgr.tier_counter(product, reputation) == 57,
+            "a sale and a production are not the same counter", state)
+
+    check(_mgr.tier_counter(product, {"trigger": "gift"}) == 0,
+            "an unknown trigger counts nothing instead of guessing", state)
+    check(_mgr.sold_by_quality.has(LADDER_GOOD), "the counter is kept per good", state)
+
+# --- 3. THE LADDER ---
+
+func _test_ladder(state: Dictionary) -> void:
+    _reset_all()
+    var product: Dictionary = _gdata.products[LADDER_GOOD]
+    var thresholds := {}
+    for tier in _mgr.TIERS:
+        if product.has(tier):
+            thresholds[tier] = int((product[tier] as Dictionary).get("threshold", 0))
+
+    var multiplier_before: float = _cdata.get_trade_sell_price_multiplier(LADDER_GOOD)
+
+    # One sale that crosses every rung pays every one of them: a city that has given away a
+    # thousand units is known, branded and famous at once.
+    _mgr.record_sale(LADDER_GOOD, {"exceptional": thresholds[_mgr.TIER_CHALLENGE]})
+    for tier in _mgr.TIERS:
+        check(_mgr.is_tier_done(_mgr.challenge_id(product, {}), tier),
+                "the rung %s must be paid by the sale that crossed it" % tier, state)
+    check(_events.size() == thresholds.size(),
+            "each rung announces itself once (got %d for %d)" % [_events.size(),
+                    thresholds.size()], state)
+
+    var reward: Dictionary = _mgr.reward_at(product[_mgr.TIER_REPUTATION])
+    check(absf(_cdata.get_trade_sell_price_multiplier(LADDER_GOOD)
+            - multiplier_before * (1.0 + float(reward.get("value", 0.0)))) < 0.0001,
+            "the rung of the reputation raises the price a town pays", state)
+
+    check(_mgr.is_challenge_completed(_mgr.challenge_id(product, product[_mgr.TIER_CHALLENGE])),
+            "the last rung is the challenge the data addresses", state)
+    # The recipe of the prestige good waits for the technology of the base one as well; the test
+    # learns it so that the rung of the ladder is the only thing left to prove.
+    var ladder_recipe := _craft_of("aged_cheese")
+    var ladder_tech := str(ladder_recipe.get("unlock_tech", ""))
+    if not _cdata.is_tech_unlocked(ladder_tech):
+        _cdata.unlocked_technologies.append(ladder_tech)
+    check(_cdata.is_craft_available(ladder_recipe),
+            "the prestige recipe opens with the rung that rewards it", state)
+
+    # A rung is paid once: a second sale crosses nothing new.
+    _events.clear()
+    _mgr.record_sale(LADDER_GOOD, {"exceptional": 500})
+    check(_events.is_empty(), "a rung already paid is not paid again", state)
+
+# --- 4. THE PICKS ---
+
+func _test_picks(state: Dictionary) -> void:
+    _reset_all()
+    _cdata.total_population = 0
+    _cdata.specialization_claimed = 0
+    check(_cdata.get_pending_specialization_picks() == 0,
+            "a city of no citizens has no choice to spend", state)
+
+    var product: Dictionary = _gdata.products[LADDER_GOOD]
+    var challenge: String = _mgr.challenge_id(product, product[_mgr.TIER_CHALLENGE])
+    _mgr.record_sale(LADDER_GOOD, {"exceptional":
+            int((product[_mgr.TIER_CHALLENGE] as Dictionary).get("threshold", 0))})
+    check(_cdata.specialization_challenge_picks == 1,
+            "a challenge rewarded with a specialization gives one choice", state)
+    check(_cdata.get_pending_specialization_picks() == 1,
+            "the choice a challenge gave is pending", state)
+
+    # A task of the era that gives something else gives no choice of the specialization.
+    for record in _gdata.challenges:
+        if record is Dictionary and str(_mgr.reward_at(record).get("type", "")) \
+                != _mgr.REWARD_SPECIALIZATION:
+            _mgr.complete_era_challenge(record)
+    check(_cdata.specialization_challenge_picks == 1,
+            "a challenge that rewards no specialization gives no choice", state)
+
+    # The milestones keep their own budget: the gift of a challenge is added to it, never merged.
+    _cdata.total_population = int(_cdata.get_specialization_thresholds()[0])
+    _cdata.check_specialization_choice()
+    check(_cdata.get_pending_specialization_picks() == 2,
+            "the choices of the milestones and of the challenges add up", state)
+    check(not _mgr.is_challenge_completed("no_such_challenge"),
+            "a challenge nobody did is not completed", state)
+    check(_mgr.is_challenge_completed(challenge), "the ladder names its own challenge", state)
+
+# --- 5. THE GATES ---
+
+func _test_gates(state: Dictionary) -> void:
+    _reset_all()
+    var product: Dictionary = _gdata.products[LADDER_GOOD]
+    var spec_id := str(_mgr.reward_at(product[_mgr.TIER_CHALLENGE]).get("id", ""))
+    var spec: Dictionary = _cdata.get_specialization(spec_id)
+    check(not spec.is_empty(), "the challenge of %s rewards a specialization" % LADDER_GOOD, state)
+
+    var recipe := _craft_of("aged_cheese")
+    # The technology alone is not enough: the recipe waits for the fame of the good.
+    if not _cdata.is_tech_unlocked(str(recipe.get("unlock_tech", ""))):
+        _cdata.unlocked_technologies.append(str(recipe.get("unlock_tech", "")))
+    check(not _cdata.is_craft_available(recipe),
+            "the prestige recipe is closed while no rung of its ladder is paid", state)
+    check(not _cdata.is_specialization_available(spec),
+            "the prestige branch cannot be taken before its challenge", state)
+    var requires: String = _cdata.get_specialization_unlock_text(spec)
+    # The text names the task the branch waits for — the title the author gave the rung, or the good
+    # itself — and never the bare identifier of it.
+    check(requires != "" and requires != _mgr.challenge_id(product, product[_mgr.TIER_CHALLENGE]),
+            "the branch says what it waits for (got \"%s\")" % requires, state)
+
+    # The rung that grants the prestige good opens the work of it at once; the branch is not one of
+    # those, it waits for the last rung of the ladder.
+    _mgr.record_sale(LADDER_GOOD, {"exceptional":
+            int((product[_mgr.TIER_BRAND] as Dictionary).get("threshold", 0))})
+    check(_cdata.is_craft_available(recipe),
+            "the rung of the brand opens the recipe it rewards", state)
+    check(not _cdata.is_specialization_available(spec),
+            "the branch waits for the last rung, not for the brand one", state)
+
+    _mgr.record_sale(LADDER_GOOD, {"exceptional":
+            int((product[_mgr.TIER_CHALLENGE] as Dictionary).get("threshold", 0))})
+    check(_cdata.is_specialization_available(spec),
+            "the challenge opens the branch it rewards", state)
+
+    # Nothing is withheld: a branch the city cannot take still stands in the list the tab reads.
+    _reset_all()
+    var locked: Array = _cdata.get_locked_specializations()
+    var found := false
+    for other in locked:
+        if str(other.get("id", "")) == spec_id:
+            found = true
+    check(found, "an unopened branch is listed among the unavailable ones", state)
+
+# --- 5b. THE WORK OF THE BRAND ---
+
+# The rung of the brand opens every recipe that works the prestige good it grants: the good itself
+# and the goods forged or woven out of it. The gate is read from the pair (the brand of the good,
+# the reward of the rung), not from the recipe, so a work the author forgot to gate is still closed
+# — the field "unlock_challenge" is stripped from a copy of each recipe below to prove it.
+func _test_brand_work(state: Dictionary) -> void:
+    var ladders := 0
+    var works := 0
+    for pid in _gdata.products:
+        var product: Dictionary = _gdata.products[pid]
+        var block = product.get(_mgr.TIER_BRAND, null)
+        if not (block is Dictionary):
+            continue
+        var reward: Dictionary = _mgr.reward_at(block)
+        if str(reward.get("type", "")) != _mgr.REWARD_BRAND_PRODUCT:
+            continue
+        var brand := str(reward.get("product", ""))
+        var recipes := _crafts_working(brand)
+        if recipes.is_empty():
+            continue
+        ladders += 1
+        var id: String = _mgr.challenge_id(product, block)
+        var quality := str(block.get("min_quality", "exceptional"))
+        var threshold := int(block.get("threshold", 0))
+        for craft in recipes:
+            works += 1
+            _reset_all()
+            var bare: Dictionary = (craft as Dictionary).duplicate(true)
+            bare.erase("unlock_challenge")
+            var tech := str(bare.get("unlock_tech", ""))
+            if tech != "" and tech not in _cdata.unlocked_technologies:
+                _cdata.unlocked_technologies.append(tech)
+            check(not _cdata.is_craft_available(bare),
+                    "%s is closed while the rung of %s is unpaid" % [str(bare.get("id", "")), id],
+                    state)
+            _mgr.record_sale(pid, {quality: threshold})
+            check(_cdata.is_craft_available(bare),
+                    "the rung of the brand of %s opens the work of %s without a gate of its own"
+                            % [pid, str(bare.get("id", ""))], state)
+            # The branch of the specialization is not one of those works: it waits for the last rung.
+            var spec := str(_mgr.reward_at(product.get(_mgr.TIER_CHALLENGE, {}))
+                    .get("id", "") if product.has(_mgr.TIER_CHALLENGE) else "")
+            if spec != "":
+                check(not _cdata.is_specialization_available(_cdata.get_specialization(spec)),
+                        "the work of the brand does not hand out the branch of the ladder", state)
+    check(ladders >= 1, "at least one ladder grants a prestige good the city can work", state)
+    # The steel line is the ladder whose brand is worked by more than one recipe; if it ever loses
+    # that, the rule below has nothing to prove.
+    check(works >= 2, "several recipes work a prestige good (got %d)" % works, state)
+
+
+# Every recipe that works the prestige good: the one that makes it and the ones that take it as an
+# ingredient. The list is built by the code the game gates with, so the test asks the same question
+# the panel asks.
+func _crafts_working(brand_id: String) -> Array:
+    var out: Array = []
+    for craft in _gdata.crafts:
+        if not (craft is Dictionary):
+            continue
+        if str(_gdata.get_brand_product_of_craft(craft)) == brand_id:
+            out.append(craft)
+    return out
+
+func _craft_of(result_id: String) -> Dictionary:
+    for craft in _gdata.crafts:
+        if not (craft is Dictionary):
+            continue
+        var result = craft.get("result", null)
+        if result is Dictionary and result.has(result_id):
+            return craft
+    return {}
+
+# --- 6. THE SAVE ---
+
+func _test_save(state: Dictionary) -> void:
+    _reset_all()
+    var product: Dictionary = _gdata.products[LADDER_GOOD]
+    var reputation: Dictionary = product[_mgr.TIER_REPUTATION]
+    _mgr.record_sale(LADDER_GOOD, {"exceptional": int(reputation.get("threshold", 0))})
+    _mgr.record_production(LADDER_GOOD, 12, "fine")
+    _mgr.chunks_bought_this_era = 3
+    _mgr.failed_challenges["a_task_the_city_lost"] = true
+    var snapshot: Dictionary = _mgr.serialize()
+
+    _reset_all()
+    check(_cdata.get_trade_sell_price_multiplier(LADDER_GOOD) == 1.0,
+            "a city with no fame sells at the plain price", state)
+
+    _mgr.deserialize(snapshot)
+    check(_mgr.tier_counter(product, reputation) == int(reputation.get("threshold", 0)),
+            "the counter of the fame comes back from the save", state)
+    check(_mgr.is_tier_done(_mgr.challenge_id(product, reputation), _mgr.TIER_REPUTATION),
+            "the rung paid before the save stays paid", state)
+    check(_mgr.produced_by_quality.get(LADDER_GOOD, {}).get("fine", 0) == 12,
+            "the production counter comes back from the save", state)
+    check(_mgr.chunks_bought_this_era == 3, "the window of the era is restored", state)
+    check(_mgr.is_challenge_failed("a_task_the_city_lost"),
+            "a task the city lost is not offered again by the save", state)
+    # The price of the fame is a consequence of the rungs, and it is rebuilt, not stored.
+    check(absf(_cdata.get_trade_sell_price_multiplier(LADDER_GOOD)
+            - (1.0 + float(_mgr.reward_at(reputation).get("value", 0.0)))) < 0.0001,
+            "the price of the fame returns with the rung that granted it", state)
+
+    # A save written before the mechanic carries nothing: the city has earned nothing.
+    _reset_all()
+    _mgr.deserialize({})
+    check(_mgr.tier_counter(product, reputation) == 0,
+            "a save without the block of the fame earns nothing", state)
+
+# Two trade-price rewards on the same rung must add up, both in live play and when a save is read
+# back. A save rebuilds the share from the rungs, so it must sum the rewards the way apply_reward
+# does rather than keeping only the last one.
+func _test_save_multiple_trade_rewards(state: Dictionary) -> void:
+    _reset_all()
+    var fake := "test_multi_trade_reward"
+    var share_a := 0.10
+    var share_b := 0.05
+    var product := {
+        "id": fake,
+        "reputation": {
+            "threshold": 1,
+            "trigger": "sell",
+            "reward": [
+                {"type": "trade_price", "value": share_a},
+                {"type": "trade_price", "value": share_b},
+            ],
+        },
+    }
+    _gdata.products[fake] = product
+    _mgr.record_sale(fake, {"common": 1})
+    var live: float = _mgr.get_fame_trade_price_share(fake)
+    check(absf(live - (share_a + share_b)) < 0.0001,
+            "both trade-price rewards of a rung are paid live", state)
+    var snapshot: Dictionary = _mgr.serialize()
+    _reset_all()
+    _mgr.deserialize(snapshot)
+    check(absf(_mgr.get_fame_trade_price_share(fake) - live) < 0.0001,
+            "a save restores the sum of the trade-price rewards, not the last of them", state)
+    _gdata.products.erase(fake)
+
+# --- 7. THE TASKS OF THE ERA ---
+
+func _test_era(state: Dictionary) -> void:
+    _reset_all()
+    var restraint := {}
+    var whole := {}
+    for record in _gdata.challenges:
+        match str(record.get("condition", "")):
+            "buy_no_chunks_in_one_era":
+                restraint = record
+            "buy_all_available_chunks_in_one_era":
+                whole = record
+    check(not restraint.is_empty() and not whole.is_empty(),
+            "both tasks of the Region are declared", state)
+    if restraint.is_empty() or whole.is_empty():
+        return
+
+    check(_mgr.offers_in_current_era(restraint) == (int(_main_map.current_era)
+            == int(restraint.get("era", 0))),
+            "a task of an era is offered only while that era runs", state)
+
+    var restraint_id := str(restraint.get("id", ""))
+    var whole_id := str(whole.get("id", ""))
+    # What the city was told about each task, in the order the news came: [id, completed].
+    var news: Array = []
+    _mgr.challenge_completed.connect(
+            func(challenge: Dictionary): news.append([str(challenge.get("id", "")), true]))
+    _mgr.challenge_failed.connect(
+            func(challenge: Dictionary): news.append([str(challenge.get("id", "")), false]))
+
+    # The window of the restraint is the era, and it is lost with the first purchase: a task that
+    # asks for nothing bought cannot be won back by spending less afterwards.
+    _main_map.expansion_manager.territory_expanded.emit(0, 0, 0)
+    check(_mgr.chunks_bought_this_era == 1, "the claiming of a chunk is booked to the era", state)
+    check(_mgr.is_challenge_failed(restraint_id),
+            "the task of restraint is lost with the first purchase of the era", state)
+    check(not _mgr.is_challenge_completed(restraint_id),
+            "a city that bought a chunk is not the one that bought none", state)
+    check(not _mgr.era_challenge_records().has(restraint),
+            "a task the city cannot win is no longer offered", state)
+    check(news.has([restraint_id, false]), "the loss of a task is announced", state)
+    # The loss is said, not staged before the player: the line goes to the HUD and so into the
+    # journal, and the world keeps running — a task already lost asks nothing of him.
+    check(_journal_says(tr("Challenge failed: %s") % _title_of(restraint)),
+            "the loss of a task is in the journal", state)
+    check(_main_map._challenge_news_queue.is_empty()
+            and not _main_map.challenge_news_dialog.visible,
+            "the loss of a task opens no window", state)
+
+    # The closing of the era does not reward what the purchase already took away.
+    _mgr.era_window_closed()
+    check(_mgr.chunks_bought_this_era == 0, "the window of the era closes with the era", state)
+    _mgr.era_window_closed()
+    check(not _mgr.is_challenge_completed(restraint_id),
+            "an era that bought nothing after a lost era does not pay the task again", state)
+
+    # An era that bought nothing closes with its task done.
+    _reset_all()
+    _mgr.era_window_closed()
+    check(_mgr.is_challenge_completed(restraint_id),
+            "an era that bought nothing closes with its task done", state)
+
+    # The whole Region is measured as the Region, not as the part of it the fog has let the city
+    # see: the land the player has not scouted is still his to buy, and one chunk taken out of the
+    # explored corner is not a claimed Region.
+    _reset_all()
+    check(_mgr.region_open_hex_count() > 0, "a new Region is not yet the city's", state)
+    check(_mgr.era_challenge_progress(whole).get("text", "") != "",
+            "the task of the Region says how much is left", state)
+    _main_map.expansion_manager.territory_expanded.emit(0, 0, 0)
+    check(not _mgr.is_challenge_completed(whole_id),
+            "one chunk bought under the fog does not claim the whole Region", state)
+    check(not _mgr.is_challenge_failed(whole_id),
+            "a Region still open is a task still winnable", state)
+
+    var claimed := _claim_whole_region()
+    check(_mgr.region_open_hex_count() == 0, "a Region taken has nothing left to take", state)
+    _main_map.expansion_manager.territory_expanded.emit(0, 0, 0)
+    check(_mgr.is_challenge_completed(whole_id),
+            "the Region is won by the last chunk of it, not by the era closing", state)
+    check(news.has([whole_id, true]), "the winning of the Region is announced", state)
+    # The reward is what stops the world: the player reads it in a window of its own, not in a line
+    # that passes by while he is busy with the map.
+    check(_main_map.challenge_news_dialog.visible
+            and str(_main_map.challenge_news_dialog.title) == tr("Challenge completed"),
+            "the winning of a task opens its window", state)
+    # The window reads as the tab that promised the task: the reward stands as the bullet of a
+    # reward. What is left to buy is not said there — the task is over, and the counter would only
+    # remind the player of the thing he has just finished doing.
+    var news_body := str(_main_map.challenge_news_body.text)
+    var counter := str(_mgr.era_challenge_progress(whole).get("text", ""))
+    check(counter != "" and not news_body.contains(counter),
+            "the window of the reward does not count what is left to buy", state)
+    check(news_body.contains("• ") and news_body.contains("[color="),
+            "the window paints the reward as the tab lists it", state)
+    _main_map.challenge_news_dialog.visible = false
+    _restore_region(claimed)
+
+    # A task of every era is not buried by the era it lost: the next window asks it again, and only
+    # the news remembers the era that went by.
+    _reset_all()
+    _mgr.era_window_closed()
+    check(not _mgr.is_challenge_failed(whole_id),
+            "a task of every era survives the era it lost", state)
+    check(_mgr.era_challenge_records().has(whole),
+            "the lost window reopens the task it could not finish", state)
+    check(news.has([whole_id, false]), "the closed era says what the city did not manage", state)
+    check(_journal_says(tr("Challenge failed: %s") % _title_of(whole)),
+            "the closed era leaves the loss in the journal", state)
+    check(_main_map._challenge_news_queue.is_empty()
+            and str(_main_map.challenge_news_dialog.title) == tr("Challenge completed"),
+            "the closing era windows the reward it earned and nothing else", state)
+    _main_map.challenge_news_dialog.visible = false
+
+    # A reward that is not a specialization gives no choice — the era tasks are exactly that.
+    check(_cdata.specialization_challenge_picks == 0,
+            "the tasks of the Region give no choice of the specialization", state)
+
+    # A condition the code does not implement never completes, however the data names it: the
+    # judgment belongs to the code, the record only points at it.
+    _gdata.challenges.append({"id": "invented_condition", "condition": "not_in_the_code"})
+    _mgr.chunks_bought_this_era = 0
+    _mgr.era_window_closed()
+    _gdata.challenges.pop_back()
+    check(not _mgr.is_challenge_completed("invented_condition"),
+            "a challenge is completed by the code, not by the data", state)
+
+func _test_tab(state: Dictionary) -> void:
+    _reset_all()
+    var city_ui = _main_map.get_node_or_null("CityUI")
+    check(city_ui != null, "CityUI not found in MainMap", state)
+    if city_ui == null:
+        return
+    var button = city_ui.get_node_or_null("TabBarPanel/TabBar/EraChallengesButton")
+    check(button != null, "the tab button of the challenges is missing", state)
+    check(city_ui.get_node_or_null("ContentPanel/ChallengesPanel") != null,
+            "the panel of the challenges is missing", state)
+    check(city_ui.challenges_tab != null, "the challenges tab script is not attached", state)
+    if button == null or city_ui.challenges_tab == null:
+        return
+
+    # The button is a tab now, not a stub: it switches the window instead of saying "under
+    # development".
+    check(not (button in city_ui.stub_buttons),
+            "the challenges button is no longer a stub", state)
+    button.pressed.emit()
+    check(city_ui.active_tab == "challenges",
+            "the button did not switch to the challenges (got \"%s\")" % city_ui.active_tab, state)
+    check(city_ui.challenges_panel.visible, "the challenges panel is not shown", state)
+    await process_frame
+
+    var list = city_ui.get_node_or_null(
+            "ContentPanel/ChallengesPanel/Body/ScrollContainer/ChallengeList")
+    check(list != null and list.get_child_count() > 0,
+            "the list of the challenges is empty", state)
+    if list == null:
+        return
+
+    # The tasks of the era fold the same way the ladders of the goods do: a closed group keeps its
+    # tasks out of the list, and only the name of the group is left to show that they are there.
+    var live_names: Array = []
+    for record in _gdata.challenges:
+        if record is Dictionary and _mgr.offers_in_current_era(record):
+            var task_name := str(record.get("name", ""))
+            if task_name != "":
+                live_names.append(task_name)
+    var era_title := tr("Challenges of this era")
+    var era_toggle := _fold_toggle(list, era_title)
+    check(not live_names.is_empty(), "the era has a task to fold away", state)
+    check(era_toggle != null, "the tasks of this era have a fold of their own", state)
+    if era_toggle != null and not live_names.is_empty():
+        check(_fold_contents(list, era_title) == 0, "a closed era fold hides its tasks", state)
+        check(_list_text(list).find(str(live_names[0])) < 0,
+                "a closed era fold keeps the task out of the text of the list", state)
+        era_toggle.pressed.emit()
+        await process_frame
+        check(_fold_contents(list, era_title) == live_names.size(),
+                "the opened era fold lists every task of the era (got %d of %d)"
+                        % [_fold_contents(list, era_title), live_names.size()], state)
+        check(_list_text(list).find(str(live_names[0])) >= 0,
+                "the opened era fold shows the task by its name", state)
+
+    # The ladder is folded under the name of its challenge, and the rungs — the good, the reward of
+    # the rung, the prestige good — are readable once the player opens it.
+    _mgr.record_sale(LADDER_GOOD, {"exceptional":
+            int((_gdata.products[LADDER_GOOD][_mgr.TIER_REPUTATION] as Dictionary)
+                    .get("threshold", 0))})
+    city_ui.challenges_tab.refresh()
+    await process_frame
+    var good_name: String = _gdata.get_product_name(LADDER_GOOD)
+    var ladder_name: String = str((_gdata.products[LADDER_GOOD]
+            [_mgr.TIER_CHALLENGE] as Dictionary).get("name", ""))
+    var rung_count := 0
+    for tier in _mgr.TIERS:
+        if (_gdata.products[LADDER_GOOD] as Dictionary).has(tier):
+            rung_count += 1
+    check(ladder_name != "", "the ladder of the test good carries no name", state)
+    check(_list_text(list).find(ladder_name) >= 0,
+            "the closed ladder is titled by its challenge", state)
+    check(_fold_contents(list, ladder_name) == 0, "a closed ladder hides its rungs", state)
+
+    var toggle := _fold_toggle(list, ladder_name)
+    check(toggle != null, "the ladder of the good has no toggle of its own", state)
+    if toggle == null:
+        return
+    toggle.pressed.emit()
+    await process_frame
+    check(_fold_contents(list, ladder_name) == rung_count,
+            "the opened ladder lists every tier of the good (got %d of %d)"
+                    % [_fold_contents(list, ladder_name), rung_count], state)
+    # A rung is named by its tier alone. The good stands in the name of the fold above it, so a rung
+    # that repeated the good would say the same line once for every step of the ladder.
+    var rung_names := _rung_names(list, ladder_name)
+    check(rung_names.size() == rung_count, "every rung of the ladder is named", state)
+    for rung_name in rung_names:
+        check(str(rung_name) != "", "a rung of the ladder carries no name", state)
+        check(str(rung_name).find(good_name) < 0,
+                "the rung \"%s\" repeats the good its fold already names" % str(rung_name), state)
+    var text := _list_text(list)
+    check(text.find(good_name) >= 0, "the tab names the good the ladder is about", state)
+    # A counter of "sold" alone reads as any sale, while the fame of a good counts only what a town
+    # takes from the storage of the city. The condition of a rung therefore names its good — read
+    # from the data of the good, not written into the phrase of the tier — and the market of it.
+    var rep := _gdata.products[LADDER_GOOD][_mgr.TIER_REPUTATION] as Dictionary
+    var rep_threshold := int(rep.get("threshold", 0))
+    var condition := str(_fold_body(list, ladder_name).get_child(0)
+            .get_node("Row/Body").get_child(1).text)
+    check(condition == "%s: %d/%d sold to the towns" % [good_name, rep_threshold, rep_threshold],
+            "the condition of a rung names its good and the market it counts (got \"%s\")"
+                    % condition, state)
+    check(text.find(str(_cdata.format_signed_percent(
+            float(_mgr.reward_at(_gdata.products[LADDER_GOOD][_mgr.TIER_REPUTATION])
+                    .get("value", 0.0))))) >= 0,
+            "the tab says what the rung of the reputation gives", state)
+    check(text.find("aged_cheese") < 0,
+            "the prestige good of the ladder is named, not its identifier", state)
+
+    # The fold is remembered over a redraw: the list is rebuilt whenever the city changes, and the
+    # ladder the player opened stays open.
+    _mgr.record_sale(LADDER_GOOD, {"exceptional": 1})
+    city_ui.challenges_tab.refresh()
+    await process_frame
+    check(_fold_contents(list, ladder_name) == rung_count,
+            "a redraw keeps the ladder the player opened", state)
+
+    # Clicking the name again folds the ladder back.
+    _fold_toggle(list, ladder_name).pressed.emit()
+    await process_frame
+    check(_fold_contents(list, ladder_name) == 0, "the ladder folds back on a second click", state)
+
+    var specializations = city_ui.get_node_or_null(
+            "ContentPanel/SpecializationPanel/Body/ScrollContainer/SpecializationList")
+    check(specializations != null, "the specialization list is missing", state)
+    if specializations == null:
+        return
+    city_ui._switch_tab("specialization")
+    await process_frame
+    var spec_text := _list_text(specializations)
+    check(spec_text.find("Requires") >= 0 or spec_text.find("cheese") >= 0,
+            "an unopened prestige branch says what it waits for", state)
+
+func _list_text(node: Node) -> String:
+    var out := ""
+    for child in node.get_children():
+        out += _collect_text(child) + "\n"
+    return out
+
+func _collect_text(node: Node) -> String:
+    var out := ""
+    if node is Label or node is Button:
+        out += node.text
+    for child in node.get_children():
+        out += " " + _collect_text(child)
+    return out
+
+# The toggle of one fold, found by the title it shows.
+func _fold_toggle(list: Node, title: String) -> Button:
+    for child in list.get_children():
+        if child is Button and str(child.text).find(title) >= 0:
+            return child
+    return null
+
+# The container the contents of an opened fold stand in; null while the fold is closed.
+func _fold_body(list: Node, title: String) -> Node:
+    var toggle := _fold_toggle(list, title)
+    if toggle == null:
+        return null
+    var siblings: Array = list.get_children()
+    var next = siblings[siblings.find(toggle) + 1] \
+            if siblings.find(toggle) + 1 < siblings.size() else null
+    return next.get_node_or_null("FoldBody") if next is MarginContainer else null
+
+# How many entries the list shows under that fold — zero while it stands closed.
+func _fold_contents(list: Node, title: String) -> int:
+    var body = _fold_body(list, title)
+    return body.get_child_count() if body != null else 0
+
+# The name each rung of a ladder carries: the first line of its plate.
+func _rung_names(list: Node, title: String) -> Array:
+    var out: Array = []
+    var body = _fold_body(list, title)
+    if body == null:
+        return out
+    for plate in body.get_children():
+        var lines = plate.get_node_or_null("Row/Body")
+        if lines != null and lines.get_child_count() > 0:
+            out.append(str(lines.get_child(0).text))
+    return out
+
+# --- THE STATE OF A NEW GAME ---
+
+# The Region taken the way the claiming takes it: every hex of it marked as belonging to the
+# Influence. The flags the map carried before are given back, so a later pass does not walk a world
+# that was bought by the test rather than by the city.
+func _claim_whole_region() -> Dictionary:
+    var saved := {}
+    var bounds = _main_map.get_region_bounds()
+    for row in range(int(bounds.row_start), int(bounds.row_end) + 1):
+        for col in range(int(bounds.col_start), int(bounds.col_end) + 1):
+            var tile = _main_map.tile_data[row][col]
+            if tile == null:
+                continue
+            saved["%d,%d" % [row, col]] = bool(tile.get("in_influence", false))
+            tile["in_influence"] = true
+    return saved
+
+func _restore_region(saved: Dictionary) -> void:
+    for key in saved:
+        var parts := str(key).split(",")
+        _main_map.tile_data[int(parts[0])][int(parts[1])]["in_influence"] = bool(saved[key])
+
+# Everything the mechanic remembers, back to the empty counters it starts with. The test walks the
+# ladder more than once, and a rung paid by the pass before would hide the reward of the pass after.
+func _reset_all() -> void:
+    _events.clear()
+    _mgr.sold_by_quality.clear()
+    _mgr.produced_by_quality.clear()
+    _mgr.done_tiers.clear()
+    _mgr.completed_challenges.clear()
+    _mgr.failed_challenges.clear()
+    _mgr.chunks_bought_this_era = 0
+    _mgr._fame_price_share.clear()
+    _cdata.specialization_challenge_picks = 0
+    _cdata.specialization_claimed = 0
+    _cdata.chosen_specialization_ids.clear()
+    # The news of a task stops the world; a pass of the test is not the player reading it. The queue
+    # goes first: hiding the window asks for the next news, and there must be none left.
+    _main_map._challenge_news_queue.clear()
+    var dialog = _main_map.get("challenge_news_dialog")
+    if dialog != null:
+        dialog.visible = false
+    _main_map.apply_pause_state()
+    # The journal is what the test reads back to know what the player was told, so a pass of it
+    # starts with the history empty.
+    var journal = _main_map.get("journal")
+    if journal != null:
+        journal.clear()
+
+# Whether the journal of the game carries the line since the last reset. The important message of
+# the HUD is what writes it (hud_message.gd), so this is the record the player can still read after
+# the line itself passed by.
+func _journal_says(text: String) -> bool:
+    var journal = _main_map.get("journal")
+    if journal == null:
+        return false
+    for entry in journal.entries:
+        if str(entry.get("text", "")) == text:
+            return true
+    return false
+
+
+# The name the player reads for a task of the era; the id is what the record falls back to.
+func _title_of(record: Dictionary) -> String:
+    var name := str(record.get("name", ""))
+    return name if name != "" else str(record.get("id", ""))
+
+func check(condition: bool, message: String, state: Dictionary) -> void:
+    if condition:
+        print("OK: ", message)
+    else:
+        state["failed"] = true
+        push_error("FALL: " + message)

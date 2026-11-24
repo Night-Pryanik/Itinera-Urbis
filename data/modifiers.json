@@ -1,0 +1,213 @@
+{
+  "modifiers": {
+    // The bonus blocks of a source that is NOT a technology. Every block carries
+    // two id maps: production_multiplier for the improvements of the map and
+    // building_production_multiplier for the buildings of the city, so a bonus
+    // may target either kind of producer.
+    //
+    // The effects of the technologies live in "tech_modifiers": every record there
+    // belongs to one technology, and the bonus follows the technology. A record
+    // marked "requires_water" needs the fresh water as well — the water-driven
+    // machinery only works where the water runs.
+    //
+    // fresh_water is water as a MATERIAL: irrigation of cultivated plants (farm,
+    // plantation), washing and soaking hides (the tanner), and cooling the still's
+    // condenser (the distillery). No technology is needed — the water_access scheme
+    // itself decides whether the hex or the city has water. The vineyard is
+    // deliberately absent: its grapes are dry-farmed.
+    "fresh_water": {
+      "production_multiplier": { "farm": 1.5, "plantation": 1.5 },
+      "building_production_multiplier": { "leatherworker_house": 1.25, "distillery": 1.25 }
+    },
+    "tech_modifiers": [
+      {
+        "tech_id": "plow",
+        "icon": "production_bonus.png",
+        "name": "Farms: +50% production",
+        "production_multiplier": { "farm": 1.5 }
+      },
+      {
+        "tech_id": "wheel",
+        "icon": "time_bonus.png",
+        "name": "Reduces the effect of distance from the city on labor cost when building improvements by 30%",
+        "modifiers": [ { "target": "improvement_distance_cost", "type": "percent", "value": -30 } ]
+      },
+      {
+        "tech_id": "mathematics",
+        "icon": "time_bonus.png",
+        "name": "Construction: -10% labor cost",
+        "modifiers": [ { "target": "construction_cost", "type": "percent", "value": -10 } ]
+      },
+      {
+        "tech_id": "irrigation",
+        "icon": "water_chain.png",
+        "name": "Fresh water passes through in a chain (up to 3 tiles)",
+        "modifiers": [ { "target": "water_chain_length", "value": 3 } ]
+      },
+      {
+        "tech_id": "canals",
+        "icon": "water_chain.png",
+        "name": "Fresh water passes through in a chain (up to 4 tiles)",
+        "modifiers": [ { "target": "water_chain_length", "value": 4 } ]
+      },
+      {
+        "tech_id": "calendar",
+        "icon": "production_bonus.png",
+        "name": "Plantations: +30% production",
+        "production_multiplier": { "plantation": 1.3 }
+      },
+      {
+        // Water as a source of MECHANICAL MOTION: ore washing and stamps at a
+        // mine/quarry, water-driven bellows in metallurgy. The record
+        // needs the running water AND the Water Power technology — unlike
+        // irrigation, which needs the water only, and unlike the Water Mill,
+        // whose own recipe already encodes the gain from the Water Wheel.
+        "tech_id": "water_power",
+        "icon": "water_chain.png",
+        "name": "Mine, quarry, bloomery, smelter: +25% production only where fresh water is available",
+        "requires_water": true,
+        "production_multiplier": { "mine": 1.25, "quarry": 1.25 },
+        "building_production_multiplier": {
+          "bloomery": 1.25, "smelter": 1.25
+        }
+      },
+      {
+        // The gears are the TRANSMISSION of a rotation, not its source: toothed
+        // wheels that pass the turn of a crank, a ratchet or an axle on to the
+        // working tool. No water is needed — a water wheel, an animal, a treadle
+        // or a human arm may turn the same gears.
+        // The hoists of the mine and the quarry are a technology of their own
+        // (the hoisting mechanisms): the gears pass the turn on, the winch lifts.
+        // The Hand Mill is not listed either: it is turned by hand.
+        "tech_id": "cogwheel",
+        "icon": "production_bonus.png",
+        "name": "Mine, quarry, animal mill, oil mill, oilmaker's, weaver's and silkmaker's houses, weaver's, mason's, carpenter's and jeweler's workshops: +25% production",
+        "production_multiplier": { "mine": 1.25, "quarry": 1.25 },
+        "building_production_multiplier": {
+          "animal_mill": 1.25, "oilmaker_house": 1.25, "oil_mill": 1.25, "weaver_house": 1.25, "weaver_workshop": 1.25,
+          "silk_maker_house": 1.25, "mason_workshop": 1.25, "jeweler_house": 1.25,
+          "carpenter_workshop": 1.25
+        }
+      },
+      {
+        // The winch and the pulley: the machinery that lifts the ore out of the
+        // shaft. The gears may turn it, the water may turn it, an animal may walk
+        // round it — the hoist itself is the machine.
+        "tech_id": "hoisting_mechanisms",
+        "icon": "production_bonus.png",
+        "name": "Mine, quarry: +10% production",
+        "production_multiplier": { "mine": 1.1, "quarry": 1.1 }
+      },
+      {
+        // The craft of the machine itself: the frame that holds the parts, the
+        // crank and the connecting rod that turn one motion into another. The
+        // mills get a second run of stones, the forest camp a saw that cuts
+        // without stopping.
+        "tech_id": "mechanics",
+        "icon": "production_bonus.png",
+        "name": "Woodcutter's camp: +10% production",
+        "production_multiplier": { "lumberjack_hut": 1.1 },
+        "building_production_slots": { "animal_mill": 1, "water_mill": 1 }
+      },
+      {
+        // Padded rigid shoulder harness: draft horses pull heavier plows, mill
+        // sweeps and road wagons without choking on a throat strap.
+        "tech_id": "horse_collar",
+        "icon": "production_bonus.png",
+        "name": "Farms, animal mill: +20% production",
+        "production_multiplier": { "farm": 1.2 },
+        "building_production_multiplier": { "animal_mill": 1.2 }
+      },
+      {
+        "tech_id": "horse_collar",
+        "icon": "time_bonus.png",
+        "name": "Reduces the effect of distance from the city on labor cost when building improvements by 20%",
+        "modifiers": [ { "target": "improvement_distance_cost", "type": "percent", "value": -20 } ]
+      },
+      {
+        // Alternating cereals, pulses, fodder and rested fallow restores soil
+        // fertility on arable farms and cash-crop plantations alike.
+        "tech_id": "crop_rotation",
+        "icon": "production_bonus.png",
+        "name": "Farms, plantations: +25% production",
+        "production_multiplier": { "farm": 1.25, "plantation": 1.25 }
+      },
+      {
+        // Blacklisted buildings remain in the map but receive no effect.
+        "tech_id": "screw_press",
+        "building_production_slots": {
+          "winemaker_house": 1, "oilmaker_house": 1, "oil_mill": 1, "dairy": 1,
+          "paper_workshop": 1, "paper_mill": 1, "jeweler_house": 1
+        }
+      },
+      {
+        // The press repeats a page: the workshop binds a second setting of sheets
+        // while the ink of the first one dries.
+        "tech_id": "printing",
+        "building_production_slots": { "bookbinder_workshop": 1 }
+      },
+      {
+        // The seigniorage of the Mint is scaled by the building's output multiplier, so a
+        // staffed assayer with the craft of assaying takes more coin out of every strike.
+        "tech_id": "assaying",
+        "icon": "coin_stack.png",
+        "name": "Assaying: +50% to the Mint's seigniorage",
+        "building_production_multiplier": { "mint": 1.5 }
+      },
+      {
+        "tech_id": "banking",
+        "icon": "banking.png",
+        "name": "Tax income: +10%",
+        "modifiers": [ { "target": "tax_income", "type": "percent", "value": 10 } ]
+      },
+      {
+        "tech_id": "banking",
+        "icon": "banking.png",
+        "name": "Internal-market trade income: +10%",
+        "modifiers": [ { "target": "internal_market_trade_income", "type": "percent", "value": 10 } ]
+      },
+      {
+        "tech_id": "banking",
+        "icon": "banking.png",
+        "name": "External-market trade income: +10%",
+        "modifiers": [ { "target": "external_market_trade_income", "type": "percent", "value": 10 } ]
+      },
+      {
+        // The output of the scholars is not a good of the city: the ordinary
+        // building_production_multiplier never reaches the science rate. The
+        // astronomy bonus therefore has a target of its own, applied to the
+        // work of the scholars and not to the base science of the city.
+        "tech_id": "astronomy",
+        "icon": "science.png",
+        "name": "Astronomy: +15% scholar output",
+        "modifiers": [ { "target": "scholar_production", "type": "percent", "value": 15 } ]
+      },
+      {
+        "tech_id": "compass",
+        "icon": "production_bonus.png",
+        "name": "Fishing boats: +25% production",
+        "production_multiplier": { "fishing_boats": 1.25 }
+      },
+      {
+        "tech_id": "compass",
+        "icon": "coin_stack.png",
+        "name": "Reduces the effect of distance from the city on scouting cost by 30%",
+        "modifiers": [ { "target": "scouting_distance_cost", "type": "percent", "value": -30 } ]
+      },
+      {
+        "tech_id": "compass",
+        "icon": "visibility.png",
+        "name": "Scouting: up to 7 tiles per area, up to 2 simultaneous expeditions, +25% map scroll range",
+        "modifiers": [
+          { "target": "scouting_chunk_size", "value": 7 },
+          { "target": "max_scouting_expeditions", "value": 2 },
+          { "target": "max_scroll_distance", "type": "percent", "value": 25 }
+        ]
+      }
+    ],
+    "terrain_modifiers": [
+      { "terrain_id": "asphalt_lake", "resource_id": "bitumen_deposit_asphalt", "production_multiplier": 2.0 },
+      { "terrain_id": "beach", "resource_id": "salt_evaporation", "production_multiplier": 2.0 }
+    ]
+  }
+}

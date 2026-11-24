@@ -1,0 +1,143 @@
+# technologies_tab.gd
+extends Node
+
+const UI_THEME = preload("res://scripts/ui_theme.gd")
+
+var tech_current_label: Label
+var tech_progress_bar: ProgressBar
+var tech_available_container: Node
+var tech_unlocked_container: Node
+
+signal research_requested(tech_id: String)
+
+func setup(current_lbl: Label, progress: ProgressBar, available: Node, unlocked: Node):
+    tech_current_label = current_lbl
+    tech_progress_bar = progress
+    tech_available_container = available
+    tech_unlocked_container = unlocked
+
+func refresh():
+    _refresh_status_labels()
+    _rebuild_lists()
+
+func update_progress():
+    # A light refresh: only the research progress and the current label.
+    _refresh_status_labels()
+
+func _refresh_status_labels():
+    if CityData.current_research_tech_id != "":
+        var tech_data = null
+        for t in GameData.technologies:
+            if t["id"] == CityData.current_research_tech_id:
+                tech_data = t
+                break
+        if tech_data:
+            var collected = CityData.get_research_science_collected()
+            var cost = CityData.current_research_science_cost
+            tech_current_label.text = tr("Researching: %s (science: %.0f/%d)") % [tech_data["name"], collected, cost]
+            tech_progress_bar.value = CityData.research_progress * 100.0
+        else:
+            tech_current_label.text = tr("Researching: ???")
+            tech_progress_bar.value = 0
+    else:
+        var queued := _get_queued_research()
+        if not queued.is_empty():
+            tech_current_label.text = tr("Queued for research: %s — the simulation is stopped") % str(queued.get("label", ""))
+            tech_progress_bar.value = 0
+        else:
+            tech_current_label.text = tr("No current research")
+            tech_progress_bar.value = 0
+
+
+# The research that is waiting for the resume of the simulation, or an empty
+# dictionary.
+func _get_queued_research() -> Dictionary:
+    var main_map = get_tree().root.find_child("MainMap", true, false)
+    if main_map == null or main_map.active_pause == null:
+        return {}
+    return main_map.active_pause.get_pending_by_prefix("research")
+
+func _get_era_name(era_id: String) -> String:
+    for era in GameData.eras:
+        if era.get("id", "") == era_id:
+            return era.get("name", era_id)
+    return era_id
+
+func _rebuild_lists():
+    # --- The list of available/unavailable technologies ---
+    for child in tech_available_container.get_children():
+        child.queue_free()
+
+    var queued := _get_queued_research()
+    var queued_tech := str(queued.get("subject", "")) if not queued.is_empty() else ""
+
+    for tech in GameData.technologies:
+        var tech_id = tech["id"]
+        var is_unlocked = tech_id in CityData.unlocked_technologies
+        var is_current = tech_id == CityData.current_research_tech_id
+        if is_unlocked or is_current:
+            continue
+
+        var is_available = CityData.is_tech_available(tech_id)
+        var row = HBoxContainer.new()
+        row.add_theme_constant_override("separation", 8)
+
+        var era_str = _get_era_name(tech.get("era", ""))
+        var name_label = Label.new()
+        if is_available:
+            name_label.text = tr("%s [%s] (science: %d)") % [tech["name"], era_str, tech.get("science_cost", 3)]
+        else:
+            var req_str = ""
+            if not CityData.is_tech_era_allowed(tech_id):
+                # The era of the technology is above the current one — the transition to it has not yet happened.
+                req_str = tr(" | Requires advancing to the next era")
+            else:
+                var prereq_text = CityData.get_tech_prerequisites_text(tech_id)
+                if prereq_text != "":
+                    req_str = tr(" | Required: ") + prereq_text
+            name_label.text = tr("%s [%s] (science: %d)%s") % [tech["name"], era_str, tech.get("science_cost", 3), req_str]
+            name_label.add_theme_color_override("font_color", UI_THEME.color("text_muted"))
+        row.add_child(name_label)
+
+        if is_available:
+            var btn = Button.new()
+            btn.text = tr("Research")
+            btn.pressed.connect(_on_research_button_pressed.bind(tech_id))
+            row.add_child(btn)
+        elif tech_id == queued_tech:
+            # The research of this technology is already waiting for the resume of
+            # the simulation. The button that would start it becomes the button that
+            # takes it back out of the queue — nothing has been spent on it.
+            var btn = Button.new()
+            btn.text = tr("Cancel")
+            btn.tooltip_text = tr("Take this research out of the queue")
+            btn.pressed.connect(_on_cancel_queued_research_pressed)
+            row.add_child(btn)
+
+        tech_available_container.add_child(row)
+
+    # --- The list of researched technologies ---
+    for child in tech_unlocked_container.get_children():
+        child.queue_free()
+    for tech_id in CityData.unlocked_technologies:
+        var tech_data = null
+        for t in GameData.technologies:
+            if t["id"] == tech_id:
+                tech_data = t
+                break
+        if tech_data:
+            var era_str = _get_era_name(tech_data.get("era", ""))
+            var lbl = Label.new()
+            lbl.text = "%s [%s]" % [tech_data["name"], era_str]
+            lbl.add_theme_color_override("font_color", UI_THEME.color("income").lightened(0.35))
+            tech_unlocked_container.add_child(lbl)
+
+func _on_research_button_pressed(tech_id: String):
+    emit_signal("research_requested", tech_id)
+
+func _on_cancel_queued_research_pressed():
+    var main_map = get_tree().root.find_child("MainMap", true, false)
+    if main_map == null or main_map.active_pause == null:
+        return
+    if main_map.active_pause.cancel_by_key("research"):
+        refresh()

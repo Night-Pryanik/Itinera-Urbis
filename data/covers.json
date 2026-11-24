@@ -1,0 +1,228 @@
+{
+  // The covers of the map: what grows ON TOP of the relief. A cover is a separate layer — a forest
+  // is not a terrain, it lies over the plain, the hills or the mountains of the hex.
+  //
+  // The forests are split by the climate that grows them: the boreal forest (the taiga) of the cold
+  // belt, the temperate one of the mild and the subtropical belts, and the tropical one near the
+  // equator. Inside every belt the wet and the dry half grow different woods, and every wood has a
+  // dense and a sparse variety — the sparse one is what a forest turns into at its edge.
+  //
+  // Which cover may grow where is decided by the "cover_chance" of the climate zone
+  // (data/climate.json) — the pools are never listed here. A terrain that carries a pool of its own
+  // keeps it: that is how the swamp of every belt and the deserts get their vegetation from
+  // data/terrains/terrains.json instead of the zone.
+  //
+  // A cover is not always a plant: what lies on top of the shallow sea is a reef of it. Such a
+  // cover names the temperature belts it grows in ("temperature_belts"), because the belt of a
+  // water hex is its latitude and nothing else — a water hex has no climate zone.
+  "covers": [
+    { "id": "none", "name": "None", "color": [ 0, 0, 0 ], "move_cost_bonus": 0, "icons": [  ] },
+
+    // --- THE POLAR BELT ------------------------------------------------------------------
+    // The poles are too cold for a tree: the ground of the tundra is covered by moss and lichen,
+    // which yields no timber.
+    {
+      "id": "tundra_moss",
+      "name": "Moss and Lichen",
+      "color": [ 186, 200, 196 ],
+      "move_cost_bonus": 0,
+      "icons": [ "tundra_moss_1.png", "tundra_moss_2.png", "tundra_moss_3.png" ]
+    },
+
+    // --- THE FORESTS OF THE MILD AND THE SUBTROPICAL BELTS -------------------------------
+    {
+      "id": "temperate_rainforest",
+      "name": "Temperate Rainforest",
+      "color": [ 34, 139, 34 ],
+      "move_cost_bonus": 0,
+      // Wood yield of this cover: how many units of wood a forest plot here
+      // gives per tick, in the same units as the "produces" of a resource
+      // (data/resources/**). The denser the forest, the higher the yield.
+      // A forest plot can be built on any cover with wood_yield > 0 —
+      // new forest covers only need this field, no code change is required.
+      // A missing field = yield of 0.
+      "wood_yield": 20,
+      "icons": [ "temperate_rainforest_1.png", "temperate_rainforest_2.png", "temperate_rainforest_3.png" ]
+    },
+    {
+      "id": "temperate_rainforest_sparse",
+      "name": "Sparse Temperate Rainforest",
+      "color": [ 34, 139, 34 ],
+      "move_cost_bonus": 0,
+      "wood_yield": 10,
+      "icons": [ "temperate_rainforest_sparse_1.png", "temperate_rainforest_sparse_2.png", "temperate_rainforest_sparse_3.png" ]
+    },
+    {
+      "id": "temperate_dry_forest",
+      "name": "Temperate Dry Forest",
+      "color": [ 96, 122, 44 ],
+      "move_cost_bonus": 0,
+      "wood_yield": 16,
+      "icons": [ "temperate_dry_forest_1.png", "temperate_dry_forest_2.png", "temperate_dry_forest_3.png" ]
+    },
+    {
+      "id": "temperate_dry_forest_sparse",
+      "name": "Sparse Temperate Dry Forest",
+      "color": [ 96, 122, 44 ],
+      "move_cost_bonus": 0,
+      "wood_yield": 8,
+      "icons": [ "temperate_dry_forest_sparse_1.png", "temperate_dry_forest_sparse_2.png", "temperate_dry_forest_sparse_3.png" ]
+    },
+
+    // --- THE BOREAL FOREST ---------------------------------------------------------------
+    {
+      "id": "taiga",
+      "name": "Taiga",
+      "color": [ 30, 90, 70 ],
+      "move_cost_bonus": 0,
+      "wood_yield": 20,
+      "icons": [ "taiga_1.png", "taiga_2.png", "taiga_3.png" ]
+    },
+    {
+      "id": "taiga_sparse",
+      "name": "Sparse Taiga",
+      "color": [ 40, 100, 80 ],
+      "move_cost_bonus": 0,
+      "wood_yield": 10,
+      "icons": [ "taiga_sparse_1.png", "taiga_sparse_2.png", "taiga_sparse_3.png" ]
+    },
+
+    // --- THE TROPICAL FOREST -------------------------------------------------------------
+    {
+      "id": "tropical_rainforest",
+      "name": "Tropical Rainforest",
+      "color": [ 25, 105, 45 ],
+      "move_cost_bonus": 0,
+      "wood_yield": 25,
+      "icons": [ "tropical_rainforest_1.png", "tropical_rainforest_2.png", "tropical_rainforest_3.png" ]
+    },
+    {
+      "id": "tropical_rainforest_sparse",
+      "name": "Sparse Tropical Rainforest",
+      "color": [ 35, 115, 55 ],
+      "move_cost_bonus": 0,
+      "wood_yield": 12,
+      "icons": [ "tropical_rainforest_sparse_1.png", "tropical_rainforest_sparse_2.png", "tropical_rainforest_sparse_3.png" ]
+    },
+    {
+      "id": "tropical_dry_forest",
+      "name": "Tropical Dry Forest",
+      "color": [ 110, 118, 40 ],
+      "move_cost_bonus": 0,
+      "wood_yield": 18,
+      "icons": [ "tropical_dry_forest_1.png", "tropical_dry_forest_2.png", "tropical_dry_forest_3.png" ]
+    },
+    {
+      "id": "tropical_dry_forest_sparse",
+      "name": "Sparse Tropical Dry Forest",
+      "color": [ 118, 124, 52 ],
+      "move_cost_bonus": 0,
+      "wood_yield": 9,
+      "icons": [ "tropical_dry_forest_sparse_1.png", "tropical_dry_forest_sparse_2.png", "tropical_dry_forest_sparse_3.png" ]
+    },
+
+    // --- THE COVERS OUTSIDE THE CLIMATE ---------------------------------------------------
+    // The reed bed is the vegetation of the warm swamp (data/terrains/terrains.json): the tall
+    // grasses of the tropics and the subtropics, where the papyrus grows among them. It is also
+    // what the marsh rolls everywhere — the marsh is a waterlogged strip by the water, not a bog.
+    {
+      "id": "reeds",
+      "name": "Reeds",
+      "color": [ 154, 205, 50 ],
+      "move_cost_bonus": 0,
+      "icons": [ "reeds_1.png", "reeds_2.png", "reeds_3.png" ]
+    },
+    {
+      "id": "swamp_forest",
+      "name": "Forest",
+      "color": [ 34, 139, 34 ],
+      "move_cost_bonus": 0,
+      "wood_yield": 20,
+      "icons": [ "swamp_forest_1.png", "swamp_forest_2.png", "swamp_forest_3.png" ]
+    },
+    {
+      "id": "swamp_forest_sparse",
+      "name": "Sparse Forest",
+      "color": [ 34, 139, 34 ],
+      "move_cost_bonus": 0,
+      "wood_yield": 10,
+      "icons": [ "swamp_forest_sparse_1.png", "swamp_forest_sparse_2.png", "swamp_forest_sparse_3.png" ]
+    },
+    {
+      "id": "oasis",
+      "name": "Oasis",
+      "color": [ 34, 139, 34 ],
+      "move_cost_bonus": 0,
+      // The cover is a direct source of fresh water: a hex with this cover
+      // (and its neighbours) gives the water_access scheme the status "direct"
+      // without any technology being researched. The equivalent flag
+      // "fresh_water_source" is set on terrain in terrains.json (currently —
+      // on "lake"). New fresh water sources only need to be given this field,
+      // no code change is required.
+      "fresh_water_source": true,
+      "icons": [ "oasis_1.png", "oasis_2.png" ]
+    },
+
+    // --- THE COVERS OF THE WATER -------------------------------------------------------------
+    // A coral reef is not a plant and not a relief: it is what lies on top of the shallow sea, so
+    // it is a cover of the water (its pool is the "cover_chance" of "shallow_sea"). The polyps
+    // build where the light reaches the bottom and the water stays warm, which is the tropical and
+    // the subtropical belt — the same latitudes the reefs occupy in reality. It is salt water, so
+    // the reef carries no "fresh_water_source".
+    {
+      "id": "coral_reef",
+      "name": "Coral Reef",
+      "color": [ 245, 140, 150 ],
+      "move_cost_bonus": 0,
+      "temperature_belts": [ "tropical", "subtropical" ],
+      // The rolled covers of a terrain read as scattered single hexes; this one is a reef, so the
+      // smoothing pass clears its lone hexes and takes over the holes inside it (map_config.json →
+      // climate.cover_smoothing). A cover without this flag is smoothed only when it yields timber.
+      "clusters": true,
+      "icons": [ "coral_reef_1.png", "coral_reef_2.png", "coral_reef_3.png" ]
+    },
+
+    // Rare geological covers are rolled after the regional vegetation pool. Their spawn_chance
+    // is a percentage of eligible relief hexes, independent of the climate's vegetation weights.
+    {
+      "id": "volcano",
+      "name": "Volcano",
+      "color": [ 104, 54, 42 ],
+      "move_cost_bonus": 0,
+      "icons": [ "volcano.png" ],
+      "terrain_families": [ "mountain" ],
+      "spawn_chance": 1.2
+    },
+    {
+      "id": "mineral_spring",
+      "name": "Mineral Spring",
+      "color": [ 63, 148, 145 ],
+      "move_cost_bonus": 0,
+      "icons": [ "mineral_spring.png" ],
+      "terrain_families": [ "hill", "mountain" ],
+      "spawn_chance": 0.5
+    },
+
+    {
+      "id": "salt_spring",
+      "name": "Salt Spring",
+      "color": [ 198, 168, 180 ],
+      "move_cost_bonus": 0,
+      "icons": [ "salt_spring.png" ],
+      "terrain_families": [ "hill", "mountain" ],
+      "spawn_chance": 0.35
+    },
+
+    // The revealed mountain spring. It is NOT part of any climate's cover_chance
+    // pool, so it never spawns naturally: the game puts it on the designated
+    // resource-less mountain only when "Concrete" is researched. It carries no
+    // fresh_water_source flag — the water still comes only through an aqueduct.
+    {
+      "id": "mountain_spring",
+      "name": "Mountain Spring",
+      "color": [ 60, 130, 180 ],
+      "move_cost_bonus": 0,
+      "icons": [ "mountain_spring.png" ]
+    }
+  ]
+}

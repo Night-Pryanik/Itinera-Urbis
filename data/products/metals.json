@@ -1,0 +1,102 @@
+{
+  "resources": [
+    {
+      "id": "meteorite_iron", "price": 45,
+      "name": "Meteorite Iron",
+      "type": "product",
+      "category": "metals",
+      "icon": "meteorite_iron.png"
+    },
+    { "id": "copper", "price": 14, "name": "Copper", "type": "product", "category": "metals", "icon": "copper.png" },
+    { "id": "gold", "price": 70, "name": "Gold", "type": "product", "category": "metals", "icon": "gold.png" },
+    { "id": "silver", "price": 40, "name": "Silver", "type": "product", "category": "metals", "icon": "silver.png" },
+    { "id": "iron", "price": 26, "name": "Iron", "type": "product", "category": "metals", "icon": "iron.png" },
+    {
+      // High-carbon pig iron tapped from the blast furnace: too brittle for blades,
+      // but fluid in the mould and refined in bulk into wrought iron and steel.
+      "id": "cast_iron",
+      "price": 20,
+      "name": "Cast Iron",
+      "type": "product",
+      "category": "metals",
+      "unlock_tech": "blast_furnace",
+      "icon": "cast_iron.png"
+    },
+    { "id": "steel", "price": 58, "name": "Steel", "type": "product", "category": "metals", "icon": "steel.png" },
+    {
+      // The brand good of the steel line — see the comment at cashmere in
+      // data/products/materials.json. The watered bar of Damascus is the antique shape of the
+      // city's steel, so the name the player reads is the steel with the name of the city on it.
+      "id": "damascus_steel",
+      "price": 102,
+      "name": "Steel of <city_name>",
+      "type": "product",
+      "category": "metals",
+      "brand_of": "steel",
+      "icon": "damascus_steel.png"
+    },
+    { "id": "tin", "price": 16, "name": "Tin", "type": "product", "category": "metals", "icon": "tin.png" },
+    { "id": "antimony", "price": 18, "name": "Antimony", "type": "product", "category": "metals", "icon": "antimony.png" },
+    { "id": "arsenic", "price": 18, "name": "Arsenic", "type": "product", "category": "metals", "icon": "arsenic.png" },
+    { "id": "bronze", "price": 34, "name": "Bronze", "type": "product", "category": "metals", "icon": "bronze.png" },
+    {
+      // Liquid metal condensed from roasted cinnabar vapor; used by smelters for
+      // precious-metal amalgamation and by jewelers for fire-gilding.
+      "id": "mercury",
+      "price": 42,
+      "name": "Mercury",
+      "type": "product",
+      "category": "metals",
+      "unlock_tech": "distillation",
+      "icon": "mercury.png"
+    },
+    {
+      "id": "brass",
+      "price": 36,
+      "name": "Brass",
+      "type": "product",
+      "category": "metals",
+      "unlock_tech": "brass_working",
+      "icon": "brass.png"
+    },
+    {
+      // Volatile metal reduced from calamine and caught by condensation in closed retorts.
+      "id": "zinc",
+      "price": 32,
+      "name": "Zinc",
+      "type": "product",
+      "category": "metals",
+      "unlock_tech": "distillation",
+      "icon": "zinc.png"
+    },
+    {
+      "id": "lead",
+      "price": 16,
+      "name": "Lead",
+      "type": "product",
+      "category": "metals",
+      "unlock_tech": "metallurgy",
+      "icon": "lead.png"
+    },
+    {
+      // Malleable table alloy of tin hardened with antimony or lead.
+      "id": "pewter",
+      "price": 42,
+      "name": "Pewter",
+      "type": "product",
+      "category": "metals",
+      "unlock_tech": "metallurgy",
+      "icon": "pewter.png"
+    },
+    {
+      // Printing alloy of lead stiffened with antimony and tin so cast letters expand into the mould.
+      "id": "type_metal",
+      "price": 80,
+      "name": "Type Metal",
+      "type": "product",
+      "category": "metals",
+      "unlock_tech": "printing",
+      "icon": "type_metal.png"
+    }
+  ]
+}

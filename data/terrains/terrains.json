@@ -1,0 +1,386 @@
+{
+  // The terrains of the map: the RELIEF of a hex (what lies under the vegetation), the water and
+  // the wetlands.
+  //
+  // Every passable land relief has a "family" — plain, hill or mountain — and the climate turns it
+  // into one of its VARIANTS: the same plain is a tundra plain at the poles, a boreal plain in the
+  // cold belt, a steppe or a prairie in the mild one, a savanna in the subtropical one and a
+  // tropical plain near the equator (see data/climate.json). The variant is the terrain of the hex:
+  // it is what the game stores and what the resources are placed on. There is no generic "plain" on
+  // the map — a plain is always one of its varieties.
+  //
+  // The NAME of a variety is the climate zone and the relief together: "Tundra, Plain",
+  // "Boreal, Plain", "Tropical, Hills". The mountains are the same in every zone, so their name
+  // carries no zone — they are just "Mountains". The cover of a hex is appended to the name when
+  // the hex is shown to the player: "Tropical, Hills, tropical forest"
+  // (GameData.terrain_display_name).
+  //
+  // The family is what the game means by "a plain" wherever the climate does not matter:
+  // a resource that grows on allowed_terrain ["plain"] grows on all six of them, and the
+  // vegetation of a hex is taken from the cover_chance of its climate zone (data/climate.json),
+  // not from the terrain record.
+  //
+  // The variants of one family share the icons of the family: nothing in the drawing tells the
+  // varieties of one relief apart yet — the climate is read from the name of the terrain in the
+  // tooltip, not from its colour. "color" is the flat colour of the hex, used where no icon is
+  // available.
+  //
+  // The WETLAND family "swamp" is built the same way: the Voronoi spreads the family and the
+  // climate turns every hex of it into the bog of its belt. The varieties of the swamp are fewer
+  // than the zones — only the belts whose wetlands really differ from their neighbours get a record
+  // of their own — and all of them are named "Swamps", the way every mountain is "Mountains".
+  "terrains": [
+    // --- THE POLAR BELT: the tundra -------------------------------------------------------
+    // The coldest belt, the closest to the poles: the same relief as everywhere else, only the
+    // ground is bare — nothing but moss and lichen grows on it (data/climate.json).
+    {
+      "id": "tundra_plain",
+      "name": "Tundra, Plain",
+      "family": "plain",
+      "color": [ 178, 190, 192 ],
+      "move_cost": 1,
+      "expansion_cost": 2,
+      "icons": [ "tundra_plain_1.png", "tundra_plain_2.png", "tundra_plain_3.png" ]
+    },
+    {
+      "id": "tundra_hill",
+      "name": "Tundra, Hills",
+      "family": "hill",
+      "color": [ 140, 152, 154 ],
+      "move_cost": 2,
+      "expansion_cost": 3,
+      "icons": [ "tundra_hill_1.png", "tundra_hill_2.png", "tundra_hill_3.png" ]
+    },
+    {
+      "id": "tundra_mountain",
+      "name": "Mountains",
+      "family": "mountain",
+      "color": [ 130, 140, 145 ],
+      "move_cost": 3,
+      "expansion_cost": 5,
+      "work_cost_mult": 2.5,
+      "icons": [ "tundra_mountain_1.png", "tundra_mountain_2.png", "tundra_mountain_3.png" ]
+    },
+
+    // --- THE COLD BELT: the boreal zone ---------------------------------------------------
+    {
+      "id": "boreal_plain",
+      "name": "Boreal, Plain",
+      "family": "plain",
+      "color": [ 196, 208, 200 ],
+      "move_cost": 1,
+      "expansion_cost": 2,
+      "icons": [ "boreal_plain_1.png", "boreal_plain_2.png", "boreal_plain_3.png" ]
+    },
+    {
+      "id": "boreal_hill",
+      "name": "Boreal, Hills",
+      "family": "hill",
+      "color": [ 150, 148, 140 ],
+      "move_cost": 2,
+      "expansion_cost": 3,
+      "icons": [ "boreal_hill_1.png", "boreal_hill_2.png", "boreal_hill_3.png" ]
+    },
+    {
+      "id": "boreal_mountain",
+      "name": "Mountains",
+      "family": "mountain",
+      "color": [ 140, 148, 152 ],
+      "move_cost": 3,
+      "expansion_cost": 5,
+      "work_cost_mult": 2.5,
+      "icons": [ "boreal_mountain_1.png", "boreal_mountain_2.png", "boreal_mountain_3.png" ]
+    },
+
+    // --- THE MILD BELT -------------------------------------------------------------------
+    // The dry part of the belt is the steppe, the wet one is the prairie: one family, two
+    // varieties, told apart by the moisture.
+    {
+      "id": "steppe_plain",
+      "name": "Steppe, Plain",
+      "family": "plain",
+      "color": [ 214, 198, 132 ],
+      "move_cost": 1,
+      "expansion_cost": 2,
+      "icons": [ "steppe_plain_1.png", "steppe_plain_2.png", "steppe_plain_3.png" ]
+    },
+    {
+      "id": "steppe_hill",
+      "name": "Steppe, Hills",
+      "family": "hill",
+      "color": [ 168, 148, 96 ],
+      "move_cost": 2,
+      "expansion_cost": 3,
+      "icons": [ "steppe_hill_1.png", "steppe_hill_2.png", "steppe_hill_3.png" ]
+    },
+    {
+      "id": "steppe_mountain",
+      "name": "Mountains",
+      "family": "mountain",
+      "color": [ 130, 122, 104 ],
+      "move_cost": 3,
+      "expansion_cost": 5,
+      "work_cost_mult": 2.5,
+      "icons": [ "steppe_mountain_1.png", "steppe_mountain_2.png", "steppe_mountain_3.png" ]
+    },
+    {
+      "id": "prairie_plain",
+      "name": "Prairie, Plain",
+      "family": "plain",
+      "color": [ 186, 205, 124 ],
+      "move_cost": 1,
+      "expansion_cost": 2,
+      "icons": [ "prairie_plain_1.png", "prairie_plain_2.png", "prairie_plain_3.png" ]
+    },
+    {
+      "id": "prairie_hill",
+      "name": "Prairie, Hills",
+      "family": "hill",
+      "color": [ 150, 165, 96 ],
+      "move_cost": 2,
+      "expansion_cost": 3,
+      "icons": [ "prairie_hill_1.png", "prairie_hill_2.png", "prairie_hill_3.png" ]
+    },
+    {
+      "id": "prairie_mountain",
+      "name": "Mountains",
+      "family": "mountain",
+      "color": [ 120, 128, 110 ],
+      "move_cost": 3,
+      "expansion_cost": 5,
+      "work_cost_mult": 2.5,
+      "icons": [ "prairie_mountain_1.png", "prairie_mountain_2.png", "prairie_mountain_3.png" ]
+    },
+
+    // --- THE SUBTROPICAL BELT ------------------------------------------------------------
+    {
+      "id": "savanna_plain",
+      "name": "Savanna, Plain",
+      "family": "plain",
+      "color": [ 222, 192, 112 ],
+      "move_cost": 1,
+      "expansion_cost": 2,
+      "icons": [ "savanna_plain_1.png", "savanna_plain_2.png", "savanna_plain_3.png" ]
+    },
+    {
+      "id": "savanna_hill",
+      "name": "Savanna, Hills",
+      "family": "hill",
+      "color": [ 180, 150, 92 ],
+      "move_cost": 2,
+      "expansion_cost": 3,
+      "icons": [ "savanna_hill_1.png", "savanna_hill_2.png", "savanna_hill_3.png" ]
+    },
+    {
+      "id": "savanna_mountain",
+      "name": "Mountains",
+      "family": "mountain",
+      "color": [ 140, 122, 96 ],
+      "move_cost": 3,
+      "expansion_cost": 5,
+      "work_cost_mult": 2.5,
+      "icons": [ "savanna_mountain_1.png", "savanna_mountain_2.png", "savanna_mountain_3.png" ]
+    },
+
+    // --- THE TROPICAL BELT ---------------------------------------------------------------
+    {
+      "id": "tropical_plain",
+      "name": "Tropical, Plain",
+      "family": "plain",
+      "color": [ 122, 178, 104 ],
+      "move_cost": 1,
+      "expansion_cost": 2,
+      "icons": [ "tropical_plain_1.png", "tropical_plain_2.png", "tropical_plain_3.png" ]
+    },
+    {
+      "id": "tropical_hill",
+      "name": "Tropical, Hills",
+      "family": "hill",
+      "color": [ 120, 150, 92 ],
+      "move_cost": 2,
+      "expansion_cost": 3,
+      "icons": [ "tropical_hill_1.png", "tropical_hill_2.png", "tropical_hill_3.png" ]
+    },
+    {
+      "id": "tropical_mountain",
+      "name": "Mountains",
+      "family": "mountain",
+      "color": [ 100, 125, 100 ],
+      "move_cost": 3,
+      "expansion_cost": 5,
+      "work_cost_mult": 2.5,
+      "icons": [ "tropical_mountain_1.png", "tropical_mountain_2.png", "tropical_mountain_3.png" ]
+    },
+
+    // --- THE WETLANDS: the swamp of every belt --------------------------------------------
+    // A swamp is waterlogged ground, not a relief, so it is a family of its own: the Voronoi
+    // spreads it under the name "swamp" (data/map_config.json → terrain_config) and the climate
+    // turns every hex of it into the variety of its belt. A zone names its swamp in
+    // data/climate.json → terrain.swamp.
+    //
+    // There is no record per zone: a wetland differs from its neighbour only where the climate
+    // does — the frozen bog of the tundra, the stunted taiga bog, the wooded carr of the mild
+    // belt and the reed bed of the warm one. The steppe and the prairie therefore share one
+    // swamp, and the two warm belts share another.
+    //
+    // The vegetation of a swamp comes from its OWN cover_chance, never from the pool of the
+    // climate zone: the ground is under water, and a jungle cannot grow on it just because the
+    // jungle grows around it. That is what keeps the reed beds (and the papyrus that grows in
+    // them) in the warm belts and the moss of the tundra out of the tropics.
+    //
+    // All the varieties are named "Swamps" — like the mountains, the name carries no zone.
+    {
+      "id": "tundra_swamp",
+      "name": "Swamps",
+      "family": "swamp",
+      "color": [ 98, 116, 108 ],
+      "move_cost": 2,
+      "expansion_cost": 4,
+      "work_cost_mult": 2.0,
+      "icons": [ "tundra_swamp_1.png", "tundra_swamp_2.png", "tundra_swamp_3.png" ],
+      // The permafrost bog: nothing but moss and lichen. No tree and no reed survives here.
+      "cover_chance": { "none": 60, "tundra_moss": 40 }
+    },
+    {
+      "id": "boreal_swamp",
+      "name": "Swamps",
+      "family": "swamp",
+      "color": [ 88, 112, 96 ],
+      "move_cost": 2,
+      "expansion_cost": 4,
+      "work_cost_mult": 2.0,
+      "icons": [ "boreal_swamp_1.png", "boreal_swamp_2.png", "boreal_swamp_3.png" ],
+      // The peat bog of the taiga: pines and birches stunted by the cold water, no reed bed.
+      "cover_chance": { "none": 45, "swamp_forest_sparse": 45, "swamp_forest": 10 }
+    },
+    {
+      "id": "temperate_swamp",
+      "name": "Swamps",
+      "family": "swamp",
+      "color": [ 90, 120, 80 ],
+      "move_cost": 2,
+      "expansion_cost": 4,
+      "work_cost_mult": 2.0,
+      "icons": [ "temperate_swamp_1.png", "temperate_swamp_2.png", "temperate_swamp_3.png" ],
+      // The carr of the mild belt: alder and willow standing in the water.
+      "cover_chance": { "none": 45, "swamp_forest_sparse": 30, "swamp_forest": 25 }
+    },
+    {
+      "id": "tropical_swamp",
+      "name": "Swamps",
+      "family": "swamp",
+      "color": [ 72, 116, 70 ],
+      "move_cost": 2,
+      "expansion_cost": 4,
+      "work_cost_mult": 2.0,
+      "icons": [ "tropical_swamp_1.png", "tropical_swamp_2.png", "tropical_swamp_3.png" ],
+      // The warm swamp is a reed bed: the papyrus field (data/resources/plants/technical_plants.json)
+      // grows on its reeds, and it is the only swamp where they do.
+      "cover_chance": { "none": 25, "swamp_forest_sparse": 10, "swamp_forest": 15, "reeds": 50 }
+    },
+
+    // --- THE RELIEF OUTSIDE THE CLIMATE ---------------------------------------------------
+    // The water, the marsh and the deserts keep their own records: they are not a variety of
+    // a plain and their vegetation comes from their own cover_chance.
+    {
+      "id": "lake",
+      "name": "Freshwater Lake",
+      "color": [ 66, 129, 180 ],
+      "move_cost": 999,
+      "expansion_cost": 6,
+      "work_cost_mult": 1.0,
+      "icons": [ "lake_1.png", "lake_2.png" ],
+      // A direct source of fresh water: a hex of this type (and its neighbours)
+      // gives the water_access scheme the status "direct" without any
+      // technology being researched. The flag is currently also set on the
+      // cover "oasis" — new fresh water sources only need to be given this
+      // field, no code change is required.
+      "fresh_water_source": true,
+      "cover_chance": { "none": 100 }
+    },
+    // --- THE COASTAL WETLANDS: the marsh of every belt ------------------------------------
+    // A marsh is a waterlogged coastal strip, placed after the Voronoi by the post-processing
+    // (_apply_marshes and SeaManager). Like the swamp, it is a family: the post-processing sets
+    // the family name "marsh" and the climate turns it into the variety of its belt.
+    //
+    // The cold marsh is a frozen bare mudflat; the warm marsh is a reedy shore. Both are named
+    // "Marsh" — the climate is read from what grows in it, not from the name.
+    {
+      "id": "cold_marsh",
+      "name": "Marsh",
+      "family": "marsh",
+      "color": [ 80, 100, 70 ],
+      "move_cost": 2,
+      "expansion_cost": 3,
+      "work_cost_mult": 1.5,
+      "icons": [ "cold_marsh_1.png", "cold_marsh_2.png", "cold_marsh_3.png" ],
+      // The frozen marsh: no reed survives here.
+      "cover_chance": { "none": 100 }
+    },
+    {
+      "id": "warm_marsh",
+      "name": "Marsh",
+      "family": "marsh",
+      "color": [ 80, 100, 70 ],
+      "move_cost": 2,
+      "expansion_cost": 3,
+      "work_cost_mult": 1.5,
+      "icons": [ "warm_marsh_1.png", "warm_marsh_2.png", "warm_marsh_3.png" ],
+      // The warm marsh is a reedy shore.
+      "cover_chance": { "none": 50, "reeds": 50 }
+    },
+    {
+      "id": "sea",
+      "name": "Sea",
+      "color": [ 40, 90, 140 ],
+      "move_cost": 999,
+      "expansion_cost": 0,
+      "work_cost_mult": 1.0,
+      "icons": [ "sea_1.png", "sea_2.png", "sea_3.png" ],
+      "cover_chance": { "none": 100 }
+    },
+    {
+      "id": "shallow_sea",
+      "name": "Shallow Sea",
+      "color": [ 55, 120, 165 ],
+      "move_cost": 999,
+      "expansion_cost": 0,
+      "work_cost_mult": 1.0,
+      "icons": [ "shallow_sea_1.png", "shallow_sea_2.png", "shallow_sea_3.png" ],
+      // The light reaches the bottom here, so the floor of a warm belt may grow a reef; the pool
+      // holds the reef for every belt and the cover of the water rules its own belts out
+      // ("temperature_belts" in data/covers.json). The deep sea stays bare: no reef builds there.
+      "cover_chance": { "none": 65, "coral_reef": 35 }
+    },
+    {
+      "id": "beach",
+      "name": "Beach",
+      "color": [ 220, 200, 140 ],
+      "move_cost": 1,
+      "expansion_cost": 2,
+      "work_cost_mult": 1.0,
+      "icons": [ "beach_1.png" ],
+      "cover_chance": { "none": 100 }
+    },
+    {
+      "id": "sandy_desert",
+      "name": "Sandy Desert",
+      "color": [ 220, 200, 140 ],
+      "move_cost": 2.5,
+      "expansion_cost": 2.5,
+      "work_cost_mult": 2,
+      "icons": [ "sandy_desert_1.png", "sandy_desert_2.png", "sandy_desert_3.png" ],
+      "cover_chance": { "none": 95, "oasis": 5 }
+    },
+    {
+      "id": "rocky_desert",
+      "name": "Rocky Desert",
+      "color": [ 220, 200, 140 ],
+      "move_cost": 2,
+      "expansion_cost": 2,
+      "work_cost_mult": 1.5,
+      "icons": [ "rocky_desert_1.png", "rocky_desert_2.png", "rocky_desert_3.png" ],
+      "cover_chance": { "none": 95, "oasis": 5 }
+    }
+  ]
+}

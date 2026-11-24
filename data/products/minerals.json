@@ -1,0 +1,133 @@
+{
+  "resources": [
+    {
+      "id": "quartz_sand",
+      "price": 5,
+      "name": "Quartz Sand",
+      "type": "product",
+      "category": "minerals",
+      "icon": "quartz_sand.png"
+    },
+    { "id": "soda", "price": 8, "name": "Soda", "type": "product", "category": "minerals", "icon": "soda.png" },
+    {
+      "id": "bitumen",
+      "price": 9,
+      "name": "Bitumen",
+      "type": "product",
+      "category": "minerals",
+      "icon": "bitumen.png"
+    },
+    {
+      "id": "alabaster",
+      "price": 8,
+      "name": "Alabaster",
+      "type": "product",
+      "category": "minerals",
+      "icon": "alabaster.png"
+    },
+    {
+      "id": "nephrite",
+      "price": 12,
+      "name": "Nephrite",
+      "type": "product",
+      "category": "minerals",
+      "icon": "nephrite.png"
+    },
+    {
+      "id": "porphyry",
+      "price": 15,
+      "name": "Porphyry",
+      "type": "product",
+      "category": "minerals",
+      "icon": "porphyry.png"
+    },
+    { "id": "pyrite", "price": 10, "name": "Pyrite", "type": "product", "category": "minerals", "icon": "pyrite.png" },
+    { "id": "obsidian", "price": 14, "name": "Obsidian", "type": "product", "category": "minerals", "icon": "obsidian.png" },
+    { "id": "sulfur", "price": 6, "name": "Sulfur", "type": "product", "category": "minerals", "icon": "sulfur.png" },
+    {
+      "id": "saltpeter",
+      "price": 10,
+      "name": "Saltpeter",
+      "type": "product",
+      "category": "minerals",
+      "icon": "saltpeter.png"
+    },
+    {
+      "id": "borax",
+      "price": 14,
+      "name": "Borax",
+      "type": "product",
+      "category": "minerals",
+      "icon": "borax.png"
+    },
+    {
+      "id": "sal_ammoniac",
+      "price": 14,
+      "name": "Sal Ammoniac",
+      "type": "product",
+      "category": "minerals",
+      "icon": "sal_ammoniac.png"
+    },
+    {
+      "id": "gypsum",
+      "price": 5,
+      "name": "Gypsum",
+      "type": "product",
+      "category": "minerals",
+      "icon": "gypsum.png"
+    },
+    {
+      "id": "peat",
+      "price": 3,
+      "name": "Peat",
+      "type": "product",
+      "category": "minerals",
+      "unlock_tech": "peat_cutting",
+      "icon": "peat.png"
+    },
+    {
+      "id": "oil_shale",
+      "price": 4,
+      "name": "Oil Shale",
+      "type": "product",
+      "category": "minerals",
+      "unlock_tech": "mining",
+      "icon": "oil_shale.png"
+    },
+    {
+      "id": "coal",
+      "price": 4,
+      "name": "Coal",
+      "type": "product",
+      "category": "minerals",
+      "unlock_tech": "coal_mining",
+      "icon": "coal.png"
+    },
+
+    // Amber is fossilized resin, and pearl and coral are mineraloids; all are included here for convenience.
+    {
+      "id": "amber",
+      "price": 20,
+      "name": "Amber",
+      "type": "product",
+      "category": "minerals",
+      "icon": "amber.png"
+    },
+    {
+      "id": "pearl",
+      "price": 20,
+      "name": "Pearl",
+      "type": "product",
+      "category": "minerals",
+      "icon": "pearl.png"
+    },
+    {
+      "id": "coral",
+      "price": 20,
+      "name": "Coral",
+      "type": "product",
+      "category": "minerals",
+      "icon": "coral.png"
+    }
+  ]
+}

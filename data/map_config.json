@@ -1,0 +1,87 @@
+{
+  // The configuration of the world map.
+  "map_config": {
+    // The starting Influence Ring (the city territory at the start of the game).
+    "start_ring_rows": 7,   // The height of the starting ring in hexes
+    "start_ring_cols": 9,   // The width of the starting ring in hexes
+
+    // The width of the Region around the Influence Ring for the FIRST era (in hexes).
+    // The width of the Region for subsequent eras is taken from data/eras.json
+    // (the "region_width" field of each era, read on the era transition).
+    // The Region is the area around the ring in which chunks can be BOUGHT
+    // (claimed). Scouting is not limited to the Region ONLY after the technology
+    // "Cartography" is researched (scouts can be sent to any point reachable
+    // by scrolling the map — including town territory and the fog of war).
+    // Before it, scouting is available only in the unexplored part of the Region,
+    // and hexes in the fog of war are not available for hovering and clicking.
+    // Unexplored hexes beyond Ring+Region are not drawn (fog of war).
+    "region_width": 2,
+
+    // --- The configuration of terrain types for generating Voronoi centres ---
+    // For each terrain type:
+    //   density         — the share of centres of that type (sum ≈ 1.0). Optional.
+    //   target_cluster  — the average cluster size in hexes (an upper bound:
+    //                     the number of centres cannot be more than area / target_cluster).
+    //                     If not set — the bound is not applied.
+    // A key is either a FAMILY — the relief (plain, hill, mountain) or the wetland (swamp); the
+    // climate turns every hex of a family into the variety of its belt, see data/climate.json — or
+    // a terrain that the climate does not touch (lake, the deserts).
+    // The global target_cluster (below) is a fallback value for the types that
+    // do not have their own target_cluster in terrain_config.
+    "target_cluster": 22,
+    "terrain_config": {
+      "plain":        { "density": 0.30, "target_cluster": 22 },
+      "hill":         { "density": 0.25, "target_cluster": 30 },
+      "lake":         { "density": 0.10, "target_cluster": 50 },
+      "mountain":     { "density": 0.20, "target_cluster": 25 },
+      "swamp":        { "density": 0.05, "target_cluster": 5 },
+      "sandy_desert": { "density": 0.05, "target_cluster": 5 },
+      "rocky_desert": { "density": 0.05, "target_cluster": 5 }
+    },
+
+  // --- Climate ---
+  // The climate is built from two independent fields:
+  //   temperature — belts running from the poles to the equator. The belts are strictly
+  //     ordered (polar → cold → mild → subtropical → tropical → subtropical → mild → cold →
+  //     polar), therefore two hexes of the same latitude never belong to non-neighbouring belts:
+  //     a tropical plain and a tundra plain cannot meet sideways. The equator sits on a random row,
+  //     so the centre of the map (and the city on it) lands on a different latitude from game to
+  //     game; a climate chosen in the world settings places the equator so the city lands in the
+  //     chosen belt.
+  //   moisture — large wet and dry regions that do not follow the latitudes: they lie anywhere,
+  //     curve and surround each other. The moisture splits every belt in two.
+  // A pair (temperature, moisture) selects a climate zone (data/climate.json), and the zone turns
+  // the relief of its region into the terrains of the belt (tundra, boreal, steppe, prairie,
+  // savanna, tropical plain) and rolls the vegetation on them.
+  //
+  // Rows are counted from the north edge of the map. All the "rows" values below are
+  // fractions of the map height, so the climate does not depend on the map size.
+  "climate": {
+    "equator_min": 0.33,        // The range of the equator row of a random climate: the nearer
+    "equator_max": 0.67,        // to 0.5, the more central (tropical) the city's latitude is
+    "tropical_half_rows": 0.05, // Half of the height of the tropical belt
+    "subtropical_rows": 0.10,   // The height of the subtropical belt on each side of the tropical
+                                // one (the savanna)
+    "mild_rows": 0.20,          // The height of the mild belt on each side of the subtropical one
+                                // (the steppe and the prairie); everything beyond it is cold
+    "polar_share": 0.3333,      // The share of the cold region that is the polar (tundra) belt.
+                                // The tundra is its outer part, the one that reaches the map edge,
+                                // and the taiga keeps the inner part. A share rather than a height
+                                // in rows: the cold region is only a few rows thick on a side the
+                                // equator has been rolled close to, and both belts have to fit in it.
+    // The belts are not straight: the temperature row of a hex is shifted by a smooth noise field,
+    // so the boundaries meander and the belts take unequal areas. The shift is limited so that
+    // the belts never overturn: the sequence stays ordered in every column.
+    "warp_rows": 5.0,           // The amplitude of the shift (in rows)
+    "warp_scale": 0.1,          // The size of the noise features (fraction of the smaller side)
+    // The moisture field: a threshold on a smooth noise. A lower threshold means more wet land.
+    "moisture_scale": 0.26,
+    "moisture_threshold": 0.5,
+    // A zone patch smaller than this many land hexes is dissolved into the zone around it.
+    "min_zone_size": 3,
+    // Lone wooded hexes are cleared and lone holes in a forest are filled, so that the woods
+    // read as groves instead of a random scatter of cells.
+    "cover_smoothing": true
+  }
+  }
+}

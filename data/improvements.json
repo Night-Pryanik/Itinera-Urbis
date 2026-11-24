@@ -1,0 +1,292 @@
+{
+  // IMPORTANT: the farm / pasture / farmstead / pigsty / beehive / vineyard /
+  // plantation improvements work in TWO modes (see docs.md, the section
+  // "Breeding animals and plants (crop_bred scheme)"):
+  //   1) The hex ALREADY has a natural resource (the improved_by field points
+  //      to this improvement in data/resources/*.json). The build keeps
+  //      tile.resource, and the quality is the current one.
+  //   2) The hex is empty — the player breeds a domesticated species. The id
+  //      of the animal/plant is written to tile.crop_bred, tile.resource stays
+  //      null. The quality is inherited from an already domesticated specimen
+  //      of that species.
+  // PRODUCTION: an improvement with a worker outputs the "produces" of its
+  // resource (or the wood yield of the cover) as a continuous stream — the
+  // value from the data is a rate of units per second. The simulation tick is
+  // SIMULATION_TICK = 1 sec (CityData.SIMULATION_TICK, the step in main_map.gd),
+  // so a produces of 10 means 10 units every second. Feed (feed_consumption)
+  // is written off at the same continuous per-second rate.
+  "improvements": [
+    {
+      "id": "farm",
+      "name": "Farm",
+      "icon": "farm.png",
+      "color": [ 255, 255, 0 ],
+      "work_cost": 8,
+      "maintenance_cost": 0.2,
+      "unlock_tech": "farming",
+      // The farm works the MAIN FOOD PLANTS only — the crops of
+      // data/resources/plants/food_plants.json. No animals (they have the
+      // pasture, the farmstead and the pigsty) and no technical or auxiliary
+      // crops (the plantation): the farm is what feeds the city, and the
+      // "Plow" bonus applies to it alone. Both improvements grow plants, so
+      // both take the fresh-water bonus (data/modifiers.json).
+
+      // The profession of the worker on this improvement. The label is set/cleared
+      // automatically in worker_manager.gd on assignment/dismissal.
+      "profession": "farmer",
+      // A conductor of fresh water: after the technology "Irrigation" is
+      // researched, the farm spreads fresh water to neighbouring hexes
+      // (the water_access scheme: chain).
+      "conducts_water": true
+    },
+    {
+      "id": "pasture",
+      "name": "Pasture",
+      "icon": "pasture.png",
+      "color": [ 34, 139, 34 ],
+      "work_cost": 25,
+      "maintenance_cost": 100.0,
+      "unlock_tech": "animal_husbandry",
+      "profession": "herder"
+    },
+    {
+      "id": "farmstead",
+      "name": "Farmstead",
+      "icon": "farmstead.png",
+      "color": [ 190, 122, 53 ],
+      // Confined small livestock (poultry, pigeons, rabbits) is housed here
+      // instead of on a pasture: a fenced grazing area is the wrong label for a
+      // coop or a hutch, and the label is the whole reason the improvement
+      // exists (docs.md, "Improvement types are a convention"). The output is
+      // the same as on a pasture — neither has production modifiers — so the
+      // difference is a cheaper construction and another worker.
+      "work_cost": 12,
+      "maintenance_cost": 100.0,
+      "unlock_tech": "animal_husbandry",
+      "profession": "stockman"
+    },
+    {
+      "id": "pigsty",
+      "name": "Pigsty",
+      "icon": "pigsty.png",
+      "color": [ 168, 112, 60 ],
+      // Pigs are kept in a sty, not grazed on a range — the same reasoning as the
+      // farmstead (docs.md, "Improvement types are a convention"). No production
+      // modifiers, so the output of the pigs is unchanged: the difference is the
+      // construction and the worker.
+      "work_cost": 16,
+      "maintenance_cost": 100.0,
+      "unlock_tech": "animal_husbandry",
+      "profession": "swineherd"
+    },
+    {
+      "id": "mine",
+      "name": "Mine",
+      "icon": "mine.png",
+      "color": [ 105, 105, 105 ],
+      "work_cost": 30,
+      "maintenance_cost": 36.0,
+      "unlock_tech": "mining",
+      "profession": "miner"
+    },
+    {
+      "id": "quarry",
+      "name": "Quarry",
+      "icon": "quarry.png",
+      "color": [ 139, 137, 137 ],
+      "work_cost": 20,
+      "maintenance_cost": 36.0,
+      "unlock_tech": "masonry",
+      "profession": "quarryman"
+    },
+    {
+      "id": "beehive",
+      "name": "Apiary",
+      "icon": "beehive.png",
+      "color": [ 255, 215, 0 ],
+      "work_cost": 12,
+      "maintenance_cost": 100.0,
+      "unlock_tech": "beekeeping",
+      "profession": "beekeeper"
+    },
+    {
+      "id": "vineyard",
+      "name": "Vineyard",
+      "icon": "vineyard.png",
+      "color": [ 128, 0, 0 ],
+      "work_cost": 35,
+      "maintenance_cost": 54.0,
+      "unlock_tech": "winegrowing",
+      "profession": "vinedresser"
+    },
+    {
+      "id": "clay_pit",
+      "name": "Clay Pit",
+      "icon": "clay_pit.png",
+      "color": [ 210, 180, 140 ],
+      "work_cost": 22,
+      "maintenance_cost": 27.0,
+      "unlock_tech": "pottery",
+      "profession": "clay_digger"
+    },
+    {
+      "id": "peat_pit",
+      "name": "Peat Pit",
+      "icon": "peat_pit.png",
+      "color": [ 92, 64, 42 ],
+      "work_cost": 22,
+      "maintenance_cost": 27.0,
+      "unlock_tech": "peat_cutting",
+      "profession": "peat_cutter"
+    },
+    {
+      "id": "plantation",
+      "name": "Plantation",
+      "icon": "plantation.png",
+      "color": [ 34, 139, 34 ],
+      "work_cost": 28,
+      "maintenance_cost": 54.0,
+      "unlock_tech": "plantations",
+      "profession": "planter",
+      // A conductor of fresh water: after the technology "Irrigation" is
+      // researched, the plantation spreads fresh water to neighbouring hexes
+      // (the water_access scheme: chain). As a grower of plants it also takes
+      // the fresh-water production bonus itself.
+      "conducts_water": true
+    },
+    {
+      "id": "tar_pit",
+      "name": "Tar Pit",
+      "icon": "tar_pit.png",
+      "color": [ 139, 69, 19 ],
+      "work_cost": 30,
+      "maintenance_cost": 81.0,
+      "unlock_tech": "tar_burning",
+      "profession": "tar_collector"
+    },
+    {
+      "id": "soda_quarry",
+      "name": "Soda Quarry",
+      "icon": "soda_quarry.png",
+      "color": [ 200, 220, 255 ],
+      "work_cost": 30,
+      "maintenance_cost": 72.0,
+      "unlock_tech": "soda_extraction",
+      "profession": "soda_extractor"
+    },
+    {
+      "id": "salt_pond",
+      "name": "Salt Pond",
+      "icon": "salt_pond.png",
+      "color": [ 255, 255, 200 ],
+      "work_cost": 30,
+      "maintenance_cost": 32.4,
+      "unlock_tech": "salt_extraction"
+    },
+    {
+      "id": "spring_catchment",
+      "name": "Spring Catchment",
+      "icon": "spring_catchment.png",
+      "color": [ 63, 148, 145 ],
+      "work_cost": 22,
+      "maintenance_cost": 46.8,
+      "unlock_tech": "masonry",
+      "profession": "water_drawer"
+    },
+    {
+      // The harbor — the "key" to the water resources of a specific body of water.
+      // It is built on an EMPTY coastal hex (land next to lake/sea) via the
+      // control panel. After the build, all resources of that body of water
+      // (found by flood-fill over the water, see MapHelpers.has_harbor_access)
+      // become available for exploitation: improvements with the requires_harbor
+      // flag can be built on them (currently — fishing_boats). Each body of
+      // water needs its OWN harbor. Access is computed dynamically (BFS over
+      // water), so when the harbor is demolished the resources of that body of
+      // water become unavailable for NEW builds once again.
+      // PROFESSIONS AND WORKERS: ordinary improvements have the "profession"
+      // field — the id of the worker's profession (see data/professions.json).
+      // In addition, the "no_worker": true field marks an improvement as
+      // INFRASTRUCTURE: it does not require a worker to perform its functions
+      // (workers cannot be assigned, and there are no "Start/Pause work" buttons
+      // in the panel).
+      "id": "harbor",
+      "name": "Harbor",
+      "icon": "harbor.png",
+      "color": [ 139, 90, 43 ],
+      "work_cost": 25,
+      "maintenance_cost": 0.4,
+      "unlock_tech": "fishing",
+      // Infrastructure: it opens the water resources of the body of water by
+      // itself, no worker is required (see docs.md, "Professions and
+      // resource consumption").
+      "no_worker": true,
+      // Marker: this improvement opens the water resources of its body of water.
+      "water_body_harbor": true
+    },
+    {
+      // Fishing boats — catch fish. They can be built ONLY on hexes with a fish
+      // resource belonging to a body of water that has a harbor (see the
+      // water_body_harbor flag on the harbor and has_harbor_access in
+      // map_helpers.gd).
+      "id": "fishing_boats",
+      "name": "Fishing Boats",
+      "icon": "fishing_boats.png",
+      "color": [ 70, 130, 180 ],
+      "work_cost": 15,
+      "maintenance_cost": 45.0,
+      "unlock_tech": "fishing",
+      "profession": "fisherman",
+      // Marker: a harbor on this same body of water is required for the build.
+      "requires_harbor": true,
+      "no_road": true
+    },
+    {
+      // Irrigation canal: an infrastructure conductor improvement unlocked by
+      // the technology "Canals". It distributes fresh water to neighbours
+      // (conducts_water) in the "by chain" mode (is_canal): the chain of water
+      // goes through canals just as through farms/plantations, with the range
+      // limit from tech_modifiers.
+      "id": "irrigation_canal",
+      "name": "Irrigation Canal",
+      "icon": "irrigation_canal.png",
+      "color": [ 0, 191, 255 ],
+      "work_cost": 20,
+      "maintenance_cost": 0.4,
+      "unlock_tech": "canals",
+      "conducts_water": true,
+      "is_canal": true,
+      "no_worker": true,
+      // A road to a canal is NOT laid: this is an infrastructure element,
+      // and extending a road network to it makes no sense.
+      "no_road": true
+    },
+    {
+      // The woodcutter's camp — a logging improvement. It works in TWO modes
+      // (both branches are supported, no code change is needed for future
+      // resources):
+      //   1) ON A WOOD RESOURCE: if the hex has a raw resource with
+      //      improved_by == "lumberjack_hut" (future cedar, oak, tulipwood,
+      //      Paulownia and so on), the camp extracts it as an ORDINARY
+      //      improvement via the common flow (tile.resource + produces) and
+      //      outputs the specific product of that resource (redwood, ship timber,
+      //      dyes, etc.). For that it is enough to set
+      //      improved_by == "lumberjack_hut" in data/resources/*.json.
+      //   2) ON AN EMPTY FOREST HEX: if there is no resource but the cover
+      //      gives timber (wood_yield > 0 in data/covers.json), the camp outputs
+      //      ordinary "Wood" derived from the density of the cover: sparse forest
+      //      — 1, continuous forest — 2. Any future forest cover with
+      //      wood_yield > 0 will fit without a code change.
+      //      It is built on an empty DRY hex (not a swamp, not marsh, not water).
+      // Implementation: calculation/crediting is in main_map.gd (the production
+      // tick), availability/preview is in control_panel.gd and map_tooltip.gd.
+      "id": "lumberjack_hut",
+      "name": "Woodcutter's Camp",
+      "icon": "lumberjack_hut.png",
+      "color": [ 101, 67, 33 ],
+      "work_cost": 18,
+      "maintenance_cost": 90.0,
+      "unlock_tech": "wood_processing",
+      "profession": "lumberjack"
+    }
+  ]
+}

@@ -1,0 +1,119 @@
+{
+  "resources": [
+    {
+      "id": "copper_tools", "price": 40,
+      "name": "Copper Tools",
+      "type": "product",
+      "category": "tools",
+      "icon": "copper_tools.png"
+    },
+    {
+      "id": "bronze_tools", "price": 60,
+      "name": "Bronze Tools",
+      "type": "product",
+      "category": "tools",
+      "icon": "bronze_tools.png"
+    },
+    {
+      "id": "brass_tools", "price": 65,
+      "name": "Brass Tools",
+      "type": "product",
+      "category": "tools",
+      "unlock_tech": "brass_working",
+      "icon": "brass_tools.png"
+    },
+    {
+      // Mass-cast plowshares, hoes, sledges and anvils poured straight into moulds:
+      // cheaper per piece than forged iron tools, produced in large batches to keep
+      // farms, mines and quarries supplied.
+      "id": "cast_iron_tools", "price": 45,
+      "name": "Cast-Iron Tools",
+      "type": "product",
+      "category": "tools",
+      "unlock_tech": "blast_furnace",
+      "icon": "cast_iron_tools.png"
+    },
+    {
+      "id": "iron_tools", "price": 90,
+      "name": "Iron Tools",
+      "type": "product",
+      "category": "tools",
+      "icon": "iron_tools.png"
+    },
+    {
+      "id": "steel_tools", "price": 135,
+      "name": "Steel Tools",
+      "type": "product",
+      "category": "tools",
+      "icon": "steel_tools.png"
+    },
+    {
+      "id": "damascus_tools", "price": 200,
+      "name": "Tools of <city_name> Steel",
+      "type": "product",
+      "category": "tools",
+      "icon": "steel_tools.png"
+    },
+    {
+      "id": "copper_weapons", "price": 45,
+      "name": "Copper Weapons",
+      "type": "product",
+      "category": "weapons",
+      "icon": "copper_weapons.png"
+    },
+    {
+      "id": "bronze_weapons", "price": 70,
+      "name": "Bronze Weapons",
+      "type": "product",
+      "category": "weapons",
+      "icon": "bronze_weapons.png"
+    },
+    {
+      "id": "iron_weapons", "price": 110,
+      "name": "Iron Weapons",
+      "type": "product",
+      "category": "weapons",
+      "icon": "iron_weapons.png"
+    },
+    {
+      // The fame of the steel line is earned by the blade, not by the bar: a town asks for the
+      // weapons of a named city, while steel as a material is what the forge sells to everyone. The
+      // three tiers are the ladder of this good — see the header comment of data/products/food.json.
+      "id": "steel_weapons", "price": 165,
+      "name": "Steel Weapons",
+      "type": "product",
+      "category": "weapons",
+      "icon": "steel_weapons.png",
+      "reputation": {
+        "threshold": 200,
+        "trigger": "sell",
+        "reward": { "type": "trade_price", "value": 0.10 }
+      },
+      "brand": {
+        "threshold": 500,
+        "trigger": "sell",
+        "min_quality": "exceptional",
+        "reward": { "type": "brand_product", "product": "damascus_steel" }
+      },
+      "challenge": {
+        "id": "steel_challenge",
+        "threshold": 1000,
+        "trigger": "sell",
+        "min_quality": "exceptional",
+        "name": "A Blade with the Name of the Town",
+        "description": "A thousand units of steel weapons of exceptional quality sold to the towns — and weapons begin to be asked by the name of the town.",
+        "reward": { "type": "specialization", "id": "weaponsmith_specialization" }
+      }
+    },
+    {
+      // The weapon of the brand bar: it is made of the good that carries the name of the city, so it
+      // stands above the steel one without a technology of its own. The blade is named by the steel
+      // it is forged from, and that steel is named by the city — hence the tag in front of it.
+      "id": "damascus_weapons", "price": 250,
+      "name": "<city_name>-steel Weapons",
+      "type": "product",
+      "category": "weapons",
+      "icon": "damascus_weapons.png"
+    }
+  ]
+}

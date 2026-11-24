@@ -1,0 +1,1585 @@
+# map_generator.gd
+@tool
+extends Node
+
+# The minimum number of hexes of the guaranteed food plant's terrain that must fit
+# inside the starting Influence Ring. The plant itself occupies one of them; the rest
+# give the player room to build farms for it (quinoa grows only in the mountains — a
+# single mountain hex would leave no place for a farm). This repairs an actual soft-lock
+# left by the random relief, so it fires only when the plant's terrain is this scarce,
+# not on every generation.
+const FOOD_PLANT_TERRAIN_HEXES := 3
+
+# The radius of the "safe yard" around the city: all the hexes within this radius
+# forcibly become a plain (plain). The cover is generated as that of
+# an ordinary plain (forests may appear), so that the yard does not look bare.
+# It guarantees that the city always has a free passable space
+# for the starting construction and that the city does not "sink" in a lake. It is applied
+# AFTER the placement of the unique terrains and BEFORE the generation of the cover/resources.
+const PLAIN_ZONE_RADIUS := 2
+
+# The radius within which placing the Voronoi centres of impassable
+# terrain types (move_cost >= 999, for example the lakes) is FORBIDDEN. Thanks to the property
+# of the Voronoi diagram this mathematically guarantees that in this area
+# an impassable terrain cannot appear (a "sunken yard" around the city).
+const CENTER_EXCLUSION_RADIUS := 6
+
+# The stage timings and the placement reports go to the console once per world. The map preview
+# runs the same stages on every change of a setting, so it switches the reports off.
+var log_stages := true
+
+# Returns the list of the terrain types that take part in the Voronoi algorithm
+# (the base relief). They do NOT include:
+#   - the unique types (unique: true) — they are placed by place_unique_terrains;
+#   - the types that are not listed in terrain_config (the marsh family) — they are created
+#     only by the post-processing (_apply_marshes).
+# The participation in the Voronoi is now set explicitly through the config: adding a new
+# type to terrains.json no longer makes it automatically spread
+# over the whole map.
+# The types of the Voronoi: the keys of terrain_config. A key is either a family — the relief or
+# the wetland (the climate turns every hex of it into the variety of its belt) — or a terrain the
+# climate leaves alone (a lake, a desert). The unique terrains are placed separately, by
+# place_unique_terrains.
+static func _get_base_terrain_ids() -> Array:
+    var cfg: Dictionary = GameData.map_config.get("terrain_config", {})
+    var ids: Array = []
+    for tid in cfg.keys():
+        var t: Dictionary = GameData.terrains.get(str(tid), {})
+        if t.get("unique", false):
+            continue
+        ids.append(str(tid))
+    return ids
+
+# Returns the list of the unique terrain types (unique: true), which are
+# placed by the universal function place_unique_terrains. This allows
+# adding new unique terrain types to data/terrains.json without changing
+# this code — the function itself iterates over all such types.
+static func _get_unique_terrain_ids() -> Array:
+    var unique_ids = []
+    for terrain_id in GameData.terrains.keys():
+        var t: Dictionary = GameData.terrains[terrain_id]
+        if t.get("unique", false):
+            unique_ids.append(terrain_id)
+    return unique_ids
+
+# Computes the number of Voronoi centres for each terrain type based on
+# the terrain_config configuration (density + target_cluster) from data/map_config.json.
+# density is the priority; target_cluster is an upper bound (the number of centres cannot
+# be more than area / target_cluster). The excess of total is redistributed
+# to the types without a target_cluster bound in proportion to their density.
+# ONLY the types explicitly listed in terrain_config take part (see
+# _get_base_terrain_ids): the others (the marsh family) are created by the post-processing.
+func make_terrain_counts(rows: int, cols: int) -> Dictionary:
+    var cfg: Dictionary = GameData.map_config
+    var area := rows * cols
+
+    # The global target_cluster — a fallback value for total.
+    var global_cluster: int = int(cfg.get("target_cluster", 22))
+    var total := maxi(12, int(round(float(area) / global_cluster)))
+
+    var terrain_config: Dictionary = cfg.get("terrain_config", {})
+    var base_ids := _get_base_terrain_ids()
+
+    var counts: Dictionary = {}
+    var weights: Dictionary = {}
+    var has_cluster: Dictionary = {}
+
+    for terrain_id in base_ids:
+        var tc: Dictionary = terrain_config.get(terrain_id, {})
+        var w := float(tc.get("density", 0.0))
+        if w <= 0.0:
+            w = _default_density(terrain_id)
+
+        var cluster_limit := -1 # -1 = no bound is set
+        if tc.has("target_cluster"):
+            cluster_limit = int(tc.get("target_cluster", 0))
+
+        weights[terrain_id] = w
+
+        # The lower bound of "at least 1 centre" — only for the types with a positive
+        # density: an explicit zero must not produce orphan centres.
+        var count := int(round(total * w))
+        if w > 0.0:
+            count = maxi(1, count)
+
+        if cluster_limit > 0:
+            var limit := maxi(1, int(round(float(area) / cluster_limit)))
+            count = mini(count, limit)
+            has_cluster[terrain_id] = true
+        else:
+            has_cluster[terrain_id] = false
+        counts[terrain_id] = count
+
+    # Redistribution of the excess: if the sum is < total, the excess is distributed
+    # to the types WITHOUT a target_cluster bound in proportion to their density.
+    var sum_counts := 0
+    for tid in counts.keys():
+        sum_counts += counts[tid]
+    if sum_counts < total:
+        var deficit = total - sum_counts
+        var free_types: Array = []
+        var free_weight := 0.0
+        for tid in base_ids:
+            if not has_cluster[tid]:
+                free_types.append(tid)
+                free_weight += weights[tid]
+        if free_weight > 0.0 and not free_types.is_empty():
+            for tid in free_types:
+                var add := int(round(deficit * (weights[tid] / free_weight)))
+                counts[tid] += add
+                deficit -= add
+                if deficit <= 0:
+                    break
+            # We distribute the remainder one by one, until it is exhausted.
+            var i := 0
+            while deficit > 0:
+                counts[free_types[i % free_types.size()]] += 1
+                deficit -= 1
+                i += 1
+
+    return counts
+
+# The default density for the types that are not listed in map_config.json.
+func _default_density(terrain_id: String) -> float:
+    match terrain_id:
+        "plain":
+            return 0.45
+        "hill":
+            return 0.25
+        "lake":
+            return 0.10
+        "mountain":
+            return 0.20
+        "swamp":
+            return 0.05
+        _:
+            return 0.05
+
+# The post-processing after the Voronoi: it turns part of the plain hexes around
+# the lakes and the seas into marshes. A ring of 1 hex wide — we iterate only
+# the immediate neighbours of each lake/sea. Each such neighbour-plain
+# becomes a marsh with a chance of 15% (MARSH_CHANCE). The hexes are marked
+# with the temporary flag _is_marsh, so that the cover generation can then set a cover for them.
+const MARSH_CHANCE := 0.15
+
+func _apply_marshes(tile_data: Array, rows: int, cols: int) -> void:
+    var lake_hexes := PackedInt32Array()
+    for r in range(rows):
+        for c in range(cols):
+            if tile_data[r][c].get("terrain", "plain") == "lake":
+                lake_hexes.append(r * cols + c)
+
+    # At the lakes: the marshes are formed on the surrounding plain (a ring around the lake).
+    var neighbors := PackedInt32Array()
+    neighbors.resize(6)
+    for water in lake_hexes:
+        var water_row := water / cols
+        var water_col := water % cols
+        var count := HexUtils.fill_neighbor_indices(water_row, water_col, rows, cols, neighbors)
+        for i in range(count):
+            var neighbor := neighbors[i]
+            var t: Dictionary = tile_data[neighbor / cols][neighbor % cols]
+            if t.get("terrain", "plain") != "plain":
+                continue
+            if randf() < MARSH_CHANCE:
+                t["terrain"] = "marsh"
+                t["_is_marsh"] = true
+
+    # At the seas: the marshes on the coast (beach) are done by SeaManager — it knows
+    # about its mask and flags and should not depend on the internal state
+    # of map_generator. It is called AFTER the application of the sea/beach mask.
+    SeaManager.apply_sea_coast_marshes(tile_data, rows, cols)
+
+# The generation of the world is split into stages so that the caller can update a
+# progress indicator between them (see MainMap._initialize_map). The monolithic
+# generate_map below stays a thin wrapper over the same stages, in the same order.
+func init_tile_data(rows: int, cols: int) -> Array:
+    # Every hex is a copy of the empty one: the stages write into the hexes of the map, so a shared
+    # record would move half the map at once.
+    var t_hexes = Time.get_ticks_msec()
+    # fresh_water_spring — a hidden flag on a resource-less mountain, designated
+    # at the start of a new game and revealed by the technology "Concrete".
+    # aqueduct — the second layer of improvements: the hex carries a section of
+    # the aqueduct regardless of its ordinary improvement.
+    # aqueduct_water — the city hex has been reached by the aqueduct.
+    var empty_tile := {"terrain": "plain", "cover": "none", "resource": null,
+            "improvement": null, "fresh_water_spring": false,
+            "aqueduct": false, "aqueduct_water": false}
+    var tile_data := []
+    tile_data.resize(rows)
+    for row in range(rows):
+        var col_array := []
+        col_array.resize(cols)
+        for col in range(cols):
+            col_array[col] = empty_tile.duplicate()
+        tile_data[row] = col_array
+    if log_stages:
+        print("hexes stage: ", Time.get_ticks_msec() - t_hexes, " ms")
+    return tile_data
+
+func apply_sea_mask(tile_data: Array, rows: int, cols: int, city_row: int, city_col: int,
+        cfg: Dictionary = {}, announce: bool = true) -> Array:
+    return SeaManager.apply_sea(tile_data, rows, cols, city_row, city_col, cfg, announce)
+
+func generate_relief(tile_data: Array, rows: int, cols: int, city_row: int, city_col: int, terrain_counts: Dictionary) -> void:
+    # We generate the centres for the Voronoi. For the impassable terrain types
+    # (the lakes and so on, move_cost >= 999) the centres must NOT get into the
+    # CENTER_EXCLUSION_RADIUS around the city: thanks to the property of the diagram
+    # of the Voronoi this mathematically guarantees that in this area no
+    # impassable terrain will appear (the city will not end up on an island).
+    var centers = []
+    for terrain_id in terrain_counts.keys():
+        var count = terrain_counts[terrain_id]
+        var exclude_center = _is_impassable_terrain_id(terrain_id)
+        for _i in range(count):
+            var r = randi() % rows
+            var c = randi() % cols
+            if exclude_center and HexUtils.hex_distance(r, c, city_row, city_col) <= CENTER_EXCLUSION_RADIUS:
+                # We iterate over the positions until we find a place outside the exclusion
+                # zone (or the attempts are exhausted — then we leave it as is).
+                for _try in range(50):
+                    r = randi() % rows
+                    c = randi() % cols
+                    if HexUtils.hex_distance(r, c, city_row, city_col) > CENTER_EXCLUSION_RADIUS:
+                        break
+            centers.append({"r": r, "c": c, "terrain": terrain_id})
+
+    var t_voronoi = Time.get_ticks_msec()
+    var voronoi: PackedInt32Array = _build_voronoi(rows, cols, centers)
+    if log_stages:
+        print("Voronoi stage: ", Time.get_ticks_msec() - t_voronoi, " ms")
+    var center_terrain := PackedStringArray()
+    center_terrain.resize(centers.size())
+    for ci in range(centers.size()):
+        center_terrain[ci] = str(centers[ci].terrain)
+    for row in range(rows):
+        var base := row * cols
+        for col in range(cols):
+            var ci := voronoi[base + col]
+            if ci >= 0:
+                tile_data[row][col]["terrain"] = center_terrain[ci]
+
+func post_process_relief(tile_data: Array, rows: int, cols: int, sea_mask: Array, city_row: int, city_col: int) -> void:
+    # --- THE REPEATED APPLICATION OF THE SEA/BEACH MASK ---
+    # The Voronoi filled the whole map with its relief, therefore on top of it
+    # we re-apply the sea (by the flag _is_sea) and the beach (by the flag _is_beach),
+    # so that they are not overwritten. It is done by SeaManager according to the flags set
+    # at the apply_sea stage BEFORE the Voronoi.
+    var t_after = Time.get_ticks_msec()
+    SeaManager.reapply_sea_mask(tile_data)
+
+    # The sea islands must not consist of lakes: we replace the lakes in the land components
+    # enclosed by the sea with a plain before the check of the minimum number of lakes.
+    SeaManager.replace_island_lakes(tile_data, sea_mask, rows, cols)
+
+    # We guarantee a minimum amount of lakes on the map: a lake should not disappear
+    # on the too small maps or on the rare accidents of the generation of the centres.
+    var lake_tiles := 0
+    for row in range(rows):
+        for col in range(cols):
+            if tile_data[row][col]["terrain"] == "lake":
+                lake_tiles += 1
+    if lake_tiles < 3:
+        for row in range(rows):
+            for col in range(cols):
+                if lake_tiles >= 3:
+                    break
+                if tile_data[row][col]["resource"] != null:
+                    continue
+                if tile_data[row][col]["terrain"] == "lake":
+                    continue
+                tile_data[row][col]["terrain"] = "lake"
+                tile_data[row][col]["cover"] = "none"
+                lake_tiles += 1
+            if lake_tiles >= 3:
+                break
+
+    # --- THE MARSHES (the post-processing after the Voronoi) ---
+    # Around each lake with a chance of ~40-50% the neighbouring plain hexes
+    # turn into marshes — a ring 1 hex wide. Such hexes
+    # are marked with the temporary flag _is_marsh, so that during the cover generation
+    # they get a cover.
+    _apply_marshes(tile_data, rows, cols)
+
+    # --- THE UNIQUE TERRAIN TYPES ---
+    # They are placed AFTER the Voronoi, but BEFORE the generation of the cover and the resources.
+    # The universal function place_unique_terrains itself iterates over all
+    # the unique terrain types (unique: true) from data/terrains.json and reads
+    # the maximum cluster size (cluster_size) for each one. Each type
+    # is placed once, as a cluster of 1..cluster_size hexes, outside
+    # the starting Influence Ring. Adding a new unique type to
+    # terrains.json does not require any change to this code.
+    place_unique_terrains(tile_data, rows, cols, city_row, city_col)
+
+    # --- THE SAFE YARD AROUND THE CITY ---
+    # We forcibly turn the hexes within PLAIN_ZONE_RADIUS around the city
+    # into a plain; the cover is generated as that of an ordinary plain. This guarantees
+    # a free passable space for the starting construction and covers
+    # the possible marshes/unique lakes that could have got into this zone.
+    # It is performed AFTER the placement of the unique terrains and BEFORE the generation
+    # of the cover and the resources.
+    _ensure_plain_zone(tile_data, rows, cols, city_row, city_col, PLAIN_ZONE_RADIUS)
+    if log_stages:
+        print("after_relief stage: ", Time.get_ticks_msec() - t_after, " ms")
+
+func apply_climate_and_covers(tile_data: Array, rows: int, cols: int) -> void:
+    apply_climate(tile_data, rows, cols)
+    apply_covers(tile_data, rows, cols)
+
+# The climate alone, without the vegetation: the zone and the temperature belt of every hex and
+# the varieties of the relief. The map preview runs this stage as well, so the belts on the
+# picture are the belts of the world; the covers are rolled by apply_covers and are not drawn.
+func apply_climate(tile_data: Array, rows: int, cols: int, chosen: String = "") -> void:
+    # --- THE CLIMATE ---
+    # The climate is built AFTER the relief, because the water hexes have no zone: the sea and
+    # the lakes break the climate regions at the coasts. The deserts are pruned right after, while
+    # the covers are still empty, and the small zone patches are dissolved before the vegetation
+    # is rolled — so that the cover of a hex always belongs to the zone it ends up in.
+    var climate_cfg: Dictionary = GameData.map_config.get("climate", {})
+    var t_climate = Time.get_ticks_msec()
+    _apply_climate(tile_data, rows, cols, chosen)
+    # The zone patches are settled BEFORE the relief is turned into the varieties of the zones: a
+    # dissolved patch takes the zone of its neighbours, and its terrain has to follow the new zone.
+    _remove_small_zone_islands(tile_data, rows, cols, int(climate_cfg.get("min_zone_size", 3)))
+    _limit_deserts(tile_data, rows, cols)
+    _convert_families(tile_data, rows, cols)
+    if log_stages:
+        print("climate stage: ", Time.get_ticks_msec() - t_climate, " ms")
+
+func apply_covers(tile_data: Array, rows: int, cols: int) -> void:
+    var climate_cfg: Dictionary = GameData.map_config.get("climate", {})
+    var t_cover = Time.get_ticks_msec()
+    for row in range(rows):
+        for col in range(cols):
+            tile_data[row][col]["cover"] = _roll_cover(tile_data[row][col])
+    if bool(climate_cfg.get("cover_smoothing", true)):
+        _smooth_covers(tile_data, rows, cols)
+    if log_stages:
+        print("cover stage: ", Time.get_ticks_msec() - t_cover, " ms")
+
+func place_all_resources(tile_data: Array, raw_res: Dictionary, rows: int, cols: int, city_row: int, city_col: int) -> void:
+    var t_res = Time.get_ticks_msec()
+    # The multi-index of the free hexes by (terrain, cover) — for a fast
+    # placement of the resources without a full scan of the map for each resource.
+    var hex_index = _build_hex_index(tile_data, rows, cols, city_row, city_col)
+
+    # --- The ordinary resources ---
+    # The category is only a classification of the resource and does not determine
+    # whether it should appear on the map. All the resources extracted by an improvement
+    # go through a single pool and are filtered only by their allowed_* and
+    # spawn_conditions.
+    var regular_resources = {}
+    for rid in raw_res.keys():
+        var r = raw_res[rid]
+        if r.get("improved_by", null) == null or r.get("improved_by", "") == "":
+            continue
+        regular_resources[rid] = r
+    _place_resources(tile_data, regular_resources, rows, cols, city_row, city_col, hex_index)
+
+    # --- The one-off (gatherable) resources ---
+    # The metal nuggets and the analogous resources with improved_by == null:
+    # they spawn across the WHOLE map at the start of the game, like the wild plants. The number
+    # of specimens is taken from spawn_count, the output on gathering — from produces.
+    # The wild plants (wild_food) are placed separately (see place_wild_food).
+    place_one_time_resources(tile_data, raw_res, rows, cols, city_row, city_col, hex_index)
+    if log_stages:
+        print("resources stage: ", Time.get_ticks_msec() - t_res, " ms")
+
+func ensure_outward_corridor(tile_data: Array, rows: int, cols: int, city_row: int, city_col: int) -> void:
+    # --- THE GUARANTEE OF A WAY OUT ---
+    # A safety check: if despite the ban on the lake centres the city has still
+    # been isolated by an impassable terrain, we lay a corridor of a plain
+    # to the outside world. It is performed at the very end, so as to take into account all the already
+    # placed marshes and unique lakes.
+    var t_corridor = Time.get_ticks_msec()
+    _ensure_outward_corridor(tile_data, rows, cols, city_row, city_col)
+    if log_stages:
+        print("corridor stage: ", Time.get_ticks_msec() - t_corridor, " ms")
+
+func generate_map(rows: int, cols: int, city_row: int, city_col: int, raw_res: Dictionary, terrain_counts: Dictionary) -> Array:
+    var t0 = Time.get_ticks_msec()
+    var tile_data = init_tile_data(rows, cols)
+    var sea_mask = apply_sea_mask(tile_data, rows, cols, city_row, city_col)
+    generate_relief(tile_data, rows, cols, city_row, city_col, terrain_counts)
+    post_process_relief(tile_data, rows, cols, sea_mask, city_row, city_col)
+    apply_climate_and_covers(tile_data, rows, cols)
+    place_all_resources(tile_data, raw_res, rows, cols, city_row, city_col)
+    ensure_outward_corridor(tile_data, rows, cols, city_row, city_col)
+    if log_stages:
+        print("generate_map stage: ", Time.get_ticks_msec() - t0, " ms")
+    return tile_data
+
+# The universal function that places all the unique terrain types on the map.
+# It iterates over all the types with "unique": true in data/terrains.json and for each one
+# places ONE connected cluster of 1..cluster_size hexes outside
+# the limits of the starting Influence Ring. The maximum cluster size is read
+# from the "cluster_size" field of the terrain data (the default is 3, if the field is not set).
+# Adding a new unique type to terrains.json does not require any change to the code.
+func place_unique_terrains(tile_data: Array, rows: int, cols: int, city_row: int, city_col: int) -> void:
+    # The bounds of the starting Influence Ring from the configuration.
+    var cfg: Dictionary = GameData.map_config
+    var ring_rows: int = int(cfg.get("start_ring_rows", 5))
+    var ring_cols: int = int(cfg.get("start_ring_cols", 7))
+    var inf_start_row: int = int(floor(city_row - ring_rows / 2.0))
+    var inf_end_row: int = inf_start_row + ring_rows - 1
+    var inf_start_col: int = int(floor(city_col - ring_cols / 2.0))
+    var inf_end_col: int = inf_start_col + ring_cols - 1
+
+    # We collect all the hexes outside the Ring that are not occupied by the city. They are the
+    # flat indices of the hexes: the type is placed once per world, and the list of a giant map is
+    # the whole map.
+    var candidates := PackedInt32Array()
+    for r in range(rows):
+        for c in range(cols):
+            if r >= inf_start_row and r <= inf_end_row and c >= inf_start_col and c <= inf_end_col:
+                continue
+            if r == city_row and c == city_col:
+                continue
+            candidates.append(r * cols + c)
+    if candidates.is_empty():
+        print("ERROR place_unique_terrains: there are no hexes outside the Influence Ring!")
+        return
+
+    for terrain_type in _get_unique_terrain_ids():
+        var t: Dictionary = GameData.terrains[terrain_type]
+        var max_cluster_size: int = int(t.get("cluster_size", 3))
+
+        # A random cluster size from 1 to max_cluster_size.
+        var cluster_size: int = randi_range(1, maxi(1, max_cluster_size))
+
+        # A random start point within the allowed area.
+        var start: int = candidates[randi() % candidates.size()]
+
+        # BFS: we build a connected cluster of cluster_size hexes adjacent to the start.
+        var cluster := PackedInt32Array()
+        cluster.append(start)
+        var visited := {}
+        visited[start] = true
+        var frontier := PackedInt32Array()
+        frontier.append(start)
+        while cluster.size() < cluster_size and frontier.size() > 0:
+            var next_frontier := PackedInt32Array()
+            for index in frontier:
+                var neighbors = HexUtils.get_neighbors_odd_r(index / cols, index % cols,
+                        rows, cols)
+                neighbors.shuffle()
+                for n in neighbors:
+                    var key: int = n.row * cols + n.col
+                    if visited.has(key):
+                        continue
+                    if n.row >= inf_start_row and n.row <= inf_end_row and n.col >= inf_start_col and n.col <= inf_end_col:
+                        continue
+                    if n.row == city_row and n.col == city_col:
+                        continue
+                    visited[key] = true
+                    cluster.append(key)
+                    next_frontier.append(key)
+                    if cluster.size() >= cluster_size:
+                        break
+                if cluster.size() >= cluster_size:
+                    break
+            frontier = next_frontier
+
+        # We change the terrain to the unique one for the chosen hexes (only if there is no improvement there).
+        for index in cluster:
+            var tile: Dictionary = tile_data[index / cols][index % cols]
+            if tile.get("improvement", null) == null:
+                tile["terrain"] = terrain_type
+                tile["cover"] = _roll_cover(tile)
+
+        if log_stages:
+            print("The unique terrain type %s is placed: %d hexes" % [terrain_type, cluster.size()])
+
+# The Voronoi diagram of the relief: the nearest centre of every hex, as the flat array of the
+# indices of the centres (-1 for a hex of a map without centres).
+#
+# The hexes are taken in order of their distance from the centres: every centre starts its own wave
+# and a hex is claimed by the wave that reaches it first, which is the nearest centre — the
+# boundaries are therefore exact in the hex metric, not approximated. One wave covers the map, so
+# the walk costs a visit of every hex and its six neighbours, whatever the number of centres.
+func _build_voronoi(rows: int, cols: int, centers: Array) -> PackedInt32Array:
+    var cells := rows * cols
+    var owner := PackedInt32Array()
+    owner.resize(cells)
+    owner.fill(-1)
+    var queue := PackedInt32Array()
+    queue.resize(cells)
+    var neighbors := PackedInt32Array()
+    neighbors.resize(6)
+    var head := 0
+    var tail := 0
+    for ci in range(centers.size()):
+        var center: Dictionary = centers[ci]
+        var index := int(center.r) * cols + int(center.c)
+        # A centre cannot share a hex with another one; the first one placed keeps it.
+        if owner[index] != -1:
+            continue
+        owner[index] = ci
+        queue[tail] = index
+        tail += 1
+    while head < tail:
+        var current := queue[head]
+        head += 1
+        var current_owner := owner[current]
+        var count := HexUtils.fill_neighbor_indices(current / cols, current % cols, rows, cols,
+                neighbors)
+        for i in range(count):
+            var neighbor := neighbors[i]
+            if owner[neighbor] != -1:
+                continue
+            owner[neighbor] = current_owner
+            queue[tail] = neighbor
+            tail += 1
+    return owner
+
+# Returns true if the terrain type is impassable (move_cost >= 999).
+# Such types (the lakes: lake, soda_lake, asphalt_lake, salt_lake) block
+# the movement of the city outwards.
+func _is_impassable_terrain_id(terrain_id: String) -> bool:
+    var t: Dictionary = GameData.terrains.get(terrain_id, {})
+    return int(t.get("move_cost", 1)) >= 999
+
+# Forcibly turns all the hexes within the radius `radius` around the city
+# into a plain without a cover. It resets the temporary flag _is_marsh.
+# It is called AFTER the placement of the unique terrains and BEFORE the climate, so that the zone
+# is completely "clean": the hex becomes the plain of the climate belt it stands in, and its cover
+# is rolled later, together with the cover of every other hex.
+func _ensure_plain_zone(tile_data: Array, rows: int, cols: int,
+        city_row: int, city_col: int, radius: int) -> void:
+    # Only the box around the city is walked: a hex further than `radius` rows away is further
+    # than `radius` in hexes as well, and the yard of the city is a dozen hexes of a map of
+    # thousands.
+    var row_from := maxi(0, city_row - radius - 1)
+    var row_to := mini(rows, city_row + radius + 2)
+    var col_from := maxi(0, city_col - radius - 2)
+    var col_to := mini(cols, city_col + radius + 3)
+    for r in range(row_from, row_to):
+        for c in range(col_from, col_to):
+            if HexUtils.hex_distance(r, c, city_row, city_col) <= radius:
+                var tile = tile_data[r][c]
+                tile["terrain"] = "plain"
+                tile["_is_marsh"] = false
+                tile["_is_sea"] = false
+                tile["_is_shallow_sea"] = false
+                tile["_is_beach"] = false
+
+# Guarantees that the city has a path to the edge of the map (to the "outside world").
+# If the city has turned out to be isolated by an impassable terrain (a lake or the sea),
+# the BFS function over the impassable hexes lays the shortest corridor from
+# the reachable area of the city to the nearest outer passable hex and
+# turns this corridor into a plain. The sea is not an obstacle for the breakthrough
+# (as is a lake), and the coast (beach, move_cost: 1) is a valid exit.
+# It repeats until the city gets an exit to the edge of the map
+# (or until it hits the limit of the iterations).
+#
+# The walks are kept in flat arrays: the hexes are numbered row * cols + col, the visited set of a
+# walk is a byte per hex, and the queue is an array read by an index. A walk of this stage covers
+# the whole land of the map, which on a giant map is tens of thousands of hexes, so a dictionary of
+# string keys or a queue whose head is taken from its front would cost more than the walk itself.
+# The terrain is read into `blocked` once per iteration: it does not change until the corridor of
+# that iteration is laid.
+func _ensure_outward_corridor(tile_data: Array, rows: int, cols: int,
+        city_row: int, city_col: int) -> void:
+    var cells := rows * cols
+    var neighbors := PackedInt32Array()
+    neighbors.resize(6)
+    var blocked := PackedByteArray()
+    blocked.resize(cells)
+    var impassable := {}
+    var reachable := PackedByteArray()
+    reachable.resize(cells)
+    var order := PackedInt32Array()
+    var queue := PackedInt32Array()
+    var from := PackedInt32Array()
+    from.resize(cells)
+    var from_set := PackedByteArray()
+    from_set.resize(cells)
+
+    for _iter in range(10):
+        # 0) The impassable hexes of the current relief.
+        for r in range(rows):
+            var base := r * cols
+            for c in range(cols):
+                var terrain_id := str(tile_data[r][c].get("terrain", "plain"))
+                if not impassable.has(terrain_id):
+                    impassable[terrain_id] = _is_impassable_terrain_id(terrain_id)
+                blocked[base + c] = 1 if impassable[terrain_id] else 0
+
+        # 1) The area reachable from the city over the passable hexes.
+        reachable.fill(0)
+        order.clear()
+        queue.clear()
+        var city_index := city_row * cols + city_col
+        reachable[city_index] = 1
+        queue.append(city_index)
+        var head := 0
+        while head < queue.size():
+            var current := queue[head]
+            head += 1
+            order.append(current)
+            var count := HexUtils.fill_neighbor_indices(current / cols, current % cols,
+                    rows, cols, neighbors)
+            for i in range(count):
+                var neighbor := neighbors[i]
+                if reachable[neighbor] == 1 or blocked[neighbor] == 1:
+                    continue
+                reachable[neighbor] = 1
+                queue.append(neighbor)
+
+        # 2) If the city has reached a passable edge of the map — the exit exists.
+        if _has_exit_to_edge(reachable, rows, cols):
+            return
+
+        # 3) We look for a water way from the reachable area to the nearest outer
+        #    passable hex. The BFS starts from all the impassable neighbours of A.
+        from.fill(-1)
+        from_set.fill(0)
+        queue.clear()
+        for current in order:
+            var count := HexUtils.fill_neighbor_indices(current / cols, current % cols,
+                    rows, cols, neighbors)
+            for i in range(count):
+                var neighbor := neighbors[i]
+                if reachable[neighbor] == 1 or blocked[neighbor] == 0:
+                    continue
+                if from_set[neighbor] == 1:
+                    continue
+                from_set[neighbor] = 1
+                from[neighbor] = current
+                queue.append(neighbor)
+
+        var target := -1
+        var qi := 0
+        while qi < queue.size() and target < 0:
+            var current := queue[qi]
+            qi += 1
+            var count := HexUtils.fill_neighbor_indices(current / cols, current % cols,
+                    rows, cols, neighbors)
+            for i in range(count):
+                var neighbor := neighbors[i]
+                if from_set[neighbor] == 1:
+                    continue
+                if blocked[neighbor] == 1:
+                    from_set[neighbor] = 1
+                    from[neighbor] = current
+                    queue.append(neighbor)
+                elif reachable[neighbor] == 0:
+                    target = neighbor
+                    from_set[neighbor] = 1
+                    from[neighbor] = current
+                    break
+
+        if target < 0:
+            # We have not found an outer passable hex (the whole world is water/islands).
+            # We lay a corridor directly to the edge of the map through the water.
+            if not _punch_corridor_to_edge(tile_data, rows, cols, reachable, order, blocked):
+                return
+        else:
+            # 4) We restore the path: the impassable hexes are turned into a plain.
+            var step := target
+            while true:
+                var prev := from[step]
+                if prev < 0 or reachable[prev] == 1:
+                    break
+                _punch_hex(tile_data, prev, cols)
+                step = prev
+
+# Returns true if at least one hex of the reachable area is on the edge of the map.
+func _has_exit_to_edge(reachable: PackedByteArray, rows: int, cols: int) -> bool:
+    var last_row := (rows - 1) * cols
+    for c in range(cols):
+        if reachable[c] == 1 or reachable[last_row + c] == 1:
+            return true
+    for r in range(rows):
+        if reachable[r * cols] == 1 or reachable[r * cols + cols - 1] == 1:
+            return true
+    return false
+
+# Turns the hex with the flat index `index` into a plain without a cover.
+# It is used for laying the exit corridor through the impassable hexes
+# (the lakes and the seas). It resets the temporary flags _is_marsh and _is_sea.
+# The corridor is laid after the climate, so the plain is resolved through the zone of the hex:
+# a corridor through the boreal zone is a boreal plain, not a green plain in the middle of the north.
+func _punch_hex(tile_data: Array, index: int, cols: int) -> void:
+    var tile: Dictionary = tile_data[index / cols][index % cols]
+    var zone_id := str(tile.get("climate", ""))
+    var terrain_id := GameData.zone_terrain(zone_id, "plain")
+    tile["terrain"] = terrain_id if terrain_id != "" else "plain"
+    # The cover is generated as that of an ordinary plain for a natural look.
+    tile["cover"] = _roll_cover(tile)
+    tile["_is_marsh"] = false
+    tile["_is_sea"] = false
+    tile["_is_shallow_sea"] = false
+
+# Lays a corridor from the reachable area directly to the edge of the map through
+# the impassable hexes. It returns true if the corridor has been laid.
+func _punch_corridor_to_edge(tile_data: Array, rows: int, cols: int,
+        reachable: PackedByteArray, order: PackedInt32Array,
+        blocked: PackedByteArray) -> bool:
+    var cells := rows * cols
+    var from := PackedInt32Array()
+    from.resize(cells)
+    from.fill(-1)
+    var from_set := PackedByteArray()
+    from_set.resize(cells)
+    var neighbors := PackedInt32Array()
+    neighbors.resize(6)
+    var queue := PackedInt32Array()
+    for current in order:
+        var count := HexUtils.fill_neighbor_indices(current / cols, current % cols,
+                rows, cols, neighbors)
+        for i in range(count):
+            var neighbor := neighbors[i]
+            if reachable[neighbor] == 1 or blocked[neighbor] == 0:
+                continue
+            if from_set[neighbor] == 1:
+                continue
+            from_set[neighbor] = 1
+            from[neighbor] = current
+            queue.append(neighbor)
+    var qi := 0
+    var target := -1
+    while qi < queue.size() and target < 0:
+        var current := queue[qi]
+        qi += 1
+        var current_row := current / cols
+        var current_col := current % cols
+        if current_row == 0 or current_row == rows - 1 or current_col == 0 or current_col == cols - 1:
+            target = current
+            break
+        var count := HexUtils.fill_neighbor_indices(current_row, current_col, rows, cols,
+                neighbors)
+        for i in range(count):
+            var neighbor := neighbors[i]
+            if from_set[neighbor] == 1:
+                continue
+            if blocked[neighbor] == 0:
+                continue
+            from_set[neighbor] = 1
+            from[neighbor] = current
+            queue.append(neighbor)
+    if target < 0:
+        return false
+    # We lay the path from the target edge impassable cell back to A.
+    var step := target
+    while true:
+        _punch_hex(tile_data, step, cols)
+        var prev := from[step]
+        if prev < 0 or reachable[prev] == 1:
+            break
+        step = prev
+    return true
+
+# --- CLIMATE ---
+#
+# The climate decides what a hex is made of and what grows on it. There is no separate "biome"
+# layer: a plain is never a plain on the map, it is one of its VARIETIES — a tundra plain, a boreal
+# plain, a steppe, a prairie, a savanna or a tropical plain (data/terrains/terrains.json) — and the
+# vegetation is a cover on top of it (data/covers.json). The wetland is divided the same way, only
+# into fewer varieties: a swamp is a family whose zones name a shared record wherever the bogs of
+# two belts do not differ.
+#
+# Two independent fields decide the variety:
+#
+#   temperature — belts running from the poles to the equator. The equator sits on a random row
+#     (the "climate" block of data/map_config.json), so the city in the middle of the map lands
+#     on a different latitude from game to game; a climate chosen in the world settings places
+#     the equator so the city lands in the chosen belt. The belts are
+#     ordered polar → cold → mild → subtropical → tropical → subtropical → mild → cold → polar,
+#     and the order is never broken: the temperature row of a hex is shifted by a smooth noise
+#     field, but the shift is clamped so that the row never decreases down a column and never
+#     grows faster than MAX_TEMPERATURE_STEP rows per row. Therefore two hexes of the same
+#     latitude are never more than one belt apart — a tropical plain and a tundra plain cannot
+#     meet sideways.
+#
+#   moisture — a smooth noise field that does not follow the latitudes at all. Wet and dry regions
+#     lie anywhere, curve and surround each other, and they split every temperature belt in two
+#     (the steppe and the prairie, the dry and the wet savanna, …).
+#
+# The polar belt is measured not from the equator but from the map edge: it is the outer part of
+# the cold region of every column ("polar_share" of data/map_config.json), so the tundra reaches
+# the pole whatever latitude the equator was rolled on, and the taiga keeps the inner part of the
+# cold region. No wooded cover grows in the tundra, so the taiga never spreads into it. A chosen
+# cold climate puts the city first: on a map too short for the full sequence on both sides of the
+# equator, the near edge keeps whatever cold fits there and may end up warmer than the taiga.
+#
+# A pair (temperature, humidity) selects a climate zone (data/climate.json), and the zone says
+# which variety every family becomes and what grows on it. The zone id is stored in the
+# tile ("climate"): the runtime asks it whenever it has to turn a family into a terrain after the
+# generation (a drained swamp, a corridor). The player never sees the zone — only the terrain and
+# the cover. The temperature belt of every hex, water included, is stored next to it
+# ("temperature") for the covers that live only in the warm belts.
+#
+# The belts themselves are placed by ClimateLayout: the arithmetic of the latitudes is shared with
+# the map preview of the new game window, so the picture of the preview shows the belts the world
+# will have.
+
+const HUMIDITY_WET := "wet"
+const HUMIDITY_DRY := "dry"
+
+# The families the climate turns into the varieties of its zone: the relief (a plain becomes a
+# tundra plain, a boreal plain, a steppe, a prairie, a savanna, a tropical plain) and the wetlands
+# (a swamp becomes the bog of its belt, a marsh becomes the mudflat of its belt). The water and
+# the deserts have no family and the climate leaves them alone.
+const CLIMATE_FAMILIES := ["plain", "hill", "mountain", "swamp", "marsh"]
+
+# Builds the climate of the map: the zone of every land hex and the terrain of its relief.
+# The water (the sea, the shallow sea and the lakes) gets no zone: it has no relief of its own and
+# it breaks the climate regions at the coasts. Its temperature belt is still recorded — the belt is
+# the latitude, and the sea does not cancel it — and that is what the water covers of the warm
+# belts (data/covers.json → "temperature_belts") are rolled with.
+func _apply_climate(tile_data: Array, rows: int, cols: int, chosen: String = "") -> void:
+    for r in range(rows):
+        for c in range(cols):
+            tile_data[r][c]["climate"] = ""
+            tile_data[r][c]["temperature"] = ""
+
+    if GameData.climate_zones.is_empty():
+        return
+    var cfg: Dictionary = GameData.map_config.get("climate", {})
+    if cfg.is_empty():
+        return
+
+    if chosen == "":
+        chosen = CityData.world_climate
+    var geo := ClimateLayout.geometry(cfg, rows, 1.0)
+    var equator := ClimateLayout.roll_equator_row(rows, cfg)
+    if chosen != ClimateLayout.CLIMATE_RANDOM:
+        var side := 1.0 if randf() < 0.5 else -1.0
+        equator = ClimateLayout.equator_of(rows, geo, chosen, side)
+    # The salt of the meander and the salt of the moisture are drawn one after another, so the
+    # sequence of the global RNG is the same as it has always been.
+    var salt := randi()
+    var belts: PackedByteArray = ClimateLayout.layout(rows, cols, geo, chosen, salt, equator)["belts"]
+
+    var moisture_scale := maxf(2.0, float(mini(rows, cols)) * float(cfg.get("moisture_scale", 0.26)))
+    var moisture_threshold := float(cfg.get("moisture_threshold", 0.5))
+    var moisture_salt := randi()
+
+    # The zone of a belt and a humidity, ready to be read per hex: a map of a giant size asks for
+    # it forty thousand times, and a lookup that builds a string key would cost more than the
+    # climate it resolves.
+    var zone_of_belt := _zone_lookup()
+    # The zone for a belt that has none at all: the first zone of the data, as the fallback of the
+    # lookup has always been.
+    var fallback_zones: Array = ["", ""]
+    if not zone_of_belt.is_empty():
+        var first_zone := str(GameData.climate_zones.keys()[0])
+        fallback_zones = [first_zone, first_zone]
+    var impassable := {}
+    for r in range(rows):
+        var base := r * cols
+        for c in range(cols):
+            var index := base + c
+            var temperature: String = ClimateLayout.BELTS[belts[index]]
+            var tile: Dictionary = tile_data[r][c]
+            tile["temperature"] = temperature
+            var terrain_id := str(tile.get("terrain", ""))
+            if not impassable.has(terrain_id):
+                impassable[terrain_id] = _is_impassable_terrain_id(terrain_id)
+            if impassable[terrain_id]:
+                continue
+            var moisture := ClimateLayout.fbm(float(r) / moisture_scale, float(c) / moisture_scale,
+                    moisture_salt, 2, 0.35)
+            var zones: Array = zone_of_belt.get(temperature, fallback_zones)
+            tile["climate"] = zones[0] if moisture >= moisture_threshold else zones[1]
+
+# Turns the families the Voronoi placed into the varieties of their climate zone: every plain
+# becomes the plain of its belt (a tundra plain, a boreal plain, a steppe, a prairie, a savanna, a
+# tropical plain), the same for the hills and the mountains, the swamp becomes the bog of its
+# belt and the marsh becomes the mudflat of its belt. The water and the deserts have no family
+# and stay as they are.
+func _convert_families(tile_data: Array, rows: int, cols: int) -> void:
+    # The terrain of a (zone, family) pair is resolved once and remembered: the pairs of a map are
+    # a handful, while the hexes are tens of thousands.
+    var resolved: Dictionary = {}
+    for r in range(rows):
+        for c in range(cols):
+            var tile: Dictionary = tile_data[r][c]
+            var family := str(tile.get("terrain", ""))
+            if not CLIMATE_FAMILIES.has(family):
+                continue
+            var zone_id := str(tile.get("climate", ""))
+            var of_zone: Dictionary = resolved.get(zone_id, {})
+            if not of_zone.has(family):
+                of_zone[family] = GameData.zone_terrain(zone_id, family)
+                resolved[zone_id] = of_zone
+            var terrain_id: String = of_zone[family]
+            if terrain_id != "":
+                tile["terrain"] = terrain_id
+
+# The zone of every belt, ready to be read by the humidity: {temperature: [wet zone, dry zone]}.
+# The first zone of a (temperature, humidity) pair wins, so a mod that adds a second zone for an
+# occupied pair has to override the vanilla record instead.
+#
+# A pair with no zone is a data problem (data_validator reports it): the generator falls back to
+# the first zone of the same temperature, so that a mod that removes a record does not strip the
+# map of its climate.
+func _zone_lookup() -> Dictionary:
+    var by_pair: Dictionary = {}
+    for zone_id in GameData.climate_zones.keys():
+        var zone: Dictionary = GameData.climate_zones[zone_id]
+        var temperature := str(zone.get("temperature", ""))
+        var humidity := str(zone.get("humidity", ""))
+        var humidity_zones: Dictionary = by_pair.get(temperature, {})
+        if not humidity_zones.has(humidity):
+            humidity_zones[humidity] = zone_id
+        by_pair[temperature] = humidity_zones
+    var lookup: Dictionary = {}
+    for temperature in by_pair.keys():
+        var humidity_zones: Dictionary = by_pair[temperature]
+        var first := str(humidity_zones.values()[0])
+        lookup[temperature] = [
+            str(humidity_zones.get(HUMIDITY_WET, first)),
+            str(humidity_zones.get(HUMIDITY_DRY, first))
+        ]
+    return lookup
+
+# The deserts are a relief of the zones that allow them (data/climate.json → "deserts": the hot dry
+# belts). Outside them the deserts are levelled into the plain of their zone: a sandy desert in the
+# middle of the boreal zone would contradict the climate the player sees.
+func _limit_deserts(tile_data: Array, rows: int, cols: int) -> void:
+    if GameData.climate_zones.is_empty():
+        return
+    for r in range(rows):
+        for c in range(cols):
+            var tile = tile_data[r][c]
+            var terrain_id := str(tile.get("terrain", ""))
+            if terrain_id != "sandy_desert" and terrain_id != "rocky_desert":
+                continue
+            var zone_id := str(tile.get("climate", ""))
+            if bool(GameData.get_climate_zone(zone_id).get("deserts", false)):
+                continue
+            var plain := GameData.zone_terrain(zone_id, "plain")
+            if plain != "":
+                tile["terrain"] = plain
+
+# Dissolves the zone patches smaller than min_size land hexes into the zone that dominates their
+# boundary, so that the map reads as large regions instead of a scatter of cells. The specks are
+# taken in CLUSTERS: two touching specks of different zones are merged into the zone around them
+# together, otherwise they would only exchange zones and stay specks. An island with no land
+# neighbours keeps a single zone of its own: there is nothing to merge it with.
+#
+# A speck is dissolved into the zone of its OWN belt: the belt of a hex is pinned by its latitude
+# (see _apply_climate), and a zone of another belt would put the vegetation of that belt on a hex
+# that does not stand in it.
+#
+# A speck that reaches the pole row keeps its zone: the belt of those hexes is pinned by the
+# latitude (see _apply_climate), and the sea cuts the polar band into specks often enough — a
+# corner of the map behind a sea strip is one hex. Merging it would take the tundra off the pole.
+func _remove_small_zone_islands(tile_data: Array, rows: int, cols: int, min_size: int) -> void:
+    if min_size <= 1:
+        return
+
+    # The walk is kept in flat arrays (the hexes are numbered row * cols + col): the stage visits
+    # the whole map twice, and a dictionary of vector keys per visit costs more than the walk.
+    var cells := rows * cols
+    var visited := PackedByteArray()
+    visited.resize(cells)
+    var small := PackedByteArray()
+    small.resize(cells)
+    var merged := PackedByteArray()
+    merged.resize(cells)
+    var members := PackedByteArray()
+    members.resize(cells)
+    var neighbors := PackedInt32Array()
+    neighbors.resize(6)
+    var stack := PackedInt32Array()
+    var patch := PackedInt32Array()
+
+    for r in range(rows):
+        var base := r * cols
+        for c in range(cols):
+            var start := base + c
+            if visited[start] == 1:
+                continue
+            var zone_id := str(tile_data[r][c].get("climate", ""))
+            if zone_id == "":
+                visited[start] = 1
+                continue
+
+            patch.clear()
+            stack.clear()
+            stack.append(start)
+            visited[start] = 1
+            while stack.size() > 0:
+                var cell: int = stack[stack.size() - 1]
+                stack.resize(stack.size() - 1)
+                patch.append(cell)
+                var count := HexUtils.fill_neighbor_indices(cell / cols, cell % cols,
+                        rows, cols, neighbors)
+                for i in range(count):
+                    var neighbour := neighbors[i]
+                    if visited[neighbour] == 1:
+                        continue
+                    if str(tile_data[neighbour / cols][neighbour % cols].get("climate", "")) != zone_id:
+                        continue
+                    visited[neighbour] = 1
+                    stack.append(neighbour)
+
+            if patch.size() >= min_size:
+                continue
+            if _touches_pole(patch, rows, cols):
+                continue
+            for cell in patch:
+                small[cell] = 1
+
+    for r in range(rows):
+        var base := r * cols
+        for c in range(cols):
+            var start := base + c
+            if small[start] == 0 or merged[start] == 1:
+                continue
+            patch.clear()
+            stack.clear()
+            stack.append(start)
+            merged[start] = 1
+            members[start] = 1
+            while stack.size() > 0:
+                var cell: int = stack[stack.size() - 1]
+                stack.resize(stack.size() - 1)
+                patch.append(cell)
+                var count := HexUtils.fill_neighbor_indices(cell / cols, cell % cols,
+                        rows, cols, neighbors)
+                for i in range(count):
+                    var neighbour := neighbors[i]
+                    if small[neighbour] == 0 or merged[neighbour] == 1:
+                        continue
+                    merged[neighbour] = 1
+                    members[neighbour] = 1
+                    stack.append(neighbour)
+            # The belt of a hex is pinned by its latitude, so a speck is dissolved into the zone
+            # of ITS OWN belt and takes only the humidity of the zone around it. A speck that
+            # takes the zone of another belt would carry the vegetation of a belt it does not
+            # stand in, and two neighbouring hexes could end up two belts apart.
+            var groups: Dictionary = {}
+            for cell in patch:
+                var belt := str(tile_data[cell / cols][cell % cols].get("temperature", ""))
+                if not groups.has(belt):
+                    groups[belt] = []
+                (groups[belt] as Array).append(cell)
+            for belt in groups.keys():
+                var cells_of_belt: Array = groups[belt]
+                var target := _dominant_neighbour_zone(tile_data, rows, cols, members,
+                        cells_of_belt, belt)
+                if target == "":
+                    # Nothing of the belt around: an island, or a belt that is narrow here.
+                    # The speck keeps its own zone — there is nothing of its belt to merge into.
+                    target = _dominant_zone_of_cells(tile_data, cols, cells_of_belt)
+                if target != "":
+                    for cell in cells_of_belt:
+                        tile_data[cell / cols][cell % cols]["climate"] = target
+            for cell in patch:
+                members[cell] = 0
+
+# Whether a patch reaches the pole row of the map, whose belt is pinned by the latitude.
+func _touches_pole(patch: PackedInt32Array, rows: int, cols: int) -> bool:
+    for cell in patch:
+        var row := cell / cols
+        if row == 0 or row == rows - 1:
+            return true
+    return false
+
+# The zone that surrounds a cluster of specks: the most frequent one among the land neighbours of
+# its hexes that are not a part of the cluster and that stand in the same belt. Ties are broken by
+# the id, so that the result does not depend on the dictionary order.
+func _dominant_neighbour_zone(tile_data: Array, rows: int, cols: int, members: PackedByteArray,
+        patch: Array, belt: String) -> String:
+    var counts: Dictionary = {}
+    var neighbors := PackedInt32Array()
+    neighbors.resize(6)
+    for cell in patch:
+        var count := HexUtils.fill_neighbor_indices(cell / cols, cell % cols, rows, cols,
+                neighbors)
+        for i in range(count):
+            var neighbour := neighbors[i]
+            if members[neighbour] == 1:
+                continue
+            var tile: Dictionary = tile_data[neighbour / cols][neighbour % cols]
+            if str(tile.get("temperature", "")) != belt:
+                continue
+            var zone_id := str(tile.get("climate", ""))
+            if zone_id == "":
+                continue
+            counts[zone_id] = int(counts.get(zone_id, 0)) + 1
+    return _most_frequent(counts)
+
+# The most frequent zone of the hexes themselves — for an island, which has no zone around it.
+func _dominant_zone_of_cells(tile_data: Array, cols: int, patch: Array) -> String:
+    var counts: Dictionary = {}
+    for cell in patch:
+        var zone_id := str(tile_data[cell / cols][cell % cols].get("climate", ""))
+        if zone_id == "":
+            continue
+        counts[zone_id] = int(counts.get(zone_id, 0)) + 1
+    return _most_frequent(counts)
+
+func _most_frequent(counts: Dictionary) -> String:
+    var best := ""
+    var best_count := 0
+    for zone_id in counts.keys():
+        var count: int = counts[zone_id]
+        if count > best_count or (count == best_count and str(zone_id) < best):
+            best = str(zone_id)
+            best_count = count
+    return best
+
+# The wooded cover a zone fills the holes in its woods with: the heaviest cover of its pool that
+# yields timber. An empty string means the zone has no woods at all.
+func _wooded_cover_of_zone(zone_id: String) -> String:
+    var chances: Dictionary = GameData.get_climate_zone(zone_id).get("cover_chance", {})
+    return _heaviest_cover_of_pool(chances, func(cover: Dictionary) -> bool:
+            return float(cover.get("wood_yield", 0)) > 0.0)
+
+# The heaviest cover of a pool that the predicate accepts; "" when none of them does.
+func _heaviest_cover_of_pool(chances: Dictionary, accepts: Callable) -> String:
+    var best := ""
+    var best_weight := 0.0
+    for cover_id in chances.keys():
+        var cover: Dictionary = GameData.covers.get(cover_id, {})
+        if not accepts.call(cover):
+            continue
+        var weight := float(chances[cover_id])
+        if weight > best_weight:
+            best = str(cover_id)
+            best_weight = weight
+    return best
+
+# Clears the lone hexes of a cover and fills the lone holes inside it: the cover of every hex is
+# rolled on its own, which gives a scatter of cells, and this pass makes the covers read as patches
+# — the woods as groves, a reef as a reef. Both changes are computed from the same snapshot and
+# applied afterwards, so the result does not depend on the traversal order.
+#
+# Two kinds of patches are smoothed: the woods of the plains and the hills, whose vegetation comes
+# from the pool of the climate zone, and the covers that mark themselves "clusters" (a coral reef),
+# whose vegetation comes from the pool of the terrain they grow on.
+func _smooth_covers(tile_data: Array, rows: int, cols: int) -> void:
+    _smooth_cover_patches(tile_data, rows, cols, _is_grove_hex, _is_grove_neighbour,
+            _is_wooded_hex, func(tile: Dictionary) -> String:
+                return _wooded_cover_of_zone(str(tile.get("climate", ""))))
+    _smooth_cover_patches(tile_data, rows, cols, _is_clumping_field_hex, _is_clumping_field_hex,
+            _has_clumping_cover, func(tile: Dictionary) -> String:
+                return _clumping_cover_of_terrain(str(tile.get("terrain", "")),
+                        str(tile.get("temperature", ""))))
+
+# The one smoothing rule, applied to one kind of patch. `applies` marks the hexes the rule may
+# change, `counts` marks the neighbours that take part in the counting, `member` marks the hexes
+# that already carry the patch cover and `filler` answers what cover fills a hole in the patch.
+func _smooth_cover_patches(tile_data: Array, rows: int, cols: int, applies: Callable,
+        counts: Callable, member: Callable, filler: Callable) -> void:
+    var mask: Array = []
+    var field: Array = []
+    for r in range(rows):
+        var marked_line: Array = []
+        var field_line: Array = []
+        for c in range(cols):
+            var tile = tile_data[r][c]
+            marked_line.append(member.call(tile))
+            field_line.append(counts.call(tile))
+        mask.append(marked_line)
+        field.append(field_line)
+
+    var changes: Array = []
+    for r in range(rows):
+        for c in range(cols):
+            var tile = tile_data[r][c]
+            if not applies.call(tile):
+                continue
+            var patch_neighbours := 0
+            var counted_neighbours := 0
+            for neighbour in HexUtils.get_neighbors_odd_r(r, c, rows, cols):
+                if not field[neighbour.row][neighbour.col]:
+                    continue
+                counted_neighbours += 1
+                if mask[neighbour.row][neighbour.col]:
+                    patch_neighbours += 1
+            if counted_neighbours == 0:
+                continue
+            if mask[r][c] and patch_neighbours == 0:
+                changes.append({"row": r, "col": c, "cover": "none"})
+            elif not mask[r][c] and patch_neighbours >= counted_neighbours - 1 and counted_neighbours >= 5:
+                if MapHelpers.has_geological_cover(tile):
+                    continue
+                var cover := str(filler.call(tile))
+                if cover != "":
+                    changes.append({"row": r, "col": c, "cover": cover})
+
+    for change in changes:
+        tile_data[change.row][change.col]["cover"] = change.cover
+
+# The woods are smoothed on the relief the climate covers: the plain and the hill of any belt. The
+# mountains, the wetlands and the water are left alone, but every land neighbour still counts
+# towards the hole a wood has to fill.
+func _is_grove_hex(tile: Dictionary) -> bool:
+    var family := GameData.terrain_family(str(tile.get("terrain", "")))
+    return family == "plain" or family == "hill"
+
+func _is_grove_neighbour(tile: Dictionary) -> bool:
+    return not _is_impassable_terrain_id(str(tile.get("terrain", "")))
+
+func _is_wooded_hex(tile: Dictionary) -> bool:
+    return float(_cover_of(tile).get("wood_yield", 0)) > 0.0
+
+# The reef field: a hex whose terrain grows a cover that reads as a patch (data/terrains/terrains.json
+# → the pool of "shallow_sea"). Its neighbours are counted inside the same field, so a beach or the
+# deep sea beyond it never breaks a reef apart.
+func _is_clumping_field_hex(tile: Dictionary) -> bool:
+    return _clumping_cover_of_terrain(str(tile.get("terrain", "")),
+            str(tile.get("temperature", ""))) != ""
+
+func _has_clumping_cover(tile: Dictionary) -> bool:
+    return bool(_cover_of(tile).get("clusters", false))
+
+func _cover_of(tile: Dictionary) -> Dictionary:
+    return GameData.covers.get(str(tile.get("cover", "none")), {})
+
+# The clumping cover a terrain fills the holes of its patches with: the heaviest cover of the
+# terrain's own pool that clusters and grows in the temperature belt of the hex.
+func _clumping_cover_of_terrain(terrain_id: String, temperature: String) -> String:
+    var chances: Dictionary = GameData.terrains.get(terrain_id, {}).get("cover_chance", {})
+    return _heaviest_cover_of_pool(chances, func(cover: Dictionary) -> bool:
+            if not bool(cover.get("clusters", false)):
+                return false
+            var belts: Array = cover.get("temperature_belts", [])
+            return belts.is_empty() or temperature in belts)
+
+# Rolls the cover of a hex. A terrain that carries a cover_chance of its own rolls on it — the
+# wetlands and the deserts keep their own vegetation, so a swamp of the tropics is a reed bed and a
+# swamp of the tundra is moss, whatever grows around them. Every other terrain is a variety of a
+# family, and the varieties of a family share the vegetation of their climate zone, so a whole
+# region gets one coherent character (a prairie region is mostly grass with groves, a tropical one
+# is mostly forest with clearings).
+# A cover of the pool that names "temperature_belts" (data/covers.json) grows only in the belts
+# listed there — the reef of the warm shallows, nothing else; it leaves the pool wherever the hex
+# stands in another belt, and a hex whose belt is unknown is no belt at all.
+func _roll_cover(tile: Dictionary) -> String:
+    var chances: Dictionary = GameData.terrains.get(str(tile.get("terrain", "")), {}) \
+            .get("cover_chance", {})
+    var zone_id := str(tile.get("climate", ""))
+    if chances.is_empty() and zone_id != "":
+        chances = GameData.get_climate_zone(zone_id).get("cover_chance", {})
+    if chances.is_empty():
+        return "none"
+    var temperature := str(tile.get("temperature", ""))
+    var total := 0.0
+    for cid in chances.keys():
+        if _cover_allowed_in_belt(str(cid), temperature):
+            total += float(chances[cid])
+    if total <= 0.0:
+        return "none"
+    var roll = randf() * total
+    var accum := 0.0
+    var rolled_cover := "none"
+    for cid in chances.keys():
+        if not _cover_allowed_in_belt(str(cid), temperature):
+            continue
+        accum += float(chances[cid])
+        if roll < accum:
+            rolled_cover = str(cid)
+            break
+
+    var terrain_family := GameData.terrain_family(str(tile.get("terrain", "")))
+    for cover_id in GameData.covers:
+        var cover: Dictionary = GameData.covers[cover_id]
+        var families: Array = cover.get("terrain_families", [])
+        var spawn_chance := float(cover.get("spawn_chance", 0.0))
+        if spawn_chance <= 0.0 or not families.has(terrain_family):
+            continue
+        if randf() * 100.0 < spawn_chance:
+            return str(cover_id)
+    return rolled_cover
+
+# Whether a cover may grow in the temperature belt of a hex. A cover without "temperature_belts"
+# is not restricted by the latitude; a cover that names them belongs to those belts only.
+func _cover_allowed_in_belt(cover_id: String, temperature: String) -> bool:
+    var belts: Array = GameData.covers.get(cover_id, {}).get("temperature_belts", [])
+    if belts.is_empty():
+        return true
+    return temperature in belts
+
+# Builds a multi-index of the free hexes by (terrain, cover).
+# The key: "terrain|cover" -> Array of dictionaries {"row", "col"}.
+# A hex is indexed TWICE when its terrain belongs to a family: under its own id
+# ("boreal_plain|taiga") and under the family ("plain|taiga"). A rule of the data may therefore
+# name either the exact terrain or the family — allowed_terrain ["plain"] finds all six varieties
+# of the plain, allowed_terrain ["swamp"] every swamp, allowed_terrain ["boreal_plain"] only the
+# boreal plain (see GameData.terrain_matches).
+# The hexes near the city (abs <= 1) are excluded, so as not to interfere with
+# the starting construction (as in the original _place_resources).
+func _build_hex_index(tile_data: Array, rows: int, cols: int, city_row: int, city_col: int) -> Dictionary:
+    var index: Dictionary = {}
+    for r in range(rows):
+        for c in range(cols):
+            if abs(r - city_row) <= 1 and abs(c - city_col) <= 1:
+                continue
+            var tile = tile_data[r][c]
+            if tile.get("resource", null) != null:
+                continue
+            var terrain_id = str(tile.get("terrain", ""))
+            var cover_id = tile.get("cover", "none")
+            for name in _index_names(terrain_id):
+                var key = "%s|%s" % [name, cover_id]
+                if not index.has(key):
+                    index[key] = []
+                index[key].append({"row": r, "col": c})
+    return index
+
+# The names a hex is indexed by: its terrain and, for a variety of a family, its family.
+func _index_names(terrain_id: String) -> Array:
+    var names: Array = [terrain_id]
+    var family := GameData.terrain_family(terrain_id)
+    if family != "" and family != terrain_id:
+        names.append(family)
+    return names
+
+# Whether the terrain of a hex satisfies the allowed_terrain list of a rule. The list may name the
+# exact terrain ("boreal_plain") or a family ("plain" — all six varieties of the plain, "swamp" —
+# every swamp).
+func _terrain_allowed(terrain_id: String, data: Dictionary) -> bool:
+    for reference in data.get("allowed_terrain", []):
+        if GameData.terrain_matches(terrain_id, str(reference)):
+            return true
+    return false
+
+# Whether the climate zone of a hex satisfies the allowed_climate_zones list of a rule.
+# An empty or missing list means "any zone".
+func _climate_allowed(tile: Dictionary, data: Dictionary) -> bool:
+    var zones: Array = data.get("allowed_climate_zones", [])
+    if zones.is_empty():
+        return true
+    return str(tile.get("climate", "")) in zones
+
+# Removes a hex from the multi-index after it has been occupied by a resource.
+func _remove_hex_from_index(hex_index: Dictionary, row: int, col: int, terrain_id: String, cover_id: String) -> void:
+    for name in _index_names(terrain_id):
+        _remove_hex_from_index_key(hex_index, row, col, "%s|%s" % [name, cover_id])
+
+func _remove_hex_from_index_key(hex_index: Dictionary, row: int, col: int, key: String) -> void:
+    if not hex_index.has(key):
+        return
+    var arr: Array = hex_index[key]
+    for i in range(arr.size()):
+        if arr[i].row == row and arr[i].col == col:
+            arr.remove_at(i)
+            break
+    if arr.is_empty():
+        hex_index.erase(key)
+
+# Parses the spawn_count field of a resource and returns the number of specimens to
+# spawn. The acceptable formats: a number >= 0 or an array [min, max] of numbers >= 0.
+#   * a number N          -> always N specimens (N=0 — do not spawn, N=1 — the old behaviour);
+#   * an array [min,max]  -> a random number from the range;
+#   * min/max swapped     -> we forcibly swap them;
+#   * incorrect data (not a number/not an array of 2 numbers, negative numbers)
+#     -> a warning and the default 1 (the old behaviour).
+# The parsing and validation are moved out to RangeUtils.roll_value — a single check
+# of "a number or [min, max]" for spawn_count and produces (see scripts/range_utils.gd).
+func _resolve_spawn_count(data: Dictionary) -> int:
+    var res_id: String = str(data.get("id", "?"))
+    var count := RangeUtils.roll_value(data.get("spawn_count", 1),
+            tr("spawn_count of resource '%s'") % res_id, 1)
+    # The world's resource density scales the number of specimens. A lone specimen cannot
+    # be halved, so a density below standard only touches resources that spawn more than
+    # once; a resource with spawn_count 0 stays unspawned at any density.
+    var density: float = CityData.world_resource_density
+    if count > 1 or (count == 1 and density > 1.0):
+        count = maxi(1, roundi(count * density))
+    return count
+
+func _place_resources(tile_data: Array, res_dict: Dictionary, _rows: int, _cols: int, _city_row: int, _city_col: int, hex_index: Dictionary):
+    if res_dict.size() == 0:
+        return
+    # We spawn ALL the resources of the category on the map, and not 1-3 random ones (as it
+    # was before). A resource is placed on a random suitable hex, if
+    # the following hold:
+    #   * tech_required (if there is one) — at the start everything is already considered available,
+    #     because this field gates only the construction of the improvement, and not the appearance;
+    #   * spawn_conditions — the activation chance and the geometric conditions
+    #     (for example, "by a river", "on a soda lake"); if it did not roll out / does not fit —
+    #     the resource is skipped;
+    #   * allowed_terrain / allowed_cover — the ordinary terrain and cover restrictions. A terrain
+    #     may be named exactly or by its family (see _build_hex_index).
+    # If the resource has tech_reveal (the underground minerals) — it appears
+    # on the map IMMEDIATELY, but is hidden from the player until the corresponding technology
+    # is learned.
+    # See docs.md, the section "tech_reveal: hidden resources".
+    #
+    # We shuffle the keys, so that the order of the placement is random — otherwise
+    # the first ones in the dictionary always take the best hexes, and the last ones risk
+    # not finding a suitable place.
+    var ids = res_dict.keys()
+    ids.shuffle()
+    for res_id in ids:
+        var data = res_dict[res_id]
+        if not MapHelpers.spawn_conditions_met(data):
+            continue
+        if bool(data.get("spawn_on_every_match", false)):
+            for hex in _matching_resource_hexes(tile_data, data, hex_index):
+                if tile_data[hex.row][hex.col].get("resource", null) == null:
+                    _place_resource_on_hex(tile_data, res_id, hex, hex_index)
+            continue
+        for i in range(_resolve_spawn_count(data)):
+            var possible := _matching_resource_hexes(tile_data, data, hex_index)
+            if possible.is_empty():
+                break
+            _place_resource_on_hex(tile_data, res_id, possible[randi() % possible.size()], hex_index)
+
+func _matching_resource_hexes(tile_data: Array, data: Dictionary, hex_index: Dictionary) -> Array:
+    var possible := []
+    for terrain_id in data.get("allowed_terrain", []):
+        for cover_id in data.get("allowed_cover", []):
+            var key := "%s|%s" % [terrain_id, cover_id]
+            for hex in hex_index.get(key, []):
+                if not _climate_allowed(tile_data[hex.row][hex.col], data):
+                    continue
+                if MapHelpers.is_hex_conditions_met(tile_data, hex.row, hex.col, data):
+                    possible.append(hex)
+    return possible
+
+func _place_resource_on_hex(tile_data: Array, res_id: String, hex: Dictionary, hex_index: Dictionary) -> void:
+    var tile: Dictionary = tile_data[hex.row][hex.col]
+    tile["resource"] = res_id
+    tile["quality"] = GameData.roll_quality()
+    _remove_hex_from_index(hex_index, hex.row, hex.col,
+            str(tile["terrain"]), str(tile.get("cover", "none")))
+
+# Places the wild plants ONLY inside the starting Influence Ring.
+# The number of specimens is taken from the spawn_count field of the resource (a number or
+# [min, max]) — as for all the other resources on the map (see
+# _resolve_spawn_count). The wild plants are gathered by the special action "Gather the wild plants"
+# (action_type "forage") and disappear from the map after being gathered.
+func place_wild_food(tile_data: Array, min_row: int, max_row: int, min_col: int, max_col: int, city_row: int, city_col: int):
+    var wild_id = "wild_food"
+    if not GameData.raw_resources.has(wild_id):
+        return
+    var wild_data = GameData.raw_resources[wild_id]
+    var count = _resolve_spawn_count(wild_data)
+    var possible = []
+    for r in range(min_row, max_row + 1):
+        for c in range(min_col, max_col + 1):
+            if abs(r - city_row) <= 2 and abs(c - city_col) <= 2:
+                continue
+            if tile_data[r][c]["resource"] != null:
+                continue
+            var terrain_id = tile_data[r][c]["terrain"]
+            var cover_id = tile_data[r][c].get("cover", "none")
+            if _terrain_allowed(terrain_id, wild_data) and cover_id in wild_data.get("allowed_cover", []):
+                if _climate_allowed(tile_data[r][c], wild_data):
+                    possible.append({"row": r, "col": c})
+    possible.shuffle()
+    for i in range(min(count, possible.size())):
+        var hex = possible[i]
+        tile_data[hex.row][hex.col]["resource"] = wild_id
+        tile_data[hex.row][hex.col]["quality"] = GameData.roll_quality()
+
+# Places the "one-off" (gatherable) resources over the whole map.
+# A resource is considered one-off if it has improved_by == null (it cannot be
+# developed by an improvement) and has produces set (there is something to gather). Such resources
+# (the metal nuggets, the wild plants) spawn at the start of the game over the whole map and
+# disappear after being gathered by a special action (see main_map.gd, the branch
+# action_type == "forage"). The number of specimens is from spawn_count, the output
+# of the product is from produces of the resource.
+# The wild plants (wild_food) do NOT take part in this function: they are placed by the separate
+# function place_wild_food strictly inside the starting Influence Ring.
+# The placement parameters are standard (see _place_resources): allowed_terrain /
+# allowed_cover and spawn_conditions.
+func place_one_time_resources(tile_data: Array, raw_res: Dictionary, rows: int, cols: int,
+        city_row: int, city_col: int, hex_index: Dictionary):
+    var one_time: Dictionary = {}
+    for rid in raw_res.keys():
+        var r = raw_res[rid]
+        if rid == "wild_food":
+            continue
+        if r.get("improved_by", null) != null:
+            continue
+        if not r.has("produces"):
+            continue
+        one_time[rid] = r
+    _place_resources(tile_data, one_time, rows, cols, city_row, city_col, hex_index)
+
+# Repairs an actual soft-lock of the starting area: the guaranteed food plant may land
+# on a terrain the random relief gave too few hexes (quinoa grows only in the mountains —
+# with a single mountain hex the player could never build a farm for it). `plant_terrain`
+# is the terrain of the hex the food-plant guarantee settled on (MapHelpers.ensure_food_plant),
+# whether that plant already stood there or was forcibly spawned. If the starting Ring holds
+# fewer than FOOD_PLANT_TERRAIN_HEXES hexes of that terrain, the deficit is made up by
+# converting free hexes next to the existing ones. A resource is never destroyed and the
+# city hex with its neighbours is never touched. With enough hexes present it does nothing.
+func ensure_free_terrain_hexes(tile_data: Array, plant_terrain: String,
+        min_row: int, max_row: int, min_col: int, max_col: int,
+        city_row: int = -1, city_col: int = -1) -> void:
+    if plant_terrain == "":
+        return
+    # The farms accept the whole family of the relief (GameData.terrain_matches), so the
+    # climate varieties of one terrain count together. A terrain without a family (a unique
+    # one) is counted by its exact id.
+    var key := GameData.terrain_family(plant_terrain)
+    if key == "":
+        key = plant_terrain
+
+    # Count every hex of the terrain inside the starting Ring (the plant's own hex included)
+    # and keep them as the seed of the cluster the addition grows onto.
+    var count := 0
+    var cluster: Array = []
+    for r in range(min_row, max_row + 1):
+        for c in range(min_col, max_col + 1):
+            if GameData.terrain_matches(str(tile_data[r][c].get("terrain", "")), key):
+                count += 1
+                cluster.append({"row": r, "col": c})
+    var deficit := FOOD_PLANT_TERRAIN_HEXES - count
+    if deficit <= 0:
+        return
+
+    # Grow the cluster outward: a multi-source BFS visits the Ring in order of distance from
+    # the existing hexes, so the nearest free hexes are converted first. The walk expands
+    # through every hex (even resource-bearing ones) to stay able to reach the whole Ring.
+    var visited := {}
+    for hex in cluster:
+        visited["%d_%d" % [hex.row, hex.col]] = true
+    var frontier := cluster.duplicate()
+    var converted := 0
+    var distance := 0
+    var max_distance = (max_row - min_row + 1) + (max_col - min_col + 1)
+    while frontier.size() > 0 and converted < deficit and distance < max_distance:
+        distance += 1
+        var next_frontier: Array = []
+        for hex in frontier:
+            var neighbors = HexUtils.get_neighbors_odd_r(hex.row, hex.col, max_row + 1, max_col + 1)
+            for n in neighbors:
+                if n.row < min_row or n.row > max_row or n.col < min_col or n.col > max_col:
+                    continue
+                var nk = "%d_%d" % [n.row, n.col]
+                if visited.has(nk):
+                    continue
+                visited[nk] = true
+                next_frontier.append(n)
+                var tile = tile_data[n.row][n.col]
+                if GameData.terrain_matches(str(tile.get("terrain", "")), key):
+                    continue
+                # The city hex and its neighbours are reserved for the starting construction;
+                # a hex with a resource is never overwritten.
+                if city_row >= 0 and abs(n.row - city_row) <= 1 and abs(n.col - city_col) <= 1:
+                    continue
+                if tile.get("resource", null) != null:
+                    continue
+                if converted >= deficit:
+                    continue
+                tile["terrain"] = _terrain_for_key(key, tile)
+                tile["cover"] = _roll_cover(tile)
+                tile["_is_marsh"] = false
+                tile["_is_sea"] = false
+                tile["_is_shallow_sea"] = false
+                tile["_is_beach"] = false
+                converted += 1
+        frontier = next_frontier
+
+# The terrain a family key becomes in this hex: the variety of the family in the climate
+# zone the hex stands in (the plain of the boreal zone is a boreal plain), or the key itself
+# when the zone does not map it (a unique terrain, an unknown zone).
+func _terrain_for_key(key: String, tile: Dictionary) -> String:
+    var zone_id := str(tile.get("climate", ""))
+    if zone_id != "":
+        var variant := GameData.zone_terrain(zone_id, key)
+        if variant != "":
+            return variant
+    return key

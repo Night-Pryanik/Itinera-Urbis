@@ -1,0 +1,99 @@
+{
+  // ROAD LEVELS — data/roads.json.
+  //
+  // A road consists of SEGMENTS (sections between neighbouring hexes, see
+  // scripts/road_manager.gd). Each segment belongs to exactly one level,
+  // and a level defines TWO independent numbers:
+  //
+  //   work_cost  — the base price of ONE segment of this level in labour, before
+  //                multipliers (terrain, distance from the city, technologies).
+  //                The total for a segment is computed by
+  //                MapHelpers.get_road_step_work_cost using the same formula as
+  //                before, only the base is taken from here rather than from the
+  //                work_cost of the special action build_road.
+  //
+  //   max_speed  — "maximum speed": how many units of resource per second this
+  //                road can carry. This is NOT the movement speed of units
+  //                (there are no units in the game), but the throughput of the
+  //                segment: a farm produces 15 units/sec, but along a path with
+  //                max_speed = 10 the city receives 10 units/sec, and the surplus
+  //                waits on the route and is delivered later (see
+  //                scripts/delivery_manager.gd). Nothing is lost.
+  //
+  // Entry fields:
+  //   id          — string identifier (snake_case), as for all entities;
+  //   level       — ordinal level number, 1-based. The levels go consecutively,
+  //                 without gaps: level 1 is the basic trail, and each further
+  //                 level costs one technology;
+  //   name        — name for the player (translated via data_loader,
+  //                 see DISPLAY_FIELDS);
+  //   description — a short explanation of what makes the level better than the
+  //                 previous one;
+  //   work_cost   — see above. The segment price is the same for all roads,
+  //                 including the one built together with an improvement: it goes
+  //                 through as a staged project and is paid for segment by
+  //                 segment, so it must not be zeroed for the sake of an
+  //                 improvement build;
+  //   max_speed   — see above, units/sec per single segment;
+  //   unlock_tech — id of the technology that unlocks the level. null/"" — the
+  //                 level is available from the start of the game. Checked by
+  //                 data_validator.gd (a reference to a non-existent technology
+  //                 is a data error);
+  //   color       — RGB 0..255, the colour of the segment on the map
+  //                 (map_renderer);
+  //   width       — thickness of the segment line on the map, in pixels.
+  //
+  // The level of a segment is stored in the ROAD NETWORK
+  // (road_manager.road_segments: "row,col|row,col" -> level), and not in a
+  // separate list, otherwise two structures about the same thing would have to be
+  // kept and synchronised manually.
+  //
+  // Each era's road technology unlocks its level here; the construction and
+  // upgrade systems use the same entries.
+  "roads": [
+    {
+      "id": "trail",
+      "level": 1,
+      "name": "Trail",
+      "description": "A simple footpath worn into the ground. Cheap, but it carries very little.",
+      "work_cost": 5,
+      "max_speed": 10,
+      "unlock_tech": null,
+      "color": [ 140, 110, 70 ],
+      "width": 5
+    },
+    {
+      "id": "cart_road",
+      "level": 2,
+      "name": "Cart Road",
+      "description": "A leveled road for carts. Three times the load of a trail.",
+      "work_cost": 10,
+      "max_speed": 30,
+      "unlock_tech": "wheel",
+      "color": [ 120, 90, 55 ],
+      "width": 8
+    },
+    {
+      "id": "paved_roads",
+      "level": 3,
+      "name": "Paved Roads",
+      "description": "Stone paving and a firm foundation keep loaded carts from sinking into mud.",
+      "work_cost": 20,
+      "max_speed": 50,
+      "unlock_tech": "road_paving",
+      "color": [ 126, 122, 115 ],
+      "width": 10
+    },
+    {
+      "id": "great_highways",
+      "level": 4,
+      "name": "Great Highways",
+      "description": "Wide, well-drained routes give heavy wagons room to pass.",
+      "work_cost": 35,
+      "max_speed": 80,
+      "unlock_tech": "road_administration",
+      "color": [ 156, 116, 69 ],
+      "width": 13
+    }
+  ]
+}

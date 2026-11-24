@@ -1,0 +1,145 @@
+{
+  // The fame of a good: three optional blocks a product may carry (see docs.md, "The fame of a
+  // good"). They share one counter and differ only in what they give away.
+  //
+  // The counter is the amount of this good the CITY HAS GIVEN UP through the trigger below, split
+  // by the quality of the units. It is cumulative and never spent, so a threshold passed long ago
+  // still counts the sales of the whole game, and a save made before the blocks existed simply
+  // carries no counter.
+  //
+  //   "trigger" — "sell" counts the units a town takes from the city, "produce" counts the units
+  //               the city makes. "sell" is the default and the honest one: fame needs witnesses,
+  //               and a city that ate all its own cheese is not known for cheese. Trade opens with
+  //               the second era, so an early good that should be famous sooner writes "produce".
+  //   "threshold" — the units the counter must reach. The blocks are absolute, not steps: 500
+  //               branded units also cleared the 200 of the reputation.
+  //   "min_quality" — only the units of this level and above feed the counter. Without the field
+  //               every level counts. The quality of the deposits is thus the currency of prestige.
+  //   "reward" — what the block gives:
+  //               { "type": "trade_price", "value": <share> }  the towns pay this much more;
+  //               { "type": "brand_product", "product": <id> } the recipe of a prestige good;
+  //               { "type": "specialization", "id": <id> }     the branch, and a pick for it;
+  //               { "type": "effect_stub", "id": <id> }       a place for an effect of the code.
+  //
+  // "name" and "description" belong to the challenge only: it is the one block the player accepts
+  // on purpose, so it is the one that needs a title of its own.
+  //
+  // Every recipe that works a prestige good — the recipe of the good itself and every recipe that
+  // takes it as an ingredient, the bar and the blade forged of it — is offered only after the rung
+  // carrying the "brand_product" reward is paid. The game reads that from the data, so such a
+  // recipe writes no gate: "unlock_challenge" on it would ask for the rung the named identifier
+  // belongs to, which is not necessarily the rung that grants the good. The field is for a work the
+  // fame of a good does not explain — a challenge of the era that opens something of its own.
+  //
+  // A "brand_of" record is a prestige good: an id of its own, never a grade of the old one. Its
+  // price is the base price of the good, and its "name" is the phrase the player reads, with the
+  // tag <city_name> where the name of the city belongs (see GameData.TAG_CITY_NAME). The data holds
+  // the format of the name and the catalog holds its translation; the code supplies the city alone,
+  // so a language keeps its own word order and the data holds no name of a city at all.
+  "resources": [
+    { "id": "wheat", "price": 2, "name": "Wheat", "type": "product", "category": "food", "icon": "wheat.png" },
+    { "id": "oats", "price": 2, "name": "Oats", "type": "product", "category": "food", "icon": "oats.png" },
+    { "id": "barley", "price": 2, "name": "Barley", "type": "product", "category": "food", "icon": "barley.png" },
+    { "id": "millet", "price": 2, "name": "Millet", "type": "product", "category": "food", "icon": "millet.png" },
+    { "id": "rye", "price": 2, "name": "Rye", "type": "product", "category": "food", "icon": "rye.png" },
+    { "id": "rice", "price": 4, "name": "Rice", "type": "product", "category": "food", "icon": "rice.png" },
+    { "id": "soybean", "price": 4, "name": "Soybean", "type": "product", "category": "food", "icon": "soybean.png" },
+    { "id": "quinoa", "price": 5, "name": "Quinoa", "type": "product", "category": "food", "icon": "quinoa.png" },
+    { "id": "canihua", "price": 4, "name": "Canihua", "type": "product", "category": "food", "icon": "canihua.png" },
+    { "id": "potato", "price": 3, "name": "Potato", "type": "product", "category": "food", "icon": "potato.png" },
+    { "id": "oca", "price": 4, "name": "Oca", "type": "product", "category": "food", "icon": "oca.png" },
+    { "id": "corn", "price": 3, "name": "Corn", "type": "product", "category": "food", "icon": "corn.png" },
+    { "id": "yam", "price": 4, "name": "Yam", "type": "product", "category": "food", "icon": "yam.png" },
+    { "id": "cassava", "price": 3, "name": "Cassava", "type": "product", "category": "food", "icon": "cassava.png" },
+    { "id": "sorghum", "price": 3, "name": "Sorghum", "type": "product", "category": "food", "icon": "sorghum.png" },
+    {
+      "id": "amaranth",
+      "price": 3,
+      "name": "Amaranth",
+      "type": "product",
+      "category": "food",
+      "icon": "amaranth.png"
+    },
+    { "id": "teff", "price": 3, "name": "Teff", "type": "product", "category": "food", "icon": "teff.png" },
+    { "id": "taro", "price": 4, "name": "Taro", "type": "product", "category": "food", "icon": "taro.png" },
+    { "id": "maca", "price": 5, "name": "Maca", "type": "product", "category": "food", "icon": "maca.png" },
+    {
+      "id": "buckwheat",
+      "price": 3,
+      "name": "Buckwheat",
+      "type": "product",
+      "category": "food",
+      "icon": "buckwheat.png"
+    },
+    { "id": "beans", "price": 3, "name": "Beans", "type": "product", "category": "food", "icon": "beans.png" },
+    { "id": "cowpea", "price": 3, "name": "Cowpea", "type": "product", "category": "food", "icon": "cowpea.png" },
+    { "id": "peas", "price": 3, "name": "Peas", "type": "product", "category": "food", "icon": "peas.png" },
+    { "id": "lentils", "price": 4, "name": "Lentils", "type": "product", "category": "food", "icon": "lentils.png" },
+    {
+      "id": "chickpeas",
+      "price": 4,
+      "name": "Chickpeas",
+      "type": "product",
+      "category": "food",
+      "icon": "chickpeas.png"
+    },
+    {
+      "id": "cheese",
+      "price": 14,
+      "name": "Cheese",
+      "type": "product",
+      "category": "food",
+      "icon": "cheese.png",
+      "reputation": {
+        "threshold": 200,
+        "trigger": "sell",
+        "reward": { "type": "trade_price", "value": 0.10 }
+      },
+      "brand": {
+        "threshold": 500,
+        "trigger": "sell",
+        "min_quality": "exceptional",
+        "reward": { "type": "brand_product", "product": "aged_cheese" }
+      },
+      "challenge": {
+        "id": "cheese_challenge",
+        "threshold": 1000,
+        "trigger": "sell",
+        "min_quality": "exceptional",
+        "name": "Gouda, Cheddar and Camembert",
+        "description": "A thousand units of cheese of exceptional quality sold to the towns — and cheese begins to be asked by the name of the town.",
+        "reward": { "type": "specialization", "id": "cheese_specialization" }
+      }
+    },
+    { "id": "bread", "price": 6, "name": "Bread", "type": "product", "category": "food", "icon": "bread.png" },
+    {
+      // The brand good of the cheese line — see the comment at cashmere in
+      // data/products/materials.json.
+      "id": "aged_cheese",
+      "price": 42,
+      "name": "Cheese of <city_name>",
+      "type": "product",
+      "category": "food",
+      "brand_of": "cheese",
+      "icon": "cheese.png"
+    },
+    {
+      "id": "foraged_food",
+      "price": 1,
+      "name": "Foraged Food",
+      "type": "product",
+      "category": "food",
+      "icon": "foraged_food.png"
+    },
+    { "id": "fish", "price": 8, "name": "Fish", "type": "product", "category": "food", "icon": "fish.png" },
+    {
+      "id": "tofu",
+      "price": 12,
+      "name": "Tofu",
+      "type": "product",
+      "category": "food",
+      "unlock_tech": "cheese_making",
+      "icon": "tofu.png"
+    }
+  ]
+}

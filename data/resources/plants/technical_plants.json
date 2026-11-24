@@ -1,0 +1,964 @@
+{
+  "resources": [
+    {
+      "id": "flax_field", "price": 4,
+      "name": "Flax",
+      "type": "raw",
+      "category": "technical_plants",
+      "group": "technical_plants",
+      "subgroup": "textile_plants",
+      "allowed_terrain": [ "plain" ],
+      "allowed_cover": [
+        "none"
+      ],
+      "allowed_climate_zones": [ "boreal_dry", "boreal_wet", "steppe", "prairie" ],
+      "improved_by": "plantation",
+      "tech_required": "plantations",
+      "produces": { "flax": 10, "feed": 40 },
+      "icon": "flax.png",
+      "color": [ 200, 200, 255 ]
+    },
+    {
+      "id": "cotton_field", "price": 6,
+      "name": "Cotton",
+      "type": "raw",
+      "category": "technical_plants",
+      "group": "technical_plants",
+      "subgroup": "textile_plants",
+      "allowed_terrain": [ "plain" ],
+      "allowed_cover": [
+        "none"
+      ],
+      "allowed_climate_zones": ["savanna_dry", "savanna_wet", "tropical_dry", "tropical_wet"],
+      "improved_by": "plantation",
+      "tech_required": "plantations",
+      "produces": { "cotton": 10, "feed": 40 },
+      "icon": "cotton.png",
+      "color": [ 255, 255, 255 ]
+    },
+    {
+      "id": "hemp_field", "price": 5,
+      "name": "Hemp",
+      "type": "raw",
+      "category": "technical_plants",
+      "group": "technical_plants",
+      "subgroup": "textile_plants",
+      "allowed_terrain": [ "plain" ],
+      "allowed_cover": [
+        "none"
+      ],
+      "allowed_climate_zones": [ "boreal_dry", "boreal_wet", "steppe", "prairie" ],
+      "improved_by": "plantation",
+      "tech_required": "plantations",
+      "produces": { "hemp": 10, "feed": 40 },
+      "icon": "hemp.png",
+      "color": [ 100, 255, 100 ]
+    },
+    {
+      "id": "jute_field", "price": 5,
+      "name": "Jute",
+      "type": "raw",
+      "category": "technical_plants",
+      "group": "technical_plants",
+      "subgroup": "textile_plants",
+      "allowed_terrain": [ "plain" ],
+      "allowed_cover": [
+        "none"
+      ],
+      "allowed_climate_zones": ["savanna_dry", "savanna_wet", "tropical_dry", "tropical_wet"],
+      "improved_by": "plantation",
+      "tech_required": "plantations",
+      "produces": { "jute": 10, "feed": 40 },
+      "icon": "jute.png",
+      "color": [ 200, 150, 100 ],
+      "spawn_conditions": [ [ { "type": "near_river", "chance": 100 } ] ]
+    },
+    {
+      "id": "ramie_field", "price": 5,
+      "name": "Ramie",
+      "type": "raw",
+      "category": "technical_plants",
+      "group": "technical_plants",
+      "subgroup": "textile_plants",
+      "allowed_terrain": [ "plain" ],
+      "allowed_cover": [
+        "none"
+      ],
+      "allowed_climate_zones": ["savanna_dry", "savanna_wet", "tropical_dry", "tropical_wet"],
+      "improved_by": "plantation",
+      "tech_required": "plantations",
+      "produces": { "ramie": 10, "feed": 40 },
+      "icon": "ramie.png",
+      "color": [ 150, 200, 150 ]
+    },
+    {
+      "id": "kenaf_field", "price": 5,
+      "name": "Kenaf",
+      "type": "raw",
+      "category": "technical_plants",
+      "group": "technical_plants",
+      "subgroup": "textile_plants",
+      "allowed_terrain": [ "plain" ],
+      "allowed_cover": [
+        "none"
+      ],
+      "allowed_climate_zones": ["savanna_dry", "savanna_wet", "tropical_dry", "tropical_wet"],
+      "improved_by": "plantation",
+      "tech_required": "plantations",
+      "produces": { "kenaf": 10, "feed": 40 },
+      "icon": "kenaf.png",
+      "color": [ 150, 200, 150 ]
+    },
+    {
+      "id": "yucca_field", "price": 5,
+      "name": "Yucca",
+      "type": "raw",
+      "category": "technical_plants",
+      "group": "technical_plants",
+      "subgroup": "textile_plants",
+      "allowed_terrain": [ "plain", "rocky_desert", "sandy_desert", "hill" ],
+      "allowed_cover": [
+        "none"
+      ],
+      "allowed_climate_zones": ["savanna_dry", "savanna_wet", "tropical_dry", "tropical_wet"],
+      "improved_by": "plantation",
+      "tech_required": "plantations",
+      "produces": { "yucca": 10, "yucca_fruit": 10, "feed": 40 },
+      "icon": "yucca.png",
+      "color": [ 150, 200, 150 ]
+    },
+    {
+      // So as not to multiply needless entities, various agave species are meant
+      // here under the single "Agave"
+      // (American agave, sisal agave, tequila agave, etc.), which in the game
+      // are combined into one resource.
+      "id": "agave_field", "price": 4,
+      "name": "Agave",
+      "type": "raw",
+      "category": "technical_plants",
+      "group": "technical_plants",
+      "subgroup": [ "textile_plants", "fruit_plants" ],
+      "allowed_terrain": [ "plain", "rocky_desert" ],
+      "allowed_cover": [
+        "none", "oasis"
+      ],
+      "allowed_climate_zones": ["savanna_dry", "savanna_wet", "tropical_dry", "tropical_wet"],
+      "improved_by": "plantation",
+      "tech_required": "plantations",
+      "produces": { "agave": 10, "sisal": 10, "feed": 40 },
+      "icon": "agave.png",
+      "color": [ 200, 255, 200 ]
+    },
+    {
+      "id": "mulberry_tree", "price": 5,
+      "name": "Mulberry Tree",
+      "type": "raw",
+      "category": "technical_plants",
+      "group": "technical_plants",
+      "subgroup": [ "textile_plants", "fruit_plants" ],
+      "allowed_terrain": [ "plain" ],
+      "allowed_cover": [
+        "none"
+      ],
+      "allowed_climate_zones": [ "steppe", "prairie", "savanna_dry", "savanna_wet" ],
+      "improved_by": "plantation",
+      "tech_required": "sericulture",
+      // The plantation is the harvest point of the hex: the mulberry gives its
+      // timber as well as the leaves and the bark (docs.md, "Improvement types
+      // are a convention").
+      "produces": { "mulberries": 10, "mulberry_bark": 10, "silk_cocoon": 10, "wood": 10 },
+      "icon": "mulberry.png",
+      "color": [ 255, 100, 100 ]
+    },
+    {
+      "id": "sesame_field", "price": 12,
+      "name": "Sesame",
+      "type": "raw",
+      "category": "technical_plants",
+      "group": "technical_plants",
+      "subgroup": [ "oil_plants", "spices" ],
+      "allowed_terrain": [ "plain" ],
+      "allowed_cover": [
+        "none"
+      ],
+      "allowed_climate_zones": ["savanna_dry", "savanna_wet", "tropical_dry", "tropical_wet"],
+      "improved_by": "plantation",
+      "tech_required": "plantations",
+      "produces": { "sesame": 10, "feed": 40 },
+      "icon": "sesame.png",
+      "color": [ 255, 200, 150 ]
+    },
+    {
+      "id": "papyrus_field", "price": 5,
+      "name": "Papyrus",
+      "type": "raw",
+      "category": "technical_plants",
+      "group": "technical_plants",
+      "subgroup": "technical_plants",
+      // The papyrus is a plant of the warm wetlands: it grows in the reed bed of the warm swamp
+      // and in the marsh beside it, never in the bogs of the cold belts. The terrain is named by
+      // its family ("swamp" is every variety of it) and the climate zones do the rest.
+      "allowed_terrain": [ "marsh", "swamp" ],
+      "allowed_cover": [
+        "none", "reeds"
+      ],
+      "allowed_climate_zones": ["savanna_dry", "savanna_wet", "tropical_dry", "tropical_wet"],
+      "improved_by": "plantation",
+      "tech_required": "plantations",
+      "produces": { "papyrus_plant": 10, "feed": 40 },
+      "icon": "papyrus_plant.png",
+      "color": [ 200, 255, 200 ]
+    },
+    {
+      "id": "indigofera_field", "price": 6,
+      "name": "Indigofera",
+      "type": "raw",
+      "category": "technical_plants",
+      "group": "technical_plants",
+      "subgroup": "dye_plants",
+      "tech_required": "dyeing",
+      "allowed_terrain": [ "plain" ],
+      "allowed_cover": [
+        "none"
+      ],
+      "allowed_climate_zones": ["savanna_dry", "savanna_wet", "tropical_dry", "tropical_wet"],
+      "improved_by": "plantation",
+      "produces": { "indigofera_leaves": 10 },
+      "icon": "indigofera.png",
+      "color": [ 200, 255, 200 ]
+    },
+    {
+      "id": "lawsonia_field", "price": 6,
+      "name": "Lawsonia",
+      "type": "raw",
+      "category": "technical_plants",
+      "group": "technical_plants",
+      "subgroup": "dye_plants",
+      "tech_required": "dyeing",
+      "allowed_terrain": [ "plain" ],
+      "allowed_cover": [
+        "none"
+      ],
+      "allowed_climate_zones": ["savanna_dry", "savanna_wet", "tropical_dry", "tropical_wet"],
+      "improved_by": "plantation",
+      "produces": { "lawsonia_leaves": 10 },
+      "icon": "lawsonia.png",
+      "color": [ 200, 255, 200 ]
+    },
+    {
+      "id": "marena_field", "price": 8,
+      "name": "Madder",
+      "type": "raw",
+      "category": "technical_plants",
+      "group": "technical_plants",
+      "subgroup": "dye_plants",
+      "tech_required": "dyeing",
+      "allowed_terrain": [ "plain" ],
+      "allowed_cover": [
+        "none"
+      ],
+      "allowed_climate_zones": [ "boreal_dry", "boreal_wet", "steppe", "prairie" ],
+      "improved_by": "plantation",
+      "produces": { "marena_roots": 10 },
+      "icon": "marena.png",
+      "color": [ 200, 255, 200 ]
+    },
+    {
+      "id": "woad_field", "price": 6,
+      "name": "Woad",
+      "type": "raw",
+      "category": "technical_plants",
+      "group": "technical_plants",
+      "subgroup": "dye_plants",
+      "tech_required": "dyeing",
+      "allowed_terrain": [ "plain" ],
+      "allowed_cover": [
+        "none"
+      ],
+      "allowed_climate_zones": [ "boreal_dry", "boreal_wet", "steppe", "prairie" ],
+      "improved_by": "plantation",
+      "produces": { "woad_leaves": 10 },
+      "icon": "woad.png",
+      "color": [ 200, 255, 200 ]
+    },
+    {
+      "id": "campeche_tree", "price": 10,
+      "name": "Campeche Tree",
+      "type": "raw",
+      "category": "technical_plants",
+      "group": "technical_plants",
+      "subgroup": "dye_plants",
+      "tech_required": "dyeing",
+      "allowed_terrain": [ "plain" ],
+      "allowed_cover": [
+        "none"
+      ],
+      "allowed_climate_zones": ["tropical_dry", "tropical_wet"],
+      "improved_by": "lumberjack_hut",
+      // The camp is the harvest point of the hex: the campeche tree gives its
+      // timber as well as its dye wood (docs.md, "Improvement types are a
+      // convention").
+      "produces": { "campeche_wood": 10, "wood": 10 },
+      "icon": "campeche_tree.png",
+      "color": [ 200, 255, 200 ]
+    },
+    {
+      "id": "safflower_field", "price": 7,
+      "name": "Safflower",
+      "type": "raw",
+      "category": "technical_plants",
+      "group": "technical_plants",
+      "subgroup": "dye_plants",
+      "tech_required": "dyeing",
+      "allowed_terrain": [ "plain" ],
+      "allowed_cover": [
+        "none"
+      ],
+      "allowed_climate_zones": [ "steppe", "prairie", "savanna_dry", "savanna_wet" ],
+      "improved_by": "plantation",
+      "produces": { "safflower_leaves": 10 },
+      "icon": "safflower.png",
+      "color": [ 200, 255, 200 ]
+    },
+    {
+      "id": "opuntia_field", "price": 6,
+      "name": "Prickly Pear",
+      "type": "raw",
+      "category": "technical_plants",
+      "group": "technical_plants",
+      "subgroup": [ "dye_plants", "fruit_plants" ],
+      "allowed_terrain": [ "plain", "rocky_desert" ],
+      "allowed_cover": [
+        "none", "oasis"
+      ],
+      "allowed_climate_zones": ["savanna_dry", "savanna_wet", "tropical_dry", "tropical_wet"],
+      "improved_by": "plantation",
+      "tech_required": "plantations",
+      "produces": { "cactus_fruit": 10, "cochineal": 10 },
+      "icon": "opuntia.png",
+      "color": [ 200, 255, 200 ]
+    },
+    {
+      // The shrub of the dry slopes gives two different goods: the dried drupes
+      // are a sour spice, the leaf is the tannin and the dyer's yellow. The
+      // plantation is the harvest point of the hex and takes both without
+      // grubbing the bush (docs.md, "Improvement types are a convention").
+      "id": "sumac_field", "price": 6,
+      "name": "Sumac",
+      "type": "raw",
+      "category": "technical_plants",
+      "group": "technical_plants",
+      "subgroup": "spices",
+      "allowed_terrain": [ "plain", "hill" ],
+      "allowed_cover": [
+        "none"
+      ],
+      "allowed_climate_zones": [ "steppe", "prairie", "savanna_dry" ],
+      "breeding": [ [ { "terrain": "sandy_desert" }, { "cover": "oasis" } ], [ { "terrain": "rocky_desert" }, { "cover": "oasis" } ] ],
+      "improved_by": "plantation",
+      "tech_required": "plantations",
+      "produces": { "sumac": 10, "sumac_leaves": 10 },
+      "icon": "sumac.png",
+      "color": [ 200, 80, 60 ]
+    },
+    {
+      "id": "oak_tree", "price": 10,
+      "name": "Oak Tree",
+      "type": "raw",
+      "category": "technical_plants",
+      "group": "technical_plants",
+      "subgroup": "dye_plants",
+      "tech_required": "dyeing",
+      "allowed_terrain": [ "plain", "hill", "mountain" ],
+      "allowed_cover": [
+        "temperate_rainforest", "temperate_dry_forest",
+        "temperate_rainforest_sparse", "temperate_dry_forest_sparse"
+      ],
+      "improved_by": "lumberjack_hut",
+      // The camp is the harvest point of the hex: the oak gives its timber, its
+      // bark and its galls without felling, and both the bark and the galls are
+      // tannin (docs.md, "Improvement types are a convention").
+      "produces": { "galls": 10, "oak_bark": 10, "wood": 10, "oak_wood": 10 },
+      "icon": "oak_tree.png",
+      "color": [ 200, 255, 200 ]
+    },
+    {
+      // The tannin sits in the heartwood, not in the bark: the chips themselves
+      // are the tanning material, so the special timber joins the tannins. The
+      // wood has no cooperage tradition and is not a barrel wood. The camp is
+      // the harvest point of the hex (docs.md, "Improvement types are a
+      // convention").
+      "id": "quebracho_tree", "price": 10,
+      "name": "Quebracho Tree",
+      "type": "raw",
+      "category": "technical_plants",
+      "group": "technical_plants",
+      "subgroup": "dye_plants",
+      "tech_required": "dyeing",
+      "allowed_terrain": [ "plain", "hill" ],
+      "allowed_cover": [
+        "tropical_dry_forest", "tropical_dry_forest_sparse",
+        "temperate_dry_forest_sparse"
+      ],
+      "allowed_climate_zones": [ "savanna_dry", "tropical_dry" ],
+      "improved_by": "lumberjack_hut",
+      "produces": { "wood": 10, "quebracho_wood": 10 },
+      "icon": "quebracho_tree.png",
+      "color": [ 150, 70, 50 ]
+    },
+    {
+      // The camp is the harvest point of the hex: the beech gives its timber as
+      // well as its nuts, no felling implied (docs.md, "Improvement types are a
+      // convention").
+      "id": "beech_tree", "price": 7,
+      "name": "Beech Tree",
+      "type": "raw",
+      "category": "technical_plants",
+      "group": "technical_plants",
+      "subgroup": "oil_plants",
+      "tech_required": "wood_processing",
+      "allowed_terrain": [ "plain", "hill", "mountain" ],
+      "allowed_cover": [
+        "temperate_rainforest", "temperate_dry_forest",
+        "temperate_rainforest_sparse", "temperate_dry_forest_sparse"
+      ],
+      "improved_by": "lumberjack_hut",
+      "produces": { "beech_nuts": 10, "wood": 10, "beech_wood": 10 },
+      "icon": "beech_tree.png",
+      "color": [ 200, 235, 170 ]
+    },
+    {
+      // The camp is the harvest point of the hex: the pine gives its timber as
+      // well as its resin, no felling implied (docs.md, "Improvement types are
+      // a convention").
+      "id": "pine_tree", "price": 4,
+      "name": "Pine Tree",
+      "type": "raw",
+      "category": "technical_plants",
+      "group": "technical_plants",
+      "subgroup": "aromatic_plants",
+      "tech_required": "wood_processing",
+      "allowed_terrain": [ "plain", "hill", "mountain" ],
+      "allowed_cover": [
+        "taiga", "taiga_sparse",
+        "temperate_rainforest_sparse", "temperate_dry_forest_sparse"
+      ],
+      "allowed_climate_zones": [ "boreal_dry", "boreal_wet", "steppe", "prairie" ],
+      "improved_by": "lumberjack_hut",
+      "produces": { "resin": 10, "wood": 10, "pine_wood": 10 },
+      "icon": "pine_tree.png",
+      "color": [ 120, 200, 160 ]
+    },
+    {
+      // The maple is the cold belt's answer to sugar cane, which needs wet
+      // savanna or jungle: its sap boils to the same sugar, so a northern town
+      // is not cut off from sweetening. The camp gathers the sap without
+      // felling (docs.md, "Improvement types are a convention").
+      "id": "maple_tree", "price": 5,
+      "name": "Maple Tree",
+      "type": "raw",
+      "category": "technical_plants",
+      "group": "technical_plants",
+      "subgroup": "technical_plants",
+      "tech_required": "wood_processing",
+      "allowed_terrain": [ "plain", "hill", "mountain" ],
+      "allowed_cover": [
+        "temperate_rainforest", "temperate_rainforest_sparse",
+        "temperate_dry_forest_sparse", "taiga_sparse"
+      ],
+      "allowed_climate_zones": [ "boreal_dry", "boreal_wet", "steppe", "prairie" ],
+      "improved_by": "lumberjack_hut",
+      "produces": { "maple_sap": 10, "wood": 10, "maple_wood": 10 },
+      "icon": "maple_tree.png",
+      "color": [ 210, 130, 90 ]
+    },
+    {
+      // The camp is the harvest point of the hex: the chestnut gives its timber
+      // as well as its bark, no felling implied (docs.md, "Improvement types
+      // are a convention").
+      "id": "chestnut_tree", "price": 6,
+      "name": "Chestnut Tree",
+      "type": "raw",
+      "category": "technical_plants",
+      "group": "technical_plants",
+      "subgroup": "dye_plants",
+      "tech_required": "wood_processing",
+      "allowed_terrain": [ "plain", "hill", "mountain" ],
+      "allowed_cover": [
+        "temperate_dry_forest", "temperate_dry_forest_sparse"
+      ],
+      "improved_by": "lumberjack_hut",
+      "produces": { "chestnut_bark": 10, "wood": 10, "chestnut_wood": 10 },
+      "icon": "chestnut_tree.png",
+      "color": [ 220, 200, 150 ]
+    },
+    {
+      // The orchard nut of Persia and Central Asia: it stands on a hill slope
+      // and in an oasis alike. The camp takes the nuts without felling, and the
+      // nut is eaten and is a tannin source at once; the timber is a specialty
+      // stave wood a cooper works where oak does not grow (docs.md,
+      // "Improvement types are a convention").
+      "id": "walnut_tree", "price": 8,
+      "name": "Walnut Tree",
+      "type": "raw",
+      "category": "technical_plants",
+      "group": "technical_plants",
+      "subgroup": "nuts",
+      "tech_required": "wood_processing",
+      "allowed_terrain": [ "plain", "hill", "mountain" ],
+      "allowed_cover": [
+        "temperate_dry_forest", "temperate_dry_forest_sparse"
+      ],
+      "breeding": [ [ { "terrain": "sandy_desert" }, { "cover": "oasis" } ], [ { "terrain": "rocky_desert" }, { "cover": "oasis" } ] ],
+      "improved_by": "lumberjack_hut",
+      "produces": { "walnuts": 10, "wood": 10, "walnut_wood": 10 },
+      "icon": "walnut_tree.png",
+      "color": [ 175, 200, 120 ]
+    },
+    {
+      // Swietenia of the tropical forests: yields common timber alongside
+      // mahogany for fine furniture.
+      "id": "swietenia_tree", "price": 11,
+      "name": "Swietenia",
+      "type": "raw",
+      "category": "technical_plants",
+      "group": "technical_plants",
+      "subgroup": "technical_plants",
+      "tech_required": "wood_processing",
+      "allowed_terrain": [ "plain", "hill" ],
+      "allowed_cover": [
+        "tropical_rainforest", "tropical_rainforest_sparse",
+        "tropical_dry_forest", "tropical_dry_forest_sparse"
+      ],
+      "allowed_climate_zones": [ "tropical_dry", "tropical_wet" ],
+      "improved_by": "lumberjack_hut",
+      "produces": { "wood": 10, "mahogany": 10 },
+      "icon": "swietenia_tree.png",
+      "color": [ 165, 75, 55 ]
+    },
+    {
+      // Dalbergia of the tropical and humid subtropical forests: yields common
+      // timber alongside rosewood for fine furniture.
+      "id": "dalbergia_tree", "price": 12,
+      "name": "Dalbergia",
+      "type": "raw",
+      "category": "technical_plants",
+      "group": "technical_plants",
+      "subgroup": "technical_plants",
+      "tech_required": "wood_processing",
+      "allowed_terrain": [ "plain", "hill" ],
+      "allowed_cover": [
+        "tropical_rainforest", "tropical_rainforest_sparse",
+        "tropical_dry_forest", "tropical_dry_forest_sparse",
+        "temperate_rainforest", "temperate_rainforest_sparse"
+      ],
+      "allowed_climate_zones": [ "savanna_wet", "tropical_dry", "tropical_wet" ],
+      "improved_by": "lumberjack_hut",
+      "produces": { "wood": 10, "rosewood": 10 },
+      "icon": "dalbergia_tree.png",
+      "color": [ 120, 55, 75 ]
+    },
+    {
+      // Ebony tree of the tropical forests: yields common timber alongside
+      // dense black ebony for fine furniture.
+      "id": "ebony_tree", "price": 13,
+      "name": "Ebony Tree",
+      "type": "raw",
+      "category": "technical_plants",
+      "group": "technical_plants",
+      "subgroup": "technical_plants",
+      "tech_required": "wood_processing",
+      "allowed_terrain": [ "plain", "hill" ],
+      "allowed_cover": [
+        "tropical_rainforest", "tropical_rainforest_sparse",
+        "tropical_dry_forest", "tropical_dry_forest_sparse"
+      ],
+      "allowed_climate_zones": [ "tropical_dry", "tropical_wet" ],
+      "improved_by": "lumberjack_hut",
+      "produces": { "wood": 10, "ebony": 10 },
+      "icon": "ebony_tree.png",
+      "color": [ 65, 55, 55 ]
+    },
+    {
+      "id": "velvetleaf_field", "price": 6,
+      "name": "Velvetleaf",
+      "type": "raw",
+      "category": "technical_plants",
+      "group": "technical_plants",
+      "subgroup": "textile_plants",
+      "allowed_terrain": [ "plain" ],
+      "allowed_cover": [
+        "none"
+      ],
+      "allowed_climate_zones": [ "savanna_dry", "savanna_wet", "tropical_dry", "tropical_wet" ],
+      "improved_by": "plantation",
+      "tech_required": "plantations",
+      "produces": { "velvetleaf": 10, "feed": 40 },
+      "icon": "velvetleaf_field.png",
+      "color": [ 200, 255, 200 ]
+    },
+    {
+      "id": "sunflower_field", "price": 5,
+      "name": "Sunflower",
+      "type": "raw",
+      "category": "technical_plants",
+      "group": "technical_plants",
+      "subgroup": "oil_seeds",
+      "allowed_terrain": [ "plain" ],
+      "allowed_cover": [
+        "none"
+      ],
+      "allowed_climate_zones": [ "steppe", "prairie", "savanna_dry" ],
+      "improved_by": "plantation",
+      "tech_required": "plantations",
+      "produces": { "sunflower": 10, "feed": 40 },
+      "icon": "sunflower.png",
+      "color": [ 255, 200, 50 ]
+    },
+    {
+      "id": "rapeseed_field", "price": 5,
+      "name": "Rapeseed",
+      "type": "raw",
+      "category": "technical_plants",
+      "group": "technical_plants",
+      "subgroup": "oil_seeds",
+      "allowed_terrain": [ "plain" ],
+      "allowed_cover": [
+        "none"
+      ],
+      "allowed_climate_zones": [ "boreal_dry", "boreal_wet", "steppe", "prairie" ],
+      "improved_by": "plantation",
+      "tech_required": "plantations",
+      "produces": { "rapeseed": 10, "feed": 40 },
+      "icon": "rapeseed.png",
+      "color": [ 255, 255, 100 ]
+    },
+    {
+      "id": "saffron_crocus", "price": 15,
+      "name": "Saffron",
+      "type": "raw",
+      "category": "technical_plants",
+      "group": "technical_plants",
+      "subgroup": "spice_plants",
+      "allowed_terrain": [ "plain" ],
+      "allowed_cover": [
+        "none"
+      ],
+      "allowed_climate_zones": [ "steppe", "prairie", "savanna_dry" ],
+      "improved_by": "plantation",
+      "tech_required": "plantations",
+      "produces": { "saffron": 5 },
+      "icon": "saffron.png",
+      "color": [ 255, 100, 50 ]
+    },
+    {
+      "id": "cinnamon_tree", "price": 12,
+      "name": "Cinnamon",
+      "type": "raw",
+      "category": "technical_plants",
+      "group": "technical_plants",
+      "subgroup": "spice_plants",
+      "allowed_terrain": [ "plain", "hill" ],
+      "allowed_cover": [
+        "tropical_rainforest", "tropical_rainforest_sparse"
+      ],
+      "allowed_climate_zones": [ "tropical_dry", "tropical_wet" ],
+      "improved_by": "plantation",
+      "tech_required": "plantations",
+      "produces": { "cinnamon": 10 },
+      "icon": "cinnamon.png",
+      "color": [ 160, 100, 60 ]
+    },
+    {
+      "id": "nutmeg_tree", "price": 14,
+      "name": "Nutmeg",
+      "type": "raw",
+      "category": "technical_plants",
+      "group": "technical_plants",
+      "subgroup": "spice_plants",
+      "allowed_terrain": [ "plain", "hill" ],
+      "allowed_cover": [
+        "tropical_rainforest", "tropical_rainforest_sparse"
+      ],
+      "allowed_climate_zones": [ "tropical_wet" ],
+      "improved_by": "plantation",
+      "tech_required": "plantations",
+      "produces": { "nutmeg": 8 },
+      "icon": "nutmeg.png",
+      "color": [ 140, 90, 50 ]
+    },
+    {
+      "id": "vanilla_orchid", "price": 16,
+      "name": "Vanilla",
+      "type": "raw",
+      "category": "technical_plants",
+      "group": "technical_plants",
+      "subgroup": "spice_plants",
+      "allowed_terrain": [ "plain", "hill" ],
+      "allowed_cover": [
+        "tropical_rainforest", "tropical_rainforest_sparse"
+      ],
+      "allowed_climate_zones": [ "tropical_wet" ],
+      "improved_by": "plantation",
+      "tech_required": "plantations",
+      "produces": { "vanilla": 6 },
+      "icon": "vanilla.png",
+      "color": [ 220, 180, 140 ]
+    },
+    {
+      "id": "hops_field", "price": 6,
+      "name": "Hops",
+      "type": "raw",
+      "category": "technical_plants",
+      "group": "technical_plants",
+      "subgroup": "brewing_plants",
+      "allowed_terrain": [ "plain" ],
+      "allowed_cover": [
+        "none"
+      ],
+      "allowed_climate_zones": [ "boreal_dry", "boreal_wet", "steppe", "prairie" ],
+      "improved_by": "plantation",
+      "tech_required": "plantations",
+      "produces": { "hops": 10 },
+      "icon": "hops.png",
+      "color": [ 120, 180, 60 ]
+    },
+    {
+      "id": "tobacco_field", "price": 8,
+      "name": "Tobacco",
+      "type": "raw",
+      "category": "technical_plants",
+      "group": "technical_plants",
+      "subgroup": "technical_crops",
+      "allowed_terrain": [ "plain" ],
+      "allowed_cover": [
+        "none"
+      ],
+      "allowed_climate_zones": [ "savanna_dry", "savanna_wet", "tropical_dry" ],
+      "improved_by": "plantation",
+      "tech_required": "plantations",
+      "produces": { "tobacco_leaf": 10 },
+      "icon": "tobacco_leaf.png",
+      "color": [ 180, 140, 60 ]
+    },
+    {
+      "id": "coca_field", "price": 8,
+      "name": "Coca",
+      "type": "raw",
+      "category": "technical_plants",
+      "group": "technical_plants",
+      "subgroup": "technical_crops",
+      "allowed_terrain": [ "plain" ],
+      "allowed_cover": [
+        "none"
+      ],
+      "allowed_climate_zones": [ "savanna_dry", "savanna_wet", "tropical_dry", "tropical_wet" ],
+      "improved_by": "plantation",
+      "tech_required": "plantations",
+      "produces": { "coca_leaf": 10 },
+      "icon": "coca_leaf.png",
+      "color": [ 60, 160, 80 ]
+    },
+    {
+      "id": "sugar_cane", "price": 7,
+      "name": "Sugar Cane",
+      "type": "raw",
+      "category": "technical_plants",
+      "group": "technical_plants",
+      "subgroup": "sugar_plants",
+      "allowed_terrain": [ "plain" ],
+      "allowed_cover": [
+        "none"
+      ],
+      "allowed_climate_zones": [ "savanna_wet", "tropical_wet" ],
+      "improved_by": "plantation",
+      "tech_required": "plantations",
+      // Cane tops and crushed stalks go to the cattle.
+      "produces": { "sugar_cane": 10, "feed": 40 },
+      "icon": "sugar_cane.png",
+      "color": [ 150, 200, 100 ]
+    },
+    {
+      // The boswellia of the dry mountains: the frankincense resin is tapped from the
+      // bark of a living tree, so the camp takes the resin without felling the
+      // tree (docs.md, "Improvement types are a convention").
+      "id": "boswellia_tree", "price": 14,
+      "name": "Boswellia",
+      "type": "raw",
+      "category": "technical_plants",
+      "group": "technical_plants",
+      "subgroup": "aromatic_plants",
+      "allowed_terrain": [ "plain", "hill", "rocky_desert" ],
+      "allowed_cover": [
+        "none", "tropical_dry_forest_sparse"
+      ],
+      "allowed_climate_zones": [ "savanna_dry", "tropical_dry" ],
+      "improved_by": "lumberjack_hut",
+      "tech_required": "wood_processing",
+      "produces": { "frankincense": 10 },
+      "icon": "boswellia_tree.png",
+      "color": [ 200, 180, 130 ]
+    },
+    {
+      // The commiphora of the dry bushland: the myrrh gum is cut out of the bark of
+      // the living tree, so the camp takes the gum without felling the tree
+      // (docs.md, "Improvement types are a convention").
+      "id": "commiphora_tree", "price": 12,
+      "name": "Commiphora",
+      "type": "raw",
+      "category": "technical_plants",
+      "group": "technical_plants",
+      "subgroup": "aromatic_plants",
+      "allowed_terrain": [ "plain", "hill", "rocky_desert" ],
+      "allowed_cover": [
+        "none", "temperate_dry_forest_sparse", "temperate_rainforest_sparse"
+      ],
+      "allowed_climate_zones": [ "savanna_dry", "savanna_wet" ],
+      "improved_by": "lumberjack_hut",
+      "tech_required": "wood_processing",
+      "produces": { "myrrh": 10 },
+      "icon": "commiphora_tree.png",
+      "color": [ 160, 140, 100 ]
+    },
+    {
+      // Hevea of the tropical lowlands: the milky sap is tapped from the bark
+      // and coagulates into rubber without felling the tree.
+      "id": "hevea_tree", "price": 14,
+      "name": "Hevea",
+      "type": "raw",
+      "category": "technical_plants",
+      "group": "technical_plants",
+      "subgroup": "rubber_plants",
+      "allowed_terrain": [ "plain", "hill" ],
+      "allowed_cover": [
+        "none", "tropical_rainforest_sparse"
+      ],
+      "allowed_climate_zones": [ "tropical_wet", "tropical_dry" ],
+      "improved_by": "lumberjack_hut",
+      "tech_required": "wood_processing",
+      "produces": { "rubber": 10 },
+      "icon": "hevea_tree.png",
+      "color": [ 120, 160, 100 ]
+    },
+    {
+      // Ficus of the tropical lowlands: its latex is collected in small cups
+      // cut into the bark, then thickened into rubber.
+      "id": "ficus_tree", "price": 12,
+      "name": "Ficus",
+      "type": "raw",
+      "category": "technical_plants",
+      "group": "technical_plants",
+      "subgroup": "rubber_plants",
+      "allowed_terrain": [ "plain", "hill" ],
+      "allowed_cover": [
+        "none", "tropical_rainforest_sparse"
+      ],
+      "allowed_climate_zones": [ "tropical_wet", "tropical_dry" ],
+      "improved_by": "lumberjack_hut",
+      "tech_required": "wood_processing",
+      "produces": { "rubber": 10 },
+      "icon": "ficus_tree.png",
+      "color": [ 140, 150, 110 ]
+    },
+    {
+      // Castilla of the tropical lowlands: the milky sap of this tree supplied
+      // the Mesoamerican rubber ball and adhesive without felling the tree.
+      "id": "castilla_tree", "price": 13,
+      "name": "Castilla",
+      "type": "raw",
+      "category": "technical_plants",
+      "group": "technical_plants",
+      "subgroup": "rubber_plants",
+      "allowed_terrain": [ "plain", "hill" ],
+      "allowed_cover": [
+        "none", "tropical_rainforest_sparse"
+      ],
+      "allowed_climate_zones": [ "tropical_wet", "tropical_dry" ],
+      "improved_by": "lumberjack_hut",
+      "tech_required": "wood_processing",
+      "produces": { "rubber": 10 },
+      "icon": "castilla_tree.png",
+      "color": [ 100, 150, 90 ]
+    },
+    {
+      // Sandalwood of the dry foothills: the heartwood is the incense wood.
+      "id": "sandalwood_tree", "price": 14,
+      "name": "Sandalwood",
+      "type": "raw",
+      "category": "technical_plants",
+      "group": "technical_plants",
+      "subgroup": "aromatic_plants",
+      "allowed_terrain": [ "plain", "hill", "rocky_desert" ],
+      "allowed_cover": [
+        "none", "tropical_dry_forest_sparse"
+      ],
+      "allowed_climate_zones": [ "savanna_dry", "tropical_dry" ],
+      "improved_by": "lumberjack_hut",
+      "tech_required": "wood_processing",
+      "produces": { "sandalwood": 10 },
+      "icon": "sandalwood_tree.png",
+      "color": [ 180, 160, 120 ]
+    },
+    {
+      // The liquidambar of the humid woods: the storax balsam is tapped from the
+      // scored bark of the living tree, so the camp takes the balsam without
+      // felling the tree (docs.md, "Improvement types are a convention").
+      "id": "liquidambar_tree", "price": 12,
+      "name": "Liquidambar",
+      "type": "raw",
+      "category": "technical_plants",
+      "group": "technical_plants",
+      "subgroup": "aromatic_plants",
+      "allowed_terrain": [ "plain", "hill" ],
+      "allowed_cover": [
+        "none", "temperate_rainforest", "temperate_rainforest_sparse"
+      ],
+      "allowed_climate_zones": [ "prairie", "savanna_wet" ],
+      "improved_by": "lumberjack_hut",
+      "tech_required": "wood_processing",
+      "produces": { "storax": 10 },
+      "icon": "liquidambar_tree.png",
+      "color": [ 175, 155, 95 ]
+    },
+    {
+      // The camphor laurel: the camphor is steamed out of the pruned wood and
+      // leaves the camp gathers, without felling the tree (docs.md,
+      // "Improvement types are a convention").
+      "id": "camphor_laurel", "price": 14,
+      "name": "Camphor Laurel",
+      "type": "raw",
+      "category": "technical_plants",
+      "group": "technical_plants",
+      "subgroup": "aromatic_plants",
+      "allowed_terrain": [ "plain", "hill" ],
+      "allowed_cover": [
+        "none", "tropical_rainforest_sparse", "tropical_dry_forest_sparse",
+        "temperate_rainforest_sparse"
+      ],
+      "allowed_climate_zones": [ "savanna_wet", "tropical_wet", "tropical_dry" ],
+      "improved_by": "lumberjack_hut",
+      "tech_required": "wood_processing",
+      "produces": { "camphor": 10 },
+      "icon": "camphor_laurel.png",
+      "color": [ 95, 165, 115 ]
+    },
+    {
+      "id": "chili_field", "price": 7,
+      "name": "Chili",
+      "type": "raw",
+      "category": "technical_plants",
+      "group": "technical_plants",
+      "subgroup": "spice_plants",
+      "allowed_terrain": [ "plain" ],
+      "allowed_cover": [
+        "none"
+      ],
+      "allowed_climate_zones": [ "savanna_dry", "savanna_wet", "tropical_dry", "tropical_wet" ],
+      "improved_by": "plantation",
+      "tech_required": "plantations",
+      "produces": { "chili": 10 },
+      "icon": "chili.png",
+      "color": [ 200, 80, 40 ]
+    }
+  ]
+}

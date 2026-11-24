@@ -1,0 +1,997 @@
+class_name MapTooltip
+
+const UI_THEME = preload("res://scripts/ui_theme.gd")
+
+var _tooltip_text_label: RichTextLabel
+var _tooltip_products_container: VBoxContainer
+var _map_renderer
+var _worker_manager
+# The key of the last drawn product list of the tooltip (for comparison
+# on a periodic update — so as not to rebuild the UI without changes).
+var _last_products_key := ""
+# The hex for which the extended block (the "Road: …" row, the properties of the hex,
+# the production with the modifiers) is already shown; -1 — the block is not shown.
+#
+# The extended block and the basic tooltip live in the SAME container, and render_products
+# cleans it. Therefore any repeated call of update_tooltip_text on the same hex
+# (for example, a periodic refresh of the pasture occupancy from InputHandler)
+# without this state would erase the row of the road level a second after it
+# appeared — and it would not return until the cursor leaves, because the
+# extended block is drawn only once per hover.
+var _extended_row: int = -1
+var _extended_col: int = -1
+
+# The colour of the road-capacity note in the "Produces:" rows. The note explains that the
+# route, not the improvement, is the limit, so it is set apart from the name and the number.
+static func route_shortfall_color() -> Color:
+    return UI_THEME.color("expense")
+
+# The road icon that replaces the word "route" in the road-capacity note. The full note
+# ("(route 10 units/sec)") was long: in the narrow left column of the panel the row ran past
+# its edge. The icon is compact and reads the same in every language, so the word does not
+# need a translation any more. It is the same icon as the "build road" special action.
+const ROAD_ICON_NAME := "road.svg"
+# The size of that icon in the rows. It matches the height of the row text.
+const ROUTE_ICON_SIZE := 14.0
+
+# The formatting of the rate (pcs/sec, units/sec) lives in the common helpers:
+# ConsumptionUi.format_rate — for the rows of the occupational consumption.
+# There is no own formatter here any more: it used to live exactly in this
+# file, and the new places showing the expense would copy-paste it.
+
+func _init(tooltip_text_label: RichTextLabel, tooltip_products_container: VBoxContainer, map_renderer, worker_manager):
+    _tooltip_text_label = tooltip_text_label
+    _tooltip_products_container = tooltip_products_container
+    _map_renderer = map_renderer
+    _worker_manager = worker_manager
+
+
+# Whether the hex carries an outpost of the city — an improvement outside the Region
+# (the technology "Emporia"). The status lives on the tile, not in a separate field: see
+# main_map.is_outpost_improvement.
+func _is_outpost_hex(row: int, col: int) -> bool:
+    var main_map = _map_renderer.main_map if _map_renderer != null else null
+    if main_map == null or not main_map.has_method("is_outpost_improvement"):
+        return false
+    return main_map.is_outpost_improvement(row, col)
+
+
+# Whether the outpost stands on a coast supplied by a harbour instead of a road.
+func _is_sea_supplied_outpost(row: int, col: int) -> bool:
+    var main_map = _map_renderer.main_map if _map_renderer != null else null
+    if main_map == null or not main_map.has_method("is_sea_outpost"):
+        return false
+    return main_map.is_sea_outpost(row, col)
+
+
+# Assembles the rows of the markers of someone else's territory for the tooltip.
+# It returns an Array<String> in the order:
+#   1) "Territory of a city" — if the hex is a part of the influence ring (in_town_influence);
+#   2) "City"                — if there is a town on the hex (has_town).
+# Both markers are independent: on the centre hex of the ring there will be BOTH, on the other
+# hexes of the ring — only the first one. Each row is already ready for output, without
+# a leading separator — the calling code adds \n depending on the context.
+# It is used in all the branches of _build_text (a unique terrain / unexplored
+# / explored), so that the tooltip is consistent: the blue patch around
+# the town is always accompanied by an explanation "this is someone's territory".
+func _town_name_for_hex(row: int, col: int) -> String:
+    var main_map = _map_renderer.main_map if _map_renderer != null else null
+    if main_map == null:
+        return ""
+    for town in main_map.towns:
+        if int(town.get("row", -1)) == row and int(town.get("col", -1)) == col:
+            return str(town.get("name", ""))
+        for influence_hex in town.get("influence_hexes", []):
+            if int(influence_hex.get("row", -1)) == row \
+                    and int(influence_hex.get("col", -1)) == col:
+                return str(town.get("name", ""))
+    return ""
+
+
+func _territory_lines_for(tile: Dictionary, row: int, col: int) -> Array:
+    var lines: Array = []
+    # The name of the town is NOT disclosed on an unexplored hex: in the fog of war the player
+    # sees only "there is something here" (a semi-transparent icon), and learns the name
+    # after the scouting. On the revealed hexes (the Ring or the scouted ones) — as it was.
+    var revealed: bool = bool(tile.get("in_influence", false)) \
+            or bool(tile.get("is_explored", false))
+    var town_name = _town_name_for_hex(row, col) if revealed else ""
+    if bool(tile.get("in_town_influence", false)):
+        lines.append(tr("Territory of the city %s") % town_name if town_name != "" else tr("City territory"))
+    if bool(tile.get("has_town", false)):
+        lines.append(tr("City %s") % town_name if town_name != "" else tr("City"))
+    return lines
+
+
+# The road level on the hex (0 — there is no road). It is taken from the NETWORK
+# (road_manager), and not from tile["road_level"]: the field on the hex describes only
+# the segment by which the hex was connected to the network.
+#
+# main_map is obtained the same way as in _town_name_for_hex: directly from the renderer,
+# and the road network is taken from the public field. A separate parameter "road network" in
+# the constructor is not added: it is needed exactly here and in
+# has_extended_tooltip_info, and MapTooltip works with the map anyway.
+func _hex_road_level(row: int, col: int) -> int:
+    var main_map = _map_renderer.main_map if _map_renderer != null else null
+    if main_map == null:
+        return 0
+    var road_manager = main_map.road_manager
+    if road_manager == null or not road_manager.has_method("get_hex_road_level"):
+        return 0
+    return int(road_manager.get_hex_road_level(row, col))
+
+# "Cart road (level 2, up to 30 units/sec per segment)" — the BEST road
+# reaching the hex: the level of the hex = the maximum over the adjacent segments
+# (road_manager.get_hex_road_level). At a crossroads of two trails and one
+# cart road the cart road is shown — just as the hex looks
+# on the map.
+#
+# The wording "up to N units/sec per segment" is important: the BEST road runs along the hex,
+# and not every adjacent segment. The average along the route is counted separately
+# (the "Route to the city" row), therefore the label must not read as
+# "the whole road here brings N".
+#
+# The level number is not needed for the sake of beauty: the player reads "level 2" in the selection button
+# and in the label of the route, and without it it is not clear which button corresponds to
+# the row on the hex.
+func road_level_line(row: int, col: int) -> String:
+    var level := _hex_road_level(row, col)
+    if level <= 0:
+        return ""
+    return tr("%s (level %d, up to %d units/sec per section)") % [
+            GameData.get_road_name(level), level,
+            GameData.get_road_max_speed(level)]
+
+func _format_resource_label_for_text(res_id: String, res_name: String) -> String:
+    if res_id == "" or res_name == "":
+        return res_name
+    var icon_name = GameData.raw_resources.get(res_id, {}).get("icon", "")
+    if icon_name == "":
+        return res_name
+    if _map_renderer == null:
+        return res_name
+    var icon_path = IconRegistry.icon_path(icon_name)
+    if icon_path == "":
+        return res_name
+    return "[img=18]%s[/img] %s" % [icon_path, res_name]
+
+
+# --- The road capacity: what the route to the city can carry ---
+
+# The average speed of the route from the hex to the city, or -1.0 when there is no route.
+# The route speed is the throughput of the road in units/sec (see
+# road_manager.find_route_to_city): it is the number of units that can be carried along the
+# whole route per second.
+func _route_avg_speed(row: int, col: int) -> float:
+    var main_map = _map_renderer.main_map if _map_renderer != null else null
+    if main_map == null or not main_map.has_method("get_route_to_city"):
+        return -1.0
+    var route: Dictionary = main_map.get_route_to_city(row, col)
+    if not route.get("ok", false):
+        return -1.0
+    return float(route.get("avg_speed", 0.0))
+
+
+# The per-product production rate (units/sec) of the BUILT improvement on the hex, together
+# with its base amount: { prod_id: {"rate": float, "base": float} }. Empty for an empty hex,
+# an improvement without a worker, or an improvement that produces nothing.
+#
+# This is the single source of these numbers: the rows of the "Produces:" block, the red
+# "(route X units/sec)" note and the warning triangle over the improvement all take the rate
+# from here, so they cannot disagree with each other.
+func production_rates(row: int, col: int, tile_data: Array) -> Dictionary:
+    var rates: Dictionary = {}
+    var tile = tile_data[row][col]
+    if tile == null or tile.improvement == null:
+        return rates
+    if not _worker_manager.has_worker(row, col):
+        return rates
+    var eff_res = MapHelpers.get_effective_resource(tile)
+    # A hidden resource (tech_reveal is not learned): as if there were none.
+    if eff_res != "" and not MapHelpers.is_resource_revealed(tile):
+        eff_res = ""
+    var has_water: bool = MapHelpers.is_hex_irrigated(
+            row, col, tile_data, tile_data.size(), tile_data[0].size())
+    if eff_res == "":
+        # A forest plot: the wood from the cover (wood_yield in covers.json).
+        if tile.improvement != "lumberjack_hut":
+            return rates
+        var lj_yield: float = MapHelpers.get_cover_wood_yield(tile)
+        if lj_yield <= 0.0:
+            return rates
+        var lj_mult: float = CityData.get_improvement_production_multiplier(
+            "lumberjack_hut", has_water, tile.get("terrain", ""), "lumberjack_hut")
+        rates["wood"] = {"rate": float(ceili(lj_yield * lj_mult)), "base": lj_yield}
+        return rates
+    var res_data = GameData.raw_resources.get(eff_res, {})
+    # The one-off resources (improved_by == null) have no continuous production: they are
+    # gathered by a special action, and there is no rate to cap.
+    if not res_data.has("produces") or res_data.get("improved_by", null) == null:
+        return rates
+    var bonus_multiplier: float = CityData.get_improvement_production_multiplier(
+        tile.improvement, has_water, tile.get("terrain", ""), eff_res)
+    var fill_frac: float = MapHelpers.get_fill_fraction(tile, res_data)
+    var cycle_period := MapHelpers.get_breeding_cycle_period(res_data)
+    for prod_id in res_data["produces"]:
+        if not CityData.is_product_available(prod_id):
+            continue
+        var base_amount := float(RangeUtils.get_min_value(res_data["produces"][prod_id], 1))
+        if str(GameData.products.get(prod_id, {}).get("category", "")) == "livestock":
+            # The heads are bred in batches once per cycle, not per second: the
+            # average rate is batch/period — a small number that never trips
+            # the route warning.
+            var per_sec := 0.0
+            if cycle_period > 0.0:
+                per_sec = base_amount / cycle_period
+            rates[str(prod_id)] = {"rate": per_sec, "base": base_amount}
+            continue
+        var final_amount := ceili(base_amount * bonus_multiplier * fill_frac)
+        rates[str(prod_id)] = {"rate": float(final_amount), "base": base_amount}
+    return rates
+
+
+# The products of the improvement on the hex whose production rate exceeds the route's average
+# speed: { prod_id: {"rate": float, "avg_speed": float} }. Empty when there is no route, no
+# producing improvement, or every product fits within the route's throughput.
+#
+# The route speed is ONE number for the whole route, but an improvement may output several
+# products, so each product is compared with it separately: the wheat may fit while the fodder
+# does not. That is why the result is keyed by product, and not a single flag.
+#
+# A shortfall does not mean the goods are lost: the surplus waits on the route and arrives
+# later (see delivery_manager.gd). The note marks the road as the bottleneck of the delivery.
+func road_capacity_shortfall(row: int, col: int, tile_data: Array) -> Dictionary:
+    var result: Dictionary = {}
+    var avg_speed := _route_avg_speed(row, col)
+    if avg_speed < 0.0:
+        return result
+    var rates := production_rates(row, col, tile_data)
+    for prod_id in rates:
+        var rate: float = float(rates[prod_id].get("rate", 0.0))
+        if rate > avg_speed + 0.0001:
+            result[str(prod_id)] = {"rate": rate, "avg_speed": avg_speed}
+    return result
+
+
+# Adds the red route note to a product row when the route cannot carry this product in full.
+# The product's own rate stays in the row; the note names the route's throughput — the number
+# that actually reaches the city, with the surplus queued behind it. The word "route" is not
+# spelled out: the row carries the road icon instead (see ROAD_ICON_NAME), which keeps the
+# note short.
+func _append_route_shortfall(item: Dictionary, prod_id: String, shortfall: Dictionary) -> void:
+    if not shortfall.has(prod_id):
+        return
+    item["route_icon_path"] = IconRegistry.icon_path(ROAD_ICON_NAME)
+    item["route_text"] = " %s %s" % [_format_speed(
+            float(shortfall[prod_id].get("avg_speed", 0.0))),
+            TranslationServer.translate("units/sec")]
+    item["route_color"] = route_shortfall_color()
+
+
+# Formats a speed for the rows: whole numbers without the decimal part (10, not 10.0), the
+# rest with one decimal (13.3) — the same rule as the amount of a product.
+func _format_speed(value: float) -> String:
+    return str(int(value)) if value == floor(value) else "%.1f" % value
+
+
+# --- The delivery: what is waiting and what is on the road ---
+
+# The delivery rows for the hex: the units waiting to be shipped and the units already
+# on the road, with the time until the current cargo arrives. They are shown only when
+# the route actually holds cargo: an idle route is already described by the "Route to
+# the city" row, and a second empty block would only add noise.
+#
+# The rows are plain label items, so the same list is used by the extended tooltip and
+# by the left column of the panel (see control_panel._append_route_info) and the two
+# cannot drift apart.
+func delivery_lines(row: int, col: int) -> Array:
+    var lines: Array = []
+    var main_map = _map_renderer.main_map if _map_renderer != null else null
+    if main_map == null:
+        return lines
+    var dm = main_map.delivery_manager
+    if dm == null:
+        return lines
+    var status: Dictionary = dm.get_route_status(row, col)
+    var pending := int(status.get("pending", 0))
+    var in_transit := int(status.get("in_transit", 0))
+    if pending <= 0 and in_transit <= 0:
+        return lines
+    lines.append({"type": "label", "text": tr("Delivery:"),
+            "color": UI_THEME.color("text_secondary")})
+    if pending > 0:
+        # The queue is exactly what the route cannot carry fast enough: it is the
+        # visible sign of the road being the bottleneck, hence the warm colour.
+        lines.append({"type": "label", "text": tr("  Waiting to ship: %d units") % pending,
+                "color": UI_THEME.color("warning")})
+    if in_transit > 0:
+        lines.append({"type": "label",
+                "text": tr("  In transit: %d units (arriving within %s sec)")
+                        % [in_transit, _format_speed(float(status.get("eta", 0.0)))],
+                "color": UI_THEME.color("income").lightened(0.35)})
+    return lines
+
+
+# --- The common rendering of the list of products ---
+# products — an array of dictionaries:
+#   { "type": "header",  "text": String }
+#   { "type": "product", "name": String, "amount": int, "icon_path": String }
+#   { "type": "label",   "text": String, "color": Color }
+# It is used both by the tooltip and by the control panel (control_panel.gd), so that
+# the display of the production does not diverge.
+# word_wrap — enables the wrapping of the words to the next line, if the text does not fit
+# into a single line (the control panel passes true, the tooltip — no).
+func render_products(products: Array, container: Node, word_wrap: bool = false):
+    var wrap_mode = TextServer.AUTOWRAP_WORD_SMART if word_wrap else TextServer.AUTOWRAP_OFF
+    for child in container.get_children():
+        # free(), and not queue_free(): the immediate removal excludes a frame when
+        # the old and the new items hang in the container at the same time — otherwise
+        # the height of the list jumped by one frame on every update.
+        child.free()
+    for item in products:
+        var type = item.get("type", "label")
+        if type == "header":
+            var label = Label.new()
+            label.text = item.get("text", "")
+            label.autowrap_mode = wrap_mode
+            label.add_theme_color_override("font_color", UI_THEME.color("text_secondary"))
+            container.add_child(label)
+        elif type == "product":
+            var hbox = HBoxContainer.new()
+            var icon_path = item.get("icon_path", "")
+            if icon_path != "":
+                var tex_rect = TextureRect.new()
+                tex_rect.texture = load(icon_path)
+                tex_rect.custom_minimum_size = Vector2(20, 20)
+                tex_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+                tex_rect.stretch_mode = TextureRect.STRETCH_SCALE
+                hbox.add_child(tex_rect)
+            var label_item = Label.new()
+            # If the item has a color set — we use it (for highlighting
+            # the consumption, when there is not enough of the resource in the storage). Otherwise —
+            # the ordinary white. If amount == 0, we output only the label
+            # (it is used for the consumption rows, where the text matters, and not the number).
+            # amount can be fractional (the rate "units/sec"); suffix
+            # is appended after the number (for example, " units/sec").
+            var amount_val = float(item.get("amount", 0))
+            if amount_val > 0:
+                var amount_str = str(int(amount_val)) if amount_val == floor(amount_val) else "%.1f" % amount_val
+                label_item.text = "%s: %s%s" % [item.get("name", ""), amount_str, str(item.get("suffix", ""))]
+            else:
+                label_item.text = item.get("name", "")
+            var item_color: Color = item.get("color", UI_THEME.color("text"))
+            label_item.add_theme_color_override("font_color", item_color)
+            hbox.add_child(label_item)
+            # The road-capacity note: "(" + the road icon + " 10 units/sec)". The word "route" is
+            # replaced by the icon (see ROAD_ICON_NAME): the spelled-out note was long, and in
+            # the narrow left column of the panel the row ran past its edge. The icon reads the
+            # same in every language. The note lives in its own tight row (separation 0), so its
+            # parts stay together and take as little width as possible.
+            var route_text := str(item.get("route_text", ""))
+            if route_text != "":
+                var route_color: Color = item.get("route_color", route_shortfall_color())
+                var note_box = HBoxContainer.new()
+                note_box.add_theme_constant_override("separation", 0)
+                var route_open = Label.new()
+                route_open.text = "("
+                route_open.add_theme_color_override("font_color", route_color)
+                note_box.add_child(route_open)
+                var route_icon_path := str(item.get("route_icon_path", ""))
+                if route_icon_path != "":
+                    var route_icon = TextureRect.new()
+                    route_icon.texture = load(route_icon_path)
+                    route_icon.custom_minimum_size = Vector2(ROUTE_ICON_SIZE, ROUTE_ICON_SIZE)
+                    route_icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+                    route_icon.stretch_mode = TextureRect.STRETCH_SCALE
+                    route_icon.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+                    # The icon takes the colour of the note: the whole note reads as one red
+                    # "the route is the limit" mark.
+                    route_icon.modulate = route_color
+                    note_box.add_child(route_icon)
+                var route_label = Label.new()
+                route_label.text = route_text
+                route_label.add_theme_color_override("font_color", route_color)
+                note_box.add_child(route_label)
+                var route_close = Label.new()
+                route_close.text = ")"
+                route_close.add_theme_color_override("font_color", route_color)
+                note_box.add_child(route_close)
+                hbox.add_child(note_box)
+            container.add_child(hbox)
+        else:
+            var label = Label.new()
+            label.text = item.get("text", "")
+            label.autowrap_mode = wrap_mode
+            label.add_theme_color_override("font_color",
+                    item.get("color", UI_THEME.color("text_secondary")))
+            container.add_child(label)
+
+
+# --- The full information about the hex for the control panel ---
+# It returns { "text": String, "products": Array }.
+# text is the FULL text of the hex: the left column of the panel shows everything at once, without
+# waiting for a hover, therefore the properties of the hex remain in it (in the ordinary tooltip
+# there are none — see _build_text with basic_only = true). products is the extended
+# production with the modifiers.
+func build_hex_info(row: int, col: int, tile_data: Array, city_row: int = 0, city_col: int = 0) -> Dictionary:
+    var text = _build_text(row, col, tile_data, city_row, city_col)
+    # It is impossible to build improvements on the hex of a city, therefore we do not show
+    # the potential output of the product in the left column of the panel for it.
+    var products = [] if row == city_row and col == city_col else _collect_extended_production(row, col, tile_data)
+    return {"text": text, "products": products}
+
+
+func update_tooltip_text(row: int, col: int, tile_data: Array, city_row: int = 0, city_col: int = 0):
+    # basic_only = true: the ordinary tooltip answers the question "what is on this hex" and
+    # shows only the terrain, the resource and the improvement. The properties of the hex,
+    # the production and the consumption live in the extended block, which appears
+    # after a hover delay. The tooltip does not have its own "Once built, ... will give" block
+    # any more: the extended one shows the same thing, but with the bonuses and
+    # the modifiers.
+    var text = _build_text(row, col, tile_data, city_row, city_col, true)
+
+    var products: Array = []
+    # If the extended block is already shown for this hex, the final set of rows is
+    # exactly it. Otherwise a refresh (the fluctuating occupancy of the pasture) would rebuild
+    # the container from scratch and all the rows of the block would disappear (see the comment
+    # to _extended_row).
+    if _extended_row == row and _extended_col == col:
+        products = _collect_extended_block(row, col, tile_data)
+
+    # We update the UI only on a REAL change of the contents. A periodic
+    # refresh (the occupancy of the pasture) calls this function several times
+    # per second: a full rebuild of the container every time looked like jerks.
+    var products_key = var_to_str(products)
+    if text == _tooltip_text_label.text \
+            and products_key == _last_products_key \
+            and _tooltip_products_container.get_child_count() == products.size():
+        return
+
+    for child in _tooltip_products_container.get_children():
+        # free(), and not queue_free(): the immediate removal excludes a frame
+        # when the old and the new items hang in the container at the same time
+        # (otherwise the size of the tooltip jumped by one frame).
+        child.free()
+
+    _tooltip_text_label.text = text
+    render_products(products, _tooltip_products_container)
+    _last_products_key = products_key
+
+
+# Answers whether to show the extended block of the tooltip on this hex.
+#
+# The conditions are NOT listed here: the check asks the same assembler, which
+# builds the block itself, and compares the result with an empty list. The list of conditions and
+# the list of rows, written separately, will sooner or later diverge — and then
+# the extended block either does not appear at all, or appears empty (see docs.md,
+# the section "The ordinary and the extended hex tooltips").
+func has_extended_tooltip_info(row: int, col: int, tile_data: Array) -> bool:
+    return not _collect_extended_block(row, col, tile_data).is_empty()
+
+
+# Answers whether the content of the tooltip on this hex changes over time and therefore
+# must be rebuilt while the mouse stays on the hex (the periodic refresh in InputHandler
+# without mouse movement). Two things change on their own: the "growing" resources (a
+# pasture fills up, its effective output grows) and the DELIVERY (the queue, the units on
+# the road and the time of arrival change every tick). On a static hex the periodic redraw
+# would only rebuild the container in vain — it is skipped.
+#
+# It is the SINGLE source of the decision — the same way has_extended_tooltip_info owns
+# "whether to show the block". The list of reasons and the block itself are written
+# separately and would sooner or later diverge; here the refresh cannot fall out of sync
+# with what actually changes on the screen.
+#
+# The function is PURE: the caller (InputHandler) needs it every frame, so it must not
+# touch the labels.
+func has_live_content(row: int, col: int, tile_data: Array) -> bool:
+    if _hex_has_delivery_cargo(row, col):
+        return true
+    return _hex_is_growing(row, col, tile_data)
+
+
+# The route of the hex holds cargo: something is waiting to be shipped or is already on the
+# road. Both numbers, and the time of arrival, change while the cargo moves — without the
+# periodic refresh the tooltip would freeze at the state it had when it appeared.
+func _hex_has_delivery_cargo(row: int, col: int) -> bool:
+    var main_map = _map_renderer.main_map if _map_renderer != null else null
+    if main_map == null:
+        return false
+    var dm = main_map.delivery_manager
+    return dm != null and dm.has_cargo(row, col)
+
+
+# A "growing" resource (a pasture with time_to_mature > 0): its occupancy and effective
+# output change over time. Moved here from InputHandler, so that both reasons for a periodic
+# refresh live in one place.
+func _hex_is_growing(row: int, col: int, tile_data: Array) -> bool:
+    if row < 0 or col < 0 or row >= tile_data.size() or col >= tile_data[0].size():
+        return false
+    var tile = tile_data[row][col]
+    if tile == null or tile.get("improvement", null) == null:
+        return false
+    var eff_res = MapHelpers.get_effective_resource(tile)
+    if eff_res == "":
+        return false
+    return MapHelpers.is_growing_resource(GameData.raw_resources.get(eff_res, {}))
+
+
+func update_extended_tooltip(row: int, col: int, tile_data: Array, _city_row: int, _city_col: int):
+    # We remember the hex: from this moment the repeated call of update_tooltip_text
+    # (the refresh of the occupancy of the pasture) will redraw EXACTLY the extended block.
+    _extended_row = row
+    _extended_col = col
+
+    _render_extra_products(_collect_extended_block(row, col, tile_data))
+
+
+# Assembles the rows of the extended block of the tooltip. The single source of these rows:
+# both the check "whether to show" (has_extended_tooltip_info), and the showing of the block
+# (update_extended_tooltip), and its redrawing on a refresh (update_tooltip_text)
+# take the result from here — otherwise the lists would diverge.
+#
+# The function is PURE: it draws nothing and does not change the labels. A side effect here
+# would be twice as dangerous — it is called by the check from handle_process (InputHandler),
+# that is, every frame until the block is shown.
+func _collect_extended_block(row: int, col: int, tile_data: Array) -> Array:
+    # The road level on the hex. It is added FIRST, before the checks below: on a hex with
+    # a road, but without an improvement (for example, an empty hex under the road) all the earlier
+    # exits would fire before, and the row would not appear at all — and that is exactly where
+    # the player decides which road to upgrade.
+    #
+    # The rows ACCUMULATE and are rendered ONCE by the caller: render_products cleans
+    # the container, and two calls in a row would erase the first one — on a hex with a road and
+    # a natural resource (for example, with the wild plants) the level would silently disappear.
+    var extra_products: Array = []
+    var road_line := road_level_line(row, col)
+    if not road_line.is_empty():
+        extra_products.append({"type": "label", "text": tr("Road: %s") % road_line,
+                "color": UI_THEME.color("income").lightened(0.35)})
+
+    # The delivery rows sit right after the road level: both describe the connection of
+    # the hex with the city, and the queue is the first thing a player looks for when
+    # the goods do not arrive. They are added before the early exits below, so a hex
+    # with cargo shows its queue even when it produces nothing to list.
+    extra_products.append_array(delivery_lines(row, col))
+
+    # The properties of the hex: the quality of the resource, the expense of the feed, the occupancy of the pasture,
+    # the access to fresh water. They were moved here from the basic tooltip, where only
+    # the terrain, the resource and the improvement remained.
+    #
+    # They are added BEFORE the early exits below: the access to the water exists also on a hex without
+    # a resource, and in the influence ring of someone else's town — the gates on the feed and the occupancy
+    # live inside _collect_hex_properties.
+    for property_line in _collect_hex_properties(row, col, tile_data):
+        extra_products.append({"type": "label", "text": property_line})
+
+    var tile = tile_data[row][col]
+    var is_revealed = tile.get("in_influence", false) or tile.get("is_explored", false)
+    if not is_revealed or bool(tile.get("in_town_influence", false)):
+        return extra_products
+
+    # The calculations of the construction cost (base/terrain/distance) were moved
+    # to the Preview of the control panel — they are not shown here any more.
+
+    var res_id = MapHelpers.get_effective_resource(tile)
+    # We do not show a hidden resource — as if there were none on the hex.
+    if res_id != "" and not MapHelpers.is_resource_revealed(tile):
+        res_id = ""
+    if res_id == "":
+        return extra_products
+    var res_data = GameData.raw_resources.get(res_id, {})
+    if not res_data.has("produces"):
+        return extra_products
+
+    extra_products.append_array(_collect_extended_production(row, col, tile_data))
+    return extra_products
+
+
+# --- The properties of the hex: what has left the basic tooltip ---
+#
+# --- The properties of the hex: what has left the basic tooltip ---
+func _collect_hex_properties(row: int, col: int, tile_data: Array) -> Array:
+    var lines: Array = []
+    var tile = tile_data[row][col]
+    if tile == null:
+        return lines
+    # The quality of the resource, the expense of the feed, the occupancy of the pasture and the access to fresh
+    # water. The ordinary tooltip answers the question "what is on this hex" (the terrain,
+    # the resource, the improvement), therefore the properties are shown only in the extended block.
+    #
+    # The single source of the rows: both the extended block of the tooltip, and the full text of the hex
+    # for the left column of the control panel. The rows are returned WITHOUT a leading line
+    # break — the caller glues them itself: in the text it is a line break plus a row,
+    # and in the container of the tooltip rows each has its own indent.
+    var is_revealed = tile.get("in_influence", false) or tile.get("is_explored", false)
+    if not is_revealed:
+        return lines
+
+    # An unexplored hex: we do not disclose the properties. The basic tooltip for it is also
+    # silent — there is only the terrain and a hint about the scouting.
+    var tile_quality = tile.get("quality", "")
+    if tile_quality != "" and tile.improvement != null:
+        lines.append(tr("Quality: %s (%s)") % [
+                GameData.get_quality_stars(tile_quality),
+                GameData.get_quality_name(tile_quality)])
+
+    var res_id = MapHelpers.get_effective_resource(tile)
+    # The quality is a property of the improvement: without a built improvement it does not
+    # exist on the hex yet.
+    if res_id != "" and not MapHelpers.is_resource_revealed(tile):
+        res_id = ""
+    # A hidden resource (tech_reveal is not learned): the player must not know about it.
+    if res_id != "" and not bool(tile.get("in_town_influence", false)):
+        var res_data = GameData.raw_resources.get(res_id, {})
+        var feed_consumption = res_data.get("feed_consumption", 0)
+        if feed_consumption > 0:
+            lines.append(tr("Feed consumption: %d per sec") % feed_consumption)
+        var time_to_mature = res_data.get("time_to_mature", 0)
+        if time_to_mature > 0:
+            # The feed and the occupancy of the herd are the economic indicators of the
+            # improvement. In the influence ring of SOMEONE ELSE'S town we do not show
+            # them: the player does not control these hexes (the same gate that was in
+            # the basic tooltip).
+            if tile.improvement != null and _worker_manager.has_worker(row, col):
+                var live_pid := GameData.live_product_of(res_id)
+                if live_pid != "" and CityData.get_storage_amount(live_pid) <= 0:
+                    # The herd lives in the city storage: zero heads means the species
+                    # is extinct — the pasture is empty until it is re-purchased.
+                    lines.append(tr("Herd: extinct"))
+                elif not bool(tile.get("herd_mature", false)):
+                    var fill_frac = MapHelpers.get_fill_fraction(tile, res_data)
+                    var t_left = MapHelpers.get_time_to_full(tile, res_data)
+                    lines.append(tr("Fill level: %d%% (full in %.0f sec)") % [
+                            roundi(fill_frac * 100), ceilf(t_left)])
+                else:
+                    lines.append(tr("Herd: full (100%)"))
+            else:
+                lines.append(tr("Fill time: %.0f sec") % time_to_mature)
+    if bool(tile.get("fresh_water_spring", false)) \
+            and CityData.is_tech_unlocked("concrete"):
+        # A section on the spring hex does NOT mean the city is reached: the
+        # line is only connected when the last section has finished. The flag
+        # on the city hex is set exactly at that moment (see the project
+        # completion handler), so it is the single source of truth here.
+        var city_reached := false
+        var main_map = _map_renderer.main_map if _map_renderer != null else null
+        if main_map != null:
+            var city_r := int(main_map.get("city_row"))
+            var city_c := int(main_map.get("city_col"))
+            if city_r >= 0 and city_r < tile_data.size() \
+                    and city_c >= 0 and city_c < tile_data[city_r].size() \
+                    and tile_data[city_r][city_c] != null:
+                city_reached = bool(tile_data[city_r][city_c].get("aqueduct_water", false))
+        if city_reached:
+            lines.append(tr("Fresh water spring: connected to the city by an aqueduct"))
+        elif bool(tile.get("aqueduct", false)):
+            lines.append(tr("Fresh water spring: aqueduct is partly built"))
+        else:
+            lines.append(tr("Fresh water spring: can be connected by an aqueduct"))
+    var water_access = MapHelpers.get_hex_water_access(
+            row, col, tile_data, tile_data.size(), tile_data[0].size())
+    if water_access == "direct":
+        lines.append(tr("Fresh water access: direct"))
+    elif water_access == "chain":
+        lines.append(tr("Fresh water access: via chain"))
+
+    return lines
+
+
+    # We show the access to fresh water for ALL hexes.
+    #
+    # Resets the binding of the extended block to the hex. It is called by the owner of the tooltip
+    # (InputHandler) on a change of the hex and on the hiding of the tooltip — there, where
+    # its own flag "the block is already shown" is reset.
+    #
+    # Without the reset, the return to the same hex would draw the extended block immediately, bypassing
+    # the hover delay: update_tooltip_text would see the old binding.
+func clear_extended_tooltip():
+    _extended_row = -1
+    _extended_col = -1
+
+# The only point of the rendering of the extended block of the tooltip. An empty list is also
+# a call: it cleans the container, and without it the rows of the previous hex
+# would remain on a hex without the extended information.
+#
+# The key is updated HERE: further on it describes the already extended block, and not the basic
+# set from update_tooltip_text. Otherwise the very first refresh after the showing of the block would see
+# "it has changed" and would rebuild the container in vain (and after it the key would still
+# become outdated — the comparison would go against what is not drawn).
+func _render_extra_products(products: Array):
+    render_products(products, _tooltip_products_container)
+    _last_products_key = var_to_str(products)
+
+
+# --- The building of the text of the hex ---
+# It is moved out of update_tooltip_text, so that the control panel (control_panel.gd)
+# shows the same information without duplicating the code.
+#
+#
+# basic_only = true — the BASIC text of the ordinary tooltip: only the terrain, the resource and the
+# improvement, that is, physically what lies on the hex. Everything else — the quality,
+# the feed, the occupancy, the access to fresh water, the production, the consumption — lives
+# in the extended block (see _collect_extended_block and _collect_hex_properties).
+#
+#
+# basic_only = false (by default) — the FULL text for the left column of the control
+# panel: there everything is shown at once, without a hover delay, therefore
+# the properties of the hex remain in it (see build_hex_info).
+func _build_text(row: int, col: int, tile_data: Array, _city_row: int = 0, _city_col: int = 0, basic_only: bool = false) -> String:
+    var tile = tile_data[row][col]
+    # The name of the hex: the terrain (with its climate zone) and the cover on top of it —
+    # "Boreal, Plain", "Tropical, Hills, Tropical Forest" (GameData.terrain_display_name).
+    var terrain_name: String = GameData.terrain_display_name(
+            str(tile.terrain), str(tile.get("cover", "none")))
+
+    var is_revealed = tile.get("in_influence", false) or tile.get("is_explored", false)
+    # The effective resource: natural (tile.resource) or bred (tile.crop_bred).
+    var res_id = MapHelpers.get_effective_resource(tile)
+    # A hidden resource (tech_reveal is not learned): the player must not know about it —
+    # we show the hex as empty (without the name of the resource, the improvement and the output).
+    if res_id != "" and not MapHelpers.is_resource_revealed(tile):
+        res_id = ""
+    var res_name = tr("none")
+    if res_id != "":
+        res_name = GameData.get_product_name(res_id)
+
+    var terrain_data = GameData.terrains.get(tile.terrain, {})
+    if terrain_data.get("unique", false) and not is_revealed:
+        # A unique terrain (for example, a soda lake) outside the visible
+        # area: we show the name/description, plus the marker "Territory of a city" /
+        # "City", if the hex has got into the ring or contains a town.
+        var desc = terrain_data.get("description", "")
+        var uniq_text: String = desc if desc != "" else terrain_name
+        var uniq_terr: Array = _territory_lines_for(tile, row, col)
+        if not uniq_terr.is_empty():
+            uniq_text += "\n" + "\n".join(uniq_terr)
+        return uniq_text
+
+    if not is_revealed:
+        # An unexplored hex (in the Region or in the fog of war): the standard
+        # text with a hint about the scouting. The scouts can be sent to any
+        # point reachable by scrolling, — including the territory of the towns, therefore
+        # the hint is the same for all the unexplored hexes.
+        var unrevealed_text: String = tr("Terrain: %s") % terrain_name
+        var unrevealed_terr: Array = _territory_lines_for(tile, row, col)
+        if not unrevealed_terr.is_empty():
+            unrevealed_text += "\n" + "\n".join(unrevealed_terr)
+        unrevealed_text += tr("\nResource: unknown (send scouts)")
+        return unrevealed_text
+
+    var imp_name = GameData.improvements.get(tile.improvement, {}).get("name", tr("none")) if tile.improvement != null else tr("none")
+    var text: String = tr("Terrain: %s") % terrain_name
+    # The markers of someone else's territory in the ring/at the place of a town: right after
+    # "Terrain", so that the player sees "who is here" before reading
+    # the rest of the tooltip. The "City" row is added ONLY when there really is
+    # a town on the hex (i.e. in the centre of the ring), and "Territory of a
+    # city" — on any hex of the ring, including the town itself.
+    var terr: Array = _territory_lines_for(tile, row, col)
+    if not terr.is_empty():
+        text += "\n" + "\n".join(terr)
+    var resource_text = _format_resource_label_for_text(res_id, res_name)
+    text += tr("\nResource: %s") % resource_text
+
+    var terrain_desc = terrain_data.get("description", "")
+    if terrain_desc != "":
+        text += "\n%s" % terrain_desc
+
+    var in_town_influence = bool(tile.get("in_town_influence", false))
+    var imp_status = ""
+    if tile.improvement != null:
+        if in_town_influence:
+            imp_status = ""
+        elif GameData.is_no_worker_improvement(tile.improvement):
+            # An infrastructure improvement (no_worker, for example a harbor):
+            # it functions on its own — the status "no worker" does not apply.
+            imp_status = tr(" (infrastructure: no worker required)")
+        elif bool(tile.get("road_missing", false)):
+            # A cut-off improvement produces nothing: the goods have no way to the city.
+            # The flag is set by the production tick (see main_map).
+            imp_status = tr(" (inactive: no road to the city)")
+        else:
+            var has_worker = _worker_manager.has_worker(row, col)
+            if not has_worker:
+                imp_status = tr(" (inactive: no worker)")
+            else:
+                imp_status = tr(" (working)")
+        # An improvement outside the Region is an outpost of the city (the technology
+        # "Emporia"): the same plantation, but on foreign land. Navigation supplies the
+        # coastal ones by sea, so they keep working without a road of their own.
+        if _is_outpost_hex(row, col):
+            if _is_sea_supplied_outpost(row, col):
+                imp_status = tr(" (outpost outside the Region, supplied by sea)") + imp_status
+            else:
+                imp_status = tr(" (outpost outside the Region)") + imp_status
+    else:
+        if res_id != "":
+            var res_data = GameData.raw_resources.get(res_id, {})
+            # There is nothing to build on a one-off resource (improved_by == null) —
+            # we do not show the status "(not built)".
+            if res_data.get("improved_by", null) != null and res_data.has("produces"):
+                imp_status = tr(" (not built)")
+
+    text += tr("\nImprovement: %s%s") % [imp_name, imp_status]
+
+    # The properties of the hex (the quality, the feed, the occupancy, the access to fresh water) are
+    # NOT shown in the ordinary tooltip — they live in the extended block. Here
+    # they are appended only to the full text, that is, to the left column of the panel.
+    if not basic_only:
+        for property_line in _collect_hex_properties(row, col, tile_data):
+            text += "\n" + property_line
+
+    # --- The conflict "a tech_reveal resource under someone else's improvement" ---
+    var conflict = MapHelpers.get_tech_reveal_conflict(tile)
+    if not conflict.is_empty():
+        var current_imp_name: String = GameData.improvements.get(tile.improvement, {}).get("name", tile.improvement)
+        text += tr("\n\nFound here: %s") % conflict.get("res_name", "")
+        text += tr("\nDemolish %s to build %s") % [current_imp_name, conflict.get("imp_name", "")]
+
+    # The cost of the construction in the tooltip/left panel is not shown any more —
+    # the calculations are moved to the Preview of the control panel.
+
+    return text
+
+
+# --- The collection of the extended production (with the modifiers) ---
+func _collect_extended_production(row: int, col: int, tile_data: Array) -> Array:
+    var result = []
+    var tile = tile_data[row][col]
+    # The road to the city caps the output: the products whose rate exceeds the route's
+    # average speed get a red note in their row (see road_capacity_shortfall). It is computed
+    # once per hex, and only for a built improvement with a worker — nothing else produces.
+    var shortfall: Dictionary = {}
+    if tile.improvement != null and _worker_manager.has_worker(row, col):
+        shortfall = road_capacity_shortfall(row, col, tile_data)
+    var eff_res = MapHelpers.get_effective_resource(tile)
+    # A hidden resource (tech_reveal is not learned): we do not show the production —
+    # otherwise the hint "Once built, X will give…" would disclose its presence.
+    if eff_res != "" and not MapHelpers.is_resource_revealed(tile):
+        eff_res = ""
+    # The rows show the PER-SECOND rate: the player receives a continuous stream —
+    # main_map._emit_continuous_production adds produces × multiplier × SIMULATION_TICK
+    # to the storage on every tick, so the "produces" from the resource data IS the rate.
+    if eff_res == "":
+        # A forest plot: the production of wood from the cover (wood_yield in
+        # covers.json). We show it both for a built plot with a worker, and
+        # as the hint "once built" on an empty forest hex. Any future
+        # a cover with wood_yield > 0 is taken into account automatically.
+        var lj_yield: float = MapHelpers.get_cover_wood_yield(tile)
+        if lj_yield > 0.0 and tile.improvement == null \
+                and CityData.is_product_available("wood"):
+            var lj_name = GameData.improvements.get("lumberjack_hut", {}).get("name", "lumberjack_hut")
+            var lj_per_sec0: float = float(int(ceil(lj_yield)))
+            var wood_data0 = GameData.products.get("wood", {})
+            var lj_icon_path0 = ""
+            if wood_data0.has("icon"):
+                lj_icon_path0 = IconRegistry.icon_path(wood_data0["icon"])
+            result.append({"type": "header", "text": tr("Once built, %s will produce:") % lj_name})
+            result.append({"type": "product", "name": wood_data0.get("name", tr("Wood")),
+                    "amount": lj_per_sec0, "icon_path": lj_icon_path0,
+                    "suffix": " " + TranslationServer.translate("units/sec")})
+        elif tile.improvement == "lumberjack_hut" and lj_yield > 0.0 \
+                and _worker_manager.has_worker(row, col) \
+                and CityData.is_product_available("wood"):
+            var lj_mult2 = CityData.get_improvement_production_multiplier(
+                "lumberjack_hut",
+                MapHelpers.is_hex_irrigated(row, col, tile_data, tile_data.size(), tile_data[0].size()),
+                tile.get("terrain", ""), "lumberjack_hut")
+            var lj_per_sec2: float = float(ceili(lj_yield * lj_mult2))
+            var wood_data2 = GameData.products.get("wood", {})
+            var lj_icon_path2 = ""
+            if wood_data2.has("icon"):
+                lj_icon_path2 = IconRegistry.icon_path(wood_data2["icon"])
+            var lj_label = wood_data2.get("name", tr("Wood"))
+            result.append({"type": "header", "text": tr("Produces:")})
+            var lj_item := {"type": "product", "name": lj_label, "amount": lj_per_sec2, "icon_path": lj_icon_path2, "suffix": " " + TranslationServer.translate("units/sec")}
+            _append_route_shortfall(lj_item, "wood", shortfall)
+            result.append(lj_item)
+        return result
+    var res_data = GameData.raw_resources.get(eff_res, {})
+    if not res_data.has("produces"):
+        return result
+
+    # The one-off resources (improved_by == null — the wild plants, the metal nuggets) do not have
+    # a continuous production: they are gathered by the special action action_type "forage",
+    # after which the resource disappears from the map. In the extended summary ("Produces:…")
+    # there is nothing to show for them, and the value of produces there is a "number or [min, max]"
+    # (the output per one gathering), and not the base output of the improvement.
+    if res_data.get("improved_by", null) == null:
+        return result
+
+    var modifiers := []
+    var bonus_multiplier = 1.0
+    if tile.improvement != null and _worker_manager.has_worker(row, col):
+        modifiers = CityData.get_improvement_production_modifiers(tile.improvement, MapHelpers.is_hex_irrigated(row, col, tile_data, tile_data.size(), tile_data[0].size()), tile.get("terrain", ""), eff_res)
+        bonus_multiplier = CityData.get_improvement_production_multiplier(tile.improvement, MapHelpers.is_hex_irrigated(row, col, tile_data, tile_data.size(), tile_data[0].size()), tile.get("terrain", ""), eff_res)
+
+    var available_products := {}
+    for prod_id in res_data["produces"]:
+        if tile.improvement == null or CityData.is_product_available(prod_id):
+            available_products[prod_id] = res_data["produces"][prod_id]
+
+    if available_products.is_empty():
+        return result
+
+    var header_text = tr("Produces:")
+    if tile.improvement == null:
+        var improvement_id = res_data.get("improved_by", "")
+        var imp_name_display = GameData.improvements.get(improvement_id, {}).get("name", improvement_id)
+        header_text = tr("Once built, %s will produce:") % imp_name_display
+    result.append({"type": "header", "text": header_text})
+
+    # The growing resources: while the herd is filling up, the actual output of the
+    # non-lethal produce (the milk, the wool, the eggs) is proportional to the
+    # occupancy. The first maturation establishes the herd, and from then on these
+    # products flow in full.
+    #
+    # The "once built" hint (no improvement on the hex yet) describes the POTENTIAL output: the
+    # herd starts filling only after the improvement is built, so the current fraction would
+    # always be zero and the row would show no rate at all. The fill reduces the rate of a
+    # working improvement, not of a planned one.
+    var herd_mature := bool(tile.get("herd_mature", false))
+    var fill_frac = 1.0 if tile.improvement == null or herd_mature else MapHelpers.get_fill_fraction(tile, res_data)
+
+    var base_amount = 0.0
+    var final_amount = 0
+    for prod_id in available_products:
+        # produces can be a number or a range [min, max] — in the summary
+        # we show the deterministic minimum (see RangeUtils).
+        base_amount = float(RangeUtils.get_min_value(available_products[prod_id], 1))
+        var prod_data = GameData.products.get(prod_id, {})
+        var suffix: String = " " + TranslationServer.translate("units/sec")
+        if str(prod_data.get("category", "")) == "livestock":
+            # The heads are bred in whole batches once per cycle — the row shows the
+            # batch and the length of the cycle, not a per-second rate.
+            final_amount = int(base_amount)
+            suffix = " " + tr("heads per %.0f sec") % MapHelpers.get_breeding_cycle_period(res_data)
+        else:
+            final_amount = ceili(base_amount * bonus_multiplier * fill_frac)
+        var prod_name = GameData.get_product_name(prod_id)
+        var icon_path = ""
+        if prod_data.has("icon"):
+            var icon_name = prod_data["icon"]
+            icon_path = IconRegistry.icon_path(icon_name)
+        var item := {"type": "product", "name": prod_name, "amount": float(final_amount), "icon_path": icon_path, "suffix": suffix}
+        _append_route_shortfall(item, str(prod_id), shortfall)
+        result.append(item)
+
+    for mod in modifiers:
+        result.append({"type": "label", "text": " %s" % mod.get("label", ""),
+            "color": UI_THEME.color("income").lightened(0.35)})
+
+    # --- The consumption of the profession ---
+    # We show the list of the resources that the profession of the worker on this hex
+    # spends from the storage. The source of the records is the registry data/consumption.json
+    # (plus the deprecated consumption field of the products), see docs.md.
+    # The section appears only if:
+    #   1) the improvement is built,
+    #   2) there is a worker on it,
+    #   3) the improvement has a profession,
+    #   4) this profession has at least one consumer.
+    # The production of the improvement itself does NOT stop when there is not enough resource —
+    # it rolls back to the base multiplier (without the bonus).
+    if tile.improvement != null and _worker_manager.has_worker(row, col):
+        # The rows of the display are assembled by the common ConsumptionUi: the same rows are drawn by
+        # the tooltip of the building details (the "Buildings" tab) and by the window of the building details,
+        # therefore the format of the expense is the same for all these places.
+        var cons_rows = ConsumptionUi.build_rows(
+            GameData.get_profession_for_improvement(tile.improvement))
+        if not cons_rows.is_empty():
+            result.append({"type": "header", "text": tr("Consumes:")})
+            for cons in cons_rows:
+                var cons_label: String = str(cons.get("label", ""))
+                # The icon of the consumed resource; for a group the icon of
+                # the first member with a picture is taken (GameData puts it in "icon").
+                var cons_icon_path: String = IconRegistry.icon_path(
+                    str(cons.get("icon", "")))
+                if cons_icon_path != "":
+                    result.append({
+                        "type": "product",
+                        "name": cons_label,
+                        "amount": 0, # we do not output the number: the text label matters
+                        "icon_path": cons_icon_path
+                    })
+                else:
+                    result.append({"type": "label", "text": cons_label,
+                        "color": UI_THEME.color("text_secondary")})
+
+    return result

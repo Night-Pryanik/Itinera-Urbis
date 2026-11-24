@@ -1,0 +1,708 @@
+# theme_manager.gd (ThemeManager autoload)
+#
+# Holds the interface palette: the presets of theme/presets/*.json, the one the player
+# has chosen, and the tokens the interface is drawn with. The palette is written into
+# the PROJECT theme — the single resource the engine hands to every Control — so the
+# standard controls (buttons, inputs, bars, tabs, scrollbars, popups) follow the choice
+# without a scene being rebuilt. The resource is edited in place and never replaced:
+# FontManager writes the fonts into the same instance.
+#
+# A preset is data, not code: a JSON file dropped into the folder becomes a choice
+# without a line of code. The whole palette is replaced at once — a missing token is not
+# filled with a default grey, because a half-themed interface cannot be told apart from
+# a bug (see validate_preset).
+#
+# The chosen preset is a player PREFERENCE, not a part of a save: it lives in
+# user://settings.cfg next to the language and the font, and is applied at start.
+extends Node
+
+const UI_THEME = preload("res://scripts/ui_theme.gd")
+const UI_ICONS = preload("res://scripts/ui_icons.gd")
+
+const PRESET_DIR := "res://theme/presets"
+const SETTINGS_PATH := "user://settings.cfg"
+const SETTINGS_SECTION := "interface"
+const SETTINGS_KEY := "theme"
+
+# The preset taken when nothing is chosen, or when the chosen one is gone. Its colours
+# are the colours the interface had before the palette existed, so the default look is
+# the familiar one.
+const DEFAULT_PRESET := "classic"
+
+# Every token a preset must define. "chrome" is the surface of the interface, "data" is
+# the meaning of a value (a price, a quality level, a profitable or a lossy rate): the
+# second group changes with the theme too, because the colours of the data are tuned for
+# the background they lie on.
+const CHROME_TOKENS: Array[String] = [
+    "panel_bg", "panel_border",
+    "control_bg", "control_hover", "control_pressed", "control_disabled",
+    "control_border", "control_border_disabled",
+    "text", "text_secondary", "text_muted", "info",
+    "accent", "accent_hover", "accent_text",
+    "field_bg", "field_border", "focus_border",
+    "track", "fill",
+    "tab_active_bg", "tab_active_text",
+    "tooltip_bg", "tooltip_border",
+    "scrollbar", "scrollbar_hover",
+    "hairline", "row_hover", "row_selected",
+    # "scrim" darkens the world behind a modal window, "row_dim" is a modulate MULTIPLIER
+    # for a whole row that is unavailable — the two colours the interface applies to what
+    # it does not draw. Their values are tuned per palette because a multiplier over a dark
+    # surface crushes it to black, while over a light one only greys it.
+    "scrim", "row_dim",
+]
+const DATA_TOKENS: Array[String] = [
+    "price", "price_amount", "quality", "income", "expense", "warning"]
+const METRIC_TOKENS: Array[String] = ["panel_radius", "control_radius"]
+
+# The buttons of the main menu lie on the picture of the city: only the word is
+# drawn there, with a frame of its own, so that it is read on any part of the picture.
+const MENU_BUTTON_OUTLINE := Color(0.05, 0.04, 0.03, 0.85)
+const MENU_BUTTON_OUTLINE_SIZE := 5
+# The plate under the item the pointer is on.
+const MENU_BUTTON_HOVER_ALPHA := 0.32
+
+# Emitted after the palette is replaced. The signals carries no data: the listeners ask
+# the manager for the tokens themselves, so a listener cannot end up with a stale copy.
+signal theme_applied
+
+var current_id: String = ""
+var _presets: Dictionary = {}
+var _palette: Dictionary = {}
+var _metrics: Dictionary = {}
+
+# The dialogs whose title the engine draws, and whether the pointer is over the mark that closes
+# one of them. See _process.
+var _dialogs: Array[AcceptDialog] = []
+var _close_mark_hovered := false
+
+func _ready() -> void:
+    # A dialog stops the world, and the mark that closes it must still answer to the pointer —
+    # while the world runs and while it waits.
+    process_mode = Node.PROCESS_MODE_ALWAYS
+    rescan()
+    apply_stored_preset()
+    get_tree().node_added.connect(_watch_dialog)
+
+func _watch_dialog(node: Node) -> void:
+    var dialog := node as AcceptDialog
+    if dialog == null:
+        return
+    _dialogs.append(dialog)
+    dialog.tree_exiting.connect(_forget_dialog.bind(dialog))
+
+func _forget_dialog(dialog: AcceptDialog) -> void:
+    _dialogs.erase(dialog)
+
+# Reads the folder again. A file that does not parse, or lacks a token, is reported and
+# skipped as a whole — one broken preset must not leave the rest unloadable.
+func rescan() -> void:
+    _presets.clear()
+    var dir := DirAccess.open(PRESET_DIR)
+    if dir == null:
+        push_warning("ThemeManager: cannot open %s" % PRESET_DIR)
+        return
+    var names := dir.get_files()
+    names.sort()
+    for file_name in names:
+        if not file_name.ends_with(".json"):
+            continue
+        var preset := _read_preset(PRESET_DIR.path_join(file_name))
+        if preset.is_empty():
+            continue
+        var id := str(preset["id"])
+        if _presets.has(id):
+            push_warning("ThemeManager: the preset id \"%s\" is used twice; %s is ignored"
+                % [id, file_name])
+            continue
+        _presets[id] = preset
+
+func _read_preset(path: String) -> Dictionary:
+    var text := FileAccess.get_file_as_string(path)
+    if text.is_empty():
+        push_warning("ThemeManager: %s is empty or unreadable" % path)
+        return {}
+    var parsed = JSON.parse_string(text)
+    if typeof(parsed) != TYPE_DICTIONARY:
+        push_warning("ThemeManager: %s is not a JSON object" % path)
+        return {}
+    var problems := validate_preset(parsed)
+    if not problems.is_empty():
+        push_warning("ThemeManager: %s is ignored — %s" % [path, "; ".join(problems)])
+        return {}
+    return parsed
+
+# The problems that make a preset unusable, as readable lines. An empty result means the
+# preset may be loaded.
+static func validate_preset(preset: Dictionary) -> Array[String]:
+    var problems: Array[String] = []
+    var id := str(preset.get("id", ""))
+    if id.is_empty():
+        problems.append("no id")
+    elif not _is_identifier(id):
+        problems.append("the id \"%s\" may only hold a-z, 0-9, _ and -" % id)
+    if str(preset.get("name_key", "")).is_empty():
+        problems.append("no name_key")
+    for section in [["chrome", CHROME_TOKENS], ["data", DATA_TOKENS]]:
+        var block = preset.get(section[0], null)
+        if typeof(block) != TYPE_DICTIONARY:
+            problems.append("no \"%s\" object" % section[0])
+            continue
+        for token in section[1]:
+            if not block.has(token):
+                problems.append("no \"%s\"" % token)
+            elif parse_color(block[token]) == null:
+                problems.append("\"%s\" is not a #RRGGBB or #RRGGBBAA colour" % token)
+    var metrics = preset.get("metrics", null)
+    if typeof(metrics) != TYPE_DICTIONARY:
+        problems.append("no \"metrics\" object")
+    else:
+        for token in METRIC_TOKENS:
+            if not metrics.has(token):
+                problems.append("no \"%s\"" % token)
+            elif typeof(metrics[token]) != TYPE_INT and typeof(metrics[token]) != TYPE_FLOAT:
+                problems.append("\"%s\" is not a number" % token)
+            elif float(metrics[token]) < 0.0:
+                problems.append("\"%s\" is negative" % token)
+    return problems
+
+static func _is_identifier(value: String) -> bool:
+    for i in value.length():
+        var c := value.unicode_at(i)
+        var is_lower: bool = c >= 97 and c <= 122
+        var is_digit: bool = c >= 48 and c <= 57
+        if not (is_lower or is_digit or c == 95 or c == 45):
+            return false
+    return true
+
+# A colour token: "#RRGGBB" or "#RRGGBBAA". null for anything else — the caller decides
+# whether that is a broken preset (validate_preset) or a fallback.
+static func parse_color(value) -> Variant:
+    if typeof(value) != TYPE_STRING:
+        return null
+    var text := str(value).strip_edges()
+    if not text.begins_with("#"):
+        return null
+    var digits := text.substr(1)
+    if digits.length() != 6 and digits.length() != 8:
+        return null
+    if not digits.is_valid_hex_number():
+        return null
+    var alpha := 255
+    if digits.length() == 8:
+        alpha = digits.substr(6, 2).hex_to_int()
+    return Color8(digits.substr(0, 2).hex_to_int(),
+        digits.substr(2, 2).hex_to_int(),
+        digits.substr(4, 2).hex_to_int(), alpha)
+
+# The presets on disk, in a stable order, as {id, name_key}. name_key is a translation
+# key: the label of the choice follows the interface language.
+func available_presets() -> Array[Dictionary]:
+    var out: Array[Dictionary] = []
+    for id in _presets:
+        out.append({"id": id, "name_key": str(_presets[id].get("name_key", id))})
+    out.sort_custom(func(a, b): return str(a["id"]) < str(b["id"]))
+    return out
+
+func has_preset(id: String) -> bool:
+    return _presets.has(id)
+
+func get_preset_id() -> String:
+    return current_id
+
+func get_stored_preset_id() -> String:
+    var config := ConfigFile.new()
+    if config.load(SETTINGS_PATH) != OK:
+        return ""
+    return str(config.get_value(SETTINGS_SECTION, SETTINGS_KEY, ""))
+
+# The colour of a token. The fallback is the caller's own default, so a script that runs
+# without the autoloads in the tree (a headless --script run) still draws something
+# sensible.
+func color(token: String, fallback := Color.WHITE) -> Color:
+    return _palette.get(token, fallback)
+
+func metric(token: String, fallback := 0.0) -> float:
+    return float(_metrics.get(token, fallback))
+
+func get_palette() -> Dictionary:
+    return _palette
+
+# Applies the stored preset, or the default one when the stored id is unknown or the
+# file is gone. A fallback is not written back: the setting belongs to the player.
+func apply_stored_preset() -> bool:
+    var stored := get_stored_preset_id()
+    return apply_preset(stored if has_preset(stored) else DEFAULT_PRESET)
+
+# Applies the preset and remembers the choice.
+func set_preset(id: String) -> bool:
+    if not apply_preset(id):
+        return false
+    var config := ConfigFile.new()
+    config.load(SETTINGS_PATH)
+    config.set_value(SETTINGS_SECTION, SETTINGS_KEY, id)
+    config.save(SETTINGS_PATH)
+    return true
+
+func apply_preset(id: String) -> bool:
+    if not has_preset(id):
+        return false
+    var preset: Dictionary = _presets[id]
+    return apply_palette(_flatten(preset["chrome"], preset["data"]), preset["metrics"], id)
+
+# Puts a palette into the interface. A preset file is the usual source, but the palette may
+# also come from a caller — the id only names the choice, and nothing here remembers it:
+# only set_preset writes the player's setting.
+func apply_palette(palette: Dictionary, metrics: Dictionary, id: String) -> bool:
+    _palette = palette
+    _metrics = metrics.duplicate()
+    current_id = id
+    UI_ICONS.clear_cache()
+    _apply_theme()
+    theme_applied.emit()
+    _repaint()
+    return true
+
+func _flatten(chrome: Dictionary, data: Dictionary) -> Dictionary:
+    var out := {}
+    for block in [chrome, data]:
+        for token in block:
+            var parsed = parse_color(block[token])
+            if parsed != null:
+                out[token] = parsed
+    return out
+
+# --- The project theme -----------------------------------------------------------
+#
+# Every standard control is styled here, not in a screen: a Control that owns no
+# override reads the project theme, so one write reaches all of them at once. A screen
+# that DOES own an override keeps it (see the palette migration of the tabs and panels),
+# which is why the theme is the source of the surface and not a replacement for it.
+
+func _apply_theme() -> void:
+    var theme := ThemeDB.get_project_theme()
+    if theme == null:
+        push_warning("ThemeManager: the project theme is not set (gui/theme/custom in project.godot).")
+        return
+    # Every write into the resource emits `changed`, and one emission walks the whole tree
+    # to tell every Control and Window that its theme items are gone: with the map and the
+    # screens loaded, the hundred writes of a switch cost about a second of freeze. They are
+    # made silent and followed by ONE emission, so the tree is told exactly once.
+    theme.set_block_signals(true)
+    _style_buttons(theme)
+    _style_text_inputs(theme)
+    _style_progress(theme)
+    _style_sliders(theme)
+    _style_tabs(theme)
+    _style_scrollbars(theme)
+    _style_popups(theme)
+    _style_windows(theme)
+    _style_text(theme)
+    _style_surfaces(theme)
+    theme.set_block_signals(false)
+    theme.emit_changed()
+
+func _style_buttons(theme: Theme) -> void:
+    for type in ["Button", "OptionButton"]:
+        theme.set_stylebox("normal", type, UI_THEME.control_normal())
+        theme.set_stylebox("hover", type, UI_THEME.control_hover())
+        theme.set_stylebox("pressed", type, UI_THEME.control_pressed())
+        theme.set_stylebox("disabled", type, UI_THEME.control_disabled())
+        theme.set_stylebox("focus", type, _focus_frame())
+        theme.set_color("font_color", type, color("text"))
+        theme.set_color("font_hover_color", type, color("text"))
+        theme.set_color("font_pressed_color", type, color("text"))
+        theme.set_color("font_focus_color", type, color("text"))
+        theme.set_color("font_disabled_color", type, color("text_muted"))
+    # The buttons of the main menu lie on the picture of the city, so nothing is drawn
+    # around the label there: the picture is seen through the item, and the word is
+    # the whole of the button. The label carries a frame of its own, for the words to
+    # be read on any part of the picture.
+    theme.set_type_variation("PictureButton", "Button")
+    theme.set_stylebox("normal", "PictureButton", _bare_plate())
+    theme.set_stylebox("hover", "PictureButton", _faint_plate(UI_THEME.control_hover()))
+    theme.set_stylebox("pressed", "PictureButton", _faint_plate(UI_THEME.control_pressed()))
+    theme.set_stylebox("disabled", "PictureButton", _bare_plate())
+    theme.set_stylebox("focus", "PictureButton", _focus_frame())
+    theme.set_color("font_color", "PictureButton", color("text"))
+    theme.set_color("font_hover_color", "PictureButton", color("text"))
+    theme.set_color("font_pressed_color", "PictureButton", color("text"))
+    theme.set_color("font_focus_color", "PictureButton", color("text"))
+    theme.set_color("font_disabled_color", "PictureButton", color("text_muted"))
+    theme.set_color("font_outline_color", "PictureButton", MENU_BUTTON_OUTLINE)
+    theme.set_constant("outline_size", "PictureButton", MENU_BUTTON_OUTLINE_SIZE)
+    # A checkbox draws its glyph on a transparent background: only the label follows the
+    # palette, a frame around the whole row would read as a pressed button.
+    for type in ["CheckBox", "CheckButton"]:
+        theme.set_color("font_color", type, color("text"))
+        theme.set_color("font_hover_color", type, color("text"))
+        theme.set_color("font_pressed_color", type, color("text"))
+        theme.set_color("font_focus_color", type, color("text"))
+        theme.set_color("font_disabled_color", type, color("text_muted"))
+    # The glyphs are textures, so the theme cannot derive them from a colour: each state
+    # uses its cached rasterization for the current palette.
+    theme.set_icon("unchecked", "CheckBox", UI_ICONS.checkbox(false, current_id))
+    theme.set_icon("checked", "CheckBox", UI_ICONS.checkbox(true, current_id))
+    # A CheckBox that belongs to a ButtonGroup is drawn as a radio button, and the engine takes
+    # its glyphs from the radio_* items (the additional ingredient of a recipe, building panel).
+    theme.set_icon("radio_unchecked", "CheckBox", UI_ICONS.radio(false, false, current_id))
+    theme.set_icon("radio_checked", "CheckBox", UI_ICONS.radio(true, false, current_id))
+    theme.set_icon("radio_unchecked_disabled", "CheckBox",
+        UI_ICONS.radio(false, true, current_id))
+    theme.set_icon("radio_checked_disabled", "CheckBox", UI_ICONS.radio(true, true, current_id))
+    theme.set_icon("unchecked", "CheckButton", UI_ICONS.switch_button(false, current_id))
+    theme.set_icon("checked", "CheckButton", UI_ICONS.switch_button(true, current_id))
+
+func _style_text_inputs(theme: Theme) -> void:
+    theme.set_stylebox("normal", "LineEdit", _field_frame(false))
+    theme.set_stylebox("focus", "LineEdit", _field_frame(true))
+    theme.set_stylebox("read_only", "LineEdit", _field_frame(false, true))
+    theme.set_color("font_color", "LineEdit", color("text"))
+    theme.set_color("font_uneditable_color", "LineEdit", color("text_muted"))
+    theme.set_color("font_placeholder_color", "LineEdit", color("text_muted"))
+    theme.set_color("caret_color", "LineEdit", color("text"))
+    # The selection is the accent at a low alpha: it marks a range without hiding the
+    # text under it.
+    var selection := color("accent")
+    selection.a = 0.35
+    theme.set_color("selection_color", "LineEdit", selection)
+
+func _style_progress(theme: Theme) -> void:
+    theme.set_stylebox("background", "ProgressBar", UI_THEME.bar_background())
+    theme.set_stylebox("fill", "ProgressBar", UI_THEME.bar_fill())
+    theme.set_color("font_color", "ProgressBar", color("text"))
+
+func _style_sliders(theme: Theme) -> void:
+    var track := StyleBoxFlat.new()
+    track.bg_color = color("track")
+    track.set_corner_radius_all(3)
+    UI_THEME.set_content_margins(track, 4.0)
+    var fill := StyleBoxFlat.new()
+    fill.bg_color = color("fill")
+    fill.set_corner_radius_all(3)
+    UI_THEME.set_content_margins(fill, 4.0)
+    var fill_highlight := fill.duplicate() as StyleBoxFlat
+    fill_highlight.bg_color = color("fill").lightened(0.25)
+    for type in ["HSlider", "VSlider"]:
+        theme.set_stylebox("slider", type, track)
+        theme.set_stylebox("grabber_area", type, fill)
+        theme.set_stylebox("grabber_area_highlight", type, fill_highlight)
+        theme.set_icon("grabber", type,
+            UI_ICONS.knob(color("control_border"), current_id, "normal"))
+        theme.set_icon("grabber_highlight", type,
+            UI_ICONS.knob(color("control_border").lightened(0.18), current_id, "highlight"))
+        theme.set_icon("grabber_pressed", type,
+            UI_ICONS.knob(color("accent"), current_id, "pressed"))
+
+func _style_tabs(theme: Theme) -> void:
+    var selected := _tab_frame(color("tab_active_bg"))
+    var hovered := _tab_frame(color("control_bg"))
+    var plain := _tab_frame(Color(0, 0, 0, 0))
+    for type in ["TabContainer", "TabBar"]:
+        theme.set_stylebox("tab_selected", type, selected)
+        theme.set_stylebox("tab_hovered", type, hovered)
+        theme.set_stylebox("tab_unselected", type, plain)
+        theme.set_stylebox("tab_disabled", type, plain)
+        theme.set_color("font_selected_color", type, color("tab_active_text"))
+        theme.set_color("font_hovered_color", type, color("text"))
+        theme.set_color("font_unselected_color", type, color("text_muted"))
+        theme.set_color("font_disabled_color", type, color("text_muted"))
+    theme.set_stylebox("panel", "TabContainer", UI_THEME.panel())
+
+func _style_scrollbars(theme: Theme) -> void:
+    # The track paints nothing, but it is what sets the thickness of the bar: a ScrollBar takes
+    # its cross-axis size from the track's margins, and a track without them collapses the bar
+    # to zero. The width of the vertical bar comes from the left/right margins, the height of
+    # the horizontal one from the top/bottom margins, so each orientation needs its own track.
+    var v_track := StyleBoxFlat.new()
+    v_track.bg_color = Color(0, 0, 0, 0)
+    v_track.content_margin_left = 4.0
+    v_track.content_margin_right = 4.0
+    var h_track := StyleBoxFlat.new()
+    h_track.bg_color = Color(0, 0, 0, 0)
+    h_track.content_margin_top = 4.0
+    h_track.content_margin_bottom = 4.0
+    theme.set_stylebox("scroll", "VScrollBar", v_track)
+    theme.set_stylebox("scroll", "HScrollBar", h_track)
+    for type in ["VScrollBar", "HScrollBar"]:
+        theme.set_stylebox("grabber", type, _scroll_grabber(color("scrollbar")))
+        theme.set_stylebox("grabber_highlight", type, _scroll_grabber(color("scrollbar_hover")))
+        theme.set_stylebox("grabber_pressed", type, _scroll_grabber(color("scrollbar_hover")))
+
+func _style_popups(theme: Theme) -> void:
+    theme.set_stylebox("panel", "PopupMenu", UI_THEME.panel())
+    theme.set_stylebox("hover", "PopupMenu", _flat(popup_hover_color(
+        color("panel_bg"), color("row_hover"), color("text")), 3))
+    theme.set_color("font_color", "PopupMenu", color("text"))
+    theme.set_color("font_hover_color", "PopupMenu", color("text"))
+    theme.set_color("font_disabled_color", "PopupMenu", color("text_muted"))
+    theme.set_color("font_accelerator_color", "PopupMenu", color("text_muted"))
+    theme.set_color("font_separator_color", "PopupMenu", color("text_muted"))
+    theme.set_stylebox("panel", "PopupPanel", UI_THEME.panel())
+
+# The frame of a dialog built in code — the offer of a new era, the news of a task of the era, the
+# confirmation of the pause menu. Such a dialog is a real Window, not a plate of the screen, and the
+# engine paints it in two boxes: the body under the content (AcceptDialog/panel) and the frame of
+# the whole window (Window/embedded_border), which is expanded over the title bar and the sides and
+# is therefore the only thing that draws the border and the corners. A ConfirmationDialog owns no
+# item of its own and reads all of these through AcceptDialog.
+#
+# The margins of both boxes are the numbers of the engine, not a style: they are the size of the
+# decorations and the padding of the content, so a dialog keeps the geometry it had and only its
+# colours change.
+func _style_windows(theme: Theme) -> void:
+    var body := UI_THEME.panel()
+    body.border_width_left = 0
+    body.border_width_right = 0
+    body.border_width_top = 0
+    body.border_width_bottom = 0
+    theme.set_stylebox("panel", "AcceptDialog", body)
+    theme.set_stylebox("embedded_border", "Window", _window_frame())
+    theme.set_stylebox("embedded_unfocused_border", "Window", _window_frame())
+    theme.set_color("title_color", "Window", color("text_secondary"))
+    # The outline under the title belongs to the dark frame of the engine: over a plate of the
+    # palette it reads as a smudge.
+    theme.set_color("title_outline_modulate", "Window", Color(0, 0, 0, 0))
+    # The mark that closes a window is a texture, so no colour of the theme reaches it: the button
+    # is rasterised from the palette. The engine has no item for the hovered state — it swaps the
+    # texture only while the button is held — so the resting item is the one that carries the
+    # hover, and _process replaces it when the pointer comes over the mark.
+    theme.set_icon("close", "Window", _close_mark_texture())
+    theme.set_icon("close_pressed", "Window", UI_ICONS.close(
+        UI_ICONS.CloseState.PRESSED, current_id))
+
+func _close_mark_texture() -> ImageTexture:
+    return UI_ICONS.close(UI_ICONS.CloseState.HOVER if _close_mark_hovered
+        else UI_ICONS.CloseState.REST, current_id)
+
+# The rectangle the engine answers a click on the close mark with, in the coordinates of the
+# window that embeds the dialog: it anchors the mark by its top left, eighteen pixels left of the
+# right edge of the content and twenty-four pixels above the content, and grows it down and to the
+# right by the size of the texture.
+func _close_mark_rect(dialog: AcceptDialog) -> Rect2:
+    var side := float(UI_ICONS.CLOSE_SIZE.x)
+    var h := float(dialog.get_theme_constant("close_h_offset", "Window"))
+    var v := float(dialog.get_theme_constant("close_v_offset", "Window"))
+    return Rect2(Vector2(dialog.position)
+        + Vector2(dialog.size.x - h, -v), Vector2(side, side))
+
+func _process(_delta: float) -> void:
+    if _dialogs.is_empty():
+        return
+    var where := get_window().get_mouse_position()
+    var hovered := false
+    for dialog in _dialogs:
+        if dialog.visible and _close_mark_rect(dialog).has_point(where):
+            hovered = true
+            break
+    if hovered == _close_mark_hovered:
+        return
+    _close_mark_hovered = hovered
+    var theme := ThemeDB.get_project_theme()
+    theme.set_block_signals(true)
+    theme.set_icon("close", "Window", _close_mark_texture())
+    theme.set_block_signals(false)
+    theme.emit_changed()
+
+# The frame of an embedded window: the plate of a window with the heavier border, grown over the
+# title bar (the thirty-two pixels of the engine under the thirty-six of the title) and over the
+# eight pixels of the sides, so the border of the dialog is its outer edge and not a line drawn
+# under the text.
+func _window_frame() -> StyleBoxFlat:
+    var style := UI_THEME.window_plate()
+    style.expand_margin_left = 8.0
+    style.expand_margin_top = 32.0
+    style.expand_margin_right = 8.0
+    style.expand_margin_bottom = 6.0
+    style.content_margin_left = 10.0
+    style.content_margin_top = 28.0
+    style.content_margin_right = 10.0
+    style.content_margin_bottom = 8.0
+    return style
+
+func _style_text(theme: Theme) -> void:
+    theme.set_color("font_color", "Label", color("text"))
+    # The title of a group of settings sits above the headings of the settings themselves.
+    # It is told apart by the bold face and the larger size of GroupHeading
+    # (theme/tooltips_theme.tres), not by a colour: the accent of a palette may be dimmer
+    # than the text, and a heading that reads as a footnote is worse than none.
+    theme.set_type_variation("GroupHeading", "Label")
+    theme.set_color("font_color", "GroupHeading", color("text"))
+    theme.set_color("default_color", "RichTextLabel", color("text"))
+    theme.set_color("font_color", "TooltipLabel", color("text"))
+    theme.set_stylebox("panel", "TooltipPanel", UI_THEME.tooltip())
+    for type in ["HSeparator", "VSeparator"]:
+        theme.set_stylebox("separator", type, _separator())
+
+# The surfaces of the screens are named variations of the project theme rather than
+# per-node styleboxes: a scene marks a Panel with a variation, and the panel follows the
+# palette without a line of runtime code. The variations are registered for Panel and
+# PanelContainer alike, because a card is a PanelContainer but a screen plate is a Panel.
+func _style_surfaces(theme: Theme) -> void:
+    _add_surface(theme, "SurfacePanel", UI_THEME.panel())
+    _add_surface(theme, "SurfaceRaised", UI_THEME.panel_raised())
+    _add_surface(theme, "SurfaceInset", UI_THEME.panel_inset())
+    _add_surface(theme, "SurfaceVeil", UI_THEME.panel_veil())
+    _add_surface(theme, "SurfaceWindow", UI_THEME.window_plate())
+    _add_surface(theme, "SurfaceProblem", UI_THEME.problem())
+    _add_surface(theme, "SurfaceTooltip", UI_THEME.tooltip())
+    # A plate that draws nothing: the region takes its surface from its own children.
+    _add_surface(theme, "SurfaceBlank", StyleBoxEmpty.new())
+    theme.set_type_variation("MutedLabel", "Label")
+    theme.set_color("font_color", "MutedLabel", color("text_muted"))
+
+func _add_surface(theme: Theme, name: String, style: StyleBox) -> void:
+    theme.set_type_variation(name, "Panel")
+    theme.set_stylebox("panel", name, style)
+
+# The plate of an item that lies on the picture: nothing is drawn, only the space
+# around the label is kept, so that the word is the whole of the button.
+func _bare_plate() -> StyleBoxFlat:
+    var style := StyleBoxFlat.new()
+    style.bg_color = Color(0, 0, 0, 0)
+    style.set_border_width_all(0)
+    style.set_corner_radius_all(int(metric("control_radius")))
+    style.content_margin_left = 8.0
+    style.content_margin_right = 8.0
+    style.content_margin_top = 4.0
+    style.content_margin_bottom = 4.0
+    return style
+
+# The faint plate under the item the pointer is on. It is faint on purpose: the word
+# stays the main thing on the picture.
+func _faint_plate(style: StyleBoxFlat) -> StyleBoxFlat:
+    style.bg_color.a *= MENU_BUTTON_HOVER_ALPHA
+    style.set_border_width_all(0)
+    return style
+
+# The focus frame is drawn OVER the normal box, so it has no fill of its own: an opaque
+# box would repaint the control in a second colour as soon as it takes the focus.
+func _focus_frame() -> StyleBoxFlat:
+    var style := StyleBoxFlat.new()
+    style.bg_color = Color(0, 0, 0, 0)
+    style.border_color = color("focus_border")
+    style.set_border_width_all(1)
+    style.set_corner_radius_all(int(metric("control_radius")))
+    return style
+
+func _field_frame(focused: bool, read_only := false) -> StyleBoxFlat:
+    var style := StyleBoxFlat.new()
+    style.bg_color = color("control_disabled") if read_only else color("field_bg")
+    if read_only:
+        style.border_color = color("control_border_disabled")
+    else:
+        style.border_color = color("focus_border") if focused else color("field_border")
+    style.set_border_width_all(1)
+    style.set_corner_radius_all(int(metric("control_radius")))
+    style.content_margin_left = 4.0
+    style.content_margin_right = 4.0
+    style.content_margin_top = 4.0
+    style.content_margin_bottom = 4.0
+    return style
+
+func _tab_frame(bg: Color) -> StyleBoxFlat:
+    var style := StyleBoxFlat.new()
+    style.bg_color = bg
+    style.content_margin_left = 12.0
+    style.content_margin_right = 12.0
+    style.content_margin_top = 6.0
+    style.content_margin_bottom = 6.0
+    style.corner_radius_top_left = 6
+    style.corner_radius_top_right = 6
+    return style
+
+func _flat(bg: Color, radius: int) -> StyleBoxFlat:
+    var style := StyleBoxFlat.new()
+    style.bg_color = bg
+    style.set_corner_radius_all(radius)
+    return style
+
+func _scroll_grabber(bg: Color) -> StyleBoxFlat:
+    var style := StyleBoxFlat.new()
+    style.bg_color = bg
+    style.set_corner_radius_all(3)
+    style.content_margin_left = 2.0
+    style.content_margin_right = 2.0
+    style.content_margin_top = 2.0
+    style.content_margin_bottom = 2.0
+    return style
+
+func _separator() -> StyleBoxLine:
+    var style := StyleBoxLine.new()
+    style.color = color("hairline")
+    style.thickness = 1
+    return style
+
+# Makes the new surface visible at once. The single emission of the theme resource (see
+# _apply_theme) already notifies the Controls through the engine chain, but that chain stops
+# at a node that is neither Control nor Window, and a Control that owns overrides may not
+# re-read its items at all. The notification is therefore repeated over the whole tree, and
+# every node that draws itself is asked to redraw — a Control included, because the badges,
+# the dots and the frames of the tree are drawn in `_draw()` of a Control and read the
+# palette there.
+func _repaint() -> void:
+    if not is_inside_tree():
+        return
+    get_tree().root.propagate_notification(Control.NOTIFICATION_THEME_CHANGED)
+    _redraw_hand_drawn(get_tree().root)
+
+func _redraw_hand_drawn(node: Node) -> void:
+    if node is CanvasItem:
+        (node as CanvasItem).queue_redraw()
+    for child in node.get_children():
+        _redraw_hand_drawn(child)
+
+# A hovered item of a popup is a band laid on the SAME plate as its neighbours, with no
+# frame of its own to mark it. On a dark plate `row_hover` is a lighter band and reads
+# even as a small step; on a light plate it is a darker one, and a step of a few percent
+# disappears — the caption stays dark on a nearly unchanged background. The fill is
+# therefore derived from the palette: blend `row_hover` towards `text` (the contrasting
+# direction in every palette) until the two linear luminances differ by 1.5x. A dark
+# palette already clears that step, so its authored `row_hover` is used as written.
+# Blending stops before the caption on the band drops below body-text contrast.
+const POPUP_HOVER_SEPARATION := 1.5
+const POPUP_HOVER_STEP := 0.04
+const POPUP_HOVER_MAX_STEPS := 24
+const POPUP_HOVER_MIN_TEXT_CONTRAST := 4.5
+
+static func popup_hover_color(panel: Color, row_hover: Color, text: Color) -> Color:
+    var fill := row_hover
+    for i in POPUP_HOVER_MAX_STEPS:
+        if luminance_separation(fill, panel) >= POPUP_HOVER_SEPARATION:
+            break
+        var next := fill.lerp(text, POPUP_HOVER_STEP)
+        if contrast_ratio(next, text) < POPUP_HOVER_MIN_TEXT_CONTRAST:
+            break
+        fill = next
+    return fill
+
+# How far apart two surfaces are in linear luminance, without the +0.05 offset of the
+# WCAG ratio. A highlight is a step BETWEEN two plates, not text on one plate: darkening
+# a light plate by 10% reads as nothing, while the same ratio on a near-black plate means
+# a band several times brighter than its background.
+static func luminance_separation(a: Color, b: Color) -> float:
+    var la := maxf(_linear_luminance(a), 0.000001)
+    var lb := maxf(_linear_luminance(b), 0.000001)
+    return maxf(la, lb) / minf(la, lb)
+
+# The WCAG contrast ratio of two colours, (L1 + 0.05) / (L2 + 0.05). The alpha is
+# ignored: the panels are near-opaque, and a translucent texture behind them is not
+# something the ratio can account for. The presets are checked against it by the test;
+# the loader itself does not refuse a low ratio, because dim text is deliberate in
+# places (a disabled control, a footnote).
+static func contrast_ratio(a: Color, b: Color) -> float:
+    var la := _linear_luminance(a)
+    var lb := _linear_luminance(b)
+    if la < lb:
+        var swap := la
+        la = lb
+        lb = swap
+    return (la + 0.05) / (lb + 0.05)
+
+static func _linear_luminance(c: Color) -> float:
+    return 0.2126 * _channel(c.r) + 0.7152 * _channel(c.g) + 0.0722 * _channel(c.b)
+
+static func _channel(value: float) -> float:
+    if value <= 0.04045:
+        return value / 12.92
+    return pow((value + 0.055) / 1.055, 2.4)

@@ -1,0 +1,52 @@
+{
+  "resources": [
+    {
+      "id": "tulip_field", "price": 10,
+      "name": "Tulips",
+      "type": "raw",
+      "category": "plants",
+      "group": "flowers",
+      "subgroup": "decorative_plants",
+      "tech_required": "irrigation",
+      "allowed_terrain": [ "plain" ],
+      "allowed_cover": [ "none" ],
+      "allowed_climate_zones": ["boreal_dry", "boreal_wet", "prairie", "steppe"],
+      "improved_by": "plantation",
+      "produces": { "tulips": 10 },
+      "icon": "tulips.png",
+      "color": [ 255, 100, 100 ]
+    },
+    {
+      "id": "rose_field", "price": 15,
+      "name": "Roses",
+      "type": "raw",
+      "category": "plants",
+      "group": "flowers",
+      "subgroup": "aromatic_plants",
+      "tech_required": "irrigation",
+      "allowed_terrain": [ "plain" ],
+      "allowed_cover": [ "none" ],
+      "allowed_climate_zones": ["boreal_dry", "boreal_wet", "prairie", "steppe"],
+      "improved_by": "plantation",
+      "produces": { "roses": 10 },
+      "icon": "roses.png",
+      "color": [ 255, 50, 50 ]
+    },
+    {
+      "id": "chamomile_field", "price": 8,
+      "name": "Chamomile",
+      "type": "raw",
+      "category": "plants",
+      "group": "flowers",
+      "subgroup": "medicinal_plants",
+      "tech_required": "irrigation",
+      "allowed_terrain": [ "plain" ],
+      "allowed_cover": [ "none" ],
+      "allowed_climate_zones": ["boreal_dry", "boreal_wet", "prairie", "steppe"],
+      "improved_by": "plantation",
+      "produces": { "chamomile": 10 },
+      "icon": "chamomile.png",
+      "color": [ 255, 255, 200 ]
+    }
+  ]
+}

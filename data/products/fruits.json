@@ -1,0 +1,67 @@
+{
+  "resources": [
+    { "id": "grapes", "price": 6, "name": "Grapes", "type": "product", "category": "fruits", "icon": "grapes.png" },
+    { "id": "olives", "price": 7, "name": "Olives", "type": "product", "category": "fruits", "icon": "olives.png" },
+    {
+      "id": "mulberries",
+      "price": 5,
+      "name": "Mulberries",
+      "type": "product",
+      "category": "fruits",
+      "icon": "mulberries.png"
+    },
+    { "id": "figs", "price": 8, "name": "Figs", "type": "product", "category": "fruits", "icon": "figs.png" },
+    { "id": "dates", "price": 10, "name": "Dates", "type": "product", "category": "fruits", "icon": "dates.png" },
+    {
+      "id": "coconuts",
+      "price": 8,
+      "name": "Coconuts",
+      "type": "product",
+      "category": "fruits",
+      "icon": "coconuts.png"
+    },
+    { "id": "agave", "price": 4, "name": "Agave", "type": "product", "category": "fruits", "icon": "agave.png" },
+    {
+      "id": "cactus_fruit",
+      "price": 6,
+      "name": "Prickly Pear",
+      "type": "product",
+      "category": "fruits",
+      "icon": "cactus_fruit.png"
+    },
+    {
+      "id": "pomegranates",
+      "price": 9,
+      "name": "Pomegranates",
+      "type": "product",
+      "category": "fruits",
+      "icon": "pomegranates.png"
+    },
+    {
+      "id": "yucca_fruit",
+      "price": 5,
+      "name": "Yucca Fruit",
+      "type": "product",
+      "category": "fruits",
+      "icon": "yucca_fruit.png"
+    },
+    {
+      // The pod is a dried sweet fruit of the tree, eaten as it is and milled
+      // into flour like a grain (the pod is a third of its weight sugar).
+      "id": "carob_pods",
+      "price": 6,
+      "name": "Carob Pods",
+      "type": "product",
+      "category": "fruits",
+      "icon": "carob_pods.png"
+    },
+    {
+      "id": "apples",
+      "price": 6,
+      "name": "Apples",
+      "type": "product",
+      "category": "fruits",
+      "icon": "apples.png"
+    }
+  ]
+}

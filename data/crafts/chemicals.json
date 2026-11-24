@@ -1,0 +1,269 @@
+{
+  "crafts": [
+    {
+      "id": "green_vitriol",
+      "name": "Green Vitriol",
+      "produced_in": [ "alchemist_house" ],
+      "resources": [ { "pyrite": 20 }, [ { "iron": 10 }, { "meteorite_iron": 10 } ] ],
+      "result": { "green_vitriol": 10 },
+      "time": 10.0,
+      "unlock_tech": "alchemy",
+      "description": "Makes a green vitriol from pyrite and iron."
+    },
+    {
+      // Direct combustion of elemental sulfur (bell / chamber process) requires Chemistry;
+      // earlier oil of vitriol is distilled from roasted green vitriol.
+      "id": "sulfuric_acid_from_sulfur",
+      "name": "Sulfuric Acid (from sulfur)",
+      "produced_in": [ "alchemist_house" ],
+      "resources": { "sulfur": 20 },
+      "result": { "sulfuric_acid": 10 },
+      "time": 10.0,
+      "unlock_tech": "chemistry",
+      "description": "Burns sulfur under moist condensing vessels into sulfuric acid."
+    },
+    {
+      "id": "sulfuric_acid_from_green_vitriol",
+      "name": "Sulfuric Acid (from green vitriol)",
+      "produced_in": [ "alchemist_house" ],
+      "resources": [ { "green_vitriol": 20 } ],
+      "result": { "sulfuric_acid": 10 },
+      "time": 10.0,
+      "unlock_tech": "distillation",
+      "description": "Distils sulfuric acid (oil of vitriol) from roasted green vitriol."
+    },
+    {
+      // Takes @alcohol (fermented drinks only) so strong spirits are never wasted
+      // as raw feedstock for rectification.
+      "id": "rectified_spirit",
+      "name": "Rectified Spirit",
+      "produced_in": [ "distillery", "alchemist_house" ],
+      "resources": { "@alcohol": 20 },
+      "result": { "rectified_spirit": 10 },
+      "time": 10.0,
+      "unlock_tech": "distillation",
+      "description": "Redistils a fermented drink into concentrated rectified spirit."
+    },
+    {
+      // Closed-still distillation splits oleoresin cleanly into volatile turpentine
+      // overhead and solid rosin in the pot.
+      "id": "resin_distillation",
+      "name": "Turpentine and Rosin",
+      "produced_in": [ "tar_distillery" ],
+      "resources": { "resin": 20 },
+      "result": { "turpentine": 10, "rosin": 10 },
+      "time": 8.0,
+      "unlock_tech": "distillation",
+      "description": "Distils pine resin into volatile turpentine and solid rosin."
+    },
+    {
+      // Turpentine stands first so a pine-producing city can make varnish from its
+      // own still; rectified spirit steps in where alcohol is plentiful.
+      "id": "spirit_varnish",
+      "name": "Varnish",
+      "produced_in": [ "tar_distillery", "alchemist_house" ],
+      "resources": [ { "rosin": 10 }, [ { "turpentine": 10 }, { "rectified_spirit": 10 } ] ],
+      "result": { "spirit_varnish": 10 },
+      "time": 8.0,
+      "unlock_tech": "distillation",
+      "description": "Dissolves rosin in turpentine or rectified spirit into a clear protective varnish."
+    },
+    {
+      // Heating oil shale without air releases the crude oil the refinery and the tannery take.
+      "id": "shale_oil",
+      "produced_in": [ "tar_distillery", "alchemist_house" ],
+      "resources": { "oil_shale": 20, "@smelting_fuel": 10 },
+      "result": { "shale_oil": 10 },
+      "time": 10.0,
+      "unlock_tech": "distillation",
+      "description": "Heats oil shale in a closed retort to recover crude shale oil."
+    },
+    {
+      // A second distillation of the crude oil drives off the light fraction used in lamps.
+      "id": "kerosene",
+      "name": "Kerosene",
+      "produced_in": [ "tar_distillery", "alchemist_house" ],
+      "resources": { "shale_oil": 20, "@smelting_fuel": 10 },
+      "result": { "kerosene": 10 },
+      "time": 8.0,
+      "unlock_tech": "distillation",
+      "description": "Redistils crude shale oil into clean-burning lamp kerosene."
+    },
+    {
+      // Distilling crude bitumen drives off clear white naphtha overhead while leaving
+      // workable pitch tar in the retort.
+      "id": "white_naphtha",
+      "name": "White Naphtha",
+      "produced_in": [ "tar_distillery", "alchemist_house" ],
+      "resources": { "bitumen": 20 },
+      "result": { "white_naphtha": 10, "tar": 10 },
+      "time": 8.0,
+      "unlock_tech": "distillation",
+      "description": "Distils bitumen into clear white naphtha and residual tar."
+    },
+    {
+      "id": "mercury",
+      "name": "Mercury",
+      "produced_in": [ "alchemist_house" ],
+      "resources": { "cinnabar_ore": 20, "@smelting_fuel": 10 },
+      "result": { "mercury": 10 },
+      "time": 10.0,
+      "unlock_tech": "distillation",
+      "description": "Roasts cinnabar ore in a retort and condenses the vapor into liquid mercury."
+    },
+    {
+      // Split into separate recipes like sulfuric acid so a mod that removes green vitriol
+      // can drop this route while hydrochloric acid keeps its alum and sulfuric routes.
+      "id": "hydrochloric_acid_from_green_vitriol",
+      "name": "Hydrochloric Acid (from green vitriol)",
+      "produced_in": [ "alchemist_house" ],
+      "resources": { "salt": 20, "green_vitriol": 10 },
+      "result": { "hydrochloric_acid": 10 },
+      "time": 10.0,
+      "unlock_tech": "distillation",
+      "description": "Distils hydrochloric acid (spirit of salt) from salt and green vitriol."
+    },
+    {
+      "id": "hydrochloric_acid_from_alum",
+      "name": "Hydrochloric Acid (from alum)",
+      "produced_in": [ "alchemist_house" ],
+      "resources": { "salt": 20, "alum": 10 },
+      "result": { "hydrochloric_acid": 10 },
+      "time": 10.0,
+      "unlock_tech": "distillation",
+      "description": "Distils hydrochloric acid (spirit of salt) from salt and alum."
+    },
+    {
+      // Glauber's wet-acid displacement: concentrated sulfuric acid drives hydrochloric
+      // acid cleanly from common salt with a higher yield than dry vitriol or alum roasting.
+      "id": "hydrochloric_acid_from_sulfuric_acid",
+      "name": "Hydrochloric Acid (from sulfuric acid)",
+      "produced_in": [ "alchemist_house" ],
+      "resources": { "salt": 20, "sulfuric_acid": 10 },
+      "result": { "hydrochloric_acid": 15 },
+      "time": 10.0,
+      "unlock_tech": "chemistry",
+      "description": "Displaces hydrochloric acid from common salt with sulfuric acid."
+    },
+    {
+      // Medieval nitrary leaching and double decomposition of lime nitrate with potash
+      // (al-Rammah, Song/Yuan workshops, Salpeterhütten); keeps antiquity saltpeter tied
+      // to natural arid crusts while giving woodland cities a medieval source for gunpowder
+      // and nitric acid.
+      "id": "saltpeter_nitrary",
+      "name": "Saltpeter (nitrary)",
+      "produced_in": [ "lime_kilns", "alchemist_house" ],
+      "resources": { "lime": 20, "potash": 10 },
+      "result": { "saltpeter": 10 },
+      "time": 12.0,
+      "unlock_tech": "gunpowder",
+      "description": "Leaches nitrified lime earth with potash and crystallizes saltpeter."
+    },
+    {
+      // Early scientific chemical synthesis of potash alum from clay, sulfuric acid and
+      // potash (Marggraf / Chaptal) for cities without natural alunite quarries.
+      "id": "alum_from_potash",
+      "name": "Alum (potash alum)",
+      "produced_in": [ "alchemist_house" ],
+      "resources": [ [ { "kaolin": 10 }, { "clay": 10 } ], { "sulfuric_acid": 10 }, { "potash": 10 } ],
+      "result": { "alum": 20 },
+      "time": 10.0,
+      "unlock_tech": "chemistry",
+      "description": "Digests clay with sulfuric acid and potash and crystallizes potash alum."
+    },
+    {
+      // Alembic sublimation provides sal ammoniac where volcanic deposits are absent,
+      // at a slower rate than mining natural crusts.
+      "id": "sal_ammoniac_sublimation",
+      "name": "Sal Ammoniac (sublimed)",
+      "produced_in": [ "alchemist_house" ],
+      "resources": { "salt": 20, "@smelting_fuel": 20 },
+      "result": { "sal_ammoniac": 10 },
+      "time": 12.0,
+      "unlock_tech": "distillation",
+      "description": "Sublimes salt and hearth soot in sealed vessels into white sal ammoniac."
+    },
+    {
+      // Consolidates lead, tin and zinc ceramic glazes with soda, borax or potash flux.
+      "id": "ceramic_glaze",
+      "name": "Ceramic Glaze",
+      "produced_in": [ "lime_kilns", "pottery_workshop" ],
+      "resources": [
+        { "quartz_sand": 10 },
+        [ { "lead": 10 }, { "tin": 10 }, { "zinc": 10 } ],
+        [ { "soda": 10 }, { "borax": 10 }, { "potash": 10 } ]
+      ],
+      "result": { "ceramic_glaze": 10 },
+      "time": 7.0,
+      "unlock_tech": "alchemy",
+      "description": "Fuses quartz sand, a metal oxide and an alkaline or borax flux into ceramic glaze."
+    },
+    {
+      // Split into separate recipes like hydrochloric acid so removing green vitriol in a
+      // mod leaves nitric acid reachable via alum and sulfuric acid.
+      "id": "nitric_acid_from_green_vitriol",
+      "name": "Nitric Acid (from green vitriol)",
+      "produced_in": [ "alchemist_house" ],
+      "resources": { "saltpeter": 20, "green_vitriol": 10 },
+      "result": { "nitric_acid": 10 },
+      "time": 10.0,
+      "unlock_tech": "distillation",
+      "description": "Distils nitric acid (aqua fortis) from saltpeter and green vitriol."
+    },
+    {
+      "id": "nitric_acid_from_alum",
+      "name": "Nitric Acid (from alum)",
+      "produced_in": [ "alchemist_house" ],
+      "resources": { "saltpeter": 20, "alum": 10 },
+      "result": { "nitric_acid": 10 },
+      "time": 10.0,
+      "unlock_tech": "distillation",
+      "description": "Distils nitric acid (aqua fortis) from saltpeter and alum."
+    },
+    {
+      // Glauber's fuming spirit of nitre: liquid sulfuric acid displaces nitric acid from
+      // saltpeter with higher yield than dry medieval vitriol or alum distillation.
+      "id": "nitric_acid_from_sulfuric_acid",
+      "name": "Nitric Acid (from sulfuric acid)",
+      "produced_in": [ "alchemist_house" ],
+      "resources": { "saltpeter": 20, "sulfuric_acid": 10 },
+      "result": { "nitric_acid": 15 },
+      "time": 10.0,
+      "unlock_tech": "chemistry",
+      "description": "Displaces nitric acid from saltpeter with sulfuric acid."
+    },
+    {
+      // Medieval alchemical route (Pseudo-Geber): dissolves sal ammoniac directly in aqua fortis.
+      "id": "aqua_regia",
+      "name": "Aqua Regia (from sal ammoniac)",
+      "produced_in": [ "alchemist_house" ],
+      "resources": { "nitric_acid": 10, "sal_ammoniac": 10 },
+      "result": { "aqua_regia": 10 },
+      "time": 10.0,
+      "unlock_tech": "distillation",
+      "description": "Dissolves sal ammoniac in nitric acid into gold-dissolving aqua regia."
+    },
+    {
+      // Scientific chemistry route: compounds pure concentrated nitric and hydrochloric
+      // acids directly with higher yield and without spending sal ammoniac.
+      "id": "aqua_regia_from_acids",
+      "name": "Aqua Regia (from acids)",
+      "produced_in": [ "alchemist_house" ],
+      "resources": { "nitric_acid": 10, "hydrochloric_acid": 10 },
+      "result": { "aqua_regia": 15 },
+      "time": 10.0,
+      "unlock_tech": "chemistry",
+      "description": "Compounds concentrated nitric and hydrochloric acids into gold-dissolving aqua regia."
+    },
+    {
+      "id": "gunpowder",
+      "name": "Gunpowder",
+      "produced_in": [ "alchemist_house" ],
+      "resources": { "saltpeter": 20, "sulfur": 10, "charcoal": 10 },
+      "result": { "gunpowder": 10 },
+      "time": 10.0,
+      "unlock_tech": "gunpowder",
+      "description": "Mills saltpeter, sulfur and charcoal into black powder for blasting rock."
+    }
+  ]
+}

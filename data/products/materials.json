@@ -1,0 +1,606 @@
+{
+  "resources": [
+    { "id": "hide", "price": 5, "name": "Hide", "type": "product", "category": "material", "icon": "hide.png" },
+    { "id": "tallow", "price": 5, "name": "Tallow", "type": "product", "category": "material", "icon": "tallow.png" },
+    {
+      "id": "wool",
+      "price": 8,
+      "name": "Wool",
+      "type": "product",
+      "category": "material",
+      "icon": "wool.png",
+      "reputation": {
+        "threshold": 200,
+        "trigger": "sell",
+        "reward": { "type": "trade_price", "value": 0.10 }
+      },
+      "brand": {
+        "threshold": 500,
+        "trigger": "sell",
+        "min_quality": "exceptional",
+        "reward": { "type": "brand_product", "product": "cashmere" }
+      },
+      "challenge": {
+        "id": "wool_challenge",
+        "threshold": 1000,
+        "trigger": "sell",
+        "min_quality": "exceptional",
+        "name": "Wool the Towns Ask for by Name",
+        "description": "A thousand units of wool of exceptional quality sold to the towns — and the cloth begins to be asked by the name of the town.",
+        "reward": { "type": "specialization", "id": "wool_specialization" }
+      }
+    },
+    { "id": "wax", "price": 9, "name": "Wax", "type": "product", "category": "material", "icon": "wax.png" },
+    {
+      // The brand good of the wool line (see data/challenges.json for the mechanic and the
+      // header comment of data/products/food.json). Its name is the phrase the player reads: the
+      // tag in it stands for the city that earned the brand.
+      "id": "cashmere",
+      "price": 24,
+      "name": "Wool of <city_name>",
+      "type": "product",
+      "category": "material",
+      "brand_of": "wool",
+      "icon": "wool.png"
+    },
+    { "id": "feathers", "price": 4, "name": "Feathers", "type": "product", "category": "material", "icon": "feathers.png" },
+    { "id": "flour", "price": 4, "name": "Flour", "type": "product", "category": "material", "icon": "flour.png" },
+    { "id": "clay", "price": 3, "name": "Clay", "type": "product", "category": "material", "icon": "clay.png" },
+    { "id": "kaolin", "price": 8, "name": "Kaolin", "type": "product", "category": "material", "icon": "kaolin.png" },
+    {
+      "id": "leather", "price": 14,
+      "name": "Leather",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "leatherworking",
+      "icon": "leather.png"
+    },
+    {
+      "id": "flax", "price": 4,
+      "name": "Flax",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "weaving",
+      "icon": "flax.png"
+    },
+    {
+      "id": "cotton", "price": 6,
+      "name": "Cotton",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "weaving",
+      "icon": "cotton.png"
+    },
+    {
+      "id": "hemp", "price": 5,
+      "name": "Hemp",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "weaving",
+      "icon": "hemp.png"
+    },
+    {
+      "id": "jute", "price": 5,
+      "name": "Jute",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "weaving",
+      "icon": "jute.png"
+    },
+    {
+      "id": "ramie", "price": 5,
+      "name": "Ramie",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "weaving",
+      "icon": "ramie.png"
+    },
+    {
+      "id": "tea_leaves", "price": 6,
+      "name": "Tea Leaves",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "fermentation",
+      "icon": "tea_leaves.png"
+    },
+    {
+      "id": "coffee_beans", "price": 7,
+      "name": "Coffee Beans",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "fermentation",
+      "icon": "coffee_beans.png"
+    },
+    {
+      "id": "cocoa_beans", "price": 8,
+      "name": "Cocoa Beans",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "fermentation",
+      "icon": "cocoa.png"
+    },
+    {
+      "id": "yerba_mate_leaves", "price": 6,
+      "name": "Yerba Mate Leaves",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "fermentation",
+      "icon": "yerba_mate_leaves.png"
+    },
+    {
+      "id": "rosella_sepals", "price": 6,
+      "name": "Rosella sepals",
+      "type": "product",
+      "category": "material",
+      "icon": "rosella_sepals.png"
+    },
+    {
+      "id": "sisal", "price": 6,
+      "name": "Sisal",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "weaving",
+      "icon": "agave.png"
+    },
+    {
+      // The fibre of the coconut husk: too coarse for cloth, so it goes to
+      // cordage.
+      "id": "coir", "price": 5,
+      "name": "Coir",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "plantations",
+      "icon": "coir.png"
+    },
+    {
+      "id": "kenaf", "price": 6,
+      "name": "Kenaf",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "weaving",
+      "icon": "kenaf.png"
+    },
+    {
+      "id": "yucca", "price": 6,
+      "name": "Yucca",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "weaving",
+      "icon": "yucca.png"
+    },
+    {
+      "id": "velvetleaf", "price": 6,
+      "name": "Velvetleaf",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "weaving",
+      "icon": "velvetleaf.png"
+    },
+    {
+      "id": "mulberry_bark", "price": 6,
+      "name": "Mulberry Bark",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "paper",
+      "icon": "mulberry_bark.png"
+    },
+    {
+      "id": "paper", "price": 14,
+      "name": "Paper",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "paper",
+      "icon": "paper.png",
+      "special_yield": { "science": 5 }
+    },
+    {
+      "id": "silk_cocoon", "price": 30,
+      "name": "Silk Cocoon",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "sericulture",
+      "icon": "silk_cocoon.png"
+    },
+    {
+      "id": "silk", "price": 60,
+      "name": "Silk",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "sericulture",
+      "icon": "silk.png",
+      "special_yield": { "science": 3 }
+    },
+    {
+      "id": "alunite", "price": 5,
+      "name": "Alunite",
+      "type": "product",
+      "category": "material",
+      "icon": "alunite.png"
+    },
+    {
+      "id": "alum", "price": 12,
+      "name": "Alum",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "limestone_burning",
+      "icon": "alum.png"
+    },
+    {
+      "id": "lime", "price": 6,
+      "name": "Lime",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "pottery",
+      "icon": "lime.png"
+    },
+    {
+      "id": "papyrus_plant", "price": 5,
+      "name": "Papyrus",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "writing",
+      "icon": "papyrus_plant.png"
+    },
+    {
+      // The raw resource "Wood". It has two kinds of source, both tied to a
+      // standing improvement: the resources that list it in their produces
+      // ("oak_tree" and "campeche_tree" beside their dye product, "mulberry_tree"
+      // as a by-product of the plantation), and a woodcutter's camp
+      // (improvement_id "lumberjack_hut") on a forest hex with no resource at
+      // all, which takes the yield from the density of the cover (wood_yield in
+      // data/covers.json). It is directed to the "Sawmill" (the recipe "Saw
+      // Boards" → Boards).
+      "id": "wood", "price": 2,
+      "name": "Wood",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "wood_processing",
+      "icon": "wood.png"
+    },
+    {
+      "id": "charcoal", "price": 5,
+      "name": "Charcoal",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "native_metals",
+      "icon": "charcoal.png"
+    },
+    {
+      "id": "coke", "price": 6,
+      "name": "Coke",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "coking",
+      "icon": "coke.png"
+    },
+    {
+      "id": "copper_ore", "price": 6,
+      "name": "Copper Ore",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "native_metals",
+      "icon": "copper_ore.png"
+    },
+    {
+      "id": "gold_ore", "price": 22,
+      "name": "Gold Ore",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "native_metals",
+      "icon": "gold_ore.png"
+    },
+    {
+      "id": "silver_ore", "price": 16,
+      "name": "Silver Ore",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "native_metals",
+      "icon": "silver_ore.png"
+    },
+    {
+      "id": "tin_ore", "price": 8,
+      "name": "Tin Ore",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "native_metals",
+      "icon": "tin_ore.png"
+    },
+    {
+      "id": "antimony_ore", "price": 12,
+      "name": "Antimony Ore",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "native_metals",
+      "icon": "antimony_ore.png"
+    },
+    {
+      "id": "arsenic_ore", "price": 12,
+      "name": "Arsenic Ore",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "native_metals",
+      "icon": "arsenic_ore.png"
+    },
+    {
+      "id": "iron_ore", "price": 10,
+      "name": "Iron Ore",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "native_metals",
+      "icon": "iron_ore.png"
+    },
+    {
+      "id": "calamine_ore", "price": 9,
+      "name": "Calamine Ore",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "native_metals",
+      "icon": "calamine_ore.png"
+    },
+    {
+      "id": "galena_ore", "price": 8,
+      "name": "Galena Ore",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "native_metals",
+      "icon": "galena_ore.png"
+    },
+    {
+      "id": "cinnabar_ore", "price": 12,
+      "name": "Cinnabar (Ore)",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "dyeing",
+      "icon": "cinnabar_ore.png"
+    },
+    {
+      "id": "cobalt_ore", "price": 15,
+      "name": "Cobalt Ore",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "dyeing",
+      "icon": "cobalt_ore.png"
+    },
+    {
+      "id": "lazurite_ore", "price": 18,
+      "name": "Lazurite",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "dyeing",
+      "icon": "lazurite_ore.png"
+    },
+    {
+      "id": "malachite_ore", "price": 14,
+      "name": "Malachite (Ore)",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "dyeing",
+      "icon": "malachite_ore.png"
+    },
+    {
+      "id": "indigofera_leaves", "price": 6,
+      "name": "Indigofera Leaves",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "dyeing",
+      "icon": "indigofera_leaves.png"
+    },
+    {
+      "id": "lawsonia_leaves", "price": 6,
+      "name": "Lawsonia Leaves",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "dyeing",
+      "icon": "lawsonia_leaves.png"
+    },
+    {
+      "id": "marena_roots", "price": 8,
+      "name": "Madder Root",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "dyeing",
+      "icon": "marena_roots.png"
+    },
+    {
+      "id": "woad_leaves", "price": 6,
+      "name": "Woad Leaves",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "dyeing",
+      "icon": "woad_leaves.png"
+    },
+    {
+      "id": "campeche_wood", "price": 10,
+      "name": "Campeche Wood",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "dyeing",
+      "icon": "campeche_wood.png"
+    },
+    {
+      "id": "safflower_leaves", "price": 7,
+      "name": "Safflower Leaves",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "dyeing",
+      "icon": "safflower_leaves.png"
+    },
+    {
+      // The leaf carries the tannin and the dye; the fruit of the same shrub is
+      // the spice "sumac".
+      "id": "sumac_leaves", "price": 6,
+      "name": "Sumac Leaves",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "dyeing",
+      "icon": "sumac_leaves.png"
+    },
+    {
+      "id": "cochineal", "price": 12,
+      "name": "Cochineal",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "dyeing",
+      "icon": "cochineal.png"
+    },
+    {
+      "id": "galls", "price": 10,
+      "name": "Galls",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "dyeing",
+      "icon": "galls.png"
+    },
+    {
+      "id": "oak_wood", "price": 10,
+      "name": "Oak Wood",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "wood_processing",
+      "icon": "oak_wood.png"
+    },
+    {
+      // Species timbers are the cooperage stock (the "@barrel_wood" group): the
+      // barrel carries no properties of its timber, so the cooper's house takes
+      // whichever species the surroundings yield.
+      "id": "beech_wood", "price": 7,
+      "name": "Beech Wood",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "wood_processing",
+      "icon": "beech_wood.png"
+    },
+    {
+      "id": "chestnut_wood", "price": 6,
+      "name": "Chestnut Wood",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "wood_processing",
+      "icon": "chestnut_wood.png"
+    },
+    {
+      "id": "pine_wood", "price": 4,
+      "name": "Pine Wood",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "wood_processing",
+      "icon": "pine_wood.png"
+    },
+    {
+      "id": "maple_wood", "price": 6,
+      "name": "Maple Wood",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "wood_processing",
+      "icon": "maple_wood.png"
+    },
+    {
+      "id": "walnut_wood", "price": 8,
+      "name": "Walnut Wood",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "wood_processing",
+      "icon": "walnut_wood.png"
+    },
+    {
+      // The heartwood carries the tannin, so the timber is both the tanning
+      // material and the dyer's red-brown.
+      "id": "quebracho_wood", "price": 10,
+      "name": "Quebracho Wood",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "wood_processing",
+      "icon": "quebracho_wood.png"
+    },
+    {
+      // Precious tropical hardwoods of the "@precious_woods" group used for
+      // fine furniture.
+      "id": "mahogany", "price": 11,
+      "name": "Mahogany",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "wood_processing",
+      "icon": "mahogany.png"
+    },
+    {
+      "id": "rosewood", "price": 12,
+      "name": "Rosewood",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "wood_processing",
+      "icon": "rosewood.png"
+    },
+    {
+      "id": "ebony", "price": 13,
+      "name": "Ebony",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "wood_processing",
+      "icon": "ebony.png"
+    },
+    {
+      "id": "resin", "price": 4,
+      "name": "Resin",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "wood_processing",
+      "icon": "resin.png"
+    },
+    {
+      // The tan barks of the "@tannins" group: the tanner's house spends a
+      // group of them on every batch of hides.
+      "id": "oak_bark", "price": 5,
+      "name": "Oak Bark",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "wood_processing",
+      "icon": "oak_bark.png"
+    },
+    {
+      "id": "chestnut_bark", "price": 5,
+      "name": "Chestnut Bark",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "wood_processing",
+      "icon": "chestnut_bark.png"
+    },
+    { "id": "sunflower", "price": 5, "name": "Sunflower Seeds", "type": "product", "category": "material", "unlock_tech": "oil_making", "icon": "sunflower.png" },
+    { "id": "rapeseed", "price": 5, "name": "Rapeseed", "type": "product", "category": "material", "unlock_tech": "oil_making", "icon": "rapeseed.png" },
+    { "id": "hops", "price": 6, "name": "Hops", "type": "product", "category": "material", "icon": "hops.png" },
+    { "id": "tobacco_leaf", "price": 10, "name": "Tobacco Leaf", "type": "product", "category": "material", "icon": "tobacco_leaf.png" },
+    { "id": "coca_leaf", "price": 10, "name": "Coca Leaf", "type": "product", "category": "coca", "icon": "coca_leaf.png" },
+    { "id": "sugar_cane", "price": 7, "name": "Sugar Cane", "type": "product", "category": "material", "icon": "sugar_cane.png" },
+    {
+      // The cold belt's sugar feedstock. A batch of sugar asks the same amount
+      // of sap as of cane, so the saps are the cheaper route to sugar; climate,
+      // not price, is what limits each of them.
+      "id": "maple_sap", "price": 3,
+      "name": "Maple Sap",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "wood_processing",
+      "icon": "maple_sap.png"
+    },
+    {
+      // The sweet juice tapped from the inflorescence of a palm — the third
+      // sugar feedstock and the only one of a warm shore. Nothing is boiled
+      // from the nut itself: its sugars are not in the meat.
+      "id": "palm_sap", "price": 3,
+      "name": "Palm Sap",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "plantations",
+      "icon": "palm_sap.png"
+    },
+    {
+      // Raw rubber tapped from hevea and ficus: the sap coagulates in the air
+      // into an elastic mass, ready for the distillery.
+      "id": "rubber", "price": 12,
+      "name": "Rubber",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "wood_processing",
+      "icon": "rubber.png"
+    }
+  ]
+}

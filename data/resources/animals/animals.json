@@ -1,0 +1,539 @@
+{
+  // The improved_by field sets the ID of the improvement THAT EXTRACTS this
+  // natural resource. If this resource is already on the hex, the player builds
+  // the improvement on top — tile.resource is preserved.
+  //
+  // If instead the player wants to RAISE these animals on an empty hex (where
+  // there is no natural resource) — they build the same improvement via the menu
+  // item "Build a pasture (cows)" and tile_data gets
+  // tile.crop_bred = "cows". No natural tile.resource appears
+  // then. Details are in docs.md, the section "Breeding animals
+  // and plants (crop_bred scheme)".
+  //
+  // allowed_climate_zones restricts the NATURAL spawn to the climate belts the
+  // species lives in (data/climate.json), so that no poultry or tropical cattle
+  // appears in the tundra. Breeding ignores the field: a domesticated animal
+  // may still be raised on any hex the terrain and the cover allow.
+  //
+  // The produces value of a live_* product is not a per-second rate: it is the
+  // breeding batch — the number of heads the pasture yields once per cycle.
+  // The cycle lasts breeding_cycle_multiplier × time_to_mature seconds
+  // (game_balance.json). The batch holds 4 heads per second of time_to_mature,
+  // so with the multiplier 1 the pasture yields 4 heads per second and keeps
+  // one slaughterhouse busy: it butchers 20 heads into 120 units of meat every
+  // 5 s (data/crafts/food_drinks.json). The herd lives in the
+  // city storage: the live_* units there are the whole population of the
+  // species, and the pasture yields nothing (and gives no milk/wool/eggs)
+  // while the population is extinct — zero heads in the storage.
+  "resources": [
+    {
+      "id": "cows", "price": 60,
+      "name": "Cattle",
+      "type": "raw",
+      "category": "animals",
+      "group": "livestock",
+      "subgroup": [ "meat_animals", "milk_animals" ],
+      "tech_required": "animal_husbandry",
+      "allowed_terrain": [ "plain", "hill" ],
+      "allowed_cover": [
+        "none", "temperate_rainforest_sparse", "temperate_dry_forest_sparse",
+        "temperate_rainforest", "temperate_dry_forest"
+      ],
+      "allowed_climate_zones": [ "boreal_dry", "boreal_wet", "steppe", "prairie" ],
+      "improved_by": "pasture",
+      "produces": { "live_cows": 240, "raw_milk": 20 },
+      "feed_consumption": 100,
+      "time_to_mature": 60.0,
+      "icon": "cows.png",
+      "color": [ 139, 90, 43 ]
+    },
+    {
+      "id": "sheep", "price": 30,
+      "name": "Sheep",
+      "type": "raw",
+      "category": "animals",
+      "group": "livestock",
+      "subgroup": [ "meat_animals", "milk_animals", "wool_animals" ],
+      "tech_required": "animal_husbandry",
+      "allowed_terrain": [ "plain", "hill" ],
+      "allowed_cover": [
+        "none", "temperate_rainforest_sparse", "temperate_dry_forest_sparse",
+        "temperate_rainforest", "temperate_dry_forest"
+      ],
+      "allowed_climate_zones": [ "tundra_dry", "tundra_wet", "boreal_dry", "boreal_wet",
+                                 "steppe", "prairie", "savanna_dry", "savanna_wet" ],
+      "breeding": [ [ { "terrain": "sandy_desert" }, { "cover": "oasis" } ], [ { "terrain": "rocky_desert" }, { "cover": "oasis" } ], [ { "terrain": "mountain" } ] ],
+      "improved_by": "pasture",
+      "produces": { "live_sheep": 160, "raw_milk": 10, "wool": 20 },
+      "feed_consumption": 50,
+      "time_to_mature": 40.0,
+      "icon": "sheep.png",
+      "color": [ 200, 200, 200 ]
+    },
+    {
+      "id": "goats", "price": 28,
+      "name": "Goats",
+      "type": "raw",
+      "category": "animals",
+      "group": "livestock",
+      "subgroup": [ "meat_animals", "milk_animals" ],
+      "tech_required": "animal_husbandry",
+      "allowed_terrain": [ "plain", "hill", "rocky_desert" ],
+      "allowed_cover": [
+        "none", "temperate_rainforest_sparse", "temperate_dry_forest_sparse",
+        "temperate_rainforest", "temperate_dry_forest", "oasis"
+      ],
+      "allowed_climate_zones": [ "tundra_dry", "tundra_wet", "boreal_dry", "boreal_wet",
+                                 "steppe", "prairie", "savanna_dry", "savanna_wet",
+                                 "tropical_dry", "tropical_wet" ],
+      "breeding": [ [ { "terrain": "sandy_desert" }, { "cover": "oasis" } ], [ { "terrain": "rocky_desert" }, { "cover": "oasis" } ], [ { "terrain": "mountain" } ] ],
+      "improved_by": "pasture",
+      "produces": { "live_goats": 160, "raw_milk": 20 },
+      "feed_consumption": 50,
+      "time_to_mature": 40.0,
+      "icon": "goats.png",
+      "color": [ 160, 140, 120 ]
+    },
+    {
+      "id": "horses", "price": 150,
+      "name": "Horses",
+      "type": "raw",
+      "category": "animals",
+      "group": "livestock",
+      "subgroup": [ "meat_animals", "milk_animals" ],
+      "tech_required": "animal_husbandry",
+      "allowed_terrain": [ "plain", "hill" ],
+      "allowed_cover": [
+        "none", "temperate_rainforest_sparse", "temperate_dry_forest_sparse",
+        "temperate_rainforest", "temperate_dry_forest"
+      ],
+      "allowed_climate_zones": [ "boreal_dry", "boreal_wet", "steppe", "prairie" ],
+      "improved_by": "pasture",
+      "produces": { "live_horses": 200, "raw_milk": 20 },
+      "feed_consumption": 80,
+      "time_to_mature": 50.0,
+      "icon": "horses.png",
+      "color": [ 100, 80, 60 ]
+    },
+    {
+      "id": "pigs", "price": 35,
+      "name": "Pigs",
+      "type": "raw",
+      "category": "animals",
+      "group": "livestock",
+      "subgroup": "meat_animals",
+      "tech_required": "animal_husbandry",
+      "allowed_terrain": [ "plain", "hill" ],
+      "allowed_cover": [
+        "none", "temperate_rainforest_sparse", "temperate_dry_forest_sparse",
+        "temperate_rainforest", "temperate_dry_forest"
+      ],
+      "allowed_climate_zones": [ "steppe", "prairie" ],
+      // Pigs live in a sty, not on a range: they do not graze, and a sty is
+      // what the player expects to see on the hex.
+      "improved_by": "pigsty",
+      "produces": { "live_pigs": 160 },
+      "feed_consumption": 50,
+      "time_to_mature": 40.0,
+      "icon": "pigs.png",
+      "color": [ 255, 180, 180 ]
+    },
+    {
+      "id": "zebu", "price": 55,
+      "name": "Zebu",
+      "type": "raw",
+      "category": "animals",
+      "group": "livestock",
+      "subgroup": [ "meat_animals", "milk_animals" ],
+      "tech_required": "animal_husbandry",
+      "allowed_terrain": [ "plain", "hill" ],
+      "allowed_cover": [
+        "none", "temperate_rainforest_sparse", "temperate_dry_forest_sparse",
+        "temperate_rainforest", "temperate_dry_forest"
+      ],
+      "allowed_climate_zones": [ "savanna_dry", "savanna_wet", "tropical_dry", "tropical_wet" ],
+      "improved_by": "pasture",
+      "produces": { "live_zebu": 240, "raw_milk": 20 },
+      "feed_consumption": 100,
+      "time_to_mature": 60.0,
+      "icon": "zebu.png",
+      "color": [ 210, 180, 140 ]
+    },
+    {
+      "id": "banteng", "price": 65,
+      "name": "Banteng",
+      "type": "raw",
+      "category": "animals",
+      "group": "livestock",
+      "subgroup": [ "meat_animals", "milk_animals" ],
+      "tech_required": "animal_husbandry",
+      "allowed_terrain": [ "plain" ],
+      "allowed_cover": [
+        "temperate_rainforest_sparse", "temperate_dry_forest_sparse",
+        "temperate_rainforest", "temperate_dry_forest"
+      ],
+      "allowed_climate_zones": [ "savanna_dry", "savanna_wet", "tropical_dry", "tropical_wet" ],
+      "improved_by": "pasture",
+      "produces": { "live_banteng": 240, "raw_milk": 10 },
+      "feed_consumption": 100,
+      "time_to_mature": 60.0,
+      "icon": "banteng.png",
+      "color": [ 160, 120, 80 ]
+    },
+    {
+      "id": "buffalo", "price": 75,
+      "name": "Buffalo",
+      "type": "raw",
+      "category": "animals",
+      "group": "livestock",
+      "subgroup": [ "meat_animals", "milk_animals" ],
+      "tech_required": "animal_husbandry",
+      "allowed_terrain": [ "plain", "hill" ],
+      "allowed_cover": [
+        "none", "temperate_rainforest_sparse", "temperate_dry_forest_sparse",
+        "temperate_rainforest", "temperate_dry_forest"
+      ],
+      "allowed_climate_zones": [ "prairie", "savanna_dry", "savanna_wet",
+                                 "tropical_dry", "tropical_wet" ],
+      "breeding": [ [ { "terrain": "swamp" }, { "cover": "reeds" } ], [ { "terrain": "marsh" }, { "cover": "reeds" } ] ],
+      "improved_by": "pasture",
+      "produces": { "live_buffalo": 240, "raw_milk": 20 },
+      "feed_consumption": 100,
+      "time_to_mature": 60.0,
+      "icon": "buffalo.png",
+      "color": [ 80, 60, 40 ]
+    },
+    {
+      "id": "bison", "price": 70,
+      "name": "Bison",
+      "type": "raw",
+      "category": "animals",
+      "group": "livestock",
+      "subgroup": [ "meat_animals", "milk_animals" ],
+      "tech_required": "animal_husbandry",
+      "allowed_terrain": [ "plain", "hill" ],
+      "allowed_cover": [
+        "none", "temperate_rainforest_sparse", "temperate_dry_forest_sparse",
+        "temperate_rainforest", "temperate_dry_forest"
+      ],
+      "allowed_climate_zones": [ "boreal_dry", "boreal_wet", "steppe", "prairie" ],
+      "improved_by": "pasture",
+      "produces": { "live_bison": 240, "raw_milk": 10 },
+      "feed_consumption": 100,
+      "time_to_mature": 60.0,
+      "icon": "bison.png",
+      "color": [ 100, 70, 50 ]
+    },
+    {
+      "id": "yak", "price": 70,
+      "name": "Yak",
+      "type": "raw",
+      "category": "animals",
+      "group": "livestock",
+      "subgroup": [ "meat_animals", "milk_animals" ],
+      "tech_required": "animal_husbandry",
+      "allowed_terrain": [ "hill", "mountain" ],
+      "allowed_cover": [
+        "none", "temperate_rainforest_sparse", "temperate_dry_forest_sparse",
+        "temperate_rainforest", "temperate_dry_forest"
+      ],
+      "allowed_climate_zones": [ "steppe", "prairie", "savanna_dry", "savanna_wet" ],
+      "improved_by": "pasture",
+      "produces": { "live_yak": 240, "raw_milk": 20 },
+      "feed_consumption": 100,
+      "time_to_mature": 60.0,
+      "icon": "yak.png",
+      "color": [ 50, 50, 50 ]
+    },
+    {
+      "id": "llama", "price": 40,
+      "name": "Llamas",
+      "type": "raw",
+      "category": "animals",
+      "group": "livestock",
+      "subgroup": [ "meat_animals", "wool_animals" ],
+      "tech_required": "animal_husbandry",
+      "allowed_terrain": [ "hill", "mountain" ],
+      "allowed_cover": [
+        "none", "temperate_rainforest_sparse", "temperate_dry_forest_sparse",
+        "temperate_rainforest", "temperate_dry_forest"
+      ],
+      "allowed_climate_zones": [ "savanna_dry", "savanna_wet", "tropical_dry", "tropical_wet" ],
+      "improved_by": "pasture",
+      "produces": { "live_llama": 180, "wool": 20 },
+      "feed_consumption": 60,
+      "time_to_mature": 45.0,
+      "icon": "llama.png",
+      "color": [ 220, 200, 180 ]
+    },
+    {
+      "id": "alpaca", "price": 40,
+      "name": "Alpacas",
+      "type": "raw",
+      "category": "animals",
+      "group": "livestock",
+      "subgroup": [ "meat_animals", "wool_animals" ],
+      "tech_required": "animal_husbandry",
+      "allowed_terrain": [ "hill", "mountain" ],
+      "allowed_cover": [
+        "none", "temperate_rainforest_sparse", "temperate_dry_forest_sparse",
+        "temperate_rainforest", "temperate_dry_forest"
+      ],
+      "allowed_climate_zones": [ "savanna_dry", "savanna_wet", "tropical_dry", "tropical_wet" ],
+      "improved_by": "pasture",
+      "produces": { "live_alpaca": 160, "wool": 30 },
+      "feed_consumption": 50,
+      "time_to_mature": 40.0,
+      "icon": "alpaca.png",
+      "color": [ 240, 230, 210 ]
+    },
+    {
+      "id": "camel", "price": 120,
+      "name": "Camels",
+      "type": "raw",
+      "category": "animals",
+      "group": "livestock",
+      "subgroup": [ "meat_animals", "milk_animals" ],
+      "tech_required": "animal_husbandry",
+      "allowed_terrain": [ "sandy_desert", "rocky_desert" ],
+      "allowed_cover": [
+        "none", "oasis"
+      ],
+      "allowed_climate_zones": [ "savanna_dry", "savanna_wet", "tropical_dry", "tropical_wet" ],
+      "improved_by": "pasture",
+      "produces": { "live_camel": 180, "raw_milk": 20 },
+      "feed_consumption": 70,
+      "time_to_mature": 45.0,
+      "icon": "camel.png",
+      "color": [ 200, 180, 140 ]
+    },
+    {
+      "id": "deer", "price": 50,
+      "name": "Deer",
+      "type": "raw",
+      "category": "animals",
+      "group": "livestock",
+      "subgroup": "meat_animals",
+      "tech_required": "animal_husbandry",
+      "allowed_terrain": [ "plain", "hill" ],
+      // The forest covers plus the moss of the tundra: the deer of the woods,
+      // the elk of the taiga and the reindeer of the polar moss.
+      "allowed_cover": [
+        "temperate_rainforest_sparse", "temperate_dry_forest_sparse",
+        "temperate_rainforest", "temperate_dry_forest",
+        "taiga_sparse", "taiga", "tundra_moss"
+      ],
+      "improved_by": "pasture",
+      "produces": { "live_deer": 140 },
+      "feed_consumption": 40,
+      "time_to_mature": 35.0,
+      "icon": "deer.png",
+      "color": [ 180, 140, 100 ]
+    },
+    {
+      "id": "chicken", "price": 10,
+      "name": "Chickens",
+      "type": "raw",
+      "category": "animals",
+      "group": "livestock",
+      "subgroup": "poultry",
+      "tech_required": "animal_husbandry",
+      "allowed_terrain": [ "plain" ],
+      "allowed_cover": [
+        "none", "temperate_rainforest_sparse", "temperate_dry_forest_sparse",
+        "temperate_rainforest", "temperate_dry_forest"
+      ],
+      "allowed_climate_zones": [ "steppe", "prairie", "savanna_dry", "savanna_wet",
+                                 "tropical_dry", "tropical_wet" ],
+      // Poultry and rabbits are housed in a farmstead, not on a pasture: a
+      // fenced grazing area is the wrong label for a coop or a hutch
+      // (docs.md, "Improvement types are a convention"). Grazing herds and
+      // the ostrich stay on the pasture.
+      "improved_by": "farmstead",
+      "produces": { "live_chicken": 80, "eggs": 30, "feathers": 10 },
+      "feed_consumption": 20,
+      "time_to_mature": 20.0,
+      "icon": "chicken.png",
+      "color": [ 255, 230, 150 ]
+    },
+    {
+      "id": "turkey", "price": 14,
+      "name": "Turkeys",
+      "type": "raw",
+      "category": "animals",
+      "group": "livestock",
+      "subgroup": "poultry",
+      "tech_required": "animal_husbandry",
+      "allowed_terrain": [ "plain" ],
+      "allowed_cover": [
+        "none", "temperate_rainforest_sparse", "temperate_dry_forest_sparse",
+        "temperate_rainforest", "temperate_dry_forest"
+      ],
+      "allowed_climate_zones": [ "steppe", "prairie", "savanna_dry", "savanna_wet",
+                                 "tropical_dry", "tropical_wet" ],
+      "improved_by": "farmstead",
+      "produces": { "live_turkey": 80, "eggs": 20, "feathers": 10 },
+      "feed_consumption": 20,
+      "time_to_mature": 20.0,
+      "icon": "turkey.png",
+      "color": [ 180, 130, 80 ]
+    },
+    {
+      "id": "duck", "price": 12,
+      "name": "Ducks",
+      "type": "raw",
+      "category": "animals",
+      "group": "livestock",
+      "subgroup": "poultry",
+      "tech_required": "animal_husbandry",
+      "allowed_terrain": [ "plain" ],
+      "allowed_cover": [
+        "none", "temperate_rainforest_sparse", "temperate_dry_forest_sparse",
+        "temperate_rainforest", "temperate_dry_forest"
+      ],
+      "allowed_climate_zones": [ "steppe", "prairie", "savanna_dry", "savanna_wet",
+                                 "tropical_dry", "tropical_wet" ],
+      "breeding": [ [ { "terrain": "swamp" }, { "cover": "reeds" } ], [ { "terrain": "marsh" }, { "cover": "reeds" } ] ],
+      "improved_by": "farmstead",
+      "produces": { "live_duck": 80, "eggs": 20, "feathers": 10 },
+      "feed_consumption": 20,
+      "time_to_mature": 20.0,
+      "icon": "duck.png",
+      "color": [ 70, 130, 50 ]
+    },
+    {
+      "id": "goose", "price": 15,
+      "name": "Geese",
+      "type": "raw",
+      "category": "animals",
+      "group": "livestock",
+      "subgroup": "poultry",
+      "tech_required": "animal_husbandry",
+      "allowed_terrain": [ "plain" ],
+      "allowed_cover": [
+        "none", "temperate_rainforest_sparse", "temperate_dry_forest_sparse",
+        "temperate_rainforest", "temperate_dry_forest"
+      ],
+      "allowed_climate_zones": [ "steppe", "prairie", "savanna_dry", "savanna_wet",
+                                 "tropical_dry", "tropical_wet" ],
+      "breeding": [ [ { "terrain": "swamp" }, { "cover": [ "reeds", "none" ] } ],
+                    [ { "terrain": "marsh" }, { "cover": [ "reeds", "none" ] } ] ],
+      "improved_by": "farmstead",
+      "produces": { "live_goose": 80, "eggs": 10, "feathers": 20 },
+      "feed_consumption": 20,
+      "time_to_mature": 20.0,
+      "icon": "goose.png",
+      "color": [ 200, 200, 200 ]
+    },
+    {
+      "id": "guineafowl", "price": 12,
+      "name": "Guineafowl",
+      "type": "raw",
+      "category": "animals",
+      "group": "livestock",
+      "subgroup": "poultry",
+      "tech_required": "animal_husbandry",
+      "allowed_terrain": [ "plain" ],
+      "allowed_cover": [
+        "none", "temperate_rainforest_sparse", "temperate_dry_forest_sparse",
+        "temperate_rainforest", "temperate_dry_forest"
+      ],
+      "allowed_climate_zones": [ "steppe", "prairie", "savanna_dry", "savanna_wet",
+                                 "tropical_dry", "tropical_wet" ],
+      "improved_by": "farmstead",
+      "produces": { "live_guineafowl": 80, "eggs": 20, "feathers": 10 },
+      "feed_consumption": 20,
+      "time_to_mature": 20.0,
+      "icon": "guineafowl.png",
+      "color": [ 100, 100, 100 ]
+    },
+    {
+      "id": "ostrich", "price": 40,
+      "name": "Ostriches",
+      "type": "raw",
+      "category": "animals",
+      "group": "livestock",
+      "subgroup": "poultry",
+      "tech_required": "animal_husbandry",
+      "allowed_terrain": [ "plain", "hill", "rocky_desert" ],
+      "allowed_cover": [
+        "none", "temperate_rainforest_sparse", "temperate_dry_forest_sparse",
+        "temperate_rainforest", "temperate_dry_forest", "oasis"
+      ],
+      "allowed_climate_zones": [ "savanna_dry", "savanna_wet", "tropical_dry" ],
+      "breeding": [ [ { "terrain": "sandy_desert" } ] ],
+      "improved_by": "pasture",
+      "produces": { "live_ostrich": 120, "eggs": 10, "feathers": 20 },
+      "feed_consumption": 40,
+      "time_to_mature": 30.0,
+      "icon": "ostrich.png",
+      "color": [ 50, 50, 50 ]
+    },
+    {
+      "id": "bee", "price": 25,
+      "name": "Bees",
+      "type": "raw",
+      "category": "animals",
+      "group": "livestock",
+      "subgroup": "bees",
+      "tech_required": "beekeeping",
+      "allowed_terrain": [ "plain", "hill" ],
+      "allowed_cover": [
+        "none", "temperate_rainforest_sparse", "temperate_dry_forest_sparse",
+        "temperate_rainforest", "temperate_dry_forest"
+      ],
+      "allowed_climate_zones": [ "boreal_dry", "boreal_wet", "steppe", "prairie",
+                                 "savanna_dry", "savanna_wet",
+                                 "tropical_dry", "tropical_wet" ],
+      "breeding": [ [ { "terrain": "sandy_desert" }, { "cover": "oasis" } ], [ { "terrain": "rocky_desert" }, { "cover": "oasis" } ] ],
+      "improved_by": "beehive",
+      "produces": { "honey": 20, "wax": 10 },
+      "feed_consumption": 0,
+      "time_to_mature": 0,
+      "icon": "bee.png",
+      "color": [ 255, 215, 0 ]
+    },
+    {
+      "id": "rabbit", "price": 8,
+      "name": "Rabbits",
+      "type": "raw",
+      "category": "animals",
+      "group": "livestock",
+      "subgroup": [ "meat_animals", "fur_animals" ],
+      "tech_required": "animal_husbandry",
+      "allowed_terrain": [ "plain" ],
+      "allowed_cover": [
+        "none", "temperate_rainforest_sparse", "temperate_dry_forest_sparse",
+        "temperate_rainforest", "temperate_dry_forest"
+      ],
+      "improved_by": "farmstead",
+      "produces": { "live_rabbit": 60 },
+      "feed_consumption": 10,
+      "time_to_mature": 15.0,
+      "icon": "rabbit.png",
+      "color": [ 200, 200, 200 ]
+    },
+    {
+      "id": "pigeon", "price": 8,
+      "name": "Pigeons",
+      "type": "raw",
+      "category": "animals",
+      "group": "livestock",
+      "subgroup": "poultry",
+      "tech_required": "animal_husbandry",
+      "allowed_terrain": [ "plain", "hill" ],
+      "allowed_cover": [
+        "none", "temperate_rainforest_sparse", "temperate_dry_forest_sparse",
+        "temperate_rainforest", "temperate_dry_forest"
+      ],
+      "allowed_climate_zones": [ "steppe", "prairie", "savanna_dry", "savanna_wet",
+                                 "tropical_dry", "tropical_wet" ],
+      "improved_by": "farmstead",
+      "produces": { "live_pigeon": 80, "eggs": 20, "feathers": 10 },
+      "feed_consumption": 20,
+      "time_to_mature": 20.0,
+      "icon": "pigeon.png",
+      "color": [ 150, 150, 150 ]
+    }
+  ]
+}

@@ -1,0 +1,144 @@
+{
+  "special_actions": [
+    {
+      "id": "clear_forest",
+      "name": "Clear Forest",
+      "action_type": "cover",
+      "icon": "clear_forest.png",
+      "source_cover": [
+        "temperate_rainforest", "temperate_rainforest_sparse",
+        "temperate_dry_forest", "temperate_dry_forest_sparse",
+        "taiga", "taiga_sparse",
+        "tropical_rainforest", "tropical_rainforest_sparse",
+        "tropical_dry_forest", "tropical_dry_forest_sparse"
+      ],
+      "result_cover": "none",
+      "work_cost": 22,
+      "unlock_tech": "wood_processing"
+    },
+    {
+      // The universal action "Gather resource" for ANY one-off resources
+      // (foraged food, native metal nuggets, etc.). Applicability is determined
+      // NOT by the target_resource field but by the "one-off" flag of the
+      // resource on the hex:
+      //   - the resource has improved_by == null (it is not extracted by an improvement);
+      //   - the resource has a non-empty produces (there is something to gather);
+      //   - the resource is visible to the player (MapHelpers.is_resource_revealed).
+      // The production output on gathering is taken from the produces field
+      // of the resource (a number or [min, max]) — see main_map.gd, the
+      // action_type == "forage" branch.
+      // After gathering, the resource disappears from the map (tile.resource = null).
+      "id": "forage_resource",
+      "name": "Forage Resource",
+      "action_type": "forage",
+      "icon": "new_resource.png",
+      "result_terrain": "dont_change",
+      "work_cost": 5
+    },
+    {
+      // Demolishing an improvement. On a hex with breeding (crop_bred) it also
+      // resets crop_bred, so that the hex becomes empty again (see docs.md, the
+      // section "Breeding animals and plants (crop_bred scheme)"). The natural
+      // tile.resource is NOT touched on demolition.
+      "id": "demolish_improvement",
+      "name": "Demolish Improvement",
+      "action_type": "demolish",
+      "icon": "demolish.svg",
+      "result_terrain": "dont_change",
+      "work_cost": 5
+    },
+    {
+      // Draining swamps and marshes: turns them into a plain (action_type "terrain").
+      // source_terrains — the list of terrain types the action applies to. An entry may name a
+      // FAMILY: "swamp" drains the bog of every climate belt at once.
+      // result_terrain — a terrain or a RELIEF FAMILY: the family "plain" resolves to the plain
+      // of the climate zone the hex stands in (a drained swamp in the boreal zone becomes a boreal plain,
+      // in the tropics — a tropical plain).
+      // The cost is significant — 3x the cost of a farm
+      "id": "drain_water",
+      "name": "Drain Water",
+      "action_type": "terrain",
+      "icon": "drain_swamp.png",
+      "source_terrains": [ "swamp", "marsh" ],
+      "result_terrain": "plain",
+      "work_cost": 24,
+      "unlock_tech": "irrigation"
+    },
+    {
+      // The road that the PLAYER builds — up to the specified hex (action_type "road").
+      // A separate action type, because this is the only special action
+      // that does NOT change the contents of the hex, but builds a segment of the
+      // CITY's road network: from the nearest already built road to the target hex
+      // (the standard road_manager.build_road_from algorithm — the shortest path
+      // over land to the nearest connected hex of the city network, water
+      // is impassable).
+      //
+      // The work_cost cost — the BASE FOR ONE NEW SEGMENT (hex) of the route.
+      // The total is the sum of the bases over all new segments, NOT a
+      // multiplication by their number: each segment has its own price, because
+      // it has its own terrain and its own
+      // distance from the city. The total price is assembled by
+      // main_map.get_road_cost_breakdown (which is also the single source for the preview
+      // and for the actual launch of the project), and the price of ONE segment is
+      // computed by MapHelpers.get_road_step_work_cost.
+      //
+      // Multipliers per segment are applied, and that is a fundamental shift.
+      // Previously the distance was NOT taken into account with the wording
+      // "the distance is already reflected in the length of the route". While the
+      // road was a single purchase, that was
+      // true: the player paid for the length and did not see what was inside.
+      // Now each segment is a separate construction on a separate hex, and a
+      // segment 10 hexes
+      // from the city costs the same as the one next to the city, even though it
+      // is the same work with the same load 10 times further away.
+      //
+      //   · work_cost_mult (terrains.json) — the difficulty of the TERRAIN: in the
+      //     mountains and swamps it is more expensive. The planner itself avoids
+      //     difficult terrain when there is an alternative route, so a road through
+      //     the mountains is exactly the "cannot go around" case, and not a
+      //     punishment for an unlucky route;
+      //   · distance from the city — its own coefficient in game_balance.json
+      //     (road_distance_cost_modifier_per_hex), separate from improvements,
+      //     because it is multiplied by the length of the route;
+      //   · "Wheel" and "Mathematics" — just as for improvements.
+      //
+      // THE SEGMENT PRICE BASE DOES NOT LIVE HERE but in data/roads.json (the
+      // work_cost field of the road level entry): a segment belongs to a level,
+      // and the cost/speed of a level are properties of that level, not of this
+      // action. That is why build_road has no work_cost field any more: a copy
+      // of the same number in two files would go out of sync at the first balance
+      // edit. The segment price is taken by
+      // MapHelpers.get_road_step_work_cost(road_level, …) from GameData.
+      //
+      // There is no separate surcharge for the LENGTH of a route: a long road
+      // takes longer to build because it has more segments, not because of a
+      // penalty.
+      //
+      // The same action type is used on a TOWN hex as well: there the road goes
+      // all the way to the town CENTRE at the level chosen by the player, so that
+      // the chosen quality reaches the town instead of dropping to the town's own
+      // trail at the boundary of its influence ring. Such a connection opens
+      // trade (see town_manager.is_trade_available).
+      "id": "build_road",
+      "name": "Build Road",
+      "action_type": "road",
+      "icon": "road.svg",
+      "result_terrain": "dont_change"
+    },
+    {
+      // The aqueduct is a SECOND LAYER of improvements: it runs over the hexes
+      // of the mountain spring and of the city, and over any improvement already
+      // standing on the way. It is a phased project like the road, and its
+      // segments are stored independently of the improvements of the hex.
+      // The base is for ONE new section; the distance and the terrain of
+      // the section are added by MapHelpers.get_improvement_work_cost.
+      "id": "build_aqueduct",
+      "name": "Build Aqueduct",
+      "action_type": "aqueduct",
+      "icon": "water_chain.png",
+      "result_terrain": "dont_change",
+      "work_cost": 14,
+      "unlock_tech": "concrete"
+    }
+  ]
+}

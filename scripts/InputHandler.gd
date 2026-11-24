@@ -1,0 +1,737 @@
+# InputHandler.gd
+extends Node
+
+var main_map: Node
+var map_renderer: Node
+var progress_bar_layer: Node
+var hud: Node
+var hex_tooltip: Node
+var tooltip_text_label: RichTextLabel
+var tooltip_products_container: Node
+var worker_manager: Node
+var city_ui: Node
+var town_ui: Node
+var pause_menu: Node
+var expansion_manager: Node
+var debug_manager: Node
+
+var _hovered_hex = null
+var _hover_start_time: float = 0.0
+var _tooltip_visible: bool = false
+var _tooltip_visible_time: float = 0.0
+var _extended_tooltip_shown: bool = false
+# The refresh period of the tooltip CONTENT without mouse movement. It is needed for
+# dynamic data (the pasture fill, production), which changes
+# over time. The period equals the "Resource data refresh interval" setting
+# (CityData.resource_display_interval, the "Settings → Game" menu) — the tooltip on the
+# map is refreshed at the same rhythm as the other places with resources.
+# The first drawing on a hex change remains instantaneous.
+var _tooltip_content_refresh_timer: float = 0.0
+var is_dragging: bool = false
+var drag_start_scroll_offset: Vector2 = Vector2.ZERO
+var drag_start_mouse: Vector2 = Vector2.ZERO
+
+# --- The pinch of the map ---
+# A single finger needs no special code: touch emulation turns it into mouse events, and
+# a tap and a pan already work through them. A pinch needs the raw touches — the emulated
+# mouse would otherwise pan the map with the very movement that zooms it.
+const PINCH_MIN_DISTANCE: float = 32.0
+# The emulated mouse also sends the release of the last finger. It must not turn into a
+# selection of the hex under the fingers after a pinch.
+const PINCH_RELEASE_GRACE_MSEC: int = 250
+
+var _touches: Dictionary = {} # index -> position in the viewport
+var _pinching: bool = false
+var _pinch_start_distance: float = 1.0
+var _pinch_start_zoom: float = 1.0
+var _pinch_ended_msec: int = -PINCH_RELEASE_GRACE_MSEC
+
+var tooltip_delay: float = 0.5
+var extended_tooltip_delay: float = 1.0
+# The speed of the movement of the map — both by the cursor standing at the edge of the
+# screen and by the arrow keys (pixels per second; the key interface/edge_scroll_speed in
+# user://settings.cfg). The two ways of moving the map are the same gesture for the player,
+# therefore they share one slider. The range matches the slider of the settings menu — the
+# clamp is here so that a hand-edited config cannot make the map jump across the whole
+# world in a single frame.
+var scroll_speed: float = 300.0
+const SCROLL_SPEED_MIN: float = 100.0
+const SCROLL_SPEED_MAX: float = 1000.0
+# The zone at the very edge of the screen that triggers scrolling (pixels).
+const SCROLL_MARGIN: float = 2
+
+func initialize(main_node: Node):
+    main_map = main_node
+    map_renderer = main_node.map_renderer
+    progress_bar_layer = main_node.progress_bar_layer
+    hud = main_node.hud
+    hex_tooltip = main_node.hex_tooltip
+    tooltip_text_label = main_node.tooltip_text_label
+    tooltip_products_container = main_node.tooltip_products_container
+    worker_manager = main_node.worker_manager
+    city_ui = main_node.city_ui
+    town_ui = main_node.town_ui
+    pause_menu = main_node.pause_menu
+    expansion_manager = main_node.expansion_manager
+    debug_manager = main_node.debug_manager
+
+func set_tooltip_delay(value: float):
+    tooltip_delay = value
+
+func set_extended_tooltip_delay(value: float):
+    extended_tooltip_delay = value
+
+func set_scroll_speed(value: float):
+    scroll_speed = clampf(value, SCROLL_SPEED_MIN, SCROLL_SPEED_MAX)
+
+# The entry point of the input of the MAP: the mouse and the keys that belong to
+# the map (see handle_input).
+#
+# It is here and not in main_map._input() on purpose. main_map._process IS the
+# simulation, therefore main_map stands still while the active pause is on — and
+# with it main_map._input as well. The input of the map would have died with it,
+# and the player could neither scroll the map by dragging nor select a hex. This
+# node is switched to PROCESS_MODE_ALWAYS by active_pause, so it keeps receiving
+# the input exactly as long as the mode is on.
+func _input(event: InputEvent) -> void:
+    handle_input(event)
+
+func handle_input(event: InputEvent):
+    if Engine.is_editor_hint():
+        return
+
+    # The map is not ready yet: the input handler is initialized only after the world
+    # is built, and while a new game generates its world (main_map.world_generating)
+    # there is nothing for the input to work with.
+    if main_map == null or main_map.world_generating:
+        return
+
+    # The touches are tracked before the checks below: a menu may open in the middle of a
+    # pinch, and the release of the fingers must still end it and settle the view.
+    if event is InputEventScreenTouch or event is InputEventScreenDrag:
+        _handle_touch(event)
+        return
+
+    # SPACE: the hotkey of the active pause. It does exactly what the button of the
+    # HUD does, and nothing else. The event is consumed right here, otherwise a
+    # focused button would receive the same key and press itself as well.
+    if event is InputEventKey and event.keycode == KEY_SPACE and event.pressed and not event.echo:
+        if pause_menu.visible or (main_map.settings_menu and main_map.settings_menu.visible):
+            # While the menu is open, the mode is left by ESC only.
+            return
+        var focus = get_viewport().gui_get_focus_owner()
+        if focus is LineEdit or focus is TextEdit:
+            # The key belongs to the text field, not to the simulation.
+            return
+        if main_map.active_pause != null:
+            main_map.toggle_active_pause()
+            get_viewport().set_input_as_handled()
+            return
+
+    if event is InputEventKey and event.keycode == KEY_ESCAPE and event.pressed:
+        # ESC: the debug menu owns the key while it is open — it closes the menu and
+        # nothing else. The menu node stands later in this pass, so the chain below
+        # has to let the key through to it.
+        if debug_manager != null and debug_manager.is_open:
+            return
+        # ESC: if the town interface is open — we close exactly it, even if
+        # a hex is selected on the map or an action preview is active (the town window
+        # is over the map).
+        if town_ui.visible:
+            town_ui.close_town()
+            get_viewport().set_input_as_handled()
+            return
+        # ESC: a list of recipes or additions is open in the building panel — the key
+        # closes that list and leaves the interface under it open. A Control list has
+        # no close-on-escape of its own, and this node receives the key before the
+        # panel does.
+        if city_ui.building_panel != null and city_ui.building_panel.close_open_popup():
+            get_viewport().set_input_as_handled()
+            return
+        # ESC: if the city interface is open — we close exactly it, even if
+        # a hex is selected on the map or an action preview is active (the city interface
+        # is over the map). Otherwise we reset the action preview in the control panel,
+        # then clear the hex selection, and only then — the usual ESC behaviour.
+        if city_ui.visible:
+            city_ui.close_city()
+            get_viewport().set_input_as_handled()
+            return
+        if main_map.control_panel.has_preview():
+            main_map.control_panel.clear_preview()
+            get_viewport().set_input_as_handled()
+            return
+        if main_map.control_panel.has_selection():
+            main_map.clear_selection()
+            get_viewport().set_input_as_handled()
+            return
+        _handle_esc()
+        # We mark the event as handled, so that it does not spread
+        # to _unhandled_input (otherwise the pause menu, having become visible, would close right away)
+        get_viewport().set_input_as_handled()
+        return
+
+    if town_ui.visible or city_ui.visible or pause_menu.visible or (main_map.settings_menu and main_map.settings_menu.visible):
+        return
+
+    # Interaction with the map is unavailable when the cursor is over the control
+    # panel: clicks, dragging, tooltips and scrolling must not pass
+    # through the panel to the map. Keyboard events (ESC and so on) meanwhile
+    # continue to be handled below.
+    # Interaction with the map is also unavailable when the cursor is over the
+    # HUD (the top left corner): otherwise the mouse movement across the HUD highlights
+    # the Region chunks and the tooltips pop up, and a click on the HUD selects the hex under it.
+    # And over the "sticky" treasury breakdown tooltip: the tooltip covers the map, and
+    # the hex tooltip should not pop up through it, nor should a chunk be
+    # highlighted or a hex be selected under it.
+    # The same for the panel of the pause button and the menu button (the upper right
+    # corner): they hang over the map, and without this the hex tooltip pops up
+    # through them.
+    # The HUD buttons meanwhile keep working: they are handled via the GUI
+    # phase (pressed / gui_input), independently of this handler.
+    if event is InputEventMouse:
+        var over_hud = hud != null and hud.get_global_rect().has_point(event.global_position)
+        var over_panel = main_map.control_panel != null \
+                and main_map.control_panel.get_global_rect().has_point(event.global_position)
+        var over_treasury_tooltip = _is_mouse_over_treasury_tooltip(event.global_position)
+        var over_top_right = _is_mouse_over_top_right(event.global_position)
+        if over_panel or over_hud or over_treasury_tooltip or over_top_right:
+            _hide_tooltip()
+            # We remove the Region chunk highlight left over from hovering
+            # before the cursor entered the panel/HUD/tooltip.
+            expansion_manager.clear_hovered_chunk()
+            return
+
+    # The debug menu is open — we block the interaction with the map
+    if debug_manager and debug_manager.is_open:
+        # In the mode of waiting for a click on a hex we allow only the mouse clicks
+        if debug_manager.waiting_for_hex:
+            if event is InputEventMouseButton:
+                _handle_mouse_button(event)
+        return
+
+    # Handling of the common mouse events
+    if event is InputEventMouseButton:
+        _handle_mouse_button(event)
+    elif event is InputEventMouseMotion:
+        _handle_mouse_motion(event)
+        # We update the chunk highlight when hovering over the hexes outside the Influence Ring.
+        # The hex is taken via _interactive_hex_at(): before researching Cartography
+        # the fog of war hexes (outside the Region) are unavailable, and the chunk
+        # highlight is not drawn on them.
+        var h = _interactive_hex_at(event.global_position.x, event.global_position.y)
+        if h != null and not main_map.tile_data[h.row][h.col].get("in_influence", false):
+            expansion_manager.update_hovered_chunk(h.row, h.col)
+        else:
+            expansion_manager.clear_hovered_chunk()
+
+func handle_process(delta: float):
+    if Engine.is_editor_hint():
+        return
+
+    # The zoom animation is advanced before every early return below: the map must not
+    # stay frozen half-zoomed because a menu happened to open in the middle of a gesture.
+    main_map.process_zoom(delta)
+
+    if _pinching:
+        # Edge scrolling would fight the fingers, and a tooltip under them is useless.
+        _hide_tooltip()
+        expansion_manager.clear_hovered_chunk()
+        return
+
+    if town_ui.visible or city_ui.visible or pause_menu.visible or (main_map.settings_menu and main_map.settings_menu.visible):
+        _hide_tooltip()
+        return
+
+    # The debug menu is open — we block the process handling (scrolling, tooltips)
+    if debug_manager and debug_manager.is_open:
+        _hide_tooltip()
+        return
+
+    # The arrow keys move the map independently of the cursor, therefore they are handled
+    # before the cursor checks below: the sticky treasury tooltip and the corner panel stop
+    # the MOUSE interaction with the map, not the keyboard.
+    _process_keyboard_scrolling(delta)
+
+    var mouse_pos_ui: Vector2 = main_map.get_global_mouse_position()
+
+    # When the cursor is on the "sticky" treasury breakdown tooltip: while it is there,
+    # the map does not react (the hex tooltip does not pop up through the tooltip and the
+    # chunk is not highlighted, and there is no edge scrolling either). _hide_tooltip() kills
+    # the hover state as well, so the hex tooltip will not appear on the delay either.
+    if _is_mouse_over_treasury_tooltip(mouse_pos_ui):
+        _hide_tooltip()
+        # We remove the chunk highlight as well: the tooltip could have "stuck"
+        # under an already stationary cursor (the panel at the screen edge shifts inwards).
+        expansion_manager.clear_hovered_chunk()
+        return
+
+    # The same for the panel of the pause button and the menu button: the corner is
+    # at the very edge of the screen, where the edge scrolling would run through them.
+    if _is_mouse_over_top_right(mouse_pos_ui):
+        _hide_tooltip()
+        expansion_manager.clear_hovered_chunk()
+        return
+
+    _process_edge_scrolling(delta)
+
+    # We hide the tooltip when the cursor is over the control panel
+    # (interaction with the map through it is forbidden). The edge scrolling ABOVE is
+    # deliberately not gated by this: the panel is anchored to the bottom edge of the
+    # screen and stretches across the whole of it, so gating the scrolling here would
+    # make the downward direction unreachable.
+    if main_map.control_panel \
+            and main_map.control_panel.get_global_rect().has_point(mouse_pos_ui):
+        _hide_tooltip()
+        return
+
+    # The tooltip
+    if hud.get_global_rect().has_point(main_map.get_global_mouse_position()):
+        _hide_tooltip()
+    if _hovered_hex != null:
+        _hover_start_time += delta
+        if _hover_start_time >= tooltip_delay and not _tooltip_visible:
+            _tooltip_visible = true
+            _tooltip_visible_time = 0.0
+            hex_tooltip.visible = true
+        if _tooltip_visible:
+            _tooltip_visible_time += delta
+            var tip_pos = main_map.get_viewport().get_mouse_position() + Vector2(15, 15)
+            var vbox = hex_tooltip.get_node("TooltipVBox")
+            var total_height = 0.0
+            for child in vbox.get_children():
+                total_height += child.get_combined_minimum_size().y + 4
+            var total_width = 0.0
+            for child in vbox.get_children():
+                if child.get_combined_minimum_size().x > total_width:
+                    total_width = child.get_combined_minimum_size().x
+            hex_tooltip.size = Vector2(total_width + 12, total_height + 12)
+            tooltip_text_label.position = Vector2(6, 4)
+            if tip_pos.x + hex_tooltip.size.x > main_map.get_viewport_rect().size.x:
+                tip_pos.x = main_map.get_viewport().get_mouse_position().x - hex_tooltip.size.x - 15
+            if tip_pos.y + hex_tooltip.size.y > main_map.get_viewport_rect().size.y:
+                tip_pos.y = main_map.get_viewport().get_mouse_position().y - hex_tooltip.size.y - 15
+            tip_pos.x = max(0, tip_pos.x)
+            tip_pos.y = max(0, tip_pos.y)
+            hex_tooltip.position = tip_pos
+            # The extended tooltip: the hex properties (quality, feed, fill,
+            # access to fresh water), production, consumption, road level.
+            if _tooltip_visible_time >= extended_tooltip_delay and not _extended_tooltip_shown and main_map.has_method("has_extended_tooltip_info") and main_map.has_method("update_extended_tooltip"):
+                if main_map.has_extended_tooltip_info(_hovered_hex.row, _hovered_hex.col):
+                    _extended_tooltip_shown = true
+                    main_map.update_extended_tooltip(_hovered_hex.row, _hovered_hex.col)
+
+            # We update the tooltip contents without mouse movement — but only on the hexes
+            # whose content changes over time: the "growing" resources (pastures) and the
+            # DELIVERY (the queue and the goods on the road change every tick; without the
+            # refresh the tooltip would freeze at the state it had when it appeared). On the
+            # other hexes the content is static, there is no point in triggering a redraw.
+            # The decision is owned by map_tooltip.has_live_content — one place for both
+            # reasons, so the refresh cannot fall out of sync with what actually changes.
+            if main_map.has_method("has_live_content") \
+                    and main_map.has_live_content(_hovered_hex.row, _hovered_hex.col):
+                _tooltip_content_refresh_timer += delta
+                if _tooltip_content_refresh_timer >= CityData.resource_display_interval:
+                    _tooltip_content_refresh_timer = 0.0
+                    main_map.update_tooltip_text(_hovered_hex.row, _hovered_hex.col)
+    else:
+        _hide_tooltip()
+
+# The scrolling of the map by the cursor standing at the edge of the screen.
+# A UI element anchored to the edge must not gate this (see the call site): the
+# control panel covers the whole bottom edge of the screen, so the downward
+# direction would be unreachable.
+func _process_edge_scrolling(delta: float):
+    if is_dragging or _pinching or not main_map.use_edge_scrolling:
+        return
+
+    var mouse_pos = main_map.get_viewport().get_mouse_position()
+    var viewport_size = main_map.get_viewport_rect().size
+    var inside = mouse_pos.x >= 0 and mouse_pos.x <= viewport_size.x and mouse_pos.y >= 0 and mouse_pos.y <= viewport_size.y
+    var scroll = Vector2.ZERO
+    if inside:
+        if mouse_pos.x < SCROLL_MARGIN:
+            scroll.x = scroll_speed * delta
+        elif mouse_pos.x > viewport_size.x - SCROLL_MARGIN:
+            scroll.x = - scroll_speed * delta
+        if mouse_pos.y < SCROLL_MARGIN:
+            scroll.y = scroll_speed * delta
+        elif mouse_pos.y > viewport_size.y - SCROLL_MARGIN:
+            scroll.y = - scroll_speed * delta
+
+    if scroll == Vector2.ZERO:
+        return
+
+    _apply_scroll(scroll)
+
+# The movement of the map by the arrow keys. The keys are polled and not taken from
+# events: a held key then moves the map continuously instead of stepping at the rate of
+# the OS key repeat, and two keys at once give a diagonal.
+func _process_keyboard_scrolling(delta: float):
+    # A text field owns the arrow keys: they move the caret there, not the map.
+    var focus = get_viewport().gui_get_focus_owner()
+    if focus is LineEdit or focus is TextEdit:
+        return
+
+    var direction := Vector2.ZERO
+    if Input.is_key_pressed(KEY_LEFT):
+        direction.x += 1.0
+    if Input.is_key_pressed(KEY_RIGHT):
+        direction.x -= 1.0
+    if Input.is_key_pressed(KEY_UP):
+        direction.y += 1.0
+    if Input.is_key_pressed(KEY_DOWN):
+        direction.y -= 1.0
+
+    if direction == Vector2.ZERO:
+        return
+
+    # The diagonal is normalised: otherwise the map would move sqrt(2) times faster.
+    _apply_scroll(direction.normalized() * scroll_speed * delta)
+
+# The single place where the position of the map is written. The clamp lives on the map:
+# the same reach limits the hexes a scout can reach (main_map.get_scout_reach_bounds), so no
+# way of moving the map may leave it.
+func _set_scroll_offset(offset: Vector2):
+    main_map.scroll_offset = main_map.clamp_scroll(offset)
+    # The map is drawn in world coordinates, so the pan is normally only a transform of the
+    # renderer. On a large map the drawing is culled to the view, and apply_view_transform
+    # re-records the hexes the transform brings into sight.
+    main_map.apply_view_transform()
+
+func _apply_scroll(scroll: Vector2):
+    # The speed is set in SCREEN pixels per second (the slider of the settings menu), so
+    # the world distance is the screen distance divided by the zoom: zoomed out, the same
+    # drag of the cursor covers more of the map, exactly as it does visually.
+    _set_scroll_offset(main_map.scroll_offset + scroll / main_map.zoom)
+
+func _handle_esc():
+    if town_ui.visible:
+        town_ui.close_town()
+    elif city_ui.visible:
+        city_ui.close_city()
+    elif main_map.active_pause != null and main_map.active_pause.is_active():
+        # The active pause is the youngest state of the chain: ESC first resumes
+        # the simulation and performs the queued actions, and only the next press
+        # of the key reaches the menu.
+        main_map.toggle_active_pause()
+    elif pause_menu.visible:
+        pause_menu.hide()
+        main_map.city_button.disabled = false
+        main_map.expansion_button.disabled = false
+    elif main_map.settings_menu and main_map.settings_menu.visible:
+        # We close the settings — pause_menu.gd will show the pause menu again
+        main_map.settings_menu.hide()
+    else:
+        main_map.open_pause_menu()
+
+func _handle_touch(event: InputEvent) -> void:
+    if event is InputEventScreenTouch:
+        var touch := event as InputEventScreenTouch
+        if touch.pressed:
+            _touches[touch.index] = touch.position
+            if _touches.size() == 2 and not _pinching:
+                _begin_pinch()
+        else:
+            _touches.erase(touch.index)
+            if _pinching and _touches.size() < 2:
+                _end_pinch()
+        return
+    if event is InputEventScreenDrag:
+        var drag := event as InputEventScreenDrag
+        if _touches.has(drag.index):
+            _touches[drag.index] = drag.position
+        if _pinching:
+            if not _map_input_allowed():
+                _end_pinch()
+                return
+            _update_pinch()
+            get_viewport().set_input_as_handled()
+
+func _map_input_allowed() -> bool:
+    if town_ui.visible or city_ui.visible or pause_menu.visible \
+            or (main_map.settings_menu and main_map.settings_menu.visible):
+        return false
+    return not (debug_manager and debug_manager.is_open)
+
+# The wheel is not allowed to zoom through the HUD or the control panel, and neither is
+# a pinch: the same parts of the screen belong to the interface, not to the map.
+func _map_input_allowed_at(pos: Vector2) -> bool:
+    if not _map_input_allowed():
+        return false
+    if hud != null and hud.get_global_rect().has_point(pos):
+        return false
+    if main_map.control_panel != null and main_map.control_panel.get_global_rect().has_point(pos):
+        return false
+    if _is_mouse_over_treasury_tooltip(pos) or _is_mouse_over_top_right(pos):
+        return false
+    return true
+
+func _begin_pinch() -> void:
+    var pair := _pinch_pair()
+    if pair.is_empty():
+        return
+    var middle: Vector2 = (pair[0] + pair[1]) * 0.5
+    if not _map_input_allowed_at(middle):
+        return
+    # A wheel animation in flight would keep correcting the scroll offset under the
+    # fingers; the pinch starts from the still image the player sees now.
+    main_map.finish_zoom()
+    _pinching = true
+    _pinch_start_distance = maxf(_pinch_distance(pair), PINCH_MIN_DISTANCE)
+    _pinch_start_zoom = main_map.zoom
+    is_dragging = false
+    _hide_tooltip()
+    expansion_manager.clear_hovered_chunk()
+
+func _update_pinch() -> void:
+    var pair := _pinch_pair()
+    if pair.is_empty():
+        return
+    var distance: float = maxf(_pinch_distance(pair), PINCH_MIN_DISTANCE)
+    var middle: Vector2 = (pair[0] + pair[1]) * 0.5
+    main_map.zoom_to(_pinch_start_zoom * distance / _pinch_start_distance, middle)
+
+func _end_pinch() -> void:
+    if not _pinching:
+        return
+    _pinching = false
+    _pinch_ended_msec = Time.get_ticks_msec()
+    main_map.end_pinch()
+    is_dragging = false
+    # If one finger stays on the screen, the pan continues from where it is now and not
+    # from the press that started the pinch.
+    if not _touches.is_empty():
+        var keys := _touches.keys()
+        keys.sort()
+        drag_start_mouse = _touches[keys[0]]
+        drag_start_scroll_offset = main_map.scroll_offset
+
+func _pinch_pair() -> Array:
+    var keys := _touches.keys()
+    keys.sort()
+    if keys.size() < 2:
+        return []
+    return [_touches[keys[0]], _touches[keys[1]]]
+
+func _pinch_distance(pair: Array) -> float:
+    return (pair[0] as Vector2).distance_to(pair[1] as Vector2)
+
+func _pinch_just_ended() -> bool:
+    return Time.get_ticks_msec() - _pinch_ended_msec < PINCH_RELEASE_GRACE_MSEC
+
+func _handle_mouse_button(event: InputEventMouseButton):
+    if _pinching or _pinch_just_ended():
+        # The emulated mouse events of a pinch must not select a hex or start a drag.
+        return
+
+    # The wheel zooms the map around the cursor. The map keeps drawing at a fixed hex
+    # radius, so the wheel only moves the TARGET zoom; the animation and the scroll
+    # correction are owned by main_map.
+    if event.button_index == MOUSE_BUTTON_WHEEL_UP or event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+        if event.pressed:
+            var factor: float = main_map.ZOOM_STEP if event.button_index == MOUSE_BUTTON_WHEEL_UP \
+                    else 1.0 / main_map.ZOOM_STEP
+            main_map.zoom_by(factor, event.global_position)
+        return
+
+    # The debug menu: waiting for a click on a hex to place a resource
+    if debug_manager and debug_manager.waiting_for_hex:
+        if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+            var hex = _pixel_to_hex(event.global_position.x, event.global_position.y)
+            if hex != null:
+                debug_manager.handle_hex_click(hex.row, hex.col)
+        return
+
+    if event.button_index == MOUSE_BUTTON_LEFT:
+        if event.pressed:
+            # The drag owns the scroll offset for its whole duration: a zoom still in
+            # flight would keep correcting it and the map would twitch under the cursor.
+            main_map.finish_zoom()
+            drag_start_scroll_offset = main_map.scroll_offset
+            drag_start_mouse = event.global_position
+            is_dragging = false
+        else:
+            if is_dragging:
+                is_dragging = false
+                return
+
+    # The hex selection is performed on the RELEASE of the LMB, and not on the press —
+    # so that pressing and dragging the map does not select and reset the hex.
+    # When dragging, the handling is already interrupted above (a return on is_dragging).
+    if event.button_index == MOUSE_BUTTON_LEFT and not event.pressed:
+        var mouse_pos = event.global_position
+        var hex = _interactive_hex_at(mouse_pos.x, mouse_pos.y)
+        if hex != null:
+            # The LMB selects any AVAILABLE hex that is visible on the screen:
+            # inside the Influence Ring — information/actions, outside the Ring —
+            # scouting or buying a chunk (see control_panel.
+            # _collect_region_actions). Before researching Cartography the fog of
+            # war hexes are unavailable (see main_map.is_hex_interactive): they cannot
+            # be selected, and scouts cannot be sent there.
+            main_map.select_hex(hex.row, hex.col)
+            if main_map.tile_data[hex.row][hex.col].get("in_influence", false) \
+                    and hex.row == main_map.city_row and hex.col == main_map.city_col:
+                var cur_time = Time.get_ticks_msec() / 1000.0
+                if cur_time - main_map.last_city_click_time < 0.5:
+                    main_map.open_city()
+                main_map.last_city_click_time = cur_time
+            # A double click on a town hex — go to its interface (trade).
+            # Only for an OPENED hex: in the fog of war the town is visible only
+            # as a hint (a semi-transparent icon), and trading with it is impossible.
+            var click_tile = main_map.tile_data[hex.row][hex.col]
+            if click_tile.get("has_town", false) \
+                    and (click_tile.get("in_influence", false) or click_tile.get("is_explored", false)):
+                var town_click_time = Time.get_ticks_msec() / 1000.0
+                if town_click_time - main_map.last_town_click_time < 0.5:
+                    main_map.open_town_ui(hex.row, hex.col)
+                main_map.last_town_click_time = town_click_time
+        else:
+            # An LMB click on an unavailable place: either the emptiness beyond
+            # the edges of the map, or a fog of war hex before researching Cartography.
+            # In the latter case we explain to the player what is missing — otherwise
+            # the click would "silently" do nothing.
+            var blocked_hex = _pixel_to_hex(mouse_pos.x, mouse_pos.y)
+            if blocked_hex != null and not main_map.is_cartography_researched():
+                main_map.hud.show_message(tr("Scouting beyond the Region requires the technology \"%s\"")
+                        % main_map.get_cartography_tech_name(), GameData.HUD_MESSAGE_IMPORTANT)
+            if main_map.control_panel.has_selection():
+                main_map.clear_selection()
+
+func _handle_mouse_motion(event: InputEventMouseMotion):
+    if _pinching or _pinch_just_ended():
+        return
+    if town_ui.visible or city_ui.visible or pause_menu.visible:
+        return
+
+    if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+        var mouse_pos = event.global_position
+        if not is_dragging:
+            if (mouse_pos - drag_start_mouse).length() > 1.0:
+                is_dragging = true
+        if is_dragging:
+            var delta = mouse_pos - drag_start_mouse
+            # The map must stay glued to the cursor: the delta is in screen pixels, and
+            # one screen pixel covers 1 / zoom world units.
+            _set_scroll_offset(drag_start_scroll_offset + delta / main_map.zoom)
+            return
+
+    var hex = _interactive_hex_at(event.global_position.x, event.global_position.y)
+    # A hex in the fog of war does not take part in the tooltip: the terrain, resources and
+    # improvements are not known to the player (see main_map.is_hex_in_fog). We reset the hover
+    # BEFORE the tooltip logic — the tooltip will not appear even after the delay.
+    # The chunk highlight and the click work meanwhile: they do not reveal
+    # the contents of the hex (there is a separate _interactive_hex_at call below).
+    if hex != null and main_map.is_hex_in_fog(hex.row, hex.col):
+        hex = null
+    if hex != _hovered_hex:
+        _hovered_hex = hex
+        _hover_start_time = 0.0
+        _extended_tooltip_shown = false
+        # We reset the binding of the extended block right here: while it is alive,
+        # update_tooltip_text below would draw the extended block on the new hex
+        # without the hover delay.
+        if main_map.has_method("clear_extended_tooltip"):
+            main_map.clear_extended_tooltip()
+        if _tooltip_visible:
+            hex_tooltip.visible = false
+            _tooltip_visible = false
+        if hex != null:
+            main_map.update_tooltip_text(hex.row, hex.col)
+
+    # We update the chunk highlight when hovering over the hexes outside the Influence Ring.
+    # We do NOT call queue_redraw() directly here: expansion_manager.update_hovered_chunk()
+    # / clear_hovered_chunk() emit the chunk_hovered signal ONLY on a real
+    # chunk change, and that signal is connected to main_map._on_chunk_hovered(),
+    # which redraws only the highlight layer. In this way we get rid of the extra
+    # redraws of the whole map on every mouse movement.
+    var h = _interactive_hex_at(event.global_position.x, event.global_position.y)
+    if h != null and not main_map.tile_data[h.row][h.col].get("in_influence", false):
+        expansion_manager.update_hovered_chunk(h.row, h.col)
+    else:
+        expansion_manager.clear_hovered_chunk()
+
+# The cursor is now over the shown ("sticky") treasury breakdown tooltip of the HUD layer.
+# Such a tooltip covers the map, and the map under it should not react to the
+# cursor: neither the hex tooltip, nor the chunk highlight, nor clicks/selection, nor the edge
+# scrolling. The check is owned by main_map — here there is only delegation (with
+# a soft has_method check: InputHandler works with scenes without the HUD layer as well).
+func _is_mouse_over_treasury_tooltip(pos: Vector2) -> bool:
+    if main_map == null or not main_map.has_method("is_mouse_over_treasury_tooltip"):
+        return false
+    return bool(main_map.is_mouse_over_treasury_tooltip(pos))
+
+# The cursor is over the panel of the pause button and the menu button (the upper
+# right corner). The panel is transparent and does not consume the mouse, therefore
+# the map under it has to be blocked explicitly — otherwise the hex tooltip pops up
+# through the buttons.
+func _is_mouse_over_top_right(pos: Vector2) -> bool:
+    var panel = main_map.get_node_or_null("TopRightLayer/TopRightPanel")
+    if panel == null:
+        return false
+    return panel.get_global_rect().has_point(pos)
+
+func _hide_tooltip():
+    hex_tooltip.visible = false
+    _tooltip_visible = false
+    _tooltip_visible_time = 0.0
+    _tooltip_content_refresh_timer = 0.0
+    _hovered_hex = null
+    _hover_start_time = 0.0
+    # Just as the flag above — here too: the tooltip is hidden, the extended block is not shown.
+    if main_map != null and main_map.has_method("clear_extended_tooltip"):
+        main_map.clear_extended_tooltip()
+    for child in tooltip_products_container.get_children():
+        child.queue_free()
+
+func _pixel_to_hex(mx: float, my: float):
+    # A fast inverse coordinate conversion: we compute an approximate hex,
+    # then check it and its neighbours within a small radius — instead of iterating over
+    # the whole map. The hexes of the WHOLE MAP are checked: the function is responsible only for
+    # the geometry and does not know the game rules. The availability of the hex for hovering and
+    # clicking is checked separately — see _interactive_hex_at().
+    # A separate limit for the whole map is not needed: the scroll is limited
+    # by main_map.get_max_scroll(), therefore the unreachable hexes physically cannot
+    # end up under the cursor.
+    var radius = main_map.HEX_RADIUS
+    var x_spacing = radius * sqrt(3.0)
+    var y_spacing = radius * 1.5
+
+    # The map draws in the world coordinates and the camera is applied by the renderer,
+    # so the cursor is converted into the world space first and the whole hit test below runs
+    # in world coordinates.
+    var world: Vector2 = main_map.screen_to_local(Vector2(mx, my))
+    var world_x = world.x
+    var world_y = world.y
+
+    var approx_row = int(round(world_y / y_spacing))
+    var approx_col = int(round(world_x / x_spacing))
+
+    # We check the approximate hex and its neighbours within a radius of 2
+    # (it covers the offset of the odd rows and the inaccuracy of the inverse conversion).
+    for row in range(approx_row - 2, approx_row + 3):
+        if row < 0 or row >= main_map.map_rows:
+            continue
+        for col in range(approx_col - 2, approx_col + 3):
+            if col < 0 or col >= main_map.map_cols:
+                continue
+            var center = HexUtils.hex_center(row, col, radius)
+            var verts = HexUtils.hex_vertices(center.x, center.y, radius)
+            if HexUtils.point_in_polygon(world_x, world_y, verts):
+                return {"row": row, "col": col}
+    return null
+
+# The hex under the cursor, if it CAN be interacted with: hovering
+# (the tooltip), the scouting/buying chunk highlight, selection by an LMB click.
+# Outside the Region the hexes are available only after researching the
+# "Cartography" technology (the fog of war): without it the scouting is limited to the Region,
+# and the fog of war hexes react neither to hovering nor to clicking
+# (see main_map.is_hex_interactive). _pixel_to_hex() remains pure
+# geometry and is used directly where the rules are not needed
+# (for example, the debug mode of placing a resource).
+func _interactive_hex_at(mx: float, my: float):
+    var hex = _pixel_to_hex(mx, my)
+    if hex == null:
+        return null
+    if not main_map.is_hex_interactive(hex.row, hex.col):
+        return null
+    return hex

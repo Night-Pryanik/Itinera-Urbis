@@ -1,0 +1,73 @@
+{
+  "resources": [
+    {
+      // Paired stones dressed with furrows for grain mills and edge-runner stones for oil presses.
+      "id": "millstone",
+      "price": 24,
+      "name": "Millstone",
+      "type": "product",
+      "category": "equipment",
+      "unlock_tech": "masonry",
+      "icon": "millstone.png"
+    },
+    {
+      // Calibrated scales, calipers, dividers, astrolabes and fine bench instruments,
+      // made from each workable metal once Mechanics and Metallurgy meet.
+      "id": "copper_precision_instruments",
+      "price": 55,
+      "name": "Copper Precision Instruments",
+      "type": "product",
+      "category": "equipment",
+      "unlock_tech": "precision_instruments",
+      "icon": "copper_precision_instruments.png"
+    },
+    {
+      "id": "bronze_precision_instruments",
+      "price": 90,
+      "name": "Bronze Precision Instruments",
+      "type": "product",
+      "category": "equipment",
+      "unlock_tech": "precision_instruments",
+      "icon": "bronze_precision_instruments.png"
+    },
+    {
+      "id": "brass_precision_instruments",
+      "price": 95,
+      "name": "Brass Precision Instruments",
+      "type": "product",
+      "category": "equipment",
+      "unlock_tech": "precision_instruments",
+      "icon": "brass_precision_instruments.png"
+    },
+    {
+      "id": "iron_precision_instruments",
+      "price": 105,
+      "name": "Iron Precision Instruments",
+      "type": "product",
+      "category": "equipment",
+      "unlock_tech": "precision_instruments",
+      "icon": "iron_precision_instruments.png"
+    },
+    {
+      "id": "steel_precision_instruments",
+      "price": 155,
+      "name": "Steel Precision Instruments",
+      "type": "product",
+      "category": "equipment",
+      "unlock_tech": "precision_instruments",
+      "icon": "steel_precision_instruments.png"
+    },
+    {
+      // Precision instruments of the brand bar: made from the steel that carries the
+      // city's name, so the recipe stays closed until the brand rung of the steel line
+      // grants damascus_steel — matching damascus_weapons without a separate tech gate.
+      "id": "damascus_precision_instruments",
+      "price": 260,
+      "name": "<city_name>-steel Precision Instruments",
+      "type": "product",
+      "category": "equipment",
+      "unlock_tech": "precision_instruments",
+      "icon": "damascus_precision_instruments.png"
+    }
+  ]
+}

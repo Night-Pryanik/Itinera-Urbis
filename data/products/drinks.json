@@ -1,0 +1,235 @@
+{
+  "resources": [
+    {
+      "id": "mineral_water",
+      "price": 26,
+      "name": "Mineral Water",
+      "type": "product",
+      "category": "drinks",
+      "unlock_tech": "masonry",
+      "icon": "mineral_water.svg"
+    },
+    {
+      "id": "beer",
+      "price": 8,
+      "name": "Beer",
+      "type": "product",
+      "category": "drinks",
+      "unlock_tech": "fermentation",
+      "icon": "beer.png"
+    },
+    {
+      "id": "hopped_beer",
+      "price": 14,
+      "name": "Hopped Beer",
+      "type": "product",
+      "category": "drinks",
+      "unlock_tech": "hopping",
+      "icon": "hopped_beer.png"
+    },
+    {
+      "id": "mead",
+      "price": 12,
+      "name": "Mead",
+      "type": "product",
+      "category": "drinks",
+      "unlock_tech": "mead_making",
+      "icon": "mead.png"
+    },
+    {
+      "id": "wine",
+      "price": 18,
+      "name": "Wine",
+      "type": "product",
+      "category": "drinks",
+      "unlock_tech": "winemaking",
+      "icon": "wine.png"
+    },
+    {
+      "id": "sake",
+      "price": 14,
+      "name": "Sake",
+      "type": "product",
+      "category": "drinks",
+      "unlock_tech": "fermentation",
+      "icon": "sake.png"
+    },
+    {
+      "id": "pulque",
+      "price": 7,
+      "name": "Pulque",
+      "type": "product",
+      "category": "drinks",
+      "unlock_tech": "fermentation",
+      "icon": "pulque.png"
+    },
+    {
+      "id": "toddy",
+      "price": 6,
+      "name": "Toddy",
+      "type": "product",
+      "category": "drinks",
+      "unlock_tech": "fermentation",
+      "icon": "toddy.png"
+    },
+    {
+      "id": "tea",
+      "price": 15,
+      "name": "Tea",
+      "type": "product",
+      "category": "drinks",
+      "unlock_tech": "fermentation",
+      "icon": "tea.png"
+    },
+    {
+      "id": "coffee",
+      "price": 18,
+      "name": "Coffee",
+      "type": "product",
+      "category": "drinks",
+      "unlock_tech": "fermentation",
+      "icon": "coffee.png"
+    },
+    {
+      "id": "cocoa",
+      "price": 18,
+      "name": "Cocoa",
+      "type": "product",
+      "category": "drinks",
+      "unlock_tech": "fermentation",
+      "icon": "cocoa_drink.png"
+    },
+    {
+      "id": "mate",
+      "price": 18,
+      "name": "Mate",
+      "type": "product",
+      "category": "drinks",
+      "unlock_tech": "fermentation",
+      "icon": "mate_drink.png"
+    },
+    {
+      "id": "karkadeh",
+      "price": 18,
+      "name": "Karkadeh",
+      "type": "product",
+      "category": "drinks",
+      "icon": "karkadeh.png"
+    },
+    {
+      "id": "vinegar",
+      "price": 18,
+      "name": "Vinegar",
+      "type": "product",
+      "category": "drinks",
+      "unlock_tech": "fermentation",
+      "icon": "vinegar.png"
+    },
+    {
+      "id": "fruit_wine",
+      "price": 18,
+      "name": "Fruit Wine",
+      "type": "product",
+      "category": "drinks",
+      "unlock_tech": "winemaking",
+      "icon": "fruit_wine.png"
+    },
+    {
+      "id": "carob_wine",
+      "price": 14,
+      "name": "Carob Wine",
+      "type": "product",
+      "category": "drinks",
+      "unlock_tech": "winemaking",
+      "icon": "carob_wine.png"
+    },
+    {
+      "id": "cider",
+      "price": 15,
+      "name": "Cider",
+      "type": "product",
+      "category": "drinks",
+      "unlock_tech": "fermentation",
+      "icon": "cider.png"
+    },
+    {
+      // Strong spirits drawn from unhopped grain beer and rice sake.
+      "id": "grain_spirit",
+      "price": 32,
+      "name": "Grain Spirit",
+      "type": "product",
+      "category": "drinks",
+      "unlock_tech": "distillation",
+      "icon": "grain_spirit.png"
+    },
+    {
+      "id": "brandy",
+      "price": 44,
+      "name": "Brandy",
+      "type": "product",
+      "category": "drinks",
+      "unlock_tech": "distillation",
+      "icon": "brandy.png"
+    },
+    {
+      // Consolidates spirits drawn from fruit wines, carob wine and apple cider.
+      "id": "fruit_brandy",
+      "price": 42,
+      "name": "Fruit Brandy",
+      "type": "product",
+      "category": "drinks",
+      "unlock_tech": "distillation",
+      "icon": "fruit_brandy.png"
+    },
+    {
+      // Consolidates spirits distilled from palm toddy, sugar cane and maple sap
+      // across warm and cold climates, mirroring how sugar unites their juices.
+      "id": "arrack",
+      "price": 24,
+      "name": "Arrack",
+      "type": "product",
+      "category": "drinks",
+      "unlock_tech": "distillation",
+      "icon": "arrack.png"
+    },
+    {
+      "id": "mezcal",
+      "price": 22,
+      "name": "Mezcal",
+      "type": "product",
+      "category": "drinks",
+      "unlock_tech": "distillation",
+      "icon": "mezcal.png"
+    },
+    {
+      "id": "honey_spirit",
+      "price": 32,
+      "name": "Honey Spirit",
+      "type": "product",
+      "category": "drinks",
+      "unlock_tech": "distillation",
+      "icon": "honey_spirit.png"
+    },
+    {
+      // Milk spirit of pastoral herds: fermented and distilled from raw milk.
+      "id": "arkhi",
+      "price": 18,
+      "name": "Arkhi",
+      "type": "product",
+      "category": "drinks",
+      "unlock_tech": "distillation",
+      "icon": "arkhi.png"
+    },
+    {
+      // Sweetened herbal and spiced spirit compounded from rectified spirit,
+      // fragrant botanicals and sweeteners.
+      "id": "cordial",
+      "price": 76,
+      "name": "Cordial",
+      "type": "product",
+      "category": "drinks",
+      "unlock_tech": "distillation",
+      "icon": "cordial.png"
+    }
+  ]
+}

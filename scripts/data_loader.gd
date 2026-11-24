@@ -1,0 +1,826 @@
+# data_loader.gd
+@tool
+extends Node
+
+const JsonUtils = preload("res://scripts/json_utils.gd")
+
+var terrains: Dictionary = {}
+var covers: Dictionary = {}
+var climate_zones: Dictionary = {}
+var raw_resources: Dictionary = {}
+var products: Dictionary = {}
+var improvements: Dictionary = {}
+var crafts: Array = []
+var craft_extras: Dictionary = {} # product id -> the additional ingredient of a recipe
+var craft_extra_kinds: Array = [] # [ { id, name } ] in the order of the file
+var buildings: Array = []
+var categories: Array = []
+var technologies: Array = []
+var groups: Array = []
+var eras: Array = []
+var product_groups: Dictionary = {} # id -> products, nested groups already expanded
+var product_group_declarations: Dictionary = {} # id -> products as written, with the "@group" entries
+var product_group_names: Dictionary = {} # id -> human-readable name
+var product_group_icons: Dictionary = {} # id -> icon file name ("" — not set)
+var modifiers: Dictionary = {}
+var special_actions: Dictionary = {} # id -> special action data
+var qualities: Dictionary = {} # data about resource quality levels
+var map_config: Dictionary = {} # the world map configuration (data/map_config.json)
+var professions: Dictionary = {} # id -> profession data (data/professions.json)
+var consumption_rules: Array = [] # consumption entries from data/consumption.json
+var city_names: Array = [] # city name variants (locale/city_names_<code>.json)
+var game_balance: Dictionary = {} # the game balance (data/game_balance.json)
+# The road levels (data/roads.json). roads_by_level — level -> level data:
+# a road network segment stores a level number, so exactly such an index is needed.
+var roads: Array = []
+var roads_by_level: Dictionary = {}
+# The specializations of the city (data/specializations.json): the branches in the order of the
+# file, and the config block with the thresholds of the population.
+var specializations: Array = []
+var specialization_config: Dictionary = {}
+# The challenges of the era (data/challenges.json): the one-off tasks whose condition is checked in
+# the code, in the order of the file.
+var challenges: Array = []
+# The diversity bonuses (data/bonuses.json): product group id -> tiers of varieties.
+var diversity_bonuses: Array = []
+
+# The id of a vanilla entity -> the icon file names the VANILLA data draws it with, for the
+# entities drawn by several pictures. Taken before the mods are laid over: a tileset draws
+# the game itself, so a record a mod changes is not its business.
+var vanilla_entities: Dictionary = {}
+
+# Where each entity came from: "collection:id" → { "file": String, "line": int }.
+# It is filled in when reading the files (_remember_sources), because after merging
+# the files into one dictionary the origin is no longer recoverable. It is needed by the runtime validator
+# (scripts/data_validator.gd) in order to point at a problem to a specific file and
+# line. The details are in the _remember_sources header.
+var entity_sources: Dictionary = {}
+
+# The merged tree of data/*.json exactly as it was read, before it is taken apart into the
+# collections above. The assembled collections are lossy — a goods group keeps only its
+# members (product_group_name/icon live in side dictionaries), the game balance is flattened
+# out of its blocks — so the field whitelist of the validator (data_validator._validate_schema)
+# walks this tree: it is the only place where every key the author wrote is still present.
+var raw_data: Dictionary = {}
+
+# What the blacklists of the mods removed: collection -> {id: true}. The entities are gone
+# from the collections, and this is the only memory of them — the runtime validator needs it
+# to tell "removed on purpose" from "a typo in the blacklist" (data_validator
+# ._validate_blacklist).
+var blacklisted: Dictionary = {}
+
+# The data fields whose value the player sees. data/*.json holds the English
+# source text, and the translation is applied here, when reading the files: the translation key
+# is the English text itself. Thanks to this the rest of the code does
+# not need to know about localization — it still reads "name"/"description".
+# "full_name" is the name as a phrase of its own (a specialization is "Raw Materials
+# specialization" but "Specialization of the domestic market"), see
+# CityData.get_specialization_full_name.
+const DISPLAY_FIELDS := ["name", "description", "flavor", "effects", "full_name"]
+
+# The dictionary fields where the player label is in the VALUE, and the key is a service
+# identifier (see _localize_display_fields).
+const VALUE_MAP_FIELDS := ["priority_names"]
+
+# The pool of generated city names lives by the language, not by the translation: every
+# language has its own list of invented names, and a name is never a translated string
+# (see locale/GLOSSARY.md). The files sit outside data/ so that the folder scan does not
+# merge them into one doubled list — see _read_city_names.
+const CITY_NAMES_FOLDER := "res://locale"
+# The language of a file the project has no pool for: English is the source language.
+const CITY_NAMES_SOURCE_LOCALE := "en"
+
+# The collections whose records are addressed by a field other than "id" — the same
+# addressing the validator uses (data_validator.ENTITY_ID_FIELDS). A mod overrides such a
+# record by that field, exactly as by "id".
+const ENTITY_ID_FIELDS := {
+    "consumption": "resource",
+}
+
+# The collections a mod's blacklist may name (see _apply_blacklist): the entity
+# collections addressed by an identifier — the very field the merge uses
+# (ENTITY_ID_FIELDS). The config blocks (game_balance, modifiers, map_config,
+# qualities) are not collections of entities, and the identifier-less arrays
+# (city_names, the diversity bonuses) have nothing to address a record by, so
+# neither can be blacklisted.
+const BLACKLIST_COLLECTIONS := [
+    "resources",
+    "crafts",
+    "buildings",
+    "improvements",
+    "technologies",
+    "categories",
+    "groups",
+    "eras",
+    "product_groups",
+    "professions",
+    "quality_levels",
+    "roads",
+    "terrains",
+    "covers",
+    "climate_zones",
+    "special_actions",
+    "challenges",
+    "consumption",
+]
+
+# The top-level keys whose elements have an "id" — by them we search
+# for the entity declaration. The order and composition repeat what load_all_data parses.
+const SOURCE_COLLECTIONS := [
+    "resources",
+    "crafts",
+    "craft_extras",
+    "craft_extra_kinds",
+    "buildings",
+    "improvements",
+    "technologies",
+    "categories",
+    "challenges",
+    "professions",
+    "product_groups",
+    "roads",
+    # The collections that no broken-reference check refers to, but
+    # whose identifiers data_validator.gd checks for the alphabet and homoglyphs.
+    # Without them the problem "carmine typed with a Cyrillic homoglyph s" would
+    # point at an entity without
+    # a file and a line — and the file and line are exactly the main value here.
+    "terrains",
+    "covers",
+    "climate_zones",
+    "eras",
+    "groups",
+    "quality_levels",
+    "special_actions",
+    "specializations",
+]
+
+# The collections of the raw data whose records may be drawn by several pictures. The names
+# are the keys of the data files, so "resources" holds both the raw goods and the products.
+const ENTITY_COLLECTIONS := [
+    "covers",
+    "terrains",
+    "improvements",
+    "resources",
+    "buildings",
+    "technologies",
+    "special_actions",
+]
+
+# Reads the vanilla data and lays the enabled mods on top of it.
+#
+# mod_dirs — the data folders of the active mods, in the order they must be applied
+# (the mods are already sorted by dependency by ModManager). An empty list — a clean
+# vanilla game.
+func load_all_data(mod_dirs: Array = []):
+    var merged_data = _load_all_json_files("res://data")
+    if merged_data.is_empty():
+        print("Error: failed to load the data from the data folder.")
+        return
+
+    # The mods are merged into the RAW tree, before the collections are assembled:
+    # everything below reads the assembled dictionaries, so a record replaced here is
+    # indistinguishable from a vanilla one for the rest of the game.
+    vanilla_entities = _entity_pictures(merged_data)
+    _apply_mods(merged_data, mod_dirs)
+
+    raw_data = merged_data
+
+    # The translation is applied BEFORE assembling the entities into dictionaries: further on, everyone who
+    # reads GameData.products[id]["name"] already gets a text in the current language. A language change
+    # re-reads the data from scratch (LocalizationManager.set_locale → GameData.load_all_data).
+    # The name of a good of the brand is the exception: its phrase carries the tag <city_name>, which only
+    # the city knows later, so such a record is display-ready after GameData.get_product_name, not before.
+    _localize_display_fields(merged_data)
+
+    terrains = {}
+    for t in merged_data.get("terrains", []):
+        terrains[t["id"]] = t
+
+    covers = {}
+    for c in merged_data.get("covers", []):
+        covers[c["id"]] = c
+
+    climate_zones = {}
+    for z in merged_data.get("climate_zones", []):
+        climate_zones[z["id"]] = z
+
+    raw_resources = {}
+    products = {}
+    for r in merged_data.get("resources", []):
+        var res_type = r.get("type", "")
+        if res_type == "raw":
+            raw_resources[r["id"]] = r
+        elif res_type == "product":
+            products[r["id"]] = r
+
+    improvements = {}
+    for i in merged_data.get("improvements", []):
+        improvements[i["id"]] = i
+
+    crafts = merged_data.get("crafts", [])
+
+    # The additional ingredients of recipes (data/craft_extras.json): the goods a recipe may
+    # take on top of its own, and the kinds they belong to (see GameData, "Additional
+    # ingredients of a recipe"). The record is addressed by the product it spends.
+    craft_extras = {}
+    for extra in merged_data.get("craft_extras", []):
+        if extra is Dictionary:
+            var extra_id = extra.get("id", "")
+            if not extra_id.is_empty():
+                craft_extras[extra_id] = extra
+    craft_extra_kinds = []
+    for kind_entry in merged_data.get("craft_extra_kinds", []):
+        if kind_entry is Dictionary and not str(kind_entry.get("id", "")).is_empty():
+            craft_extra_kinds.append(kind_entry)
+
+    diversity_bonuses = merged_data.get("product_group_bonuses", [])
+    buildings = merged_data.get("buildings", [])
+    categories = merged_data.get("categories", [])
+    technologies = merged_data.get("technologies", [])
+    groups = merged_data.get("groups", [])
+    eras = merged_data.get("eras", [])
+
+    # NEW: we load the product groups
+    product_groups = {}
+    product_group_declarations = {}
+    product_group_names = {}
+    product_group_icons = {}
+    for pg in merged_data.get("product_groups", []):
+        if pg is Dictionary:
+            var group_id = pg.get("id", "")
+            if not group_id.is_empty():
+                product_group_declarations[group_id] = pg.get("products", [])
+                product_group_names[group_id] = pg.get("name", group_id)
+                # The optional "icon" field: the group's own icon. An empty string
+                # — the icon is not set, then GameData takes the icon of the first
+                # member that has an icon (see GameData.get_product_group_icon).
+                product_group_icons[group_id] = str(pg.get("icon", ""))
+    product_groups = _expand_product_groups(product_group_declarations)
+
+    # NEW: we load the global modifiers
+    modifiers = merged_data.get("modifiers", {})
+
+    # NEW: we load the special actions (logging, draining swamps, etc.)
+    special_actions = {}
+    for sa in merged_data.get("special_actions", []):
+        if sa is Dictionary:
+            var sa_id = sa.get("id", "")
+            if not sa_id.is_empty():
+                special_actions[sa_id] = sa
+
+    # City names: the pool of the current language, plus whatever the mods add to it.
+    city_names = _read_city_names(merged_data.get("city_names", []))
+
+    # NEW: we load the road levels (data/roads.json). roads_by_level is needed
+    # by a road network segment: it stores a level number, and not an id.
+    roads = []
+    roads_by_level = {}
+    for road in merged_data.get("roads", []):
+        if road is Dictionary:
+            roads.append(road)
+            roads_by_level[int(road.get("level", 0))] = road
+
+    # NEW: we load the data about resource quality levels.
+    # In data/qualities.json the keys are at the top level (quality_levels,
+    # priority_default, etc.), therefore we assemble them manually. Additionally
+    # we support the variant with a nested "qualities" dictionary.
+    qualities = {}
+    var nested_qualities = merged_data.get("qualities", {})
+    if nested_qualities is Dictionary:
+        for key in nested_qualities.keys():
+            qualities[key] = nested_qualities[key]
+    for key in ["quality_levels", "priority_default", "priority_options", "priority_names"]:
+        if merged_data.has(key):
+            qualities[key] = merged_data[key]
+
+    # We load the world map configuration (starting ring, region).
+    # The data/map_config.json file contains the "map_config" key with the parameters:
+    # start_ring_rows / start_ring_cols / region_width. The map size itself is chosen
+    # by the player in the world settings of a new game (CityData.world_map_size).
+    map_config = merged_data.get("map_config", {})
+
+    # NEW: we load the professions of workers at improvements (data/professions.json).
+    # The profession fields:
+    #   id          — a string identifier (snake_case);
+    #   name        — singular nominative form ("Farmer");
+    #   icon        — the icon file name;
+    #   description — a short description.
+    # The details of the profession resource consumption scheme — see docs.md, the
+    # section "Professions and consumption".
+    professions = {}
+    for p in merged_data.get("professions", []):
+        if p is Dictionary:
+            var pid = p.get("id", "")
+            if not pid.is_empty():
+                professions[pid] = p
+
+    # NEW: we load the registry of occupational consumption
+    # (data/consumption.json). Each entry:
+    #   resource          — the product id OR the group "@<id>" from data/product_groups/;
+    #   profession        — an array of the ids of the consuming professions;
+    #   amount/interval/production_bonus — the parameters of the consumption tick.
+    # The groups allow a profession to consume any suitable product from
+    # the set (for example, "@boats" — "Boats"). The details — see docs.md,
+    # the section "Professions and resource consumption".
+    consumption_rules = []
+    for cr in merged_data.get("consumption", []):
+        if cr is Dictionary and not str(cr.get("resource", "")).is_empty():
+            consumption_rules.append(cr)
+
+    # NEW: we load the game balance (data/game_balance.json).
+    # The numeric constants of the game. The "game_balance" key is at the top level,
+    # and it is grouped into named blocks (city, expansion, towns) so that the file
+    # stays readable as it grows. The blocks are a layout of the FILE only:
+    # the constants are flattened back into one flat dictionary here, because every
+    # reader addresses a key by name (game_balance.get("base_tax_per_citizen")), not
+    # through its block. See _flatten_balance_blocks.
+    game_balance = _flatten_balance_blocks(merged_data.get("game_balance", {}))
+
+    # The specializations of the city (data/specializations.json). The config block is a plain
+    # dictionary of scalars and stays as it is read: the thresholds are the whole of it.
+    specializations = []
+    for spec in merged_data.get("specializations", []):
+        if spec is Dictionary and not str(spec.get("id", "")).is_empty():
+            specializations.append(spec)
+    var spec_config = merged_data.get("specialization_config", {})
+    specialization_config = spec_config if spec_config is Dictionary else {}
+
+    # The challenges of the era (data/challenges.json). The records keep their condition id as it
+    # is written: ChallengeManager looks the check up by it, and a check the game does not know is
+    # reported by the validator rather than dropped here.
+    challenges = []
+    for challenge in merged_data.get("challenges", []):
+        if challenge is Dictionary and not str(challenge.get("id", "")).is_empty():
+            challenges.append(challenge)
+
+# A group may name another group as "@<id>". The registry the game reads holds only concrete
+# products, so the lists are expanded once here and every consumer sees the same flat set. The
+# declarations stay separate: the validator reads them to check the references and the nesting
+# chain before it is flattened. A group reached twice is expanded once, and a repeated good is
+# written once — a group answers "any of these goods", not "draw this good twice".
+func _expand_product_groups(declarations: Dictionary) -> Dictionary:
+    var expanded := {}
+    for gid in declarations:
+        if not expanded.has(gid):
+            _collect_group_products(str(gid), declarations, expanded, [])
+    return expanded
+
+
+func _collect_group_products(gid: String, declarations: Dictionary,
+        expanded: Dictionary, path: Array) -> Array:
+    if expanded.has(gid):
+        return expanded[gid]
+    # A cycle is a data error the validator reports; here it only has to terminate.
+    if gid in path:
+        return []
+    var members: Array = []
+    path.append(gid)
+    for raw_member in declarations.get(gid, []):
+        var member := str(raw_member)
+        if member.begins_with("@"):
+            var nested_id := member.substr(1)
+            if declarations.has(nested_id):
+                for nested_member in _collect_group_products(nested_id, declarations, expanded, path):
+                    if not nested_member in members:
+                        members.append(nested_member)
+        elif not member in members:
+            members.append(member)
+    path.pop_back()
+    expanded[gid] = members
+    return members
+
+
+# Flattens the named blocks of the game balance into one flat dictionary.
+#
+# A block is a nested dictionary of constants. One level is enough — the blocks group
+# the fields by the system that owns them, they do not nest further — so a plain
+# one-level flatten keeps the lookup simple: any key of any block becomes a top-level
+# key. The names must therefore stay unique across the whole file, which the blocks
+# guarantee by construction.
+#
+# A non-dictionary value is a constant that was not grouped; it is carried over as
+# is, so a field may live either inside a block or at the top level while the file is
+# being reorganised.
+func _flatten_balance_blocks(blocks: Dictionary) -> Dictionary:
+    var flat: Dictionary = {}
+    for key in blocks.keys():
+        var value: Variant = blocks[key]
+        if value is Dictionary:
+            for field in value.keys():
+                flat[field] = value[field]
+        else:
+            flat[key] = value
+    return flat
+
+# Translates the values of the fields the player sees (DISPLAY_FIELDS) into the current
+# game language. The walk is recursive: one function covers both the flat lists
+# of entities and the nested ones (technologies[].unlock_effects[].name).
+#
+# The translation key is a pair (english text, context): the context is the path of the
+# JSON keys from the file root to the field ("technologies.name" for the technology
+# names, "product_groups.name" for the product groups). Objects of different types
+# share the same display text ("Jewelry" in both technologies and product groups),
+# but they must be translated independently. The context is built by exactly the
+# same rule as tools/i18n_build_po.py (scan_data): the two implementations
+# are required to produce the same keys, or the game would look up keys missing
+# from the catalog (this is caught by the smoke test: tools/i18n_smoke.gd).
+#
+# A separate case — qualities.json: there "priority_names" is a dictionary
+# {priority_code: the player label}, that is, the label is in the VALUE, and the
+# key remains a service one. Such dictionaries are listed in VALUE_MAP_FIELDS.
+func _localize_display_fields(node: Variant, context: String = "") -> void:
+    if node is Dictionary:
+        for key in node.keys():
+            var value: Variant = node[key]
+            var key_context = key if context == "" else context + "." + key
+            if DISPLAY_FIELDS.has(key) and value is String:
+                node[key] = tr(str(value), key_context)
+            elif DISPLAY_FIELDS.has(key) and value is Array:
+                # A list of display lines (the "effects" of a specialization): every entry is a
+                # text of its own, translated with the context of the whole list.
+                for i in value.size():
+                    if value[i] is String:
+                        value[i] = tr(str(value[i]), key_context)
+            elif VALUE_MAP_FIELDS.has(key) and value is Dictionary:
+                for option_key in value.keys():
+                    if value[option_key] is String:
+                        value[option_key] = tr(str(value[option_key]), key_context)
+            else:
+                _localize_display_fields(value, key_context)
+    elif node is Array:
+        for item in node:
+            _localize_display_fields(item, context)
+
+func _load_all_json_files(folder_path: String) -> Dictionary:
+    var result = {}
+    var dir = DirAccess.open(folder_path)
+    if dir == null:
+        print("Error: failed to open the folder ", folder_path)
+        return result
+
+    dir.list_dir_begin()
+    var file_name = dir.get_next()
+    while file_name != "":
+        if dir.current_is_dir():
+            var sub_result = _load_all_json_files(folder_path.path_join(file_name))
+            _merge_dictionaries(result, sub_result)
+        elif file_name.ends_with(".json"):
+            var file_path = folder_path.path_join(file_name)
+            var file = FileAccess.open(file_path, FileAccess.READ)
+            if file == null:
+                print("Error: failed to open the file ", file_path)
+            else:
+                var text = file.get_as_text()
+                # The files allow comments, which JSON does not (see json_utils.gd).
+                var data = JsonUtils.parse(text)
+                if data == null:
+                    print("Error: failed to parse JSON from ", file_path)
+                else:
+                    _remember_sources(file_path, text, data)
+                    _merge_dictionaries(result, data)
+        file_name = dir.get_next()
+    dir.list_dir_end()
+    return result
+
+# The name pool of the language the game runs in: locale/city_names_<code>.json, one
+# file per language (see CITY_NAMES_FOLDER). A language without its own file falls back
+# to the source one, so the pool is never empty because of a missing translation.
+#
+# The language is read from TranslationServer and not from the LocalizationManager
+# autoload: that manager sets this code before the data is ever read, and a tool that
+# picks a language on its own goes through the same door.
+func _read_city_names(extra_names) -> Array:
+    var requested := TranslationServer.get_locale().to_lower().split("_")[0]
+    var names: Array = []
+    for code in [requested, CITY_NAMES_SOURCE_LOCALE]:
+        var data = _read_json_file(CITY_NAMES_FOLDER.path_join("city_names_%s.json" % code))
+        if data is Dictionary and data.get("city_names") is Array:
+            names = data["city_names"]
+            break
+    if extra_names is Array:
+        names.append_array(extra_names)
+    return names
+
+# One data file outside the folder scan, in the same JSON-with-comments format.
+# null — the file is absent, which is a normal answer for a language with no pool.
+func _read_json_file(file_path: String):
+    if not FileAccess.file_exists(file_path):
+        return null
+    var file = FileAccess.open(file_path, FileAccess.READ)
+    if file == null:
+        print("Error: failed to open the file ", file_path)
+        return null
+    var data = JsonUtils.parse(file.get_as_text())
+    if data == null:
+        print("Error: failed to parse JSON from ", file_path)
+    return data
+
+# --- THE ORIGIN OF ENTITIES (file + line) -------------------------------
+#
+# _merge_dictionaries merges the files into one dictionary and erases the place of
+# each entity: after loading it is impossible to say whether "Wheat" is declared in
+# data/products/food.json or in data/products/products.json. The runtime validator
+# (scripts/data_validator.gd) stumbles on this: it can name the problem
+# ("The product 'sunflower' does not exist"), but without the file the author would
+# have to look for the typo manually across all the files in data/.
+#
+# That is why an index is recorded in parallel with the merging: "collection:id" →
+# the file and the declaration line. Exactly the declarations, and not the mentions:
+# an id can occur in a file both as a group member and as a recipe result, and the
+# line number would then point at the wrong place.
+func _remember_sources(file_path: String, raw_text: String, data: Dictionary):
+    if not (data is Dictionary):
+        return
+    # A comment may hold an example record with a real identifier. Search the cleaned
+    # text so that example cannot be reported as a declaration. The cleaner keeps the
+    # original line breaks, so the numbers still match the file in the editor.
+    var search_text := JsonUtils.strip_comments(raw_text)
+    _remember_key_sources(file_path, search_text, data)
+    for collection in SOURCE_COLLECTIONS:
+        var entries = data.get(collection, null)
+        if not (entries is Array):
+            continue
+        for entry in entries:
+            if not (entry is Dictionary):
+                continue
+            var id := str(entry.get("id", ""))
+            if id.is_empty():
+                continue
+            entity_sources["%s:%s" % [collection, id]] = {
+                "file": file_path,
+                "line": _find_decl_line(search_text, id),
+            }
+    _remember_consumption_sources(file_path, search_text, data)
+
+# The origin of the TOP-LEVEL keys — the collections themselves ("resources", "crafts",
+# "game_balance"), indexed as "@key:<name>". A collection has no entity of its own to hang
+# the index on, while the field whitelist of the validator needs a file for two cases: an
+# unknown collection in the data root, and a record whose own origin is not indexed (the
+# diversity bonuses of data/bonuses.json have no "id" field to be indexed by).
+#
+# A key that several files share (crafts, resources) keeps the first file it was seen in:
+# any of them is a fair pointer, and the first one is at least stable.
+func _remember_key_sources(file_path: String, search_text: String, data: Dictionary):
+    for key in data.keys():
+        var index_key := "@key:%s" % str(key)
+        if entity_sources.has(index_key):
+            continue
+        entity_sources[index_key] = {
+            "file": file_path,
+            "line": _find_key_line(search_text, str(key)),
+        }
+
+# The line of a top-level key — the one where it is written as `"name":`, and not merely
+# mentioned inside a comment or in the value of another field.
+func _find_key_line(search_text: String, key: String) -> int:
+    var needle := "\"%s\"" % key
+    var lines := search_text.split("\n")
+    for i in lines.size():
+        var line: String = lines[i]
+        var at := line.find(needle)
+        while at >= 0:
+            if line.substr(at + needle.length()).lstrip(" \t").begins_with(":"):
+                return i + 1
+            at = line.find(needle, at + 1)
+    return 0
+
+# The consumption rules (data/consumption.json) have no identifier of their own:
+# a rule is declared by the resource/profession/amount/interval fields, and there is
+# no "id" field in it, therefore the common pass above skips them. Without a separate
+# pass the "resource does not exist" problem would be left without indicating a file —
+# and the file and
+# line here are exactly the main value of the message.
+#
+# The key is the "resource" value itself (with "@" for groups). In this way the index
+# key matches what the validator passes as source_id
+# (data_validator._validate_consumption), and both sides agree.
+#
+# A key collision for two rules with the same resource is impossible: the registry
+# forbids it (GameData.get_profession_consumption discards a duplicate by
+# display_key), therefore an index overwrite does not happen here.
+func _remember_consumption_sources(file_path: String, search_text: String, data: Dictionary):
+    var rules = data.get("consumption", null)
+    if not (rules is Array):
+        return
+    for rule in rules:
+        if not (rule is Dictionary):
+            continue
+        var res_key := str(rule.get("resource", ""))
+        if res_key.is_empty():
+            continue
+        entity_sources["consumption:%s" % res_key] = {
+            "file": file_path,
+            "line": _find_resource_decl_line(search_text, res_key),
+        }
+
+# The declaration line of a consumption rule — the one where the "resource" field
+# with this value stands. A rule has no "id" for _find_decl_line to look for, so it
+# is identified by that field. The search runs on comment-stripped text for the
+# same reason: an example in a comment must not be reported as the rule.
+func _find_resource_decl_line(search_text: String, res_key: String) -> int:
+    var needle := "\"%s\"" % res_key
+    var lines := search_text.split("\n")
+    for i in lines.size():
+        var line: String = lines[i]
+        # The field name and the value on one line — a compact record
+        # { "resource": "@boats", ... }. A multi-line record does not occur,
+        # but even in that case 0 will be returned, and it will not point at someone else's line.
+        if line.contains("\"resource\"") and line.contains(needle):
+            return i + 1
+    return 0
+
+# The line on which an entity with such an id is DECLARED, — or 0 if it was not found.
+#
+# The text is searched after the comments have been stripped: a commented-out example
+# may carry a real id, and pointing at it would be worse than no line at all.
+# JsonUtils.strip_comments keeps the line breaks, so the number still matches the file
+# the author sees in the editor.
+#
+# First we search for the line where the id stands next to an "id" (a compact record
+# { "id": "salt", "price": 6 }) — that is the declaration itself. If there is no such one, we take
+# the first line where the id occurs at all: for multi-line records like a goods
+# group of data/product_groups/ (id on one line, "products" — on the next ones) it still
+# leads to the declaration line.
+func _find_decl_line(search_text: String, id: String) -> int:
+    var needle := "\"%s\"" % id
+    var lines := search_text.split("\n")
+    var fallback := 0
+    for i in lines.size():
+        var line: String = lines[i]
+        if not line.contains(needle):
+            continue
+        if line.contains("\"id\""):
+            return i + 1
+        if fallback == 0:
+            fallback = i + 1
+    return fallback
+
+func _merge_dictionaries(target: Dictionary, source: Dictionary):
+    for key in source.keys():
+        if target.has(key) and typeof(target[key]) == TYPE_ARRAY and typeof(source[key]) == TYPE_ARRAY:
+            target[key].append_array(source[key])
+        elif target.has(key) and typeof(target[key]) == TYPE_DICTIONARY and typeof(source[key]) == TYPE_DICTIONARY:
+            for subkey in source[key]:
+                target[key][subkey] = source[key][subkey]
+        else:
+            target[key] = source[key]
+
+# --- MODS ----------------------------------------------------------------------
+#
+# A mod ships the same kind of files as data/*.json, in its own "data" folder. Two rules
+# cover the whole merge:
+#
+#   1. A record whose identifier the vanilla data does not have is simply added.
+#   2. A record whose identifier the vanilla data already has OVERRIDES it field by
+#      field: the fields the mod writes replace the vanilla values, the fields it does
+#      not write keep theirs. An overridden record is never duplicated.
+#
+# The value of an overridden field is taken as a whole: a mod that writes "produces"
+# replaces that dictionary, it does not add entries to the vanilla one. Only the
+# top-level dictionaries that are not collections of entities (game_balance, modifiers,
+# map_config, qualities) are merged recursively, because their blocks are a layout of
+# the file: a mod changing one constant must not erase its neighbours.
+#
+# The mods are applied in the order of mod_dirs, so a later mod overrides an earlier
+# one. ModManager orders them by dependency.
+# The id of an entity -> the icon file names the data draws it with, for the entities drawn
+# by SEVERAL pictures. Read from the raw tree before the mods are laid over it: the pictures
+# of the game itself are what a tileset draws, and a mod that changes them is the mod's
+# business, not the set's.
+func _entity_pictures(tree: Dictionary) -> Dictionary:
+    var out := {}
+    for collection_name in ENTITY_COLLECTIONS:
+        for record in tree.get(collection_name, []):
+            if not (record is Dictionary):
+                continue
+            var id := str(record.get("id", ""))
+            var icons = record.get("icons", [])
+            if id.is_empty() or not (icons is Array):
+                continue
+            var names: Array = []
+            for icon in icons:
+                var icon_name := str(icon)
+                if not icon_name.is_empty():
+                    names.append(icon_name)
+            if names.size() > 1:
+                out[id] = names
+    return out
+
+func _apply_mods(target: Dictionary, mod_dirs: Array) -> void:
+    for mod_dir in mod_dirs:
+        var folder := str(mod_dir).path_join("data")
+        if DirAccess.open(folder) == null:
+            continue
+        var mod_data = _load_all_json_files(folder)
+        if mod_data.is_empty():
+            continue
+        _merge_mod_data(target, mod_data)
+        _apply_blacklist(target, mod_data)
+
+# --- THE BLACKLIST ---------------------------------------------------------------
+#
+# A mod may REMOVE vanilla entities, not only add and override them. The "blacklist"
+# key of its data is a dictionary { "<collection>": ["id", …] }: the collection is one of
+# BLACKLIST_COLLECTIONS, the value lists the identifiers to remove from it.
+#
+# The identifiers belong to their collection. The same id may be blacklisted as a recipe
+# and as a product — those are different entities that happen to share a name, and both
+# go. Inside one collection a repeated id changes nothing.
+#
+# The blacklist is applied right after the mod's own merge, so the rule between the mods
+# stays the one of the overrides: a mod applied later (a dependent, or one the dependency
+# order put after it) may declare a blacklisted entity again, and it will be back.
+#
+# A removed entity usually leaves its references behind: a goods group that lists a removed
+# product or a recipe that spends a removed resource. They are NOT cleaned up
+# automatically — the runtime validator reports them, and the author removes the referrers
+# the same way (a blacklist entry or an override). A recipe whose only producer building was
+# blacklisted remains in the data but cannot be used in the game. An entry that names nothing
+# is a problem of its own (data_validator._validate_blacklist): what was removed is recorded
+# in `blacklisted`, so the check can tell it from a typo.
+func _apply_blacklist(target: Dictionary, mod_data: Dictionary) -> void:
+    var blacklist = mod_data.get("blacklist", null)
+    if not (blacklist is Dictionary) or blacklist.is_empty():
+        return
+    for collection in blacklist.keys():
+        var name := str(collection)
+        if not BLACKLIST_COLLECTIONS.has(name):
+            # The shape of the blacklist is the validator's business: an unknown
+            # collection is reported by the whitelist, with the list of the allowed ones.
+            continue
+        var banned := _string_set(blacklist[collection])
+        if banned.is_empty():
+            continue
+        var entries = target.get(name, null)
+        if not (entries is Array):
+            continue
+        var id_field := str(ENTITY_ID_FIELDS.get(name, "id"))
+        var removed: Dictionary = blacklisted.get(name, {})
+        if not (removed is Dictionary):
+            removed = {}
+        var kept: Array = []
+        for entry in entries:
+            if not (entry is Dictionary):
+                kept.append(entry)
+                continue
+            var id := str(entry.get(id_field, ""))
+            if banned.has(id):
+                removed[id] = true
+                continue
+            kept.append(entry)
+        target[name] = kept
+        blacklisted[name] = removed
+
+# A value that is either a list of identifiers or a single identifier — the same
+# forgiveness as the manifest's authors/author (mod_manager._string_list).
+func _string_set(value) -> Dictionary:
+    var out := {}
+    if value is Array:
+        for item in value:
+            var text := str(item)
+            if not text.is_empty():
+                out[text] = true
+    elif value is String and not value.is_empty():
+        out[value] = true
+    return out
+
+func _merge_mod_data(target: Dictionary, mod: Dictionary) -> void:
+    for key in mod.keys():
+        var value = mod[key]
+        if not target.has(key):
+            target[key] = value
+        elif target[key] is Array and value is Array:
+            _merge_entity_array(target[key], value, str(key))
+        elif target[key] is Dictionary and value is Dictionary:
+            _deep_merge_dict(target[key], value)
+        else:
+            target[key] = value
+
+func _merge_entity_array(base: Array, records: Array, collection: String) -> void:
+    var id_field := str(ENTITY_ID_FIELDS.get(collection, "id"))
+    var positions := {}
+    for i in base.size():
+        var record = base[i]
+        if record is Dictionary and record.has(id_field):
+            positions[str(record[id_field])] = i
+    for record in records:
+        if not (record is Dictionary) or not record.has(id_field):
+            # A record without an identifier (a city name) has nothing to override.
+            base.append(record)
+            continue
+        var id := str(record[id_field])
+        if positions.has(id):
+            var existing = base[positions[id]]
+            for field in record.keys():
+                existing[field] = record[field]
+        else:
+            positions[id] = base.size()
+            base.append(record)
+
+func _deep_merge_dict(target: Dictionary, source: Dictionary) -> void:
+    for key in source.keys():
+        var value = source[key]
+        if target.has(key) and target[key] is Dictionary and value is Dictionary:
+            _deep_merge_dict(target[key], value)
+        else:
+            target[key] = value

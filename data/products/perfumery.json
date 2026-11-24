@@ -1,0 +1,121 @@
+{
+  // The aromatic materials of the perfumer's art and the goods made from them.
+  "resources": [
+    {
+      "id": "frankincense",
+      "price": 30,
+      "name": "Frankincense",
+      "type": "product",
+      "category": "perfumery",
+      "unlock_tech": "wood_processing",
+      "icon": "frankincense.png"
+    },
+    {
+      "id": "myrrh",
+      "price": 25,
+      "name": "Myrrh",
+      "type": "product",
+      "category": "perfumery",
+      "unlock_tech": "wood_processing",
+      "icon": "myrrh.png"
+    },
+    {
+      "id": "sandalwood",
+      "price": 14,
+      "name": "Sandalwood",
+      "type": "product",
+      "category": "perfumery",
+      "unlock_tech": "wood_processing",
+      "icon": "sandalwood.png"
+    },
+    {
+      "id": "storax",
+      "price": 18,
+      "name": "Storax",
+      "type": "product",
+      "category": "perfumery",
+      "unlock_tech": "wood_processing",
+      "icon": "storax.png"
+    },
+    {
+      "id": "camphor",
+      "price": 24,
+      "name": "Camphor",
+      "type": "product",
+      "category": "perfumery",
+      "unlock_tech": "wood_processing",
+      "icon": "camphor.png"
+    },
+    {
+      "id": "perfume",
+      "price": 50,
+      "name": "Perfume",
+      "type": "product",
+      "category": "perfumery",
+      "unlock_tech": "perfume_making",
+      "icon": "perfume.png"
+    },
+    {
+      // Incense is a fragrant material ground with charcoal and sold as the perfumer's art.
+      "id": "incense",
+      "price": 45,
+      "name": "Incense",
+      "type": "product",
+      "category": "perfumery",
+      "unlock_tech": "perfume_making",
+      "icon": "incense.png"
+    },
+    {
+      "id": "attar",
+      "price": 85,
+      "name": "Attar",
+      "type": "product",
+      "category": "perfumery",
+      "unlock_tech": "distillation",
+      "icon": "attar.png"
+    },
+    {
+      // Sandalwood oil distilled from the heartwood.
+      "id": "sandalwood_oil",
+      "price": 45,
+      "name": "Sandalwood Oil",
+      "type": "product",
+      "category": "perfumery",
+      "unlock_tech": "distillation",
+      "icon": "sandalwood_oil.png"
+    },
+    {
+      // Fragrant hydrosol condensed from rose petals or chamomile blossoms,
+      // sold directly to citizens for table, bath and household use.
+      "id": "floral_water",
+      "price": 38,
+      "name": "Floral Water",
+      "type": "product",
+      "category": "perfumery",
+      "unlock_tech": "distillation",
+      "icon": "floral_water.png"
+    },
+    {
+      // Concentrated essential oil steam-distilled from chamomile blossoms;
+      // an aromatic base for alcohol perfumery, like sandalwood oil.
+      "id": "chamomile_oil",
+      "price": 50,
+      "name": "Chamomile Oil",
+      "type": "product",
+      "category": "perfumery",
+      "unlock_tech": "distillation",
+      "icon": "chamomile_oil.png"
+    },
+    {
+      // Alcohol-based luxury perfume made by dissolving essential oils or fine
+      // spices in rectified spirit.
+      "id": "spirit_perfume",
+      "price": 105,
+      "name": "Fragrant Spirit",
+      "type": "product",
+      "category": "perfumery",
+      "unlock_tech": "distillation",
+      "icon": "spirit_perfume.png"
+    }
+  ]
+}

@@ -1,0 +1,205 @@
+# ui_icons.gd
+#
+# The few glyphs of the interface that the engine draws as textures rather than as
+# styleboxes: the box of a checkbox, the switch of a check button, the knob of a slider,
+# the mark that closes a window. A texture cannot follow a palette on its own, so the
+# shapes are rasterised from the palette and reused for that palette's glyph states.
+#
+# The engine's own glyphs are drawn in near-white, which disappears on a light theme, and
+# the one SVG the project shipped was tuned for the old grey.
+#
+# The sizes match the engine defaults exactly (16×16, and 32×16 for the switch), so no control
+# changes its minimum size when the icons are replaced. The close mark is the one glyph drawn
+# larger than the engine's, for the reason given at close().
+class_name UiIcons
+extends RefCounted
+
+const BOX_SIZE := Vector2i(16, 16)
+const SWITCH_SIZE := Vector2i(32, 16)
+const CLOSE_SIZE := Vector2i(20, 20)
+
+# Supersamples per edge of a pixel: a shape is either inside a sample or outside it, and
+# the fraction of the samples inside is the coverage, which is what smooths the edge.
+const SS := 4
+
+static var _glyph_cache: Dictionary = {}
+
+# The square a checkbox marks. Empty it is the control surface with its frame; checked,
+# the accent tick sits on the same surface, so the glyph reads the same on any background.
+static func checkbox(checked: bool, palette_id: String = "") -> ImageTexture:
+    var layers: Array = [
+        {"color": UiTheme.color("control_bg"), "sd": _rounded_rect(Vector2(8, 8), Vector2(6.5, 6.5), 2.5), "w": - 1.0},
+        {"color": UiTheme.color("control_border"), "sd": _rounded_rect(Vector2(8, 8), Vector2(6.5, 6.5), 2.5), "w": 1.5},
+    ]
+    if checked:
+        layers.append({"color": UiTheme.color("accent"),
+            "sd": _polyline([Vector2(4.2, 8.4), Vector2(7.0, 11.0), Vector2(12.0, 5.4)]), "w": 2.0})
+    return _render(BOX_SIZE, layers, palette_id, "checkbox",
+        "checked" if checked else "unchecked")
+
+# The round mark of a radio button: the surface and the frame of the checkbox, and the accent
+# dot instead of the tick. A CheckBox inside a ButtonGroup draws exactly these glyphs, so the
+# two have to agree in size and framing.
+static func radio(checked: bool, muted: bool = false, palette_id: String = "") -> ImageTexture:
+    var frame := UiTheme.color("text_muted") if muted else UiTheme.color("control_border")
+    var layers: Array = [
+        {"color": UiTheme.color("control_bg"), "sd": _disc(Vector2(8, 8), 6.5), "w": - 1.0},
+        {"color": frame, "sd": _disc(Vector2(8, 8), 6.5), "w": 1.5},
+    ]
+    if checked:
+        var dot := UiTheme.color("text_muted") if muted else UiTheme.color("accent")
+        layers.append({"color": dot, "sd": _disc(Vector2(8, 8), 3.6), "w": - 1.0})
+    var state := "checked" if checked else "unchecked"
+    if muted:
+        state += "_muted"
+    return _render(BOX_SIZE, layers, palette_id, "radio", state)
+
+# The switch of a check button: the knob moves across the track and both change role, so
+# the on state is legible without reading its colour against the surface behind it.
+static func switch_button(on: bool, palette_id: String = "") -> ImageTexture:
+    var track := UiTheme.color("track") if not on else UiTheme.color("fill")
+    var knob := UiTheme.color("text_secondary") if not on else UiTheme.color("text")
+    var centre_x := 8.0 if not on else 24.0
+    var layers: Array = [
+        {"color": track, "sd": _rounded_rect(Vector2(16, 8), Vector2(15.5, 7.5), 7.5), "w": - 1.0},
+        {"color": knob, "sd": _disc(Vector2(centre_x, 8), 5.5), "w": - 1.0},
+    ]
+    return _render(SWITCH_SIZE, layers, palette_id, "switch", "on" if on else "off")
+
+# The round handle of a slider, drawn in one flat colour.
+static func knob(tint: Color, palette_id: String = "", state: String = "") -> ImageTexture:
+    var layers: Array = [
+        {"color": tint, "sd": _disc(Vector2(8, 8), 5.5), "w": - 1.0},
+    ]
+    return _render(BOX_SIZE, layers, palette_id, "knob", state)
+
+enum CloseState {REST, HOVER, PRESSED}
+
+# The mark that closes a window, drawn as the button the engine gives no stylebox for: the plate
+# and the frame of a control in the state the pointer puts it in — the same three fills a Button is
+# drawn with — and the cross over them, its arms within three pixels of the edge so the mark fills
+# the button instead of floating in it.
+#
+# Twenty pixels is not a taste: the engine anchors the mark by its top left, eighteen pixels left
+# of the right edge of the content and twenty-four above the content, and grows it down and to the
+# right by its own size. In the twenty-eight pixels of the title bar that leaves four above and
+# four below only at this side.
+static func close(state: int, palette_id: String = "") -> ImageTexture:
+    var fill := UiTheme.color("control_bg")
+    if state == CloseState.HOVER:
+        fill = UiTheme.color("control_hover")
+    elif state == CloseState.PRESSED:
+        fill = UiTheme.color("control_pressed")
+    var plate := _rounded_rect(Vector2(10, 10), Vector2(9.35, 9.35),
+        UiTheme.metric("control_radius"))
+    var cross := UiTheme.color("text")
+    var layers: Array = [
+        {"color": fill, "sd": plate, "w": - 1.0},
+        {"color": UiTheme.color("control_border"), "sd": plate, "w": 1.3},
+        {"color": cross, "sd": _polyline(
+            PackedVector2Array([Vector2(6.0, 6.0), Vector2(14.0, 14.0)])), "w": 2.2},
+        {"color": cross, "sd": _polyline(
+            PackedVector2Array([Vector2(14.0, 6.0), Vector2(6.0, 14.0)])), "w": 2.2},
+    ]
+    return _render(CLOSE_SIZE, layers, palette_id, "close", str(state))
+
+# --- the rasteriser ---
+
+# A layer is {color, sd, w}: `sd` maps a point to its signed distance to the shape, and
+# a negative `w` asks for the whole interior while a positive one asks for a band of that
+# width drawn along the outline.
+static func clear_cache() -> void:
+    _glyph_cache.clear()
+
+static func _render(size: Vector2i, layers: Array, palette_id: String,
+        glyph: String, state: String) -> ImageTexture:
+    var cached := _get_cached(palette_id, glyph, state)
+    if cached != null:
+        return cached
+    var image := Image.create(size.x, size.y, false, Image.FORMAT_RGBA8)
+    for y in range(size.y):
+        for x in range(size.x):
+            var out := Color(0, 0, 0, 0)
+            for layer in layers:
+                var covered := _coverage(x, y, layer["sd"], layer["w"])
+                if covered <= 0.0:
+                    continue
+                out = _over(out, _faded(layer["color"], covered))
+            image.set_pixel(x, y, out)
+    var texture := ImageTexture.create_from_image(image)
+    _store_cached(palette_id, glyph, state, texture)
+    return texture
+
+static func _get_cached(palette_id: String, glyph: String, state: String) -> ImageTexture:
+    if not _glyph_cache.has(palette_id):
+        return null
+    var palette_cache: Dictionary = _glyph_cache[palette_id]
+    if not palette_cache.has(glyph):
+        return null
+    var glyph_cache: Dictionary = palette_cache[glyph]
+    return glyph_cache.get(state)
+
+static func _store_cached(palette_id: String, glyph: String, state: String,
+        texture: ImageTexture) -> void:
+    if not _glyph_cache.has(palette_id):
+        _glyph_cache[palette_id] = {}
+    var palette_cache: Dictionary = _glyph_cache[palette_id]
+    if not palette_cache.has(glyph):
+        palette_cache[glyph] = {}
+    var glyph_cache: Dictionary = palette_cache[glyph]
+    glyph_cache[state] = texture
+    palette_cache[glyph] = glyph_cache
+    _glyph_cache[palette_id] = palette_cache
+
+static func _coverage(px: int, py: int, sd: Callable, width: float) -> float:
+    var inside := 0
+    for sy in range(SS):
+        for sx in range(SS):
+            var p := Vector2(px + (sx + 0.5) / SS, py + (sy + 0.5) / SS)
+            var d: float = sd.call(p)
+            var hit := d <= 0.0 if width < 0.0 else absf(d) <= width * 0.5
+            if hit:
+                inside += 1
+    return float(inside) / float(SS * SS)
+
+# Straight-alpha source over straight-alpha destination.
+static func _over(dst: Color, src: Color) -> Color:
+    var a := src.a + dst.a * (1.0 - src.a)
+    if a <= 0.0:
+        return Color(0, 0, 0, 0)
+    var behind := 1.0 - src.a
+    return Color(
+        (src.r * src.a + dst.r * dst.a * behind) / a,
+        (src.g * src.a + dst.g * dst.a * behind) / a,
+        (src.b * src.a + dst.b * dst.a * behind) / a, a)
+
+static func _faded(tint: Color, covered: float) -> Color:
+    var c := tint
+    c.a = tint.a * covered
+    return c
+
+# --- the shapes, as signed distance fields in icon pixels ---
+
+static func _rounded_rect(centre: Vector2, half: Vector2, radius: float) -> Callable:
+    return func(p: Vector2) -> float:
+        var q := (p - centre).abs() - half + Vector2(radius, radius)
+        return minf(maxf(q.x, q.y), 0.0) + q.max(Vector2.ZERO).length() - radius
+
+static func _disc(centre: Vector2, radius: float) -> Callable:
+    return func(p: Vector2) -> float:
+        return (p - centre).length() - radius
+
+static func _polyline(points: PackedVector2Array) -> Callable:
+    return func(p: Vector2) -> float:
+        var nearest := INF
+        for i in range(points.size() - 1):
+            nearest = minf(nearest, _distance_to_segment(p, points[i], points[i + 1]))
+        return nearest
+
+static func _distance_to_segment(p: Vector2, a: Vector2, b: Vector2) -> float:
+    var span := b - a
+    var length_sq := span.length_squared()
+    if length_sq <= 0.0001:
+        return (p - a).length()
+    var t := clampf((p - a).dot(span) / length_sq, 0.0, 1.0)
+    return (p - (a + span * t)).length()

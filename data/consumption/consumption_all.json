@@ -1,0 +1,233 @@
+{
+  // A registry of occupational resource consumption.
+  //
+  // It describes what the worker professions consume on the map improvements
+  // and in the city buildings, and how often (see docs.md, the section
+  // "Professions and resource consumption").
+  // The "profession ↔ resource" link is set via the "profession" field.
+  //
+  // The target resource ("resource") can be:
+  //   * an id of a single product from data/products/*.json — for example, "tools";
+  //   * a reference to a product group from data/product_groups/ in the format
+  //     "@<group_id>" — for example, "@boats" (the "Boats" group). The goods of
+  //     a group are written off either all at once (the default for "all") or
+  //     one member per tick, rotating over those in stock (the default for the
+  //     working professions). The quality priority still applies inside each
+  //     member. While a professional rule is covered — the bonus applies; if
+  //     not — the bonus is removed and the improvement keeps working on the base.
+  //
+  // Entry format:
+  //   resource          — the product id or the group "@id" (as in craft recipes).
+  //   profession        — an array of profession ids that consume the resource
+  //                       (data/professions.json). Several professions may
+  //                       consume the same resource.
+  //   amount            — how many units are written off per one "consumption tick".
+  //   interval          — the period between write-offs in seconds (fractions allowed).
+  //   production_bonus  — an addition to the production multiplier of the object
+  //                       while the resource is enough in storage. 0.5 = +50% (x1.5).
+  //                       The bonuses of SINGLE entries add up to each other,
+  //                       while among GROUP ones the best available one is taken (just one):
+  //                       the "Boats" group gives the bonus of the best of the
+  //                       available members, not of all of them at once.
+  //                       It does not apply to the pseudo-profession "all" (0.0):
+  //                       city consumption gives no bonus at all.
+  //   consume_all       — for a group resource only. true (the default for
+  //                       "all") takes the full "amount" from EVERY member with
+  //                       stock in the same tick, so the order has no effect;
+  //                       false (the default for the professions) takes one
+  //                       member per tick, rotating over the ones with stock.
+  //                       The quality priority of the Trade tab still applies
+  //                       within each member.
+  //
+  // The pseudo-profession "all" (all citizens of the city, the top of the
+  // profession hierarchy):
+  //   Entries with "profession": ["all"] are processed SEPARATELY from the
+  //   per-hex ones: the write-off runs head-count based on CityData.total_population —
+  //   the amount in a rule is counted PER ONE citizen, the total write-off per tick =
+  //   amount * total_population. It is not the hex timer that ticks but the general
+  //   city timer (worker_manager.tick_city_consumption on SIMULATION_TICK).
+  //   The write-off runs ON THE FACT OF AVAILABILITY: per attempt
+  //   min(what is in storage, the required amount) is written off — there is no
+  //   waiting for full coverage. If there is less in
+  //   storage than required, everything there is written off (the timer is reset);
+  //   if storage is empty — the timer is kept, and whatever appears is written off
+  //   right away on the nearest tick.
+  //
+  // Duplicating declarations: if the same resource is described both here and in
+  // a product (data/products/*.json, the "consumption" field) for one profession,
+  // the entry from this file takes priority; the duplicate entry is ignored.
+  // "Resource-side" consumption is left for the single cases where a product
+  // has no analogue or assembling a group is not reasonable.
+  //
+  // A resource listed both here and for a profession (consumption_profession.json)
+  // is written off ONCE: the profession has priority, and its citizens are
+  // subtracted from the headcount of the "all" rule for the same resource. The
+  // amount of such an "all" rule is still PER ONE remaining resident.
+  "consumption": [
+    {
+      "resource": "@fruits",
+      "profession": [ "all" ],
+      "amount": 10,
+      "interval": 1,
+      "production_bonus": 0.0
+    },
+    {
+      "resource": "@nuts",
+      "profession": [ "all" ],
+      "amount": 10,
+      "interval": 1,
+      "production_bonus": 0.0
+    },
+    {
+      "resource": "@alcohol",
+      "profession": [ "all" ],
+      "amount": 10,
+      "interval": 1,
+      "production_bonus": 0.0
+    },
+    {
+      // Strong spirits are drunk in smaller measure than everyday fermented drinks
+      // and sit on their own rule so domestic sales can be managed apart from @alcohol.
+      "resource": "@spirits",
+      "profession": [ "all" ],
+      "amount": 5,
+      "interval": 5,
+      "production_bonus": 0.0
+    },
+    {
+      "resource": "@non_alcoholic_beverages",
+      "profession": [ "all" ],
+      "amount": 10,
+      "interval": 1,
+      "production_bonus": 0.0
+    },
+    {
+      "resource": "@tableware",
+      "profession": [ "all" ],
+      "amount": 10,
+      "interval": 10,
+      "production_bonus": 0.0
+    },
+    {
+      "resource": "@jewelry",
+      "profession": [ "all" ],
+      "amount": 10,
+      "interval": 10,
+      "production_bonus": 0.0
+    },
+    {
+      "resource": "@clothes",
+      "profession": [ "all" ],
+      "amount": 10,
+      "interval": 10,
+      "production_bonus": 0.0
+    },
+    {
+      // Carpets are durable furnishings, so citizens use them less often than clothes.
+      "resource": "carpet",
+      "profession": [ "all" ],
+      "amount": 10,
+      "interval": 20,
+      "production_bonus": 0.0
+    },
+    {
+      "resource": "@spices",
+      "profession": [ "all" ],
+      "amount": 10,
+      "interval": 1,
+      "production_bonus": 0.0
+    },
+    {
+      "resource": "@sweeteners",
+      "profession": [ "all" ],
+      "amount": 10,
+      "interval": 1,
+      "production_bonus": 0.0
+    },
+    {
+      "resource": "@aux_food",
+      "profession": [ "all" ],
+      "amount": 10,
+      "interval": 1,
+      "production_bonus": 0.0
+    },
+    {
+      "resource": "@consumer_goods",
+      "profession": [ "all" ],
+      "amount": 10,
+      "interval": 1,
+      "production_bonus": 0.0
+    },
+    {
+      "resource": "tobacco",
+      "profession": [ "all" ],
+      "amount": 10,
+      "interval": 1,
+      "production_bonus": 0.0
+    },
+    {
+      // The citizens chew coca leaf raw — the leaf is the good itself,
+      // not the raw material of a workshop, so it is written off directly.
+      // Heavy labour professions have their own coca rule and take priority:
+      // their workers are excluded from this headcount (see the header), so the
+      // leaf is written off once per citizen and grants them +10% production.
+      "resource": "coca_leaf",
+      "profession": [ "all" ],
+      "amount": 10,
+      "interval": 1,
+      "production_bonus": 0.0
+    },
+    {
+      // The citizens write off the goods of the perfumer's art: they put the perfume on
+      // and burn the incense. Only the ready goods are written off — the raw resin and
+      // the roses are the material of the perfumer's house, and the citizens do not eat
+      // the raw material of a good that is made out of it.
+      // The rate is a tenth of the one of the other luxuries (the jewelry
+      // and the clothes are written off at a unit per citizen per second) — the perfumer
+      // and the citizens take the same goods out of the same storage, and a heavy write-off
+      // would leave the workshop without its own products.
+      "resource": "@perfumery",
+      "profession": [ "all" ],
+      "amount": 1,
+      "interval": 10,
+      "production_bonus": 0.0
+    },
+    {
+      // Furniture is a durable furnishing: citizens write it off less often
+      // than clothes or tableware, and use both kinds when they are in stock.
+      "resource": "@furniture",
+      "profession": [ "all" ],
+      "amount": 10,
+      "interval": 20,
+      "production_bonus": 0.0
+    },
+    {
+      // Everyday lighting of all citizens, like the lamp oils of @consumer_goods: no production
+      // bonus goes with it. Both kinds are written off together at a moderate rate.
+      "resource": "@candles",
+      "profession": [ "all" ],
+      "amount": 5,
+      "interval": 5,
+      "production_bonus": 0.0
+    },
+    {
+      // Ornamental cut flowers bought directly by citizens on the domestic market.
+      "resource": "tulips",
+      "profession": [ "all" ],
+      "amount": 5,
+      "interval": 10,
+      "production_bonus": 0.0
+    },
+    {
+      // Household hearth and stove fuel: citizens take one fuel per tick (peat or coal),
+      // rotating over those in stock rather than burning both at once, at a moderate rate
+      // that leaves fuel in storage for kilns, boilers and coke ovens.
+      "resource": "@fuel",
+      "profession": [ "all" ],
+      "amount": 5,
+      "interval": 10,
+      "production_bonus": 0.0,
+      "consume_all": false
+    }
+  ]
+}

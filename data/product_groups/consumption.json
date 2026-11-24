@@ -1,0 +1,239 @@
+{
+  // A part of the registry of product groups: the goods that stand for one another wherever a good of
+  // the data may be named. A group is addressed as "@<id>" — by the ingredient of a craft recipe, by
+  // the resource of a consumption rule, by the goods a specialization bonus acts on.
+  //
+  // The registry is split by the mechanic that reads it, and this file holds the groups a consumption
+  // rule writes off — the key "@<id>" of the "resource" field in data/consumption/ (see
+  // scripts/consumption_manager.gd). The identifier of a group is global, so a group lives in exactly
+  // one file even when a second mechanic names it; the file of that mechanic says so.
+  //
+  // The optional "icon" field of a group — the icon file name shown wherever the group itself is
+  // drawn as a resource: the card and tooltip on the "Trade" tab, the group rows and the headers of a
+  // composition list. If it is not specified, the icon of the FIRST member of the group that has its
+  // own icon is taken; a group needs its own icon where that member does not speak for the group.
+  //
+  // A member of "products" may be "@<id>" of another group instead of a good: the loader replaces it
+  // with that group's members. A group must not nest in itself, directly or through other groups.
+  "product_groups": [
+    {
+      "id": "boats",
+      "name": "Boats",
+      "products": [ "reed_boat", "wooden_boat" ]
+    },
+    {
+      "id": "fruits",
+      "name": "Fruits",
+      "products": [
+        "grapes",
+        "olives",
+        "mulberries",
+        "figs",
+        "dates",
+        "coconuts",
+        "cactus_fruit",
+        "agave",
+        "pomegranates",
+        "yucca_fruit",
+        "carob_pods",
+        "apples"
+      ]
+    },
+    {
+      // Nuts are a group of their own although the warehouse shelf already
+      // separates them from fruits: one consumption rule writes off one group,
+      // so pooling the two would let a town pay the same demand out of either
+      // harvest. Walnuts stand in "@tannins" as well — the nut is eaten and is
+      // a tanning material at once, and the two demands compete for it.
+      "id": "nuts",
+      "name": "Nuts",
+      "products": [ "walnuts", "pistachio", "beech_nuts" ]
+    },
+    {
+      // The fermented drinks the city empties. The recipes of vinegar and rectified spirit take
+      // the same list, keeping distilled spirits apart.
+      "id": "alcohol",
+      "name": "Alcohol",
+      "products": [ "beer", "mead", "sake", "pulque", "toddy", "wine", "fruit_wine", "hopped_beer", "carob_wine", "cider" ]
+    },
+    {
+      // Distilled spirits stand apart from fermented "@alcohol" so they are never spent on
+      // vinegar or rectification and can be toggled independently on the domestic market.
+      // The citizens take a dram of every kind that is in stock.
+      "id": "spirits",
+      "name": "Strong Spirits",
+      "products": [
+        "arkhi",
+        "mezcal",
+        "arrack",
+        "grain_spirit",
+        "honey_spirit",
+        "fruit_brandy",
+        "brandy",
+        "cordial"
+      ]
+    },
+    {
+      "id": "non_alcoholic_beverages",
+      "name": "Beverages",
+      "products": [ "tea", "coffee", "cocoa", "mate", "karkadeh", "mineral_water" ]
+    },
+    {
+      // The citizens set the table with every kind of vessel in stock, from
+      // common pottery to silver plate.
+      "id": "tableware",
+      "name": "Tableware",
+      "products": [
+        "pottery",
+        "stone_tableware",
+        "glassware",
+        "fine_ceramics",
+        "porcelain",
+        "cast_iron_cookware",
+        "metal_tableware",
+        "crystal_glassware",
+        "silver_tableware"
+      ]
+    },
+    {
+      "id": "jewelry",
+      "name": "Jewelry",
+      "products": [
+        "gold_jewelry",
+        "silver_jewelry",
+        "steel_jewelry",
+        "brass_jewelry",
+        "bronze_jewelry",
+        "iron_jewelry",
+        "lazurite_jewelry",
+        "malachite_jewelry",
+        "nephrite_jewelry",
+        "porphyry_jewelry",
+        "copper_jewelry",
+        "glass_jewelry",
+        "pearl_jewelry",
+        "coral_jewelry",
+        "amber_jewelry"
+      ]
+    },
+    {
+      "id": "clothes",
+      "name": "Clothes",
+      "products": [
+        "wool_clothes",
+        "fabric_clothes",
+        "leather_clothes",
+        "silk_clothes"
+      ]
+    },
+    {
+      "id": "spices",
+      "name": "Spices",
+      "products": [
+        //"black_pepper",
+        "sesame",
+        "cinnamon",
+        //"cloves",
+        "nutmeg",
+        "saffron",
+        "vanilla",
+        "chili",
+        "sumac"
+      ]
+    },
+    {
+      "id": "sweeteners",
+      "name": "Sweeteners",
+      "products": [ "sugar", "honey", "carob_syrup" ]
+    },
+    {
+      "id": "aux_food",
+      "name": "Additional Food",
+      "products": [ "eggs", "oyster" ]
+    },
+    {
+      // Everyday household supplies, consumed as a basket: the order of the
+      // members does not decide the draw. Glue and the lamp oils are taken
+      // together with the common goods and compete with the workshops that use them.
+      "id": "consumer_goods",
+      "name": "Consumer Goods",
+      "products": [ "salt", "soap", "sponge", "pumice", "glue", "@lamp_oils" ]
+    },
+    {
+      // The empty vessel a good is stored and shipped in. Tare is generic: the winemaker, brewer,
+      // oilmaker, distiller and perfumer ask for any container, not one tied to a single drink or oil.
+      "id": "tare",
+      "name": "Tare",
+      "products": [ "amphora", "glass_bottle", "wooden_barrel" ]
+    },
+    {
+      // The goods of the perfumer's art as the citizens use them: floral water, oil
+      // perfume, incense, attar and alcohol-based fragrant spirit. Raw resins, blossoms
+      // and intermediate essential oils (sandalwood oil, chamomile oil) are NOT in the
+      // group: citizens buy finished goods, not workshop feedstocks.
+      // The citizens wear the perfume and burn the incense, so all the finished
+      // goods in stock are written off together.
+      "id": "perfumery",
+      "name": "Perfumery",
+      "products": [ "floral_water", "perfume", "incense", "attar", "spirit_perfume" ]
+    },
+    {
+      // Work tools: the pick of the miner and quarryman, the axe of the lumberjack,
+      // the hoe of the farmer and planter, the shovel of the clay digger and the vinedresser,
+      // the chisel of the mason, the knife and hook of the butcher. The profession draws
+      // one tool at a time, rotating over the kinds that are in stock; the order sets
+      // where the rotation starts.
+      "id": "instruments",
+      "name": "Instruments",
+      "products": [ "copper_tools", "cast_iron_tools", "bronze_tools", "brass_tools", "iron_tools", "steel_tools", "damascus_tools" ]
+    },
+    {
+      // Calibrated balances, calipers, dividers, astrolabes and fine bench tools across
+      // every workable metal. Scholars, alchemists and jewelers draw one kind at a time;
+      // the metal sets the precision the same way it sets the quality of a work tool
+      // (the ladder of data/consumption/consumption_profession.json).
+      "id": "precision_instruments",
+      "name": "Precision Instruments",
+      "products": [
+        "copper_precision_instruments",
+        "bronze_precision_instruments",
+        "brass_precision_instruments",
+        "iron_precision_instruments",
+        "steel_precision_instruments",
+        "damascus_precision_instruments"
+      ]
+    },
+    {
+      // Furniture the citizens write off: both the everyday piece and the
+      // costly one are used when in stock.
+      "id": "furniture",
+      "name": "Furniture",
+      "products": [ "furniture", "luxury_furniture" ]
+    },
+    {
+      // Domestic candles: both kinds are burned together when in stock.
+      "id": "candles",
+      "name": "Candles",
+      "products": [ "tallow_candles", "wax_candles" ]
+    },
+    {
+      // The oils burned in household lamps. Vegetable oil is the ancient fuel; white naphtha comes
+      // from bitumen and kerosene is distilled from shale oil. The crude shale oil itself is too
+      // smoky for a lamp and goes to the tannery and the refinery instead. @consumer_goods names
+      // this group as a member, so the basket draws on every kind in stock. Lighting is a need of
+      // all citizens, not of a few trades: there is no production bonus here, only the urban
+      // "all" write-off of @consumer_goods.
+      "id": "lamp_oils",
+      "name": "Lamp Oils",
+      "products": [ "vegetable_oil", "white_naphtha", "kerosene" ]
+    },
+    {
+      // Household hearth and stove fuel: bog peat and mineral coal. Citizens draw
+      // one fuel per tick (consume_all: false), rotating over those in stock; wood,
+      // charcoal and coke stay dedicated workshop and furnace feedstocks.
+      "id": "fuel",
+      "name": "Fuel",
+      "products": [ "peat", "coal", "oil_shale" ]
+    }
+  ]
+}

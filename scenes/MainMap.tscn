@@ -1,0 +1,342 @@
+[gd_scene format=3 uid="uid://bo3pvrchbv6ey"]
+
+[ext_resource type="Script" uid="uid://diakox5tjb4x4" path="res://scripts/main_map.gd" id="1_5hgy3"]
+[ext_resource type="Script" uid="uid://d1onks36gomhd" path="res://scripts/hud_message.gd" id="2_1kkdm"]
+[ext_resource type="PackedScene" uid="uid://dwa0g8671hsh0" path="res://scenes/CityUI.tscn" id="2_a1mhp"]
+[ext_resource type="PackedScene" uid="uid://d00jxkppr273t" path="res://scenes/pause_menu.tscn" id="3_2t08r"]
+[ext_resource type="Script" uid="uid://ioi24pjoaapx" path="res://scripts/build_manager.gd" id="5_6ic70"]
+[ext_resource type="Script" uid="uid://b2anvgprhgych" path="res://scripts/map_renderer.gd" id="6_82ayj"]
+[ext_resource type="Script" uid="uid://coq275q8pnqnc" path="res://scripts/project_manager.gd" id="7b_pm01"]
+[ext_resource type="Script" uid="uid://b7pijc74chsbo" path="res://scripts/road_manager.gd" id="7_2m761"]
+[ext_resource type="Script" uid="uid://d5hdforsqjlr" path="res://scripts/expansion_manager.gd" id="8_8fkir"]
+[ext_resource type="Script" uid="uid://clfermtbeqck1" path="res://scripts/worker_manager.gd" id="9_nmjbi"]
+[ext_resource type="Script" uid="uid://f5r75bb5rgdq" path="res://scripts/townsfolk_manager.gd" id="10_yd4n3"]
+[ext_resource type="Script" uid="uid://diqugyctdt728" path="res://scripts/InputHandler.gd" id="11_wehgl"]
+[ext_resource type="Script" uid="uid://dqr41kq6yhepx" path="res://scripts/river_manager.gd" id="12_rvmgr"]
+[ext_resource type="Script" uid="uid://jmvb53g5bw57" path="res://scripts/debug_manager.gd" id="13_dbgmgr"]
+[ext_resource type="Script" uid="uid://bqthdmil0kgn6" path="res://scripts/progress_bar_layer.gd" id="14_pblayer"]
+[ext_resource type="Script" uid="uid://bvivpa15khla" path="res://scripts/control_panel.gd" id="15_ctrlpanel"]
+[ext_resource type="Script" uid="uid://bcysm6it5igvq" path="res://scripts/town_manager.gd" id="16_twnmgr"]
+[ext_resource type="PackedScene" uid="uid://k2vtownujaab" path="res://scenes/TownUI.tscn" id="17_twnui"]
+[ext_resource type="Script" uid="uid://1b62pk8bfd16" path="res://scripts/unread_dot.gd" id="18_unread"]
+[ext_resource type="Script" path="res://scripts/fps_counter.gd" id="19_fpscnt"]
+[ext_resource type="Script" path="res://scripts/map_highlight_layer.gd" id="20_hilayer"]
+[ext_resource type="Script" path="res://scripts/improvement_state_layer.gd" id="21_implayer"]
+
+[node name="MainMap" type="Node2D" unique_id=1469125025]
+script = ExtResource("1_5hgy3")
+
+[node name="MapRenderer" type="Node2D" parent="." unique_id=1095572482]
+script = ExtResource("6_82ayj")
+
+[node name="ImprovementStateLayer" type="Node2D" parent="MapRenderer"]
+script = ExtResource("21_implayer")
+
+[node name="HighlightLayer" type="Node2D" parent="MapRenderer" unique_id=1095572484]
+script = ExtResource("20_hilayer")
+
+[node name="ProgressBarLayer" type="Node2D" parent="MapRenderer" unique_id=1095572483]
+script = ExtResource("14_pblayer")
+
+[node name="CityUI" parent="." unique_id=1004795705 instance=ExtResource("2_a1mhp")]
+visible = false
+
+[node name="TownUI" parent="." unique_id=-1294967295 instance=ExtResource("17_twnui")]
+visible = false
+
+[node name="HUD" type="Panel" parent="." unique_id=1988910692]
+offset_right = 184.0
+offset_bottom = 165.0
+theme_type_variation = &"SurfaceVeil"
+script = ExtResource("2_1kkdm")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HUD" unique_id=74397860]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = 2.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 4
+
+[node name="PopulationLabel" type="Label" parent="HUD/VBoxContainer" unique_id=448761200]
+layout_mode = 2
+text = "Population: 50"
+
+[node name="YearLabel" type="Label" parent="HUD/VBoxContainer" unique_id=1082760423]
+layout_mode = 2
+
+[node name="TreasuryLabel" type="RichTextLabel" parent="HUD/VBoxContainer" unique_id=448771777]
+layout_mode = 2
+mouse_filter = 2
+bbcode_enabled = true
+text = "Treasury: 0"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+
+[node name="CityButton" type="Button" parent="HUD/VBoxContainer" unique_id=964408477]
+layout_mode = 2
+tooltip_text = "ЛКМ: переход в интерфейс города
+ПКМ: центрирование карты на городе"
+text = "City"
+
+[node name="ExpansionButton" type="Button" parent="HUD/VBoxContainer" unique_id=1722725868]
+layout_mode = 2
+tooltip_text = "Scout and claim neighboring lands."
+text = "Expansion"
+
+[node name="JournalButton" type="Button" parent="HUD/VBoxContainer" unique_id=2083371047]
+layout_mode = 2
+tooltip_text = "Open the journal of important messages"
+text = "Journal"
+
+[node name="UnreadDot" type="Control" parent="HUD/VBoxContainer/JournalButton" unique_id=1695833642]
+visible = false
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -13.0
+offset_top = 4.0
+offset_right = -4.0
+offset_bottom = 13.0
+grow_horizontal = 0
+mouse_filter = 2
+script = ExtResource("18_unread")
+
+[node name="MapMessageLabel" type="Label" parent="HUD/VBoxContainer" unique_id=1468814370]
+visible = false
+propagate_maximum_size = true
+layout_mode = 2
+autowrap_mode = 2
+
+[node name="TopRightLayer" type="CanvasLayer" parent="." unique_id=2000000002]
+layer = 0
+
+[node name="TopRightPanel" type="Control" parent="TopRightLayer" unique_id=2000000003]
+self_modulate = Color(1, 1, 1, 0)
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -252.0
+offset_right = -40.0
+offset_bottom = 31.0
+grow_horizontal = 0
+mouse_filter = 2
+
+[node name="TopRightBox" type="HBoxContainer" parent="TopRightLayer/TopRightPanel" unique_id=2000000005]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 4
+
+[node name="ClockLabel" type="Label" parent="TopRightLayer/TopRightPanel/TopRightBox" unique_id=2000000007]
+custom_minimum_size = Vector2(48, 0)
+layout_mode = 2
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 5
+text = "00:00"
+
+[node name="PauseButton" type="Button" parent="TopRightLayer/TopRightPanel/TopRightBox" unique_id=2000000006]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+size_flags_vertical = 4
+tooltip_text = "Stop the simulation. Your actions are queued until you resume it (SPACE)"
+expand_icon = true
+
+[node name="FpsLabel" type="Label" parent="TopRightLayer/TopRightPanel/TopRightBox"]
+custom_minimum_size = Vector2(64, 0)
+layout_mode = 2
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 5
+text = "FPS: 60"
+script = ExtResource("19_fpscnt")
+
+[node name="MenuButton" type="Button" parent="TopRightLayer/TopRightPanel/TopRightBox" unique_id=2000000004]
+layout_mode = 2
+text = "Menu"
+
+[node name="PauseMenu" parent="." unique_id=513166833 instance=ExtResource("3_2t08r")]
+visible = false
+
+[node name="HexTooltip" type="Panel" parent="." unique_id=1303469343]
+visible = false
+offset_right = 220.0
+offset_bottom = 80.0
+theme_type_variation = &"SurfaceTooltip"
+
+[node name="TooltipVBox" type="VBoxContainer" parent="HexTooltip" unique_id=433727967]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="TooltipTextLabel" type="RichTextLabel" parent="HexTooltip/TooltipVBox" unique_id=1266942755]
+layout_mode = 2
+fit_content = true
+scroll_active = false
+
+[node name="TooltipProductsContainer" type="VBoxContainer" parent="HexTooltip/TooltipVBox" unique_id=239241664]
+layout_mode = 2
+
+[node name="BuildManager" type="Node" parent="." unique_id=1269596246]
+script = ExtResource("5_6ic70")
+
+[node name="RoadManager" type="Node" parent="." unique_id=2061907274]
+script = ExtResource("7_2m761")
+
+[node name="ProjectManager" type="Node" parent="." unique_id=2061907275]
+script = ExtResource("7b_pm01")
+
+[node name="ExpansionManager" type="Node" parent="." unique_id=1230720441]
+script = ExtResource("8_8fkir")
+
+[node name="WorkerManager" type="Node" parent="." unique_id=1914351628]
+script = ExtResource("9_nmjbi")
+
+[node name="TownsfolkManager" type="Node" parent="." unique_id=1981434839]
+script = ExtResource("10_yd4n3")
+
+[node name="InputHandler" type="Node" parent="." unique_id=1067302669]
+script = ExtResource("11_wehgl")
+
+[node name="RiverManager" type="Node" parent="." unique_id=2061907300]
+script = ExtResource("12_rvmgr")
+
+[node name="TownManager" type="Node" parent="." unique_id=2061907303]
+script = ExtResource("16_twnmgr")
+
+[node name="DebugManager" type="Control" parent="." unique_id=2061907301]
+visible = false
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("13_dbgmgr")
+
+[node name="ControlPanelLayer" type="CanvasLayer" parent="."]
+layer = 0
+
+; The height is a share of the window (about 23%, the old 176 units of a 768-unit canvas).
+; A fixed number of canvas units grew with the interface scale and covered half the map.
+[node name="ControlPanel" type="Panel" parent="ControlPanelLayer" unique_id=2061907302]
+anchor_top = 0.77
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 0.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_type_variation = &"SurfaceVeil"
+script = ExtResource("15_ctrlpanel")
+
+; The three columns of the panel divide it by anchors so that they keep their proportions when
+; a larger interface scale shrinks the logical canvas (see scripts/ui_scale.gd).
+[node name="SepInfoPreview" type="ColorRect" parent="ControlPanelLayer/ControlPanel" unique_id=736594410]
+layout_mode = 1
+anchor_left = 0.3
+anchor_right = 0.3
+anchor_bottom = 1.0
+offset_left = -1.0
+offset_top = 6.0
+offset_right = 1.0
+offset_bottom = -6.0
+color = Color(0.54902, 0.54902, 0.54902, 1)
+
+[node name="SepPreviewActions" type="ColorRect" parent="ControlPanelLayer/ControlPanel" unique_id=1909537324]
+layout_mode = 1
+anchor_left = 0.7
+anchor_right = 0.7
+anchor_bottom = 1.0
+offset_left = -1.0
+offset_top = 6.0
+offset_right = 1.0
+offset_bottom = -6.0
+color = Color(0.54902, 0.54902, 0.54902, 1)
+
+[node name="PreviewContainer" type="VBoxContainer" parent="ControlPanelLayer/ControlPanel" unique_id=2061907310]
+layout_mode = 1
+anchor_left = 0.3
+anchor_right = 0.7
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 6.0
+offset_right = -10.0
+offset_bottom = 0.0
+grow_horizontal = 2
+theme_override_constants/separation = 4
+
+[node name="PreviewHeader" type="VBoxContainer" parent="ControlPanelLayer/ControlPanel/PreviewContainer" unique_id=2061907311]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="PreviewScroll" type="ScrollContainer" parent="ControlPanelLayer/ControlPanel/PreviewContainer" unique_id=390631621]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="PreviewMargin" type="MarginContainer" parent="ControlPanelLayer/ControlPanel/PreviewContainer/PreviewScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/margin_left = 8
+
+[node name="PreviewContent" type="VBoxContainer" parent="ControlPanelLayer/ControlPanel/PreviewContainer/PreviewScroll/PreviewMargin" unique_id=1071817127]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="InfoVBox" type="VBoxContainer" parent="ControlPanelLayer/ControlPanel" unique_id=2061907305]
+layout_mode = 1
+anchor_right = 0.3
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 6.0
+offset_right = -8.0
+offset_bottom = -6.0
+size_flags_horizontal = 3
+
+[node name="InfoScroll" type="ScrollContainer" parent="ControlPanelLayer/ControlPanel/InfoVBox" unique_id=463549985]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="InfoContent" type="VBoxContainer" parent="ControlPanelLayer/ControlPanel/InfoVBox/InfoScroll" unique_id=47367785]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="InfoLabel" type="RichTextLabel" parent="ControlPanelLayer/ControlPanel/InfoVBox/InfoScroll/InfoContent" unique_id=2061907306]
+layout_mode = 2
+bbcode_enabled = true
+text = "Select a hex on the map (LMB) to see information and available actions."
+fit_content = true
+scroll_active = false
+
+[node name="ProductsContainer" type="VBoxContainer" parent="ControlPanelLayer/ControlPanel/InfoVBox/InfoScroll/InfoContent" unique_id=2061907307]
+layout_mode = 2
+
+[node name="ActionsVBox" type="VBoxContainer" parent="ControlPanelLayer/ControlPanel" unique_id=2061907308]
+layout_mode = 1
+anchor_left = 0.7
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 6.0
+offset_right = -8.0
+offset_bottom = -6.0
+size_flags_horizontal = 0
+
+[node name="ActionsScroll" type="ScrollContainer" parent="ControlPanelLayer/ControlPanel/ActionsVBox" unique_id=1488545637]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="ActionsContent" type="VBoxContainer" parent="ControlPanelLayer/ControlPanel/ActionsVBox/ActionsScroll" unique_id=453821295]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ActionsContainer" type="FlowContainer" parent="ControlPanelLayer/ControlPanel/ActionsVBox/ActionsScroll/ActionsContent" unique_id=2061907309]
+layout_mode = 2
+theme_override_constants/h_separation = 4
+theme_override_constants/v_separation = 4

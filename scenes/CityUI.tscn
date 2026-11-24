@@ -1,0 +1,752 @@
+[gd_scene format=3 uid="uid://dwa0g8671hsh0"]
+
+[ext_resource type="Script" uid="uid://db8sfnu5rqjpf" path="res://scripts/city_ui.gd" id="1_sxg55"]
+[ext_resource type="Script" uid="uid://1b62pk8bfd16" path="res://scripts/unread_dot.gd" id="2_dot"]
+
+[node name="CityUi" type="Control" unique_id=1004795705]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_sxg55")
+
+[node name="RightPanel" type="Panel" parent="." unique_id=470611506]
+layout_mode = 1
+anchors_preset = 11
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 824.0
+offset_right = 1253.0
+offset_bottom = 768.0
+grow_horizontal = 0
+grow_vertical = 2
+theme_type_variation = &"SurfacePanel"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="RightPanel" unique_id=1613617050]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="BuiltBuildingsLabel" type="Label" parent="RightPanel/VBoxContainer" unique_id=970030327]
+layout_mode = 2
+text = "Built buildings"
+
+[node name="BuiltBuildingsList" type="VBoxContainer" parent="RightPanel/VBoxContainer" unique_id=1857158825]
+layout_mode = 2
+
+[node name="TabBarPanel" type="Panel" parent="." unique_id=215368179]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 50.0
+grow_horizontal = 2
+theme_type_variation = &"SurfaceRaised"
+
+[node name="TabBar" type="HBoxContainer" parent="TabBarPanel" unique_id=388558789]
+layout_mode = 1
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 200.0
+offset_bottom = 42.0
+theme_override_constants/separation = 4
+
+[node name="ResourcesTabButton" type="Button" parent="TabBarPanel/TabBar" unique_id=1545388005]
+custom_minimum_size = Vector2(36, 34)
+layout_mode = 2
+tooltip_text = "Resources"
+
+[node name="BuildingsTabButton" type="Button" parent="TabBarPanel/TabBar" unique_id=1963724598]
+custom_minimum_size = Vector2(36, 34)
+layout_mode = 2
+tooltip_text = "Buildings"
+
+[node name="TradeTabButton" type="Button" parent="TabBarPanel/TabBar" unique_id=390577073]
+custom_minimum_size = Vector2(36, 34)
+layout_mode = 2
+tooltip_text = "Trade"
+
+[node name="TechnologiesTabButton" type="Button" parent="TabBarPanel/TabBar" unique_id=1779431610]
+custom_minimum_size = Vector2(36, 34)
+layout_mode = 2
+tooltip_text = "Technologies"
+
+[node name="EffectsTabButton" type="Button" parent="TabBarPanel/TabBar" unique_id=1900000501]
+custom_minimum_size = Vector2(36, 34)
+layout_mode = 2
+tooltip_text = "Effects"
+
+[node name="EraChallengesButton" type="Button" parent="TabBarPanel/TabBar" unique_id=1900000401]
+custom_minimum_size = Vector2(36, 34)
+layout_mode = 2
+tooltip_text = "Challenges"
+
+[node name="ReputationSpecializationButton" type="Button" parent="TabBarPanel/TabBar" unique_id=1900000402]
+custom_minimum_size = Vector2(36, 34)
+layout_mode = 2
+tooltip_text = "Specialization"
+
+[node name="PickDot" type="Control" parent="TabBarPanel/TabBar/ReputationSpecializationButton" unique_id=1900000404]
+visible = false
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -11.0
+offset_top = 2.0
+offset_right = -2.0
+offset_bottom = 11.0
+grow_horizontal = 0
+mouse_filter = 2
+script = ExtResource("2_dot")
+
+[node name="EncyclopediaButton" type="Button" parent="TabBarPanel/TabBar" unique_id=1900000403]
+custom_minimum_size = Vector2(36, 34)
+layout_mode = 2
+tooltip_text = "Encyclopedia"
+
+[node name="TopFoodLabel" type="HBoxContainer" parent="TabBarPanel" unique_id=1528058809]
+layout_mode = 1
+anchor_right = 1.0
+offset_left = 300.0
+offset_top = 8.0
+offset_right = -60.0
+offset_bottom = 42.0
+theme_override_constants/separation = 8
+
+[node name="FoodLabel" type="Label" parent="TabBarPanel/TopFoodLabel" unique_id=1528058810]
+layout_mode = 2
+size_flags_vertical = 4
+text = "Food: 0"
+
+[node name="PopLabel" type="Label" parent="TabBarPanel/TopFoodLabel" unique_id=1528058811]
+layout_mode = 2
+size_flags_vertical = 4
+text = "Population: 1"
+
+[node name="TreasuryLabel" type="RichTextLabel" parent="TabBarPanel/TopFoodLabel" unique_id=1528058812]
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+bbcode_enabled = true
+text = "Treasury: 0"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+
+[node name="ContentPanel" type="Panel" parent="." unique_id=606119453]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 50.0
+offset_right = 824.0
+offset_bottom = 768.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_type_variation = &"SurfaceInset"
+
+[node name="ResourcesPanel" type="Control" parent="ContentPanel" unique_id=939479849]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="ContentPanel/ResourcesPanel" unique_id=507307176]
+layout_mode = 0
+offset_left = 4.0
+offset_top = 6.0
+offset_right = 183.0
+offset_bottom = 29.0
+text = "Resource list"
+
+[node name="SectionsBar" type="HBoxContainer" parent="ContentPanel/ResourcesPanel" unique_id=1900000301]
+layout_mode = 0
+offset_left = 4.0
+offset_top = 32.0
+offset_right = 76.0
+offset_bottom = 66.0
+theme_override_constants/separation = 4
+
+[node name="StorageButton" type="Button" parent="ContentPanel/ResourcesPanel/SectionsBar" unique_id=1900000302]
+custom_minimum_size = Vector2(36, 34)
+layout_mode = 2
+tooltip_text = "Storage"
+
+[node name="TamedButton" type="Button" parent="ContentPanel/ResourcesPanel/SectionsBar" unique_id=1900000303]
+custom_minimum_size = Vector2(36, 34)
+layout_mode = 2
+tooltip_text = "Tamed resources"
+
+[node name="StorageSection" type="VBoxContainer" parent="ContentPanel/ResourcesPanel" unique_id=1900000305]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 70.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="ContentPanel/ResourcesPanel/StorageSection" unique_id=1900000306]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="StorageList" type="VBoxContainer" parent="ContentPanel/ResourcesPanel/StorageSection/ScrollContainer" unique_id=1900000307]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="TamedSection" type="VBoxContainer" parent="ContentPanel/ResourcesPanel" unique_id=1900000308]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 70.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="ContentPanel/ResourcesPanel/TamedSection" unique_id=1900000309]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="TamedList" type="VBoxContainer" parent="ContentPanel/ResourcesPanel/TamedSection/ScrollContainer" unique_id=1900000310]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="BuildingsPanel" type="Control" parent="ContentPanel" unique_id=1411062318]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="FoodLabel" type="Label" parent="ContentPanel/BuildingsPanel" unique_id=289532673]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+offset_right = 184.0
+offset_bottom = 23.0
+text = "Food available: 0"
+
+[node name="PanelsLayout" type="HBoxContainer" parent="ContentPanel/BuildingsPanel" unique_id=1962390109]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 27.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="AvailableBuildingsPanel" type="Control" parent="ContentPanel/BuildingsPanel/PanelsLayout" unique_id=1098170534]
+custom_minimum_size = Vector2(500, 0)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ContentPanel/BuildingsPanel/PanelsLayout/AvailableBuildingsPanel" unique_id=1309099413]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -27.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="AvailableBuildingsLabel" type="Label" parent="ContentPanel/BuildingsPanel/PanelsLayout/AvailableBuildingsPanel/VBoxContainer" unique_id=101904791]
+layout_mode = 2
+text = "Available buildings:"
+
+[node name="AvailableBuildingsScroll" type="ScrollContainer" parent="ContentPanel/BuildingsPanel/PanelsLayout/AvailableBuildingsPanel/VBoxContainer" unique_id=1295887837]
+custom_minimum_size = Vector2(300, 600)
+layout_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="BuildingsList" type="VBoxContainer" parent="ContentPanel/BuildingsPanel/PanelsLayout/AvailableBuildingsPanel/VBoxContainer/AvailableBuildingsScroll" unique_id=1073741824]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="BuildButton" type="Button" parent="ContentPanel/BuildingsPanel" unique_id=235108591]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = -34.0
+offset_right = 104.0
+offset_bottom = -3.0
+grow_vertical = 0
+disabled = true
+text = "Build"
+
+[node name="TradePanel" type="Control" parent="ContentPanel" unique_id=730713259]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Split" type="Control" parent="ContentPanel/TradePanel" unique_id=1900000201]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="InternalPlate" type="PanelContainer" parent="ContentPanel/TradePanel/Split" unique_id=1900000230]
+layout_mode = 1
+anchors_preset = 9
+anchor_right = 0.5
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_type_variation = &"SurfaceInset"
+
+[node name="InternalPanel" type="VBoxContainer" parent="ContentPanel/TradePanel/Split/InternalPlate" unique_id=1900000202]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="TitleLabel" type="Label" parent="ContentPanel/TradePanel/Split/InternalPlate/InternalPanel" unique_id=1900000203]
+layout_mode = 2
+text = "Domestic trade"
+
+[node name="InternalScroll" type="ScrollContainer" parent="ContentPanel/TradePanel/Split/InternalPlate/InternalPanel" unique_id=1900000204]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+vertical_scroll_mode = 2
+
+[node name="InternalList" type="VBoxContainer" parent="ContentPanel/TradePanel/Split/InternalPlate/InternalPanel/InternalScroll" unique_id=1900000205]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="ExternalPlate" type="PanelContainer" parent="ContentPanel/TradePanel/Split" unique_id=1900000231]
+layout_mode = 1
+anchors_preset = 11
+anchor_left = 0.5
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_type_variation = &"SurfaceInset"
+
+[node name="ExternalPanel" type="VBoxContainer" parent="ContentPanel/TradePanel/Split/ExternalPlate" unique_id=1900000206]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="TitleLabel" type="Label" parent="ContentPanel/TradePanel/Split/ExternalPlate/ExternalPanel" unique_id=1900000207]
+layout_mode = 2
+text = "Foreign trade"
+
+[node name="SectionsBar" type="HBoxContainer" parent="ContentPanel/TradePanel/Split/ExternalPlate/ExternalPanel" unique_id=1900000210]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="DealsButton" type="Button" parent="ContentPanel/TradePanel/Split/ExternalPlate/ExternalPanel/SectionsBar" unique_id=1900000211]
+custom_minimum_size = Vector2(36, 34)
+layout_mode = 2
+tooltip_text = "Trade deals"
+
+[node name="PartnersButton" type="Button" parent="ContentPanel/TradePanel/Split/ExternalPlate/ExternalPanel/SectionsBar" unique_id=1900000212]
+custom_minimum_size = Vector2(36, 34)
+layout_mode = 2
+tooltip_text = "Trade partners"
+
+[node name="DealsSection" type="VBoxContainer" parent="ContentPanel/TradePanel/Split/ExternalPlate/ExternalPanel" unique_id=1900000213]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 4
+
+[node name="SortBar" type="HBoxContainer" parent="ContentPanel/TradePanel/Split/ExternalPlate/ExternalPanel/DealsSection" unique_id=1900000214]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="NameSortButton" type="Button" parent="ContentPanel/TradePanel/Split/ExternalPlate/ExternalPanel/DealsSection/SortBar" unique_id=1900000215]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+
+[node name="PriceSortButton" type="Button" parent="ContentPanel/TradePanel/Split/ExternalPlate/ExternalPanel/DealsSection/SortBar" unique_id=1900000216]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+
+[node name="TypeSortButton" type="Button" parent="ContentPanel/TradePanel/Split/ExternalPlate/ExternalPanel/DealsSection/SortBar" unique_id=1900000217]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+
+[node name="DealsScroll" type="ScrollContainer" parent="ContentPanel/TradePanel/Split/ExternalPlate/ExternalPanel/DealsSection" unique_id=1900000218]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+vertical_scroll_mode = 2
+
+[node name="DealsList" type="VBoxContainer" parent="ContentPanel/TradePanel/Split/ExternalPlate/ExternalPanel/DealsSection/DealsScroll" unique_id=1900000219]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="PartnersSection" type="VBoxContainer" parent="ContentPanel/TradePanel/Split/ExternalPlate/ExternalPanel" unique_id=1900000220]
+visible = false
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 4
+
+[node name="SortBar" type="HBoxContainer" parent="ContentPanel/TradePanel/Split/ExternalPlate/ExternalPanel/PartnersSection" unique_id=1900000221]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="NameSortButton" type="Button" parent="ContentPanel/TradePanel/Split/ExternalPlate/ExternalPanel/PartnersSection/SortBar" unique_id=1900000222]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+
+[node name="DistanceSortButton" type="Button" parent="ContentPanel/TradePanel/Split/ExternalPlate/ExternalPanel/PartnersSection/SortBar" unique_id=1900000223]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+
+[node name="PartnersScroll" type="ScrollContainer" parent="ContentPanel/TradePanel/Split/ExternalPlate/ExternalPanel/PartnersSection" unique_id=1900000224]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+vertical_scroll_mode = 2
+
+[node name="PartnersList" type="VBoxContainer" parent="ContentPanel/TradePanel/Split/ExternalPlate/ExternalPanel/PartnersSection/PartnersScroll" unique_id=1900000225]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="TechnologiesPanel" type="Control" parent="ContentPanel" unique_id=1065922502]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CurrentResearch" type="Panel" parent="ContentPanel/TechnologiesPanel" unique_id=6664287]
+layout_mode = 0
+offset_left = 4.0
+offset_top = 6.0
+offset_right = 500.0
+offset_bottom = 62.0
+theme_type_variation = &"SurfaceInset"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ContentPanel/TechnologiesPanel/CurrentResearch" unique_id=2140575714]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 490.0
+offset_bottom = 58.0
+
+[node name="SciencePoolLabel" type="Label" parent="ContentPanel/TechnologiesPanel/CurrentResearch/VBoxContainer" unique_id=597162081]
+layout_mode = 2
+text = "Science: 1.0/sec"
+
+[node name="TechCurrentLabel" type="Label" parent="ContentPanel/TechnologiesPanel/CurrentResearch/VBoxContainer" unique_id=882780081]
+layout_mode = 2
+text = "No current research"
+
+[node name="TreeRoot" type="Control" parent="ContentPanel/TechnologiesPanel" unique_id=1900000001]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 66.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="EffectsPanel" type="Control" parent="ContentPanel" unique_id=1900000502]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TitleLabel" type="Label" parent="ContentPanel/EffectsPanel" unique_id=1900000503]
+layout_mode = 0
+offset_left = 4.0
+offset_top = 6.0
+offset_right = 183.0
+offset_bottom = 29.0
+text = "City effects"
+
+[node name="SectionsBar" type="HBoxContainer" parent="ContentPanel/EffectsPanel" unique_id=1900000504]
+layout_mode = 0
+offset_left = 4.0
+offset_top = 32.0
+offset_right = 76.0
+offset_bottom = 66.0
+theme_override_constants/separation = 4
+
+[node name="EffectsButton" type="Button" parent="ContentPanel/EffectsPanel/SectionsBar" unique_id=1900000505]
+custom_minimum_size = Vector2(36, 34)
+layout_mode = 2
+tooltip_text = "City effects"
+
+[node name="DiversityButton" type="Button" parent="ContentPanel/EffectsPanel/SectionsBar" unique_id=1900000506]
+custom_minimum_size = Vector2(36, 34)
+layout_mode = 2
+tooltip_text = "Diversity"
+
+[node name="EffectsSection" type="VBoxContainer" parent="ContentPanel/EffectsPanel" unique_id=1900000507]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = 70.0
+offset_right = -8.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="ContentPanel/EffectsPanel/EffectsSection" unique_id=1900000508]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="EffectsList" type="VBoxContainer" parent="ContentPanel/EffectsPanel/EffectsSection/ScrollContainer" unique_id=1900000509]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="DiversitySection" type="VBoxContainer" parent="ContentPanel/EffectsPanel" unique_id=1900000510]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = 70.0
+offset_right = -8.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="ContentPanel/EffectsPanel/DiversitySection" unique_id=1900000511]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="DiversityList" type="VBoxContainer" parent="ContentPanel/EffectsPanel/DiversitySection/ScrollContainer" unique_id=1900000512]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="SpecializationPanel" type="Control" parent="ContentPanel" unique_id=1900000601]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TitleLabel" type="Label" parent="ContentPanel/SpecializationPanel" unique_id=1900000602]
+layout_mode = 0
+offset_left = 4.0
+offset_top = 6.0
+offset_right = 183.0
+offset_bottom = 29.0
+text = "Specialization"
+
+[node name="Body" type="VBoxContainer" parent="ContentPanel/SpecializationPanel" unique_id=1900000603]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = 32.0
+offset_right = -8.0
+offset_bottom = -4.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 4
+
+[node name="ScrollContainer" type="ScrollContainer" parent="ContentPanel/SpecializationPanel/Body" unique_id=1900000604]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="SpecializationList" type="VBoxContainer" parent="ContentPanel/SpecializationPanel/Body/ScrollContainer" unique_id=1900000605]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="ChallengesPanel" type="Control" parent="ContentPanel" unique_id=1900000701]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TitleLabel" type="Label" parent="ContentPanel/ChallengesPanel" unique_id=1900000702]
+layout_mode = 0
+offset_left = 4.0
+offset_top = 6.0
+offset_right = 183.0
+offset_bottom = 29.0
+text = "Challenges"
+
+[node name="Body" type="VBoxContainer" parent="ContentPanel/ChallengesPanel" unique_id=1900000703]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = 32.0
+offset_right = -8.0
+offset_bottom = -4.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 4
+
+[node name="ScrollContainer" type="ScrollContainer" parent="ContentPanel/ChallengesPanel/Body" unique_id=1900000704]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="ChallengeList" type="VBoxContainer" parent="ContentPanel/ChallengesPanel/Body/ScrollContainer" unique_id=1900000705]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="EncyclopediaPanel" type="Control" parent="ContentPanel" unique_id=1900000801]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="BackButton" type="Button" parent="ContentPanel/EncyclopediaPanel" unique_id=1900000818]
+layout_mode = 1
+anchors_preset = 0
+offset_left = 4.0
+offset_top = 6.0
+offset_right = 84.0
+offset_bottom = 36.0
+disabled = true
+text = "Back"
+
+[node name="SearchField" type="LineEdit" parent="ContentPanel/EncyclopediaPanel" unique_id=1900000802]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 92.0
+offset_top = 6.0
+offset_right = -8.0
+offset_bottom = 36.0
+grow_horizontal = 2
+placeholder_text = "Search by name"
+clear_button_enabled = true
+
+[node name="Body" type="HBoxContainer" parent="ContentPanel/EncyclopediaPanel" unique_id=1900000803]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = 44.0
+offset_right = -8.0
+offset_bottom = -4.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 8
+
+[node name="SectionsColumn" type="VBoxContainer" parent="ContentPanel/EncyclopediaPanel/Body" unique_id=1900000804]
+custom_minimum_size = Vector2(180, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_constants/separation = 4
+
+[node name="EntitiesColumn" type="VBoxContainer" parent="ContentPanel/EncyclopediaPanel/Body" unique_id=1900000809]
+custom_minimum_size = Vector2(320, 0)
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 6
+
+[node name="TitleLabel" type="Label" parent="ContentPanel/EncyclopediaPanel/Body/EntitiesColumn" unique_id=1900000810]
+layout_mode = 2
+text = "Resources"
+mouse_filter = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="ContentPanel/EncyclopediaPanel/Body/EntitiesColumn" unique_id=1900000811]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="EntityList" type="VBoxContainer" parent="ContentPanel/EncyclopediaPanel/Body/EntitiesColumn/ScrollContainer" unique_id=1900000812]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="DetailColumn" type="VBoxContainer" parent="ContentPanel/EncyclopediaPanel/Body" unique_id=1900000813]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 12
+
+[node name="Icon" type="TextureRect" parent="ContentPanel/EncyclopediaPanel/Body/DetailColumn" unique_id=1900000814]
+custom_minimum_size = Vector2(256, 256)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 3
+size_flags_horizontal = 4
+mouse_filter = 2
+
+[node name="NameLabel" type="Label" parent="ContentPanel/EncyclopediaPanel/Body/DetailColumn" unique_id=1900000815]
+layout_mode = 2
+size_flags_horizontal = 3
+horizontal_alignment = 1
+autowrap_mode = 3
+mouse_filter = 2
+
+[node name="DescriptionScroll" type="ScrollContainer" parent="ContentPanel/EncyclopediaPanel/Body/DetailColumn" unique_id=1900000816]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="Description" type="VBoxContainer" parent="ContentPanel/EncyclopediaPanel/Body/DetailColumn/DescriptionScroll" unique_id=1900000817]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="BottomPanel" type="Panel" parent="." unique_id=47910934]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 718.0
+offset_bottom = 768.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_type_variation = &"SurfaceRaised"
+
+[node name="MessageLabel" type="Label" parent="BottomPanel" unique_id=2138032127]
+layout_mode = 1
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_right = 1.0
+grow_vertical = 2
+
+[node name="CloseButtonTop" type="Button" parent="." unique_id=1190549711]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -37.0
+offset_bottom = 31.0
+grow_horizontal = 0
+theme_override_font_sizes/font_size = 16
+text = "X"

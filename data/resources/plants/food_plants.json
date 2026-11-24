@@ -1,0 +1,521 @@
+{
+  // The "farm" improvement works in two modes (see docs.md, the section
+  // "Breeding animals and plants (crop_bred scheme)"):
+  //   1) The hex already has a natural resource (for example, "wheat_field",
+  //      placed by the generator) — building the farm keeps
+  //      tile.resource, and the quality is the current one.
+  //   2) The hex is empty — the player RAISES a domesticated crop. The id is
+  //      written to tile.crop_bred, tile.resource stays null. The quality is
+  //      inherited from an already domesticated specimen of that plant.
+  //
+  // Exception: wild_food (foraged food) requires no improvement
+  // (improved_by == null) and is gathered by the "Forage wild food" special action.
+  "resources": [
+    {
+      "id": "wild_food", "price": 1,
+      "name": "Foraged Food",
+      "type": "raw",
+      "category": "plants",
+      "group": "wild",
+      "subgroup": "forage",
+      "allowed_terrain": [ "plain", "hill", "swamp" ],
+      "allowed_cover": [
+        "none", "temperate_rainforest_sparse", "temperate_dry_forest_sparse",
+        "temperate_rainforest", "temperate_dry_forest", "swamp_forest",
+        "swamp_forest_sparse"
+      ],
+      "improved_by": null,
+      "produces": { "foraged_food": [ 50, 100 ] },
+      "spawn_count": [ 2, 4 ],
+      "icon": "foraged_food.png",
+      "color": [ 255, 200, 100 ]
+    },
+    {
+      "id": "wheat_field", "price": 2,
+      "name": "Wheat",
+      "type": "raw",
+      "category": "plants",
+      "group": "food_plants",
+      "subgroup": "cereals",
+      "tech_required": "farming",
+      "allowed_terrain": [ "plain" ],
+      "allowed_cover": [
+        "none"
+      ],
+      "allowed_climate_zones": [ "boreal_dry", "boreal_wet", "steppe", "prairie" ],
+      "breeding": [ [ { "terrain": "sandy_desert" }, { "cover": "oasis" } ], [ { "terrain": "rocky_desert" }, { "cover": "oasis" } ] ],
+      "improved_by": "farm",
+      "produces": { "wheat": 11, "feed": 120 },
+      "icon": "wheat.png",
+      "color": [ 218, 165, 32 ]
+    },
+    {
+      "id": "oat_field", "price": 2,
+      "name": "Oats",
+      "type": "raw",
+      "category": "plants",
+      "group": "food_plants",
+      "subgroup": "cereals",
+      "tech_required": "farming",
+      "allowed_terrain": [ "plain", "hill" ],
+      "allowed_cover": [
+        "none"
+      ],
+      "allowed_climate_zones": [ "boreal_dry", "boreal_wet", "steppe", "prairie" ],
+      "improved_by": "farm",
+      "produces": { "oats": 11, "feed": 120 },
+      "icon": "oats.png",
+      "color": [ 214, 210, 82 ]
+    },
+    {
+      "id": "barley_field", "price": 2,
+      "name": "Barley",
+      "type": "raw",
+      "category": "plants",
+      "group": "food_plants",
+      "subgroup": "cereals",
+      "tech_required": "farming",
+      "allowed_terrain": [ "plain", "hill", "rocky_desert" ],
+      "allowed_cover": [
+        "none", "oasis"
+      ],
+      "allowed_climate_zones": [ "boreal_dry", "boreal_wet", "steppe", "prairie",
+                                 "savanna_dry", "tropical_dry" ],
+      "breeding": [ [ { "terrain": "sandy_desert" }, { "cover": "oasis" } ], [ { "terrain": "rocky_desert" }, { "cover": "oasis" } ] ],
+      "improved_by": "farm",
+      "produces": { "barley": 11, "feed": 120 },
+      "icon": "barley.png",
+      "color": [ 218, 184, 96 ]
+    },
+    {
+      "id": "millet_field", "price": 2,
+      "name": "Millet",
+      "type": "raw",
+      "category": "plants",
+      "group": "food_plants",
+      "subgroup": "cereals",
+      "tech_required": "farming",
+      "allowed_terrain": [ "plain", "rocky_desert" ],
+      "allowed_cover": [
+        "none", "oasis"
+      ],
+      "allowed_climate_zones": [ "steppe", "savanna_dry", "savanna_wet",
+                                 "tropical_dry", "tropical_wet" ],
+      "breeding": [ [ { "terrain": "sandy_desert" }, { "cover": "oasis" } ], [ { "terrain": "rocky_desert" }, { "cover": "oasis" } ] ],
+      "improved_by": "farm",
+      "produces": { "millet": 11, "feed": 120 },
+      "icon": "millet.png",
+      "color": [ 240, 230, 140 ]
+    },
+    {
+      "id": "rye_field", "price": 2,
+      "name": "Rye",
+      "type": "raw",
+      "category": "plants",
+      "group": "food_plants",
+      "subgroup": "cereals",
+      "tech_required": "farming",
+      "allowed_terrain": [ "plain", "hill" ],
+      "allowed_cover": [
+        "none"
+      ],
+      "allowed_climate_zones": [ "boreal_dry", "boreal_wet", "steppe", "prairie" ],
+      "improved_by": "farm",
+      "produces": { "rye": 11, "feed": 120 },
+      "icon": "rye.png",
+      "color": [ 160, 150, 100 ]
+    },
+    {
+      "id": "rice_field", "price": 4,
+      "name": "Rice",
+      "type": "raw",
+      "category": "plants",
+      "group": "food_plants",
+      "subgroup": "cereals",
+      "tech_required": "irrigation",
+      "allowed_terrain": [ "plain" ],
+      "allowed_cover": [
+        "none"
+      ],
+      "allowed_climate_zones": [ "prairie", "savanna_dry", "savanna_wet",
+                                 "tropical_dry", "tropical_wet" ],
+      "breeding": [ [ { "terrain": "sandy_desert" }, { "cover": "oasis" } ], [ { "terrain": "rocky_desert" }, { "cover": "oasis" } ] ],
+      "improved_by": "farm",
+      "produces": { "rice": 11, "feed": 120 },
+      "icon": "rice.png",
+      "color": [ 180, 220, 120 ],
+      "spawn_conditions": [ [ { "type": "near_river", "chance": 100 } ] ]
+    },
+    {
+      "id": "soybean_field", "price": 4,
+      "name": "Soybean",
+      "type": "raw",
+      "category": "plants",
+      "group": "food_plants",
+      "subgroup": "legumes",
+      "tech_required": "farming",
+      "allowed_terrain": [ "plain" ],
+      "allowed_cover": [
+        "none"
+      ],
+      "allowed_climate_zones": [ "prairie", "savanna_dry", "savanna_wet",
+                                 "tropical_dry", "tropical_wet" ],
+      "improved_by": "farm",
+      "produces": { "soybean": 11, "feed": 60 },
+      "icon": "soybean.png",
+      "color": [ 170, 190, 100 ]
+    },
+    {
+      "id": "quinoa_field", "price": 5,
+      "name": "Quinoa",
+      "type": "raw",
+      "category": "plants",
+      "group": "food_plants",
+      "subgroup": "pseudocereals",
+      "tech_required": "farming",
+      "allowed_terrain": [ "hill", "mountain" ],
+      "allowed_cover": [
+        "none"
+      ],
+      "allowed_climate_zones": ["savanna_dry", "savanna_wet", "tropical_dry", "tropical_wet"],
+      "improved_by": "farm",
+      "produces": { "quinoa": 11, "feed": 80 },
+      "icon": "quinoa.png",
+      "color": [ 210, 150, 110 ]
+    },
+    {
+      "id": "canihua_field", "price": 4,
+      "name": "Canihua",
+      "type": "raw",
+      "category": "plants",
+      "group": "food_plants",
+      "subgroup": "pseudocereals",
+      "tech_required": "farming",
+      "allowed_terrain": [ "hill", "mountain" ],
+      "allowed_cover": [
+        "none"
+      ],
+      "allowed_climate_zones": ["savanna_dry", "savanna_wet", "tropical_dry", "tropical_wet"],
+      "improved_by": "farm",
+      "produces": { "canihua": 11, "feed": 80 },
+      "icon": "canihua.png",
+      "color": [ 200, 140, 100 ]
+    },
+    {
+      "id": "potato_field", "price": 3,
+      "name": "Potato",
+      "type": "raw",
+      "category": "plants",
+      "group": "food_plants",
+      "subgroup": "tubers",
+      "tech_required": "farming",
+      "allowed_terrain": [ "plain", "hill" ],
+      "allowed_cover": [
+        "none"
+      ],
+      "allowed_climate_zones": [ "boreal_dry", "boreal_wet", "steppe", "prairie" ],
+      "improved_by": "farm",
+      "produces": { "potato": 11, "feed": 40 },
+      "icon": "potato.png",
+      "color": [ 180, 160, 110 ]
+    },
+    {
+      "id": "oca_field", "price": 4,
+      "name": "Oca",
+      "type": "raw",
+      "category": "plants",
+      "group": "food_plants",
+      "subgroup": "tubers",
+      "tech_required": "farming",
+      "allowed_terrain": [ "hill" ],
+      "allowed_cover": [
+        "none"
+      ],
+      "allowed_climate_zones": ["savanna_dry", "savanna_wet", "tropical_dry", "tropical_wet"],
+      "improved_by": "farm",
+      "produces": { "oca": 11, "feed": 40 },
+      "icon": "oca.png",
+      "color": [ 230, 160, 120 ]
+    },
+    {
+      "id": "corn_field", "price": 3,
+      "name": "Corn",
+      "type": "raw",
+      "category": "plants",
+      "group": "food_plants",
+      "subgroup": "cereals",
+      "tech_required": "farming",
+      "allowed_terrain": [ "plain" ],
+      "allowed_cover": [
+        "none"
+      ],
+      "allowed_climate_zones": [ "prairie", "savanna_dry", "savanna_wet",
+                                 "tropical_dry", "tropical_wet" ],
+      "breeding": [ [ { "terrain": "sandy_desert" }, { "cover": "oasis" } ], [ { "terrain": "rocky_desert" }, { "cover": "oasis" } ] ],
+      "improved_by": "farm",
+      "produces": { "corn": 11, "feed": 120 },
+      "icon": "corn.png",
+      "color": [ 240, 200, 50 ]
+    },
+    {
+      "id": "yam_field", "price": 4,
+      "name": "Yam",
+      "type": "raw",
+      "category": "plants",
+      "group": "food_plants",
+      "subgroup": "tubers",
+      "tech_required": "farming",
+      "allowed_terrain": [ "plain" ],
+      "allowed_cover": [
+        "none"
+      ],
+      "allowed_climate_zones": ["savanna_dry", "savanna_wet", "tropical_dry", "tropical_wet"],
+      "improved_by": "farm",
+      "produces": { "yam": 11, "feed": 40 },
+      "icon": "yam.png",
+      "color": [ 160, 120, 80 ]
+    },
+    {
+      "id": "cassava_field", "price": 3,
+      "name": "Cassava",
+      "type": "raw",
+      "category": "plants",
+      "group": "food_plants",
+      "subgroup": "tubers",
+      "tech_required": "farming",
+      "allowed_terrain": [ "plain" ],
+      "allowed_cover": [
+        "none"
+      ],
+      "allowed_climate_zones": ["savanna_dry", "savanna_wet", "tropical_dry", "tropical_wet"],
+      "improved_by": "farm",
+      "produces": { "cassava": 11, "feed": 40 },
+      "icon": "cassava.png",
+      "color": [ 180, 140, 100 ]
+    },
+    {
+      "id": "sorghum_field", "price": 3,
+      "name": "Sorghum",
+      "type": "raw",
+      "category": "plants",
+      "group": "food_plants",
+      "subgroup": "cereals",
+      "tech_required": "farming",
+      "allowed_terrain": [ "plain", "hill", "rocky_desert" ],
+      "allowed_cover": [
+        "none", "oasis"
+      ],
+      "allowed_climate_zones": ["savanna_dry", "savanna_wet", "tropical_dry", "tropical_wet"],
+      "breeding": [ [ { "terrain": "sandy_desert" }, { "cover": "oasis" } ], [ { "terrain": "rocky_desert" }, { "cover": "oasis" } ] ],
+      "improved_by": "farm",
+      "produces": { "sorghum": 11, "feed": 120 },
+      "icon": "sorghum.png",
+      "color": [ 200, 130, 70 ]
+    },
+    {
+      "id": "amaranth_field", "price": 3,
+      "name": "Amaranth",
+      "type": "raw",
+      "category": "plants",
+      "group": "food_plants",
+      "subgroup": "pseudocereals",
+      "tech_required": "farming",
+      "allowed_terrain": [ "plain", "hill" ],
+      "allowed_cover": [
+        "none"
+      ],
+      "allowed_climate_zones": ["savanna_dry", "savanna_wet", "tropical_dry", "tropical_wet"],
+      "breeding": [ [ { "terrain": "sandy_desert" }, { "cover": "oasis" } ], [ { "terrain": "rocky_desert" }, { "cover": "oasis" } ] ],
+      "improved_by": "farm",
+      "produces": { "amaranth": 11, "feed": 80 },
+      "icon": "amaranth.png",
+      "color": [ 180, 50, 50 ]
+    },
+    {
+      "id": "teff_field", "price": 3,
+      "name": "Teff",
+      "type": "raw",
+      "category": "plants",
+      "group": "food_plants",
+      "subgroup": "cereals",
+      "tech_required": "farming",
+      "allowed_terrain": [ "hill", "mountain" ],
+      "allowed_cover": [
+        "none"
+      ],
+      "allowed_climate_zones": ["savanna_dry", "savanna_wet", "tropical_dry", "tropical_wet"],
+      "improved_by": "farm",
+      "produces": { "teff": 11, "feed": 120 },
+      "icon": "teff.png",
+      "color": [ 150, 100, 50 ]
+    },
+    {
+      "id": "taro_field", "price": 4,
+      "name": "Taro",
+      "type": "raw",
+      "category": "plants",
+      "group": "food_plants",
+      "subgroup": "tubers",
+      "tech_required": "irrigation",
+      "allowed_terrain": [ "plain" ],
+      "allowed_cover": [
+        "none"
+      ],
+      "allowed_climate_zones": ["savanna_dry", "savanna_wet", "tropical_dry", "tropical_wet"],
+      "improved_by": "farm",
+      "produces": { "taro": 11, "feed": 40 },
+      "icon": "taro.png",
+      "color": [ 140, 180, 140 ],
+      "spawn_conditions": [ [ { "type": "near_river", "chance": 100 } ] ]
+    },
+    {
+      "id": "maca_field", "price": 5,
+      "name": "Maca",
+      "type": "raw",
+      "category": "plants",
+      "group": "food_plants",
+      "subgroup": "tubers",
+      "tech_required": "farming",
+      "allowed_terrain": [ "mountain" ],
+      "allowed_cover": [
+        "none"
+      ],
+      "allowed_climate_zones": ["savanna_dry", "savanna_wet", "tropical_dry", "tropical_wet"],
+      "improved_by": "farm",
+      "produces": { "maca": 11, "feed": 40 },
+      "icon": "maca.png",
+      "color": [ 200, 180, 100 ]
+    },
+    {
+      "id": "buckwheat_field", "price": 3,
+      "name": "Buckwheat",
+      "type": "raw",
+      "category": "plants",
+      "group": "food_plants",
+      "subgroup": "cereals",
+      "tech_required": "farming",
+      "allowed_terrain": [ "plain", "hill" ],
+      "allowed_cover": [
+        "none"
+      ],
+      "allowed_climate_zones": [ "boreal_dry", "boreal_wet", "steppe", "prairie" ],
+      "improved_by": "farm",
+      "produces": { "buckwheat": 11, "feed": 120 },
+      "icon": "buckwheat.png",
+      "color": [ 160, 110, 70 ]
+    },
+    {
+      "id": "bean_field", "price": 3,
+      "name": "Beans",
+      "type": "raw",
+      "category": "plants",
+      "group": "food_plants",
+      "subgroup": "legumes",
+      "tech_required": "farming",
+      "allowed_terrain": [ "plain" ],
+      "allowed_cover": [
+        "none"
+      ],
+      "allowed_climate_zones": ["savanna_dry", "savanna_wet", "tropical_dry", "tropical_wet"],
+      "breeding": [ [ { "terrain": "sandy_desert" }, { "cover": "oasis" } ], [ { "terrain": "rocky_desert" }, { "cover": "oasis" } ] ],
+      "improved_by": "farm",
+      "produces": { "beans": 11, "feed": 60 },
+      "icon": "beans.png",
+      "color": [ 180, 100, 60 ]
+    },
+    {
+      "id": "cowpea_field", "price": 3,
+      "name": "Cowpea",
+      "type": "raw",
+      "category": "plants",
+      "group": "food_plants",
+      "subgroup": "legumes",
+      "tech_required": "farming",
+      "allowed_terrain": [ "plain", "hill" ],
+      "allowed_cover": [
+        "none"
+      ],
+      "allowed_climate_zones": ["savanna_dry", "savanna_wet", "tropical_dry", "tropical_wet"],
+      "breeding": [ [ { "terrain": "sandy_desert" }, { "cover": "oasis" } ], [ { "terrain": "rocky_desert" }, { "cover": "oasis" } ] ],
+      "improved_by": "farm",
+      "produces": { "cowpea": 11, "feed": 60 },
+      "icon": "cowpea.png",
+      "color": [ 170, 120, 80 ]
+    },
+    {
+      "id": "pea_field", "price": 3,
+      "name": "Peas",
+      "type": "raw",
+      "category": "plants",
+      "group": "food_plants",
+      "subgroup": "legumes",
+      "tech_required": "farming",
+      "allowed_terrain": [ "plain" ],
+      "allowed_cover": [
+        "none"
+      ],
+      "allowed_climate_zones": [ "boreal_dry", "boreal_wet", "steppe", "prairie" ],
+      "improved_by": "farm",
+      "produces": { "peas": 11, "feed": 60 },
+      "icon": "peas.png",
+      "color": [ 120, 180, 80 ]
+    },
+    {
+      "id": "lentil_field", "price": 4,
+      "name": "Lentils",
+      "type": "raw",
+      "category": "plants",
+      "group": "food_plants",
+      "subgroup": "legumes",
+      "tech_required": "farming",
+      "allowed_terrain": [ "plain", "hill" ],
+      "allowed_cover": [
+        "none"
+      ],
+      "allowed_climate_zones": [ "steppe", "prairie", "savanna_dry" ],
+      "breeding": [ [ { "terrain": "sandy_desert" }, { "cover": "oasis" } ], [ { "terrain": "rocky_desert" }, { "cover": "oasis" } ] ],
+      "improved_by": "farm",
+      "produces": { "lentils": 11, "feed": 60 },
+      "icon": "lentils.png",
+      "color": [ 160, 140, 80 ]
+    },
+    {
+      "id": "chickpea_field", "price": 4,
+      "name": "Chickpeas",
+      "type": "raw",
+      "category": "plants",
+      "group": "food_plants",
+      "subgroup": "legumes",
+      "tech_required": "farming",
+      "allowed_terrain": [ "plain", "hill" ],
+      "allowed_cover": [
+        "none"
+      ],
+      "allowed_climate_zones": [ "steppe", "prairie", "savanna_dry" ],
+      "breeding": [ [ { "terrain": "sandy_desert" }, { "cover": "oasis" } ], [ { "terrain": "rocky_desert" }, { "cover": "oasis" } ] ],
+      "improved_by": "farm",
+      "produces": { "chickpeas": 11, "feed": 60 },
+      "icon": "chickpeas.png",
+      "color": [ 200, 170, 100 ]
+    },
+    {
+      "id": "pistachio_field", "price": 8,
+      "name": "Pistachio",
+      "type": "raw",
+      "category": "plants",
+      "group": "extra_food_plants",
+      "subgroup": "nuts",
+      "allowed_terrain": [ "plain", "hill" ],
+      "allowed_cover": [
+        "none"
+      ],
+      "allowed_climate_zones": [ "savanna_dry", "steppe", "prairie" ],
+      "breeding": [ [ { "terrain": "sandy_desert" }, { "cover": "oasis" } ], [ { "terrain": "rocky_desert" }, { "cover": "oasis" } ] ],
+      "improved_by": "plantation",
+      "tech_required": "plantations",
+      "produces": { "pistachio": 8 },
+      "icon": "pistachio.png",
+      "color": [ 120, 180, 80 ]
+    }
+  ]
+}

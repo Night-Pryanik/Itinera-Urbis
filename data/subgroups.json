@@ -1,0 +1,32 @@
+// The subgroups of raw resources: species of animals, families of plants, kinds of minerals.
+// They classify the domesticated resources on the "Tamed" tab and serve as filters when
+// the world generator guarantees that at least one resource of a kind is present (a
+// construction material, for example).
+// Do not confuse this with the goods groups of data/product_groups/: those hold
+// interchangeable goods used in recipes, building costs, consumption and specialization
+// bonuses. The diversity bonuses are declared for those goods groups in data/bonuses.json.
+{
+  "groups": [
+    {"id": "meat_animals", "name": "Meat Animals"},
+    {"id": "milk_animals", "name": "Dairy Animals"},
+    {"id": "wool_animals", "name": "Wool Animals"},
+    {"id": "poultry", "name": "Poultry"},
+    {"id": "fur_animals", "name": "Fur Animals"},
+    {"id": "bees", "name": "Bees"},
+    {"id": "fish", "name": "Fish"},
+    {"id": "misc_fish", "name": "Other Seafood"},
+    {"id": "decorative_plants", "name": "Ornamental Plants"},
+    {"id": "medicinal_plants", "name": "Medicinal Plants"},
+    {"id": "aromatic_plants", "name": "Aromatic Plants"},
+    {"id": "textile_plants", "name": "Textile Plants"},
+    {"id": "oil_plants", "name": "Oil Plants"},
+    {"id": "technical_plants", "name": "Technical Plants"},
+    {"id": "spices", "name": "Spices"},
+    {"id": "fruits", "name": "Fruits"},
+    {"id": "nuts", "name": "Nuts"},
+    {"id": "construction_materials", "name": "Construction Materials"},
+    {"id": "dye_minerals", "name": "Dye Minerals"},
+    {"id": "jewelry_minerals", "name": "Jewelry Minerals"},
+    {"id": "other", "name": "Other"}
+  ]
+}

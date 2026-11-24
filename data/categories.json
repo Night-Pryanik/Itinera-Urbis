@@ -1,0 +1,36 @@
+{
+// The categories that all resources available in storage are split into
+// (displayed on the 'Resources' tab in the city).
+// This is a purely visual split that does not affect gameplay, with a single
+// exception: all resources of the 'food' category are pooled together and
+// counted as Food in storage. */
+  "categories": [
+    { "id": "food", "name": "Food" },
+    { "id": "livestock", "name": "Livestock" },
+    { "id": "fruits", "name": "Fruits" },
+    { "id": "nuts", "name": "Nuts" },
+    { "id": "drinks", "name": "Drinks" },
+    { "id": "tobacco", "name": "Tobacco Products" },
+    { "id": "coca", "name": "Coca" },
+    { "id": "spices", "name": "Spices" },
+    { "id": "perfumery", "name": "Perfumery" },
+    { "id": "aux_food", "name": "Additional Food" },
+    { "id": "sweeteners", "name": "Sweeteners" },
+    { "id": "technical_plants", "name": "Technical Crops" },
+    { "id": "aux_plants", "name": "Auxiliary Crops" },
+    { "id": "luxury", "name": "Luxury" },
+    { "id": "material", "name": "Materials" },
+    { "id": "construction_material", "name": "Building Materials" },
+    { "id": "minerals", "name": "Minerals" },
+    { "id": "metals", "name": "Metals" },
+    { "id": "clothes", "name": "Clothes" },
+    { "id": "household_items", "name": "Household Items" },
+    { "id": "tools", "name": "Tools" },
+    { "id": "weapons", "name": "Weapons" },
+    { "id": "equipment", "name": "Equipment" },
+    { "id": "chemicals", "name": "Chemicals" },
+    { "id": "containers", "name": "Containers" },
+    { "id": "writing_materials", "name": "Writing Materials" },
+    { "id": "other", "name": "Other" }
+  ]
+}

@@ -1,0 +1,303 @@
+{
+  "resources": [
+    {
+      "id": "meteorite_iron_nugget",
+      "price": 45,
+      "name": "Meteorite Iron",
+      "type": "raw",
+      "category": "metals",
+      "group": "",
+      "subgroup": "",
+      "tech_reveal": "native_metals",
+      "allowed_terrain": [ "plain", "hill", "mountain", "rocky_desert" ],
+      "allowed_cover": [
+        "none", "temperate_rainforest_sparse", "temperate_dry_forest_sparse",
+        "temperate_rainforest", "temperate_dry_forest"
+      ],
+      "improved_by": null,
+      "produces": { "meteorite_iron": [ 20, 50 ] },
+      "spawn_count": [ 1, 10 ],
+      "icon": "meteorite_iron_nugget.png",
+      "color": [ 120, 130, 140 ]
+    },
+    {
+      "id": "copper_nugget",
+      "price": 14,
+      "name": "Copper Nugget",
+      "type": "raw",
+      "category": "metals",
+      "group": "",
+      "subgroup": "",
+      "tech_reveal": "native_metals",
+      "allowed_terrain": [ "plain", "hill", "mountain", "rocky_desert" ],
+      "allowed_cover": [
+        "none", "temperate_rainforest_sparse", "temperate_dry_forest_sparse",
+        "temperate_rainforest", "temperate_dry_forest"
+      ],
+      "improved_by": null,
+      "produces": { "copper": [ 20, 50 ] },
+      "spawn_count": [ 1, 10 ],
+      "icon": "copper_nugget.png",
+      "color": [ 120, 130, 140 ]
+    },
+    {
+      "id": "gold_nugget",
+      "price": 70,
+      "name": "Gold Nugget",
+      "type": "raw",
+      "category": "metals",
+      "group": "",
+      "subgroup": "",
+      "tech_reveal": "native_metals",
+      "allowed_terrain": [ "plain", "hill", "mountain", "rocky_desert" ],
+      "allowed_cover": [
+        "none", "temperate_rainforest_sparse", "temperate_dry_forest_sparse",
+        "temperate_rainforest", "temperate_dry_forest"
+      ],
+      "improved_by": null,
+      "produces": { "gold": [ 20, 50 ] },
+      "spawn_count": [ 1, 10 ],
+      "icon": "gold_nugget.png",
+      "color": [ 120, 130, 140 ]
+    },
+    {
+      "id": "silver_nugget",
+      "price": 40,
+      "name": "Silver Nugget",
+      "type": "raw",
+      "category": "metals",
+      "group": "",
+      "subgroup": "",
+      "tech_reveal": "native_metals",
+      "allowed_terrain": [ "plain", "hill", "mountain", "rocky_desert" ],
+      "allowed_cover": [
+        "none", "temperate_rainforest_sparse", "temperate_dry_forest_sparse",
+        "temperate_rainforest", "temperate_dry_forest"
+      ],
+      "improved_by": null,
+      "produces": { "silver": [ 20, 50 ] },
+      "spawn_count": [ 1, 10 ],
+      "icon": "silver_nugget.png",
+      "color": [ 120, 130, 140 ]
+    },
+    {
+      "id": "hematite_deposit",
+      "price": 10,
+      "name": "Iron",
+      "type": "raw",
+      "category": "metals",
+      "group": "",
+      "subgroup": "",
+      "strategic": true,
+      "tech_reveal": "native_metals",
+      "tech_required": "metallurgy",
+      "allowed_terrain": [ "hill", "mountain", "rocky_desert" ],
+      "allowed_cover": [
+        "none", "temperate_rainforest_sparse", "temperate_dry_forest_sparse",
+        "temperate_rainforest", "temperate_dry_forest"
+      ],
+      "improved_by": "mine",
+      "produces": { "iron_ore": 10 },
+      "spawn_count": [ 1, 10 ],
+      "icon": "iron.png",
+      "color": [ 120, 130, 140 ]
+    },
+    {
+      "id": "limonite_deposit",
+      "price": 10,
+      "name": "Iron",
+      "type": "raw",
+      "category": "metals",
+      "group": "",
+      "subgroup": "",
+      "strategic": true,
+      "tech_reveal": "native_metals",
+      "tech_required": "metallurgy",
+      "allowed_terrain": [ "swamp" ],
+      "allowed_cover": [
+        "none", "reed"
+      ],
+      "improved_by": "mine",
+      "produces": { "iron_ore": 10 },
+      "spawn_count": [ 1, 10 ],
+      "icon": "iron.png",
+      "color": [ 120, 130, 140 ]
+    },
+    {
+      "id": "copper_deposit",
+      "price": 6,
+      "name": "Copper",
+      "type": "raw",
+      "category": "metals",
+      "group": "",
+      "subgroup": "",
+      "strategic": true,
+      "tech_reveal": "native_metals",
+      "tech_required": "metallurgy",
+      "allowed_terrain": [ "hill", "mountain", "rocky_desert" ],
+      "allowed_cover": [
+        "none", "temperate_rainforest_sparse", "temperate_dry_forest_sparse",
+        "temperate_rainforest", "temperate_dry_forest"
+      ],
+      "improved_by": "mine",
+      "produces": { "copper_ore": 10 },
+      "spawn_count": [ 1, 10 ],
+      "icon": "copper.png",
+      "color": [ 210, 180, 130 ]
+    },
+    {
+      "id": "gold_deposit",
+      "price": 22,
+      "name": "Gold",
+      "type": "raw",
+      "category": "metals",
+      "group": "",
+      "subgroup": "",
+      "strategic": true,
+      "tech_reveal": "native_metals",
+      "tech_required": "metallurgy",
+      "allowed_terrain": [ "hill", "mountain", "rocky_desert" ],
+      "allowed_cover": [
+        "none", "temperate_rainforest_sparse", "temperate_dry_forest_sparse",
+        "temperate_rainforest", "temperate_dry_forest"
+      ],
+      "improved_by": "mine",
+      "produces": { "gold_ore": 10 },
+      "spawn_count": [ 1, 10 ],
+      "icon": "gold.png",
+      "color": [ 255, 215, 0 ]
+    },
+    {
+      "id": "silver_deposit",
+      "price": 16,
+      "name": "Silver",
+      "type": "raw",
+      "category": "metals",
+      "group": "",
+      "subgroup": "",
+      "strategic": true,
+      "tech_reveal": "native_metals",
+      "tech_required": "metallurgy",
+      "allowed_terrain": [ "hill", "mountain", "rocky_desert" ],
+      "allowed_cover": [
+        "none", "temperate_rainforest_sparse", "temperate_dry_forest_sparse",
+        "temperate_rainforest", "temperate_dry_forest"
+      ],
+      "improved_by": "mine",
+      "produces": { "silver_ore": 10 },
+      "spawn_count": [ 1, 10 ],
+      "icon": "silver.png",
+      "color": [ 192, 192, 192 ]
+    },
+    {
+      "id": "tin_deposit",
+      "price": 8,
+      "name": "Tin",
+      "type": "raw",
+      "category": "metals",
+      "group": "",
+      "subgroup": "",
+      "strategic": true,
+      "tech_reveal": "native_metals",
+      "tech_required": "bronze",
+      "allowed_terrain": [ "hill", "mountain", "rocky_desert" ],
+      "allowed_cover": [
+        "none", "temperate_rainforest_sparse", "temperate_dry_forest_sparse",
+        "temperate_rainforest", "temperate_dry_forest"
+      ],
+      "improved_by": "mine",
+      "produces": { "tin_ore": 10 },
+      "spawn_count": [ 1, 10 ],
+      "icon": "tin.png",
+      "color": [ 192, 192, 192 ]
+    },
+    {
+      "id": "antimony_deposit",
+      "price": 12,
+      "name": "Antimony",
+      "type": "raw",
+      "category": "metals",
+      "group": "",
+      "subgroup": "",
+      "strategic": true,
+      "tech_reveal": "native_metals",
+      "tech_required": "bronze",
+      "allowed_terrain": [ "hill", "mountain", "rocky_desert" ],
+      "allowed_cover": [
+        "none", "temperate_rainforest_sparse", "temperate_dry_forest_sparse",
+        "temperate_rainforest", "temperate_dry_forest"
+      ],
+      "improved_by": "mine",
+      "produces": { "antimony_ore": 10 },
+      "spawn_count": [ 1, 10 ],
+      "icon": "antimony.png",
+      "color": [ 192, 192, 192 ]
+    },
+    {
+      "id": "arsenic_deposit",
+      "price": 12,
+      "name": "Arsenic",
+      "type": "raw",
+      "category": "metals",
+      "group": "",
+      "subgroup": "",
+      "strategic": true,
+      "tech_reveal": "native_metals",
+      "tech_required": "bronze",
+      "allowed_terrain": [ "hill", "mountain", "rocky_desert" ],
+      "allowed_cover": [
+        "none", "temperate_rainforest_sparse", "temperate_dry_forest_sparse",
+        "temperate_rainforest", "temperate_dry_forest"
+      ],
+      "improved_by": "mine",
+      "produces": { "arsenic_ore": 10 },
+      "spawn_count": [ 1, 10 ],
+      "icon": "arsenic.png",
+      "color": [ 192, 192, 192 ]
+    },
+    {
+      "id": "calamine_deposit",
+      "price": 9,
+      "name": "Calamine",
+      "type": "raw",
+      "category": "metals",
+      "group": "",
+      "subgroup": "",
+      "strategic": true,
+      "tech_reveal": "native_metals",
+      "tech_required": "brass_working",
+      "allowed_terrain": [ "hill", "mountain", "rocky_desert" ],
+      "allowed_cover": [
+        "none", "temperate_rainforest_sparse", "temperate_dry_forest_sparse",
+        "temperate_rainforest", "temperate_dry_forest"
+      ],
+      "improved_by": "mine",
+      "produces": { "calamine_ore": 10 },
+      "spawn_count": [ 1, 10 ],
+      "icon": "calamine.png",
+      "color": [ 215, 205, 175 ]
+    },
+    {
+      "id": "galena_deposit",
+      "price": 8,
+      "name": "Galena",
+      "type": "raw",
+      "category": "metals",
+      "group": "",
+      "subgroup": "",
+      "strategic": true,
+      "tech_reveal": "native_metals",
+      "tech_required": "metallurgy",
+      "allowed_terrain": [ "hill", "mountain", "rocky_desert" ],
+      "allowed_cover": [
+        "none", "temperate_rainforest_sparse", "temperate_dry_forest_sparse",
+        "temperate_rainforest", "temperate_dry_forest"
+      ],
+      "improved_by": "mine",
+      "produces": { "galena_ore": 10 },
+      "spawn_count": [ 1, 10 ],
+      "icon": "galena.png",
+      "color": [ 130, 135, 145 ]
+    }
+  ]
+}

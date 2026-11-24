@@ -1,0 +1,496 @@
+{
+  // A registry of occupational resource consumption.
+  //
+  // It describes what the worker professions consume on the map improvements
+  // and in the city buildings, and how often (see docs.md, the section
+  // "Professions and resource consumption").
+  // The "profession ↔ resource" link is set via the "profession" field.
+  //
+  // The target resource ("resource") can be:
+  //   * an id of a single product from data/products/*.json — for example, "tools";
+  //   * a reference to a product group from data/product_groups/ in the format
+  //     "@<group_id>" — for example, "@boats" (the "Boats" group). The goods of
+  //     a group are written off either all at once (the default for "all") or
+  //     one member per tick, rotating over those in stock (the default for the
+  //     working professions). The quality priority still applies inside each
+  //     member. While the sum over the group covers "amount" — the bonus applies;
+  //     if not — the bonus is removed and the improvement keeps working on the base.
+  //
+  // Entry format:
+  //   resource          — the product id or the group "@id" (as in craft recipes).
+  //   profession        — an array of profession ids that consume the resource
+  //                       (data/professions.json). Several professions may
+  //                       consume the same resource.
+  //   buildings         — optional array of building ids (data/buildings.json).
+  //                       When set, only citizens of the listed professions
+  //                       working in those specific buildings consume the
+  //                       resource and receive its bonus; map improvements and
+  //                       other buildings of the same profession ignore the rule.
+  //   amount            — how many units are written off per one "consumption tick".
+  //   interval          — the period between write-offs in seconds (fractions allowed).
+  //   production_bonus  — an addition to the production multiplier of the object
+  //                       while the resource is enough in storage. 0.5 = +50% (x1.5).
+  //                       The bonuses of SINGLE entries add up to each other,
+  //                       while among GROUP ones the best available one is taken (just one):
+  //                       the "Boats" group gives the bonus of the best of the
+  //                       available members, not of all of them at once.
+  //                       It does not apply to the pseudo-profession "all" (0.0):
+  //                       city consumption gives no bonus at all.
+  //   consume_all       — for a group resource only. true (the default for
+  //                       "all") takes the full "amount" from EVERY member with
+  //                       stock in the same tick, so the order has no effect;
+  //                       false (the default for the professions) takes one
+  //                       member per tick, rotating over the ones with stock
+  //                       unless "members" sets per-member tiers. The quality
+  //                       priority of the Trade tab still applies within each
+  //                       member.
+  //   members           — optional map { product_id: { interval?, production_bonus? } }
+  //                       for a group resource with consume_all = false. Overrides
+  //                       the interval and/or production_bonus of specific members
+  //                       (omitted fields and unlisted members inherit the rule's
+  //                       base interval and production_bonus) and switches the draw
+  //                       from rotation to highest-tier-first: better bonus first,
+  //                       then longer interval, falling back to lower tiers only
+  //                       when higher ones run out.
+  //
+  // Duplicating declarations: if the same resource is described both here and in
+  // a product (data/products/*.json, the "consumption" field) for one profession,
+  // the entry from this file takes priority; the duplicate entry is ignored.
+  // "Resource-side" consumption is left for the single cases where a product
+  // has no analogue or assembling a group is not reasonable.
+  //
+  // A resource listed both here and for the pseudo-profession "all"
+  // (consumption_all.json) is written off ONCE: the professions of this file have
+  // priority, and their citizens are subtracted from the headcount of the "all"
+  // rule for the same resource. The professionals keep the production bonus of
+  // their rule; the "all" rule gives no bonus.
+  "consumption": [
+    {
+      // Boats lift the catch on every fishing ground. Planked wooden boats take
+      // precedence over reed boats when both are in stock, giving twice the bonus
+      // and wearing out half as fast.
+      "resource": "@boats",
+      "profession": [ "fisherman" ],
+      "amount": 10,
+      "interval": 30,
+      "members": {
+        "reed_boat": { "interval": 20, "production_bonus": 0.1 },
+        "wooden_boat": { "interval": 40, "production_bonus": 0.2 }
+      }
+    },
+    {
+      "resource": "writing_set",
+      "profession": [ "scientist" ],
+      "amount": 10,
+      "interval": 10,
+      "production_bonus": 0.25
+    },
+    {
+      "resource": "@tare",
+      "profession": [ "winemaker", "brewer", "oilmaker", "distiller", "perfumer" ],
+      "amount": 10,
+      "interval": 10,
+      "production_bonus": 0.25
+    },
+    {
+      // Sulfur preserves the drink and the oil while they stand in the vessel and
+      // bleaches the cloth in finishing, therefore the one rule covers both the
+      // professions that consume tare and the weaver.
+      "resource": "sulfur",
+      "profession": [ "winemaker", "brewer", "oilmaker", "weaver" ],
+      "amount": 10,
+      "interval": 10,
+      "production_bonus": 0.1
+    },
+    {
+      "resource": "alum",
+      "profession": [ "dyer" ],
+      "amount": 10,
+      "interval": 10,
+      "production_bonus": 0.1
+    },
+    {
+      // Sulfuric acid consumption by metallurgists: a boost to production while
+      // sulfuric acid is available in storage, representing its use in metal
+      // refining, pickling, and other metallurgical processes.
+      "resource": "sulfuric_acid",
+      "profession": [ "smelter", "blacksmith" ],
+      "amount": 10,
+      "interval": 10,
+      "production_bonus": 0.15
+    },
+    {
+      // Work tools are a consumable for everyone who digs, fells, mines, cuts or shapes:
+      // the knife and the hook of the butcher wear out like the pick and the axe. The
+      // rule prefers the strongest tool material in stock. All materials wear out
+      // at the same rate.
+      "resource": "@instruments",
+      "profession": [ 
+        "butcher",
+        "miner",
+        "quarryman",
+        "lumberjack",
+        "farmer",
+        "planter",
+        "clay_digger",
+        "peat_cutter",
+        "potter",
+        "vinedresser",
+        "blacksmith",
+        "furniture_maker",
+        "mason",
+        "boatbuilder"
+      ],
+      "amount": 10,
+      "interval": 10,
+      "members": {
+        "copper_tools": { "production_bonus": 0.10 },
+        "cast_iron_tools": { "production_bonus": 0.20 },
+        "bronze_tools": { "production_bonus": 0.15 },
+        "brass_tools": { "production_bonus": 0.15 },
+        "iron_tools": { "production_bonus": 0.20 },
+        "steel_tools": { "production_bonus": 0.25 },
+        "damascus_tools": { "production_bonus": 0.30 }
+      }
+    },
+    {
+      // Glue holds the crafts of the shaped material and of the written word together: the
+      // tanner glues the tanned hide, the carpenter and the furniture maker glue the timber,
+      // the potter joins and finishes the fired clay, the paper and parchment makers size
+      // their sheets with it, and the bookbinder glues the spine of the book.
+      "resource": "glue",
+      "profession": [
+        "tanner",
+        "potter",
+        "carpenter",
+        "furniture_maker",
+        "paper_maker",
+        "parchment_maker",
+        "bookbinder"
+      ],
+      "amount": 10,
+      "interval": 10,
+      "production_bonus": 0.1
+    },
+    {
+      // Tar makes cask staves watertight for the cooper, seals hull seams for the
+      // boatbuilder and protects heavy sailcloth and stitched edges against rot.
+      "resource": "tar",
+      "profession": [ "cooper", "sailmaker", "boatbuilder" ],
+      "amount": 10,
+      "interval": 10,
+      "production_bonus": 0.1
+    },
+    {
+      // Alchemists use rectified spirit as a clean lamp fuel and general extraction solvent.
+      "resource": "rectified_spirit",
+      "profession": [ "alchemist" ],
+      "amount": 10,
+      "interval": 15,
+      "production_bonus": 0.15
+    },
+    {
+      // Turpentine protects and dresses worked timber for carpenters and furniture makers
+      // and dissolves oils and stains in the dyer's workshop.
+      "resource": "turpentine",
+      "profession": [ "carpenter", "furniture_maker", "dyer" ],
+      "amount": 10,
+      "interval": 10,
+      "production_bonus": 0.1
+    },
+    {
+      // Rosin pitches barrels inside, seals planked boat hulls against leaks, enriches
+      // soap lather, sizes paper sheets against ink bleed and serves as soldering flux.
+      "resource": "rosin",
+      "profession": [ "cooper", "soap_maker", "paper_maker", "blacksmith", "boatbuilder" ],
+      "amount": 10,
+      "interval": 10,
+      "production_bonus": 0.1
+    },
+    {
+      // Clear varnish seals finished furniture, woodwork and bound book covers.
+      "resource": "spirit_varnish",
+      "profession": [ "furniture_maker", "carpenter", "bookbinder" ],
+      "amount": 10,
+      "interval": 15,
+      "production_bonus": 0.15
+    },
+    {
+      // Mercury extracts gold and silver from ore by amalgamation and coats ornaments
+      // in fire-gilding.
+      "resource": "mercury",
+      "profession": [ "smelter", "jeweler" ],
+      "amount": 10,
+      "interval": 15,
+      "production_bonus": 0.2
+    },
+    {
+      // Hydrochloric acid pickles scale from forged metal, leaches ores, cleans and
+      // parts precious metals for the jeweler, and brightens mordant dyes.
+      "resource": "hydrochloric_acid",
+      "profession": [ "smelter", "blacksmith", "jeweler", "dyer" ],
+      "amount": 10,
+      "interval": 10,
+      "production_bonus": 0.15
+    },
+    {
+      // Coca is the stimulant of hard manual labour: the leaf sharpens the
+      // worker and lifts his output by a tenth. The rule covers extraction,
+      // felling, furnace work and field work. Citizens of these professions are
+      // excluded from the "all" coca rule, so the leaf is not spent twice; the
+      // rate per worker matches the one per resident there.
+      "resource": "coca_leaf",
+      "profession": [
+        "miner",
+        "quarryman",
+        "clay_digger",
+        "peat_cutter",
+        "soda_extractor",
+        "lumberjack",
+        "charcoal_burner",
+        "tar_collector",
+        "smelter",
+        "blacksmith",
+        "boatbuilder",
+        "farmer",
+        "planter",
+        "vinedresser"
+      ],
+      "amount": 10,
+      "interval": 10,
+      "production_bonus": 0.1
+    },
+    {
+      // Saltpeter clarifies molten glass as an oxidizing fining agent and cures
+      // smoked meat and landed fish.
+      "resource": "saltpeter",
+      "profession": [ "glassmaker", "smoker", "fisherman" ],
+      "amount": 10,
+      "interval": 10,
+      "production_bonus": 0.1
+    },
+    {
+      // Nitric acid parts silver from gold in assaying and etches and cleans worked metal.
+      "resource": "nitric_acid",
+      "profession": [ "smelter", "jeweler", "blacksmith" ],
+      "amount": 10,
+      "interval": 10,
+      "production_bonus": 0.15
+    },
+    {
+      // Aqua regia dissolves and refines gold to high purity for jewelers and alchemists.
+      "resource": "aqua_regia",
+      "profession": [ "jeweler", "alchemist" ],
+      "amount": 10,
+      "interval": 15,
+      "production_bonus": 0.2
+    },
+    {
+      // Black powder splits hard rock seams in underground mines and stone quarries.
+      "resource": "gunpowder",
+      "profession": [ "miner", "quarryman" ],
+      "amount": 10,
+      "interval": 15,
+      "production_bonus": 0.25
+    },
+    {
+      // Calibrated balances, dividers, calipers and fine bench instruments aid
+      // measurement in the library and scriptorium, weighing in the alchemist's
+      // house and assaying and engraving at the jeweler's bench.
+      //
+      // The metal sets the precision, as it does for the work tools (@instruments):
+      // a soft copper or bronze scale bends and loses its graduation, while iron,
+      // steel and the watered bar of the city hold the exact division. The ladder
+      // follows the work tools metal for metal, so a profession gains the same step
+      // for the same metal in both rules. One kind is consumed at a time, the
+      // better one first; all metals wear out at the same rate.
+      "resource": "@precision_instruments",
+      "profession": [ "scientist", "alchemist", "jeweler" ],
+      "amount": 10,
+      "interval": 20,
+      "members": {
+        "copper_precision_instruments": { "production_bonus": 0.10 },
+        "bronze_precision_instruments": { "production_bonus": 0.15 },
+        "brass_precision_instruments": { "production_bonus": 0.15 },
+        "iron_precision_instruments": { "production_bonus": 0.20 },
+        "steel_precision_instruments": { "production_bonus": 0.25 },
+        "damascus_precision_instruments": { "production_bonus": 0.30 }
+      }
+    },
+    {
+      // The fine tools of the mint master's craft: the metal sets the precision of a balance
+      // the same way it sets it for the scholar's instruments. Only the Mint uses this rule,
+      // so the base seigniorage of the Mint without instruments stays unchanged.
+      "resource": "@precision_instruments",
+      "profession": [ "mint_worker" ],
+      "buildings": [ "mint" ],
+      "amount": 10,
+      "interval": 20,
+      "members": {
+        "copper_precision_instruments": { "production_bonus": 0.10 },
+        "bronze_precision_instruments": { "production_bonus": 0.15 },
+        "brass_precision_instruments": { "production_bonus": 0.15 },
+        "iron_precision_instruments": { "production_bonus": 0.20 },
+        "steel_precision_instruments": { "production_bonus": 0.25 },
+        "damascus_precision_instruments": { "production_bonus": 0.30 }
+      }
+    },
+    {
+      // Molten lead draws base impurities out of silver and gold in cupellation and assaying.
+      "resource": "lead",
+      "profession": [ "smelter", "jeweler" ],
+      "amount": 10,
+      "interval": 15,
+      "production_bonus": 0.1
+    },
+    {
+      // Vitreous glaze seals fired earthenware and stoneware into smooth, waterproof vessels.
+      "resource": "ceramic_glaze",
+      "profession": [ "potter" ],
+      "amount": 10,
+      "interval": 10,
+      "production_bonus": 0.15
+    },
+    {
+      // Cast movable type multiplies the output of the bookbinder's press.
+      "resource": "type_metal",
+      "profession": [ "bookbinder" ],
+      "amount": 10,
+      "interval": 15,
+      "production_bonus": 0.25
+    },
+    {
+      // Alkaline potash lye scours and bleaches woven cloth and sets dye vats.
+      "resource": "potash",
+      "profession": [ "weaver", "dyer" ],
+      "amount": 10,
+      "interval": 10,
+      "production_bonus": 0.1
+    },
+    {
+      // Borax dissolves metal oxides in soldering and assaying and eases the melting
+      // of ceramic glazes and heat-resistant glass.
+      "resource": "borax",
+      "profession": [ "jeweler", "blacksmith", "smelter", "potter", "glassmaker" ],
+      "amount": 10,
+      "interval": 15,
+      "production_bonus": 0.15
+    },
+    {
+      // Sal ammoniac strips oxide film in tinning and brazing and sharpens mordant dyes.
+      "resource": "sal_ammoniac",
+      "profession": [ "blacksmith", "jeweler", "dyer" ],
+      "amount": 10,
+      "interval": 15,
+      "production_bonus": 0.15
+    },
+    {
+      // Fine white kaolin fills paper fibres into an opaque, smooth writing surface.
+      "resource": "kaolin",
+      "profession": [ "paper_maker" ],
+      "amount": 10,
+      "interval": 10,
+      "production_bonus": 0.1
+    },
+    {
+      // Smalt imparts a fire-fast cobalt blue to ceramic glazes and blown glass.
+      "resource": "smalt",
+      "profession": [ "potter", "glassmaker" ],
+      "amount": 10,
+      "interval": 15,
+      "production_bonus": 0.15
+    },
+    {
+      // Calcined plaster casts repeatable pottery and foundry moulds and dresses stonework.
+      "resource": "plaster",
+      "profession": [ "potter", "smelter", "mason" ],
+      "amount": 10,
+      "interval": 10,
+      "production_bonus": 0.1
+    },
+    {
+      // Hydraulic lime mortar beds and binds cut masonry in the stonecutter's yard.
+      "resource": "mortar",
+      "profession": [ "mason" ],
+      "amount": 10,
+      "interval": 10,
+      "production_bonus": 0.15
+    },
+    {
+      // Rough pumice grinds the stone smooth before the final polish: the stonecutter
+      // rubs it over the dressed block, the jeweler over the face of the gem.
+      "resource": "pumice",
+      "profession": [ "mason", "jeweler" ],
+      "amount": 10,
+      "interval": 10,
+      "production_bonus": 0.1
+    },
+    {
+      // Rendered tallow curries tanned hides, tallows cask joints, waterproofs sailcloth
+      // against spray and greases boat seams, oarlocks and launching skids.
+      "resource": "tallow",
+      "profession": [ "tanner", "cooper", "sailmaker", "boatbuilder" ],
+      "amount": 10,
+      "interval": 10,
+      "production_bonus": 0.1
+    },
+    {
+      // Tarred ropes haul ore and stone from wet shafts and quarries, edge stitched sails
+      // as rot-proof bolt-ropes and rig and caulk wooden and fishing boats.
+      "resource": "tarred_ropes",
+      "profession": [ "miner", "quarryman", "fisherman", "sailmaker", "boatbuilder" ],
+      "amount": 10,
+      "interval": 15,
+      "production_bonus": 0.15
+    },
+    {
+      // Beeswax dresses heavy canvas and coats sewing twine so sails shed water and seams
+      // pull tight without fraying.
+      "resource": "wax",
+      "profession": [ "sailmaker" ],
+      "amount": 10,
+      "interval": 10,
+      "production_bonus": 0.1
+    },
+    {
+      // Windmill sweeps fray in wind and weather; fresh canvas keeps the sails taut and
+      // turning fast. Hand, animal and water mills have no sails and ignore this rule.
+      "resource": "canvas",
+      "profession": [ "miller" ],
+      "buildings": [ "windmill" ],
+      "amount": 10,
+      "interval": 15,
+      "production_bonus": 0.15
+    },
+    {
+      // Millstones wear smooth under steady rotation and must be redressed and replaced:
+      // animal, water and wind mills grind grain between paired stones, and the oilmaker
+      // crushes olives and oilseeds under edge-runner stones before pressing. Hand mills
+      // turn too slowly to wear millstones out and ignore this rule.
+      "resource": "millstone",
+      "profession": [ "miller", "oilmaker" ],
+      "buildings": [ "animal_mill", "water_mill", "windmill", "oilmaker_house", "oil_mill" ],
+      "amount": 10,
+      "interval": 30,
+      "production_bonus": 0.15
+    },
+    {
+      // Dried bog turf fires pottery and brick kilns, heats malt and brew kettles,
+      // boils soap pans and cures fish over slow smoke where firewood is scarce.
+      "resource": "peat",
+      "profession": [ "potter", "brewer", "soap_maker", "smoker" ],
+      "amount": 10,
+      "interval": 15,
+      "production_bonus": 0.05
+    },
+    {
+      // Mineral coal feeds hot, steady fires under pottery kilns, glass pots, brew
+      // kettles, stills, soap pans and dye vats without touching molten iron directly.
+      "resource": "coal",
+      "profession": [ "potter", "glassmaker", "brewer", "distiller", "soap_maker", "dyer" ],
+      "amount": 10,
+      "interval": 15,
+      "production_bonus": 0.1
+    }
+  ]
+}

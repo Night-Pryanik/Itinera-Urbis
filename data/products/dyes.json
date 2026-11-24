@@ -1,0 +1,184 @@
+{
+  "resources": [
+    {
+      "id": "ochre",
+      "price": 5,
+      "name": "Ochre",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "dyeing",
+      "icon": "ochre.png"
+    },
+    {
+      "id": "indigo",
+      "price": 22,
+      "name": "Indigo",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "dyeing",
+      "icon": "indigo.png"
+    },
+    {
+      "id": "henna",
+      "price": 12,
+      "name": "Henna",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "dyeing",
+      "icon": "henna.png"
+    },
+    {
+      "id": "purple",
+      "price": 55,
+      "name": "Purple",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "dyeing",
+      "icon": "purple.png"
+    },
+    {
+      "id": "sepia",
+      "price": 20,
+      "name": "Sepia",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "dyeing",
+      "icon": "sepia.png"
+    },
+    {
+      "id": "rose_madder",
+      "price": 10,
+      "name": "Rose Madder",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "dyeing",
+      "icon": "carmine.png"
+    },
+    {
+      "id": "woad",
+      "price": 8,
+      "name": "Woad",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "dyeing",
+      "icon": "indigo.png"
+    },
+    {
+      "id": "campeche",
+      "price": 18,
+      "name": "Campeche",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "dyeing",
+      "icon": "campeche.png"
+    },
+    {
+      "id": "carthamin",
+      "price": 15,
+      "name": "Carthamin",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "dyeing",
+      "icon": "carthamin.png"
+    },
+    {
+      "id": "carmine",
+      "price": 32,
+      "name": "Carmine",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "dyeing",
+      "icon": "carmine.png"
+    },
+    {
+      "id": "cinnabar",
+      "price": 25,
+      "name": "Cinnabar",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "dyeing",
+      "icon": "cinnabar.png"
+    },
+    {
+      "id": "ultramarine",
+      "price": 38,
+      "name": "Ultramarine",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "dyeing",
+      "icon": "ultramarine.png"
+    },
+    {
+      "id": "malachite",
+      "price": 15,
+      "name": "Malachite",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "dyeing",
+      "icon": "malachite.png"
+    },
+    {
+      "id": "sumac_yellow",
+      "price": 10,
+      "name": "Sumac Yellow",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "dyeing",
+      "icon": "sumac_yellow.png"
+    },
+    {
+      "id": "quebracho_brown",
+      "price": 10,
+      "name": "Quebracho Brown",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "dyeing",
+      "icon": "quebracho_brown.png"
+    },
+    {
+      "id": "lead_white",
+      "price": 38,
+      "name": "Lead White",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "dyeing",
+      "icon": "lead_white.png"
+    },
+    {
+      "id": "minium",
+      "price": 26,
+      "name": "Minium",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "limestone_burning",
+      "icon": "minium.png"
+    },
+    {
+      "id": "verdigris",
+      "price": 36,
+      "name": "Verdigris",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "dyeing",
+      "icon": "verdigris.png"
+    },
+    {
+      "id": "orpiment",
+      "price": 28,
+      "name": "Orpiment",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "dyeing",
+      "icon": "orpiment.png"
+    },
+    {
+      "id": "smalt",
+      "price": 44,
+      "name": "Smalt",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "potash_making",
+      "icon": "smalt.png"
+    }
+  ]
+}

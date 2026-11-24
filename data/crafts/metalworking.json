@@ -1,0 +1,432 @@
+{
+  "crafts": [
+    {
+      "id": "copper_from_copper_ore",
+      "name": "Copper (from copper ore)",
+      "produced_in": [ "smelter" ],
+      "resources": { "copper_ore": 20, "@smelting_fuel": 10 },
+      "result": { "copper": 10 },
+      "time": 5.0,
+      "unlock_tech": "native_metals",
+      "description": "Smelts copper ore into pure copper."
+    },
+    {
+      "id": "copper_from_malachite",
+      "name": "Copper (from malachite)",
+      "produced_in": [ "smelter" ],
+      "resources": { "malachite_ore": 20, "@smelting_fuel": 10 },
+      "result": { "copper": 10 },
+      "time": 5.0,
+      "unlock_tech": "native_metals",
+      "description": "Smelts malachite ore into pure copper."
+    },
+    {
+      "id": "copper_tools",
+      "name": "Copper Tools",
+      "produced_in": [ "forge", "smithing_workshop" ],
+      "resources": { "copper": 20, "@smelting_fuel": 10 },
+      "result": { "copper_tools": 10 },
+      "time": 5.0,
+      "unlock_tech": "metallurgy",
+      "description": "Makes a set of tools for craftsmen."
+    },
+    {
+      "id": "copper_weapons",
+      "name": "Copper Weapons",
+      "produced_in": [ "forge", "smithing_workshop" ],
+      "resources": { "copper": 30, "@smelting_fuel": 10 },
+      "result": { "copper_weapons": 10 },
+      "time": 6.0,
+      "unlock_tech": "metallurgy",
+      "description": "Makes a batch of weapons to defend the city."
+    },
+    {
+      "id": "gold",
+      "name": "Gold",
+      "produced_in": [ "smelter" ],
+      "resources": { "gold_ore": 20, "@smelting_fuel": 10 },
+      "result": { "gold": 10 },
+      "time": 5.0,
+      "unlock_tech": "native_metals",
+      "description": "Smelts gold ore into pure gold."
+    },
+    {
+      "id": "silver",
+      "name": "Silver",
+      "produced_in": [ "smelter" ],
+      "resources": { "silver_ore": 20, "@smelting_fuel": 10 },
+      "result": { "silver": 10 },
+      "time": 5.0,
+      "unlock_tech": "native_metals",
+      "description": "Smelts silver ore into pure silver."
+    },
+    {
+      "id": "bronze",
+      "name": "Bronze",
+      "produced_in": [ "smelter" ],
+      "resources": { "copper": 20, "@bronze_alloys": 10, "@smelting_fuel": 10 },
+      "result": { "bronze": 10 },
+      "time": 5.0,
+      "unlock_tech": "bronze",
+      "description": "Makes a bronze alloy from copper/antimony/arsenic and tin."
+    },
+    {
+      "id": "bronze_tools",
+      "name": "Bronze Tools",
+      "produced_in": [ "forge", "smithing_workshop" ],
+      "resources": { "bronze": 20, "@smelting_fuel": 10 },
+      "result": { "bronze_tools": 10 },
+      "time": 5.0,
+      "unlock_tech": "bronze",
+      "description": "Makes a set of tools for craftsmen."
+    },
+    {
+      // The prestige good of the steel line (see the header comment of
+      // data/products/food.json).
+      "id": "damascus_steel",
+      "name": "Damascus Steel",
+      "produced_in": [ "forge", "smithing_workshop" ],
+      "resources": { "steel": 20, "@smelting_fuel": 10 },
+      "result": { "damascus_steel": 10 },
+      "time": 15,
+      "unlock_tech": "steel_making",
+      "description": "Foldes the bloom of the city into the watered bar the smiths of other towns ask for."
+    },
+    {
+      "id": "bronze_weapons",
+      "name": "Bronze Weapons",
+      "produced_in": [ "forge", "smithing_workshop" ],
+      "resources": { "bronze": 30, "@smelting_fuel": 10 },
+      "result": { "bronze_weapons": 10 },
+      "time": 6.0,
+      "unlock_tech": "bronze",
+      "description": "Makes a batch of weapons to defend the city."
+    },
+    {
+      "id": "iron",
+      "name": "Iron",
+      "produced_in": [ "bloomery" ],
+      "resources": { "iron_ore": 20, "@smelting_fuel": 20 },
+      "result": { "iron": 10 },
+      "time": 5.0,
+      "unlock_tech": "iron_processing",
+      "description": "Makes iron out of ore."
+    },
+    {
+      // Steel is made where the bar is worked, not where the ore is smelted: the bloom goes back into
+      // the forge with charcoal, and the smith takes the carbon up into it.
+      "id": "steel",
+      "name": "Steel",
+      "produced_in": [ "forge", "smithing_workshop" ],
+      "resources": [ [ { "iron": 20 }, { "meteorite_iron": 20 } ], { "@smelting_fuel": 20 } ],
+      "result": { "steel": 10 },
+      "time": 8.0,
+      "unlock_tech": "steel_making",
+      "description": "Drives charcoal into a bloom of iron in the forge."
+    },
+    {
+      "id": "iron_tools",
+      "name": "Iron Tools",
+      "produced_in": [ "forge", "smithing_workshop" ],
+      "resources": [ [ { "iron": 20 }, { "meteorite_iron": 20 } ], { "@smelting_fuel": 20 } ],
+      "result": { "iron_tools": 10 },
+      "time": 5.0,
+      "unlock_tech": "iron_processing",
+      "description": "Makes a set of tools for craftsmen."
+    },
+    {
+      "id": "steel_tools",
+      "name": "Steel Tools",
+      "produced_in": [ "forge", "smithing_workshop" ],
+      "resources": { "steel": 20, "@smelting_fuel": 20 },
+      "result": { "steel_tools": 10 },
+      "time": 5.0,
+      "unlock_tech": "steel_making",
+      "description": "Makes a set of tools for craftsmen."
+    },
+    {
+      "id": "damascus_tools",
+      "name": "Tools of <city_name> Steel",
+      "produced_in": [ "forge", "smithing_workshop" ],
+      "resources": { "damascus_steel": 20, "@smelting_fuel": 20 },
+      "result": { "damascus_tools": 10 },
+      "time": 5.0,
+      "unlock_tech": "steel_making",
+      "description": "Makes a set of tools for craftsmen."
+    },
+    {
+      "id": "iron_weapons",
+      "name": "Iron Weapons",
+      "produced_in": [ "forge", "smithing_workshop" ],
+      "resources": [ [ { "iron": 30 }, { "meteorite_iron": 30 } ], { "@smelting_fuel": 20 } ],
+      "result": { "iron_weapons": 10 },
+      "time": 6.0,
+      "unlock_tech": "iron_processing",
+      "description": "Makes a batch of weapons to defend the city."
+    },
+    {
+      "id": "steel_weapons",
+      "name": "Steel Weapons",
+      "produced_in": [ "forge", "smithing_workshop" ],
+      "resources": { "steel": 30, "@smelting_fuel": 20 },
+      "result": { "steel_weapons": 10 },
+      "time": 6.0,
+      "unlock_tech": "steel_making",
+      "description": "Makes a batch of weapons to defend the city."
+    },
+    {
+      // The blade of the brand bar: it stands above the steel one and is opened by the same rung of
+      // the fame as the bar itself, so the city that earned the brand can work it at once.
+      "id": "damascus_weapons",
+      "name": "Damascus Weapons",
+      "produced_in": [ "forge", "smithing_workshop" ],
+      "resources": { "damascus_steel": 20, "@smelting_fuel": 20 },
+      "result": { "damascus_weapons": 10 },
+      "time": 8.0,
+      "unlock_tech": "steel_making",
+      "description": "Foldes and quenches the watered bar into blades that keep their edge."
+    },
+    {
+      "id": "tin",
+      "name": "Tin",
+      "produced_in": [ "smelter" ],
+      "resources": { "tin_ore": 20, "@smelting_fuel": 10 },
+      "result": { "tin": 10 },
+      "time": 5.0,
+      "unlock_tech": "native_metals",
+      "description": "Smelts tin ore into pure tin."
+    },
+    {
+      "id": "arsenic",
+      "name": "Arsenic",
+      "produced_in": [ "smelter" ],
+      "resources": { "arsenic_ore": 20, "@smelting_fuel": 10 },
+      "result": { "arsenic": 10 },
+      "time": 5.0,
+      "unlock_tech": "native_metals",
+      "description": "Smelts arsenic ore into pure arsenic."
+    },
+    {
+      "id": "antimony",
+      "name": "Antimony",
+      "produced_in": [ "smelter" ],
+      "resources": { "antimony_ore": 20, "@smelting_fuel": 10 },
+      "result": { "antimony": 10 },
+      "time": 5.0,
+      "unlock_tech": "native_metals",
+      "description": "Smelts antimony ore into pure antimony."
+    },
+    {
+      // Crucible cementation infuses copper directly with zinc vapour from crushed calamine.
+      "id": "brass",
+      "name": "Brass (cementation)",
+      "produced_in": [ "smelter" ],
+      "resources": { "copper": 20, "calamine_ore": 10, "@smelting_fuel": 10 },
+      "result": { "brass": 10 },
+      "time": 6.0,
+      "unlock_tech": "brass_working",
+      "description": "Heats copper with calamine ore and charcoal in sealed crucibles to produce brass."
+    },
+    {
+      // Zinc boils below its reduction temperature and must be condensed in closed retorts.
+      "id": "zinc",
+      "name": "Zinc",
+      "produced_in": [ "smelter", "alchemist_house" ],
+      "resources": { "calamine_ore": 20, "@smelting_fuel": 20 },
+      "result": { "zinc": 10 },
+      "time": 10.0,
+      "unlock_tech": "distillation",
+      "description": "Reduces calamine ore in sealed retorts and condenses the vapour into metallic zinc."
+    },
+    {
+      // Alloying copper with distilled metallic zinc doubles the batch yield over cementation.
+      "id": "brass_from_zinc",
+      "name": "Brass (from zinc)",
+      "produced_in": [ "smelter" ],
+      "resources": { "copper": 20, "zinc": 10, "@smelting_fuel": 10 },
+      "result": { "brass": 20 },
+      "time": 6.0,
+      "unlock_tech": "distillation",
+      "description": "Melts copper directly with metallic zinc into a cleaner, richer batch of brass."
+    },
+    {
+      "id": "brass_tools",
+      "name": "Brass Tools",
+      "produced_in": [ "forge", "smithing_workshop" ],
+      "resources": { "brass": 20, "@smelting_fuel": 10 },
+      "result": { "brass_tools": 10 },
+      "time": 5.0,
+      "unlock_tech": "brass_working",
+      "description": "Forges and casts corrosion-resistant brass tools for craftsmen."
+    },
+    {
+      "id": "copper_precision_instruments",
+      "name": "Copper Precision Instruments",
+      "produced_in": [ "forge", "smithing_workshop", "jeweler_house" ],
+      "resources": { "copper": 20, "@smelting_fuel": 10 },
+      "result": { "copper_precision_instruments": 10 },
+      "time": 10.0,
+      "unlock_tech": "precision_instruments",
+      "description": "Shapes and calibrates copper balance beams, pans and sighting rings."
+    },
+    {
+      "id": "bronze_precision_instruments",
+      "name": "Bronze Precision Instruments",
+      "produced_in": [ "forge", "smithing_workshop", "jeweler_house" ],
+      "resources": { "bronze": 20, "@smelting_fuel": 10 },
+      "result": { "bronze_precision_instruments": 10 },
+      "time": 10.0,
+      "unlock_tech": "precision_instruments",
+      "description": "Casts and engraves graduated bronze calipers, dividers and geared dials."
+    },
+    {
+      "id": "brass_precision_instruments",
+      "name": "Brass Precision Instruments",
+      "produced_in": [ "forge", "smithing_workshop", "jeweler_house" ],
+      "resources": { "brass": 20, "@smelting_fuel": 10 },
+      "result": { "brass_precision_instruments": 10 },
+      "time": 10.0,
+      "unlock_tech": "precision_instruments",
+      "description": "Casts and engraves fine brass assay balances, dividers and astrolabes."
+    },
+    {
+      "id": "iron_precision_instruments",
+      "name": "Iron Precision Instruments",
+      "produced_in": [ "forge", "smithing_workshop", "jeweler_house" ],
+      "resources": [ [ { "iron": 20 }, { "meteorite_iron": 20 } ], { "@smelting_fuel": 20 } ],
+      "result": { "iron_precision_instruments": 10 },
+      "time": 10.0,
+      "unlock_tech": "precision_instruments",
+      "description": "Forges and files rigid iron compasses, squares, calipers and steelyards."
+    },
+    {
+      "id": "steel_precision_instruments",
+      "name": "Steel Precision Instruments",
+      "produced_in": [ "forge", "smithing_workshop", "jeweler_house" ],
+      "resources": { "steel": 20, "@smelting_fuel": 20 },
+      "result": { "steel_precision_instruments": 10 },
+      "time": 10.0,
+      "unlock_tech": "precision_instruments",
+      "description": "Tempers and grinds hardened steel pivots, dividers, gravers and precision gauges."
+    },
+    {
+      // Precision work of the brand bar: stands above the steel tier and opens automatically
+      // once both Precision Instruments is researched and the steel line's brand rung is earned.
+      "id": "damascus_precision_instruments",
+      "name": "Damascus Precision Instruments",
+      "produced_in": [ "forge", "smithing_workshop", "jeweler_house" ],
+      "resources": { "damascus_steel": 20, "@smelting_fuel": 20 },
+      "result": { "damascus_precision_instruments": 10 },
+      "time": 12.0,
+      "unlock_tech": "precision_instruments",
+      "description": "Tempers and grinds the watered bar of the city into master pivots, dividers, gravers and precision gauges."
+    },
+    {
+      // Argentiferous galena yields a minor silver fraction alongside lead on cupellation.
+      "id": "lead",
+      "name": "Lead",
+      "produced_in": [ "smelter" ],
+      "resources": { "galena_ore": 30, "@smelting_fuel": 10 },
+      "result": { "lead": 15, "silver": 5 },
+      "time": 8.0,
+      "unlock_tech": "metallurgy",
+      "description": "Smelts and cupels galena ore into soft lead and a smaller yield of silver."
+    },
+    {
+      "id": "pewter",
+      "name": "Pewter",
+      "produced_in": [ "smelter" ],
+      "resources": [ { "tin": 10 }, [ { "antimony": 10 }, { "lead": 10 } ], { "@smelting_fuel": 10 } ],
+      "result": { "pewter": 10 },
+      "time": 5.0,
+      "unlock_tech": "metallurgy",
+      "description": "Alloys tin with antimony or lead into bright pewter for tableware."
+    },
+    {
+      "id": "type_metal",
+      "name": "Type Metal",
+      "produced_in": [ "smelter" ],
+      "resources": { "lead": 20, "antimony": 10, "tin": 10, "@smelting_fuel": 10 },
+      "result": { "type_metal": 10 },
+      "time": 8.0,
+      "unlock_tech": "printing",
+      "description": "Melts lead with antimony and tin into sharp-casting printing alloy."
+    },
+    {
+      "id": "metal_tableware",
+      "name": "Metal Tableware",
+      "produced_in": [ "forge", "smithing_workshop" ],
+      "resources": [ [ { "copper": 10 }, { "bronze": 10 }, { "brass": 10 }, { "pewter": 10 } ], { "@smelting_fuel": 10 } ],
+      "result": { "metal_tableware": 10 },
+      "time": 6.0,
+      "unlock_tech": "metallurgy",
+      "description": "Shapes copper, bronze, brass or pewter into durable plates, pitchers and bowls."
+    },
+    {
+      // Continuous fluxed smelting doubles the metal yield per batch of iron ore over a bloomery.
+      "id": "cast_iron",
+      "name": "Cast Iron",
+      "produced_in": [ "blast_furnace" ],
+      "resources": [ { "iron_ore": 20 }, { "@smelting_fuel": 20 }, [ { "limestone": 10 }, { "lime": 10 } ] ],
+      "result": { "cast_iron": 20 },
+      "time": 6.0,
+      "unlock_tech": "blast_furnace",
+      "description": "Smelts iron ore with limestone or lime flux into molten cast iron."
+    },
+    {
+      // Rigid, porous coke bears a heavier column of ore than wood charcoal without crushing,
+      // raising blast-furnace yield per unit of fuel and flux.
+      "id": "cast_iron_coke",
+      "name": "Coke Smelting",
+      "produced_in": [ "blast_furnace" ],
+      "resources": [ { "iron_ore": 30 }, { "coke": 20 }, [ { "limestone": 10 }, { "lime": 10 } ] ],
+      "result": { "cast_iron": 30 },
+      "time": 7.0,
+      "unlock_tech": "coking",
+      "description": "Smelts a heavy charge of iron ore over porous coke with limestone or lime flux into molten cast iron."
+    },
+    {
+      // Finery conversion turns blast-furnace pig iron into wrought bar iron in bulk.
+      "id": "iron_from_cast_iron",
+      "name": "Iron (from cast iron)",
+      "produced_in": [ "forge", "smithing_workshop" ],
+      "resources": { "cast_iron": 20, "@smelting_fuel": 10 },
+      "result": { "iron": 20 },
+      "time": 6.0,
+      "unlock_tech": "blast_furnace",
+      "description": "Decarburizes cast iron on the finery hearth and hammers it into wrought iron."
+    },
+    {
+      // Controlled partial decarburization yields steel directly without first forging iron bars.
+      "id": "steel_from_cast_iron",
+      "name": "Steel (from cast iron)",
+      "produced_in": [ "forge", "smithing_workshop" ],
+      "resources": { "cast_iron": 20, "@smelting_fuel": 10 },
+      "result": { "steel": 10 },
+      "time": 6.0,
+      "unlock_tech": "blast_furnace",
+      "description": "Refines high-carbon cast iron down to resilient steel in the finery forge."
+    },
+    {
+      // Mould-casting turns out a larger batch of work tools than forging each piece by hand.
+      "id": "cast_iron_tools",
+      "name": "Cast-Iron Tools",
+      "produced_in": [ "blast_furnace", "forge", "smithing_workshop" ],
+      "resources": { "cast_iron": 30, "@smelting_fuel": 10 },
+      "result": { "cast_iron_tools": 20 },
+      "time": 6.0,
+      "unlock_tech": "blast_furnace",
+      "description": "Pours molten cast iron into moulds to make large batches of plowshares, hoes and heavy tools."
+    },
+    {
+      "id": "cast_iron_cookware",
+      "name": "Cast-Iron Cookware",
+      "produced_in": [ "blast_furnace", "forge", "smithing_workshop" ],
+      "resources": { "cast_iron": 10, "@smelting_fuel": 10 },
+      "result": { "cast_iron_cookware": 10 },
+      "time": 5.0,
+      "unlock_tech": "blast_furnace",
+      "description": "Casts molten iron into thick-walled cauldrons, kettles and skillets."
+    }
+  ]
+}

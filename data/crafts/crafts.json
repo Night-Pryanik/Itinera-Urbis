@@ -1,0 +1,605 @@
+{
+  "crafts": [
+    {
+      "id": "grind_grain_hand",
+      "name": "Flour (by hand)",
+      "produced_in": [ "hand_mill" ],
+      "resources": { "@millable_grains": 20 },
+      "result": { "flour": 10 },
+      "time": 10
+    },
+    {
+      "id": "grind_grain_animal",
+      "name": "Flour (with draft animals)",
+      "produced_in": [ "animal_mill" ],
+      "resources": { "@millable_grains": 20, "feed": 10 },
+      "result": { "flour": 10 },
+      "time": 5
+    },
+    {
+      "id": "grind_grain_water",
+      "name": "Flour (with a water wheel)",
+      "produced_in": [ "water_mill" ],
+      "resources": { "@millable_grains": 20 },
+      "result": { "flour": 10 },
+      "time": 2
+    },
+    {
+      "id": "grind_grain_wind",
+      "name": "Flour (with a windmill)",
+      "produced_in": [ "windmill" ],
+      "resources": { "@millable_grains": 20 },
+      "result": { "flour": 10 },
+      "time": 2
+    },
+    {
+      "id": "pottery",
+      "name": "Pottery",
+      "produced_in": [ "pottery_workshop" ],
+      "resources": { "clay": 20 },
+      "result": { "pottery": 10 },
+      "time": 4.0,
+      "unlock_tech": "pottery",
+      "description": "Creates clay pots for storage."
+    },
+    {
+      // The prestige good of the pottery line (see the header comment of
+      // data/products/food.json). Kaolin stands first where available, with common
+      // clay keeping the prestige recipe open to any city that earns the brand.
+      "id": "porcelain",
+      "name": "Porcelain",
+      "produced_in": [ "pottery_workshop" ],
+      "resources": [ [ { "kaolin": 20 }, { "clay": 20 } ] ],
+      "result": { "porcelain": 10 },
+      "time": 12,
+      "unlock_tech": "pottery",
+      "description": "Fires the clay of the city into the thin, ringing ware the towns pay a name for."
+    },
+    {
+      "id": "fine_ceramics",
+      "name": "Fine Ceramics",
+      "produced_in": [ "pottery_workshop" ],
+      "resources": { "kaolin": 20 },
+      "result": { "fine_ceramics": 10 },
+      "extra_kinds": ["dye"],
+      "time": 6.0,
+      "unlock_tech": "pottery",
+      "description": "Throws and fires white kaolin clay into thin, hard ceramic tableware."
+    },
+    {
+      "id": "amphora",
+      "name": "Amphora",
+      "produced_in": [ "pottery_workshop" ],
+      "resources": { "clay": 30 },
+      "result": { "amphora": 10 },
+      "time": 5.0,
+      "unlock_tech": "pottery",
+      "description": "Creates amphoras for storage and transport of liquid and dry goods."
+    },
+    {
+      "id": "bricks",
+      "name": "Bricks",
+      "produced_in": [ "pottery_workshop" ],
+      "resources": { "clay": 30 },
+      "result": { "bricks": 10 },
+      "time": 5.0,
+      "unlock_tech": "pottery",
+      "description": "Fires clay into building bricks."
+    },
+    {
+      "id": "clay_tablets",
+      "name": "Clay Tablets",
+      "produced_in": [ "pottery_workshop" ],
+      "resources": { "clay": 20 },
+      "result": { "clay_tablets": 10 },
+      "time": 5.0,
+      "unlock_tech": "pottery",
+      "description": "Creates clay tablets for writing."
+    },
+    {
+      "id": "leather",
+      "name": "Leather",
+      "produced_in": [ "leatherworker_house" ],
+      "resources": { "hide": 10, "@tannins": 10 },
+      "result": { "leather": 10 },
+      "time": 4.0,
+      "unlock_tech": "leatherworking",
+      "description": "Turns hides into tough leather."
+    },
+    {
+      "id": "fabric_clothes",
+      "name": "Cloth Clothes",
+      "produced_in": [ "weaver_house", "weaver_workshop" ],
+      "resources": { "@textile_crops": 20 },
+      "result": { "fabric_clothes": 10 },
+      "extra_kinds": ["dye"],
+      "time": 4.0,
+      "unlock_tech": "weaving",
+      "description": "Weaves clothes out of cloth."
+    },
+    {
+      "id": "wool_clothes",
+      "name": "Wool Clothes",
+      "produced_in": [ "weaver_house", "weaver_workshop" ],
+      "resources": { "wool": 20 },
+      "result": { "wool_clothes": 10 },
+      "extra_kinds": ["dye"],
+      "time": 4.0,
+      "unlock_tech": "weaving",
+      "description": "Weaves clothes out of wool."
+    },
+    {
+      "id": "carpet",
+      "name": "Carpet",
+      "produced_in": [ "weaver_house", "weaver_workshop" ],
+      "resources": [ [ { "wool": 20 }, { "@textile_crops": 20 } ] ],
+      "result": { "carpet": 10 },
+      "time": 8.0,
+      "unlock_tech": "weaving",
+      "description": "Weaves durable carpets from wool or plant fibers."
+    },
+    {
+      "id": "canvas_loom",
+      "name": "Canvas",
+      "produced_in": [ "weaver_house", "weaver_workshop" ],
+      "resources": { "@textile_crops": 20 },
+      "result": { "canvas": 10 },
+      "time": 8.0,
+      "unlock_tech": "weaving",
+      "description": "Weaves heavy sailcloth from plant fibers on a hand loom."
+    },
+    {
+      "id": "canvas",
+      "name": "Canvas",
+      "produced_in": [ "sailmaker_house" ],
+      "resources": { "@textile_crops": 20 },
+      "result": { "canvas": 10 },
+      "time": 4.0,
+      "unlock_tech": "shipbuilding",
+      "description": "Weaves and stitches heavy sailcloth from plant fibers."
+    },
+    {
+      // The prestige good of the wool line (see the header comment of
+      // data/products/food.json).
+      "id": "cashmere",
+      "name": "Cashmere",
+      "produced_in": [ "weaver_house", "weaver_workshop" ],
+      "resources": { "wool": 20 },
+      "result": { "cashmere": 10 },
+      "time": 12,
+      "unlock_tech": "weaving",
+      "description": "Combles and spins the fleece of the city into the softest cloth a town will ask for."
+    },
+    {
+      "id": "silk_clothes",
+      "name": "Silk Clothes",
+      "produced_in": [ "weaver_house", "weaver_workshop" ],
+      "resources": { "silk": 20 },
+      "result": { "silk_clothes": 10 },
+      "extra_kinds": ["dye"],
+      "time": 4.0,
+      "unlock_tech": "sericulture",
+      "description": "Weaves clothes out of silk."
+    },
+    {
+      "id": "leather_clothes",
+      "name": "Leather Clothes",
+      "produced_in": [ "leatherworker_house" ],
+      "resources": { "leather": 20 },
+      "result": { "leather_clothes": 10 },
+      "time": 4.0,
+      "unlock_tech": "leatherworking",
+      "description": "Sews clothes out of leather."
+    },
+    {
+      "id": "processed_building_stone",
+      "name": "Building Stone",
+      "produced_in": [ "mason_workshop" ],
+      "resources": { "@building_stone": 20 },
+      "result": { "processed_building_stone": 10 },
+      "time": 4.0,
+      "unlock_tech": "masonry",
+      "description": "Shapes rough stone into a form fit for building."
+    },
+    {
+      "id": "millstone",
+      "name": "Millstones",
+      "produced_in": [ "mason_workshop" ],
+      "resources": { "@millstones": 20 },
+      "result": { "millstone": 10 },
+      "time": 6.0,
+      "unlock_tech": "masonry",
+      "description": "Shapes and furrows hard stone into millstones for mills and oil presses."
+    },
+    {
+      "id": "glassware",
+      "name": "Glassware",
+      "produced_in": [ "glassmaker_house" ],
+      "resources": { "quartz_sand": 20, "soda": 10 },
+      "result": { "glassware": 10 },
+      "time": 5.0,
+      "unlock_tech": "glassmaking",
+      "description": "Turns sand and soda into glassware."
+    },
+    {
+      "id": "glass_bottle",
+      "name": "Glass Bottle",
+      "produced_in": [ "glassmaker_house" ],
+      "resources": { "quartz_sand": 20, "soda": 10 },
+      "result": { "glass_bottle": 10 },
+      "time": 5.0,
+      "unlock_tech": "glassblowing",
+      "description": "Blows bottles from molten glass."
+    },
+    {
+      // Forest glass spends potash with lime stabilizer and extra fuel over a longer melt,
+      // so natural soda remains the faster and cheaper flux whenever it can be mined or bought.
+      "id": "glassware_from_potash",
+      "name": "Glassware (forest glass)",
+      "produced_in": [ "glassmaker_house" ],
+      "resources": { "quartz_sand": 20, "potash": 10, "lime": 10, "@smelting_fuel": 10 },
+      "result": { "glassware": 10 },
+      "time": 9.0,
+      "unlock_tech": "potash_making",
+      "description": "Melts quartz sand with potash, lime and charcoal into forest glassware."
+    },
+    {
+      "id": "glass_bottle_from_potash",
+      "name": "Glass Bottle (forest glass)",
+      "produced_in": [ "glassmaker_house" ],
+      "resources": { "quartz_sand": 20, "potash": 10, "lime": 10, "@smelting_fuel": 10 },
+      "result": { "glass_bottle": 10 },
+      "time": 9.0,
+      "unlock_tech": "glassblowing",
+      "description": "Blows sturdy bottles from potash-lime forest glass."
+    },
+    {
+      // Potash-lead crystal glass unlocked by Chemistry: demands purified potash and lead
+      // flux calculation beyond antiquity glassblowing.
+      "id": "crystal_glassware",
+      "name": "Crystal Glassware",
+      "produced_in": [ "glassmaker_house" ],
+      "resources": { "quartz_sand": 20, "lead": 10, "potash": 10 },
+      "result": { "crystal_glassware": 10 },
+      "time": 8.0,
+      "unlock_tech": "chemistry",
+      "description": "Fuses quartz sand with lead and potash into clear, brilliant crystal tableware."
+    },
+    {
+      "id": "ropes",
+      "name": "Ropes and Cables",
+      "produced_in": [ "ropemaker_house", "ropewalk" ],
+      "resources": { "@rope_fibers": 20 },
+      "result": { "ropes": 10 },
+      "time": 5.0,
+      "unlock_tech": "rope_making",
+      "description": "Twists ropes and cables from fibers."
+    },
+    {
+      "id": "tar",
+      "name": "Tar",
+      "produced_in": [ "tar_distillery" ],
+      "resources": { "bitumen": 20 },
+      "result": { "tar": 10 },
+      "time": 5.0,
+      "unlock_tech": "tar_burning",
+      "description": "Turns bitumen into tar."
+    },
+    {
+      "id": "wood_tar",
+      "name": "Wood Tar",
+      "produced_in": [ "tar_distillery" ],
+      "resources": { "resin": 20 },
+      "result": { "tar": 10 },
+      "time": 5.0,
+      "unlock_tech": "tar_burning",
+      "description": "Distils tar out of resin."
+    },
+    {
+      "id": "tarred_ropes",
+      "name": "Tarred Ropes",
+      "produced_in": [ "tar_distillery" ],
+      "resources": { "ropes": 10, "tar": 10 },
+      "result": { "tarred_ropes": 10 },
+      "time": 5.0,
+      "unlock_tech": "tar_burning",
+      "description": "Soaks ropes in tar to make them waterproof."
+    },
+    {
+      "id": "glue",
+      "name": "Glue",
+      "produced_in": [ "tar_distillery" ],
+      "resources": { "rubber": 20 },
+      "result": { "glue": 10 },
+      "time": 5.0,
+      "unlock_tech": "wood_processing",
+      "description": "Boils rubber into a sticky adhesive for wood, leather and pottery."
+    },
+    {
+      "id": "soap",
+      "name": "Soap",
+      "produced_in": [ "soap_maker_house" ],
+      "resources": [ [ { "vegetable_oil": 10 }, { "tallow": 10 } ], { "soda": 10 } ],
+      "result": { "soap": 10 },
+      "time": 5.0,
+      "unlock_tech": "soap_making",
+      "description": "Turns oil or tallow and soda into soap."
+    },
+    {
+      // Potash lye alone yields soft soap; causticizing with quicklime and salting out with
+      // common salt turns it into firm bars, keeping natural soda far faster and thriftier.
+      "id": "soap_from_potash",
+      "name": "Soap (from potash lye)",
+      "produced_in": [ "soap_maker_house" ],
+      "resources": [ [ { "tallow": 10 }, { "vegetable_oil": 10 } ], { "potash": 10 }, { "lime": 10 }, { "salt": 10 } ],
+      "result": { "soap": 10 },
+      "time": 9.0,
+      "unlock_tech": "potash_making",
+      "description": "Boils tallow or oil with lime-causticized potash lye and salts the batch out into hard soap."
+    },
+    {
+      "id": "silk",
+      "name": "Silk",
+      "produced_in": [ "silk_maker_house" ],
+      "resources": { "silk_cocoon": 20 },
+      "result": { "silk": 10 },
+      "time": 5.0,
+      "unlock_tech": "sericulture",
+      "description": "Turns silkworm cocoons into silk."
+    },
+    {
+      "id": "lime",
+      "name": "Lime",
+      "produced_in": [ "lime_kilns" ],
+      "resources": { "limestone": 20 },
+      "result": { "lime": 10 },
+      "time": 5.0,
+      "unlock_tech": "limestone_burning",
+      "description": "Burns limestone into lime."
+    },
+    {
+      "id": "alum",
+      "name": "Alum",
+      "produced_in": [ "lime_kilns" ],
+      "resources": { "alunite": 20 },
+      "result": { "alum": 10 },
+      "time": 5.0,
+      "unlock_tech": "limestone_burning",
+      "description": "Produces alum from alunite by roasting, leaching and crystallization."
+    },
+    {
+      "id": "sulfur_from_pyrite",
+      "name": "Sulfur",
+      "produced_in": [ "lime_kilns" ],
+      "resources": { "pyrite": 20, "@smelting_fuel": 10 },
+      "result": { "sulfur": 10 },
+      "time": 8.0,
+      "unlock_tech": "limestone_burning",
+      "description": "Roasts pyrite to obtain sulfur."
+    },
+    {
+      // Restricted to ash-rich broadleaf timbers (@potash_woods) plus charcoal over a long cycle
+      // so common forest wood cannot flood the alkali market or displace natural soda lakes.
+      "id": "potash",
+      "name": "Potash",
+      "produced_in": [ "lime_kilns" ],
+      "resources": { "@potash_woods": 30, "charcoal": 10 },
+      "result": { "potash": 10 },
+      "time": 10.0,
+      "unlock_tech": "potash_making",
+      "description": "Burns broadleaf hardwood timber, leaches the ash and calcines the lye into potash."
+    },
+    {
+      "id": "mortar",
+      "name": "Lime Mortar",
+      "produced_in": [ "lime_kilns", "mason_workshop" ],
+      "resources": [ { "lime": 10 }, [ { "tuff": 10 }, { "quartz_sand": 10 } ] ],
+      "result": { "mortar": 10 },
+      "time": 5.0,
+      "unlock_tech": "limestone_burning",
+      "description": "Slakes lime with volcanic tuff or quartz sand into durable hydraulic mortar."
+    },
+    {
+      "id": "plaster",
+      "name": "Gypsum Plaster",
+      "produced_in": [ "lime_kilns" ],
+      "resources": [ [ { "gypsum": 20 }, { "alabaster": 20 } ] ],
+      "result": { "plaster": 10 },
+      "time": 5.0,
+      "unlock_tech": "limestone_burning",
+      "description": "Calcines gypsum or alabaster into fine setting plaster for moulds and stucco."
+    },
+    {
+      "id": "papyrus",
+      "name": "Papyrus",
+      "produced_in": [ "papyrus_workshop" ],
+      "resources": { "papyrus_plant": 20 },
+      "result": { "papyrus": 10 },
+      "time": 5.0,
+      "unlock_tech": "writing",
+      "description": "Turns papyrus stems into papyrus."
+    },
+    {
+      "id": "reed_boat",
+      "name": "Reed Boats",
+      "produced_in": [ "papyrus_workshop" ],
+      "resources": { "papyrus_plant": 200 },
+      "result": { "reed_boat": 10 },
+      "time": 100,
+      "unlock_tech": "fishing",
+      "description": "Builds a boat from reeds."
+    },
+    {
+      "id": "wooden_boat",
+      "name": "Wooden Boats",
+      "produced_in": [ "boatyard" ],
+      "resources": { "planks": 30, "canvas": 10, "ropes": 10 },
+      "result": { "wooden_boat": 10 },
+      "time": 12.0,
+      "unlock_tech": "shipbuilding",
+      "description": "Builds planked wooden boats rigged with cloth sails and rope."
+    },
+    {
+      "id": "parchment",
+      "name": "Parchment",
+      "produced_in": [ "parchment_workshop" ],
+      "resources": { "hide": 20, "lime": 10 },
+      "result": { "parchment": 10 },
+      "time": 5.0,
+      "unlock_tech": "parchment",
+      "description": "Produces parchment from animal hides by liming them."
+    },
+    {
+      "id": "planks",
+      "name": "Planks",
+      "produced_in": [ "carpenter_workshop" ],
+      "resources": { "wood": 20 },
+      "result": { "planks": 10 },
+      "time": 4.0,
+      "unlock_tech": "wood_processing",
+      "description": "Saws timber into planks for construction."
+    },
+    {
+      "id": "charcoal",
+      "name": "Charcoal",
+      "produced_in": [ "charcoal_kiln" ],
+      "resources": { "wood": 20 },
+      "result": { "charcoal": 10 },
+      "time": 5.0,
+      "unlock_tech": "native_metals",
+      "description": "Burns wood into charcoal."
+    },
+    {
+      "id": "coke",
+      "name": "Coke",
+      "produced_in": [ "coke_oven" ],
+      "resources": { "coal": 20 },
+      "result": { "coke": 15 },
+      "time": 6.0,
+      "unlock_tech": "coking",
+      "description": "Bakes coal without air into hard, clean-burning metallurgical coke."
+    },
+    {
+      "id": "wax_tablets",
+      "name": "Wax Tablets",
+      "produced_in": [ "carpenter_workshop" ],
+      "resources": { "wood": 10, "wax": 10 },
+      "result": { "wax_tablets": 10 },
+      "time": 5.0,
+      "unlock_tech": "writing",
+      "description": "Makes wooden tablets with a hollow filled with wax."
+    },
+    {
+      "id": "paper",
+      "name": "Paper",
+      "produced_in": [ "paper_workshop", "paper_mill" ],
+      "resources": { "@paper_fibers": 10, "lime": 10 },
+      "result": { "paper": 10 },
+      "time": 5.0,
+      "unlock_tech": "paper",
+      "description": "Makes paper from various plant fibers."
+    },
+    {
+      // The ware is not only cut out: the hollow of a bowl and the face of a plate are
+      // ground smooth, and the pumice of the quarry is the abrasive that does it.
+      "id": "stone_tableware",
+      "name": "Stone Tableware",
+      "produced_in": [ "mason_workshop" ],
+      "resources": { "@tableware_stones": 20, "pumice": 5 },
+      "result": { "stone_tableware": 10 },
+      "time": 5.0,
+      "unlock_tech": "masonry",
+      "description": "Cuts stone into plates, bowls, and cups and grinds them smooth with pumice."
+    },
+    {
+      "id": "ink_from_green_vitriol_galls",
+      "name": "Ink",
+      "produced_in": [ "dyer_house" ],
+      "resources": { "green_vitriol": 10, "galls": 20 },
+      "result": { "ink": 10 },
+      "time": 5.0,
+      "unlock_tech": "alchemy",
+      "description": "Makes ink from green vitriol and galls."
+    },
+    {
+      "id": "ink_from_iron_galls_vinegar",
+      "name": "Ink",
+      "produced_in": [ "dyer_house" ],
+      "resources": [ [ { "iron": 10 }, { "meteorite_iron": 10 } ], { "galls": 20 }, { "vinegar": 20 } ],
+      "result": { "ink": 10 },
+      "time": 5.0,
+      "unlock_tech": "dyeing",
+      "description": "Makes ink from iron, galls, and vinegar."
+    },
+    {
+      "id": "writing_set",
+      "name": "Writing Set",
+      "produced_in": [ "carpenter_workshop" ],
+      "resources": { "@writing_instruments": 10, "ink": 10 },
+      "result": { "writing_set": 10 },
+      "time": 5.0,
+      "unlock_tech": "writing",
+      "description": "Makes a writing set from writing instruments and ink."
+    },
+    {
+      "id": "book",
+      "name": "Book",
+      "produced_in": [ "bookbinder_workshop" ],
+      "resources": [ [ { "parchment": 10 }, { "paper": 10 } ], { "leather": 10 }, { "glue": 10 } ],
+      "result": { "book": 10 },
+      "time": 8.0,
+      "unlock_tech": "bookbinding",
+      "description": "Binds sheets of parchment or paper with leather and glue into a book."
+    },
+    {
+      "id": "wooden_barrel",
+      "name": "Wooden Barrel",
+      "produced_in": [ "cooper_house" ],
+      "resources": { "@barrel_wood": 20 },
+      "result": { "wooden_barrel": 10 },
+      "time": 5.0,
+      "unlock_tech": "wood_processing",
+      "description": "Makes wooden barrels."
+    },
+    {
+      "id": "furniture",
+      "name": "Furniture",
+      "produced_in": [ "furniture_maker_house" ],
+      "resources": { "wood": 20 },
+      "result": { "furniture": 10 },
+      "time": 8.0,
+      "unlock_tech": "wood_processing",
+      "description": "Makes simple furniture from common timber."
+    },
+    {
+      "id": "luxury_furniture",
+      "name": "Luxury Furniture",
+      "produced_in": [ "furniture_maker_house" ],
+      "resources": { "@precious_woods": 20 },
+      "result": { "luxury_furniture": 5 },
+      "time": 14.0,
+      "unlock_tech": "wood_processing",
+      "description": "Makes fine furniture from precious hardwoods."
+    },
+    {
+      "id": "tallow_candles",
+      "name": "Tallow Candles",
+      "produced_in": [ "chandler_house", "soap_maker_house" ],
+      "resources": { "tallow": 20 },
+      "result": { "tallow_candles": 10 },
+      "time": 5.0,
+      "unlock_tech": "candle_making",
+      "description": "Dips wicks in rendered animal tallow to make cheap everyday and miner's candles."
+    },
+    {
+      "id": "wax_candles",
+      "name": "Wax Candles",
+      "produced_in": [ "chandler_house" ],
+      "resources": { "wax": 20 },
+      "result": { "wax_candles": 10 },
+      "time": 5.0,
+      "unlock_tech": "candle_making",
+      "description": "Moulds clean beeswax around braided wicks into bright, smokeless candles."
+    }
+  ]
+}
