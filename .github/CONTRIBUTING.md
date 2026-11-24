@@ -89,7 +89,8 @@ Godot reads the `.po` itself: the engine has a loader for the format
 step, no `.godot/imported/` copy and no other build step takes part. The engine
 can read `.mo` as well, but nothing in this project reads one: a `.mo` file in the
 repository would be a second copy that nothing loads, nothing checks and nothing
-updates with the `.po`, so the catalog is kept in `.po` alone.
+updates with the `.po`, so the catalog is kept in `.po` alone and `.gitignore`
+keeps a compiled catalog out of the repository.
 
 A new string therefore needs two things: the English text in the code, and the
 translation in `locale/<code>.po`.
