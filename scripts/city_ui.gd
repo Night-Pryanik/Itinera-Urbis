@@ -13,6 +13,7 @@ const UiHelpers = preload("res://scripts/ui_helpers.gd")
 @onready var effects_panel = $ContentPanel/EffectsPanel
 @onready var specialization_panel = $ContentPanel/SpecializationPanel
 @onready var challenges_panel = $ContentPanel/ChallengesPanel
+@onready var encyclopedia_panel = $ContentPanel/EncyclopediaPanel
 
 # The tab buttons
 @onready var resources_tab_button = $TabBarPanel/TabBar/ResourcesTabButton
@@ -21,8 +22,8 @@ const UiHelpers = preload("res://scripts/ui_helpers.gd")
 @onready var technologies_tab_button = $TabBarPanel/TabBar/TechnologiesTabButton
 @onready var effects_tab_button = $TabBarPanel/TabBar/EffectsTabButton
 @onready var specialization_tab_button = $TabBarPanel/TabBar/ReputationSpecializationButton
-# The section buttons next to the tabs. The sections are not implemented yet, therefore a
-# click only reports that in the bottom strip; the buttons share the look of the tab bar.
+# The button of a section added before its screen exists reports that in the bottom strip.
+# No button uses this path now; the list is kept for the next screens of this kind.
 @onready var era_challenges_button = $TabBarPanel/TabBar/EraChallengesButton
 @onready var reputation_specialization_button = $TabBarPanel/TabBar/ReputationSpecializationButton
 @onready var encyclopedia_button = $TabBarPanel/TabBar/EncyclopediaButton
@@ -74,6 +75,8 @@ var effects_tab: Node
 var specialization_tab: Node
 # The tab "Challenges" — the fame of a good and the tasks of the era (see challenges_tab.gd).
 var challenges_tab: Node
+# The tab "Encyclopedia" — the sections of the entities of the game (see encyclopedia_tab.gd).
+var encyclopedia_tab: Node
 # The map itself: the foreign trade column reads the towns discovered by the player
 # from it (see set_map).
 var main_map: Node = null
@@ -234,11 +237,15 @@ func _ready():
     challenges_tab.set_map(main_map)
     add_child(challenges_tab)
 
+    encyclopedia_tab = load("res://scripts/encyclopedia_tab.gd").new()
+    encyclopedia_tab.setup($ContentPanel/EncyclopediaPanel)
+    add_child(encyclopedia_tab)
+
     # The signals of the buttons
-    for btn in [resources_tab_button, buildings_tab_button, trade_tab_button, technologies_tab_button, effects_tab_button, era_challenges_button, specialization_tab_button]:
+    for btn in [resources_tab_button, buildings_tab_button, trade_tab_button, technologies_tab_button, effects_tab_button, era_challenges_button, specialization_tab_button, encyclopedia_button]:
         if not btn.pressed.is_connected(_on_tab_button_pressed):
             btn.pressed.connect(_on_tab_button_pressed.bind(btn))
-    stub_buttons = [encyclopedia_button]
+    stub_buttons = []
     for btn in stub_buttons:
         if not btn.pressed.is_connected(_on_stub_button_pressed):
             btn.pressed.connect(_on_stub_button_pressed.bind(btn))
@@ -260,7 +267,8 @@ func _ready():
         {"button": technologies_tab_button, "id": "technologies"},
         {"button": effects_tab_button, "id": "effects"},
         {"button": era_challenges_button, "id": "challenges"},
-        {"button": specialization_tab_button, "id": "specialization"}
+        {"button": specialization_tab_button, "id": "specialization"},
+        {"button": encyclopedia_button, "id": "encyclopedia"}
     ]
     _highlight_active_tab_button()
 
@@ -449,6 +457,9 @@ func show_resources_tab():
 func show_technologies_tab():
     _switch_tab("technologies")
 
+func show_encyclopedia_tab():
+    _switch_tab("encyclopedia")
+
 func refresh_light():
     # A public method for a light refresh on a change of the assignments.
     # A change of the assignments is an action of the player: the resource values are updated
@@ -464,6 +475,7 @@ func _refresh_all():
     effects_tab.refresh()
     specialization_tab.refresh()
     challenges_tab.refresh()
+    encyclopedia_tab.refresh()
     _refresh_specialization_dot()
     _update_food_label()
 
@@ -476,6 +488,7 @@ func _switch_tab(tab_id: String):
     effects_panel.visible = (tab_id == "effects")
     challenges_panel.visible = (tab_id == "challenges")
     specialization_panel.visible = (tab_id == "specialization")
+    encyclopedia_panel.visible = (tab_id == "encyclopedia")
 
     # The right panel "Built buildings" is shown only on the tabs
     # "Resources" and "Buildings" (when the window is divided in half); on "Trade" and
@@ -511,6 +524,8 @@ func _switch_tab(tab_id: String):
         # The counters of the fame grow while the window stands closed, so the list is built on
         # every opening rather than kept in step with the ticks.
         challenges_tab.refresh()
+    elif tab_id == "encyclopedia":
+        encyclopedia_tab.refresh()
 
     ui_helpers.set_message("")
     _highlight_active_tab_button()

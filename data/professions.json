@@ -43,9 +43,10 @@
   //                  It is NOT shown as a worker label in the interface: it serves
   //                  as the source name in the planned consumption block
   //                  of the "Resources" tab ("Scientist").
-  //   icon         — the icon file name (as for products/improvements);
-  //                  it is not displayed anywhere at the moment.
-  //   description  — a short description for tooltips (optional).
+  //   icon         — the icon file name (as for products/improvements), shown in the
+  //                  encyclopedia.
+  //   description  — a short description shown in the encyclopedia (optional).
+  //   flavor       — a short historical note shown in the encyclopedia (optional).
   "professions": [
     // THE PSEUDO-PROFESSION — the top of the hierarchy: it covers ALL citizens
     // of the city — both the idle ones and the busy ones (including workers at
@@ -59,286 +60,334 @@
     // this is not a worker label but a population counter.
     {
       "id": "all",
+      "flavor": "Every resident is counted here, whether the day is spent in a workshop or at home; the common needs of the town are shared by all.",
       "name": "All Citizens",
       "description": "A pseudo-profession that covers the whole population of the city, including employed citizens.",
       "pseudo": true
     },
     {
       "id": "farmer",
+      "flavor": "Fields were tilled with hand tools long before the plough; the plough let one household work more ground.",
       "name": "Farmer",
       "icon": "profession_farmer.png",
       "description": "Works the fields and tends the crops."
     },
     {
       "id": "herder",
+      "flavor": "Herding follows the seasons: the flock moves to fresh pasture and its heads are counted at the fold.",
       "name": "Herder",
       "icon": "profession_herder.png",
       "description": "Tends the herd and keeps count of the livestock."
     },
     {
       "id": "stockman",
+      "flavor": "Poultry and small stock stay near the house, where scraps and a roof are enough.",
       "name": "Stockman",
       "icon": "profession_stockman.png",
       "description": "Feeds the poultry and the small livestock kept under a roof."
     },
     {
       "id": "swineherd",
+      "flavor": "Pigs root for scraps and can be kept beside the houses instead of out in the fields.",
       "name": "Swineherd",
       "icon": "profession_swineherd.png",
       "description": "Tends the pigs and keeps the sty in order."
     },
     {
       "id": "miner",
+      "flavor": "Ore was followed into the ground with pick and fire; timber props held the galleries open.",
       "name": "Miner",
       "icon": "profession_miner.png",
       "description": "Digs ore and minerals out of the ground."
     },
     {
       "id": "quarryman",
+      "flavor": "Open cuts supplied stone for walls and roads before deeper galleries were needed.",
       "name": "Quarryman",
       "icon": "profession_quarryman.png",
       "description": "Extracts stone from open quarries."
     },
     {
       "id": "beekeeper",
+      "flavor": "Hives can stand wherever flowers grow, so wax and honey were carried with the keeper.",
       "name": "Beekeeper",
       "icon": "profession_beekeeper.png",
       "description": "Tends the hives and harvests honey."
     },
     {
       "id": "vinedresser",
+      "flavor": "Vines are trained and pruned by hand, and the whole harvest arrives in one short season.",
       "name": "Vinedresser",
       "icon": "profession_vinedresser.png",
       "description": "Cultivates the vineyard and gathers the harvest."
     },
     {
       "id": "clay_digger",
+      "flavor": "Clay is dug, left to weather and sorted before a potter can shape or fire it.",
       "name": "Clay Digger",
       "icon": "profession_clay_digger.png",
       "description": "Digs and sorts clay for firing."
     },
     {
       "id": "peat_cutter",
+      "flavor": "Wet turf cut from a bog and stacked to dry becomes fuel that burns slowly and evenly.",
       "name": "Peat Cutter",
       "icon": "profession_peat_cutter.png",
       "description": "Cuts wet turf from the bog and stacks it to dry into fuel."
     },
     {
       "id": "water_drawer",
+      "flavor": "A catchment at a spring saves carrying water from the stream for every vessel.",
       "name": "Water Drawer",
       "icon": "mineral_water.svg",
       "description": "Collects mineral water at a spring catchment."
     },
     {
       "id": "potter",
+      "flavor": "The wheel and the kiln let one maker turn soft clay into vessels, bricks and tablets.",
       "name": "Potter",
       "icon": "profession_potter.png",
       "description": "Shapes and fires clay into pots, bricks and tablets."
     },
     {
       "id": "planter",
+      "flavor": "Technical and spice crops need seedbeds, weeding and a dry place to keep the harvest.",
       "name": "Planter",
       "icon": "profession_planter.png",
       "description": "Grows technical and spice crops."
     },
     {
       "id": "tar_collector",
+      "flavor": "Tar seeps from the ground and certain trees; boiling it down thickens it into pitch.",
       "name": "Tar Burner",
       "icon": "profession_tar_collector.png",
       "description": "Gathers and boils down natural tar."
     },
     {
       "id": "soda_extractor",
+      "flavor": "Natural soda is gathered from deposits and plant ash and washed before glass or soap can use it.",
       "name": "Soda Extractor",
       "icon": "profession_soda_extractor.png",
       "description": "Extracts soda from natural deposits."
     },
     {
       "id": "fisherman",
+      "flavor": "A boat and a dock reach fishing grounds the shore cannot reach.",
       "name": "Fisherman",
       "icon": "profession_fisherman.png",
       "description": "Fishes from boats on any water body with a dock."
     },
     {
       "id": "lumberjack",
+      "flavor": "Trees are felled with axe and saw, then hauled to the plots that need timber.",
       "name": "Lumberjack",
       "icon": "profession_lumberjack.png",
       "description": "Fells trees in forest plots and hauls in the timber."
     },
     {
       "id": "charcoal_burner",
+      "flavor": "Wood baked slowly with little air turns to charcoal, which burns hotter than raw wood.",
       "name": "Charcoal Burner",
       "icon": "profession_charcoal_burner.png",
       "description": "Burns wood into charcoal."
     },
     {
       "id": "glassmaker",
+      "flavor": "Sand and soda melt in a hot furnace and cool into glass without any finer tool.",
       "name": "Glassmaker",
       "icon": "profession_glassmaker.png",
       "description": "Turns sand and soda into glass."
     },
     {
       "id": "smelter",
+      "flavor": "Ore and fuel in a heated furnace yield metal; the heat does the work, wherever the furnace stands.",
       "name": "Smelter Worker",
       "icon": "profession_smelter.png",
       "description": "Smelts ore into pure metals."
     },
     {
       "id": "blacksmith",
+      "flavor": "Metal is hammered while hot and soft; tools and ornaments leave the same hearth.",
       "name": "Blacksmith",
       "icon": "profession_blacksmith.png",
       "description": "Forges tools, weapons and ornaments from metal."
     },
     {
       "id": "scientist",
+      "flavor": "Copying and comparing texts keeps knowledge alive even where no school stands.",
       "name": "Scholar",
       "icon": "profession_scientist.png",
       "description": "Copies and studies texts in the library and scriptorium, adding to the city's science."
     },
     {
       "id": "mint_worker",
+      "flavor": "Coins are struck from weighed metal, and the stamp is a promise the treasury must honour.",
       "name": "Mint Worker",
       "icon": "coin_stack.png",
       "description": "Strikes the coins of the city and assays the metal at the mint. Every batch of coin leaves a seigniorage in the treasury."
     },
     {
       "id": "tax_collector",
+      "flavor": "A tally of residents lets a town collect its dues without guessing at the headcount.",
       "name": "Tax Collector",
       "icon": "profession_tax_collector.png",
       "description": "Takes the tally of the citizens in the tax yard, so that the poll tax is gathered in full and a little more reaches the treasury."
     },
     {
       "id": "winemaker",
+      "flavor": "Grapes are pressed and the juice left to ferment; the vessels matter as much as the fruit.",
       "name": "Winemaker",
       "icon": "profession_winemaker.png",
       "description": "Description of winemaker profession."
     },
     {
       "id": "brewer",
+      "flavor": "Grain is mashed, boiled with hops and left to ferment in a cool vessel.",
       "name": "Brewer",
       "icon": "profession_brewer.png",
       "description": "Description of brewer profession."
     },
     {
       "id": "oilmaker",
+      "flavor": "Olives and oilseeds are crushed and pressed; a press gives more than a hand can.",
       "name": "Oilmaker",
       "icon": "profession_oilmaker.png",
       "description": "Description of oilmaker profession."
     },
     {
       "id": "perfumer",
+      "flavor": "Resins and flowers give their scent when ground, steeped or gently distilled.",
       "name": "Perfumer",
       "icon": "profession_perfumer.png",
       "description": "Grinds aromatic resins into perfumes and incense."
     },
     {
       "id": "dyer",
+      "flavor": "Roots, bark and insects give colour to cloth when steeped in a mordant bath.",
       "name": "Dyer",
       "description": "Makes dyes from natural materials."
     },
     {
       "id": "weaver",
+      "flavor": "A loom turns thread into cloth more evenly than hands alone can.",
       "name": "Weaver",
       "description": "Weaves cloth, clothes and carpets from fibers."
     },
     {
       "id": "paper_maker",
+      "flavor": "Beaten plant fibre suspended in water settles into thin sheets on a frame.",
       "name": "Paper Maker",
       "icon": "profession_paper_maker.png",
       "description": "Strains plant fibers into sheets of paper."
     },
     {
       "id": "parchment_maker",
+      "flavor": "Hides are limed, scraped and stretched dry into a surface that takes ink.",
       "name": "Parchment Maker",
       "icon": "profession_parchment_maker.png",
       "description": "Limes, scrapes and dries hides into parchment."
     },
     {
       "id": "bookbinder",
+      "flavor": "Sheets are sewn and covered so that a text can be carried and kept.",
       "name": "Bookbinder",
       "icon": "profession_bookbinder.png",
       "description": "Sews the sheets into books and glues the spine under a leather cover."
     },
     {
       "id": "tanner",
+      "flavor": "Hides treated with bark or mineral salts stop rotting and can be sewn into goods.",
       "name": "Tanner",
       "icon": "profession_tanner.png",
       "description": "Tans hides and sews leather goods."
     },
     {
       "id": "carpenter",
+      "flavor": "Timber is sawn and joined with pegs into frames, tools and furniture.",
       "name": "Carpenter",
       "icon": "profession_carpenter.png",
       "description": "Saws timber into planks and shapes wood for construction and crafts."
     },
     {
       "id": "cooper",
+      "flavor": "Staves are cut and bound with hoops; a tight barrel keeps goods dry.",
       "name": "Cooper",
       "icon": "profession_cooper.png",
       "description": "Fits staves into barrels and seals them with tar."
     },
     {
       "id": "furniture_maker",
+      "flavor": "Joinery turns plain timber into pieces that make a house usable and comfortable.",
       "name": "Furniture Maker",
       "icon": "furniture_maker.png",
       "description": "Crafts furniture and luxury furniture from timber."
     },
     {
       "id": "distiller",
+      "flavor": "Fermented drinks heated in a still give a stronger spirit when the vapour is cooled.",
       "name": "Distiller",
       "icon": "profession_distiller.png",
       "description": "Tends the still and draws strong spirits and rectified spirit from fermented drinks and sweet mashes."
     },
     {
       "id": "alchemist",
+      "flavor": "Retorts and gentle heat separate acids and solvents from minerals and plants.",
       "name": "Alchemist",
       "icon": "profession_alchemist.png",
       "description": "Distils acids, solvents and reagents in retorts and alembics."
     },
     {
       "id": "jeweler",
+      "flavor": "Soft metal is cut and set with stone; the work needs a steady eye more than heavy tools.",
       "name": "Jeweler",
       "icon": "profession_jeweler.png",
       "description": "Cuts stones and works precious metals into jewelry."
     },
     {
       "id": "soap_maker",
+      "flavor": "Fat or oil boiled with alkali becomes soap that carries dirt away with water.",
       "name": "Soapmaker",
       "icon": "profession_soap_maker.png",
       "description": "Boils oils, alkali and resin into soap."
     },
     {
       "id": "chandler",
+      "flavor": "A wick dipped again and again in melted fat or wax becomes a candle that stores light.",
       "name": "Chandler",
       "icon": "profession_chandler.png",
       "description": "Dips and moulds tallow and beeswax into candles."
     },
     {
       "id": "mason",
+      "flavor": "Stone is dressed into blocks that carry weight in walls, whether laid dry or in mortar.",
       "name": "Mason",
       "icon": "profession_mason.png",
       "description": "Dresses rough stone into ashlar blocks, tableware and mortar."
     },
     {
       "id": "smoker",
+      "flavor": "Fish hung over a slow fire dries and takes smoke, which keeps it through the cold season.",
       "name": "Smoker",
       "icon": "profession_smoker.png",
       "description": "Cures and smokes fish over slow wood fires."
     },
     {
       "id": "miller",
+      "flavor": "Millstones turn grain into flour; wind, water and animals have all been used to turn them.",
       "name": "Miller",
       "icon": "profession_miller.png",
       "description": "Grinds grain between millstones and tends the mill."
     },
     {
       "id": "sailmaker",
+      "flavor": "Heavy cloth is sewn and treated so a boat or mill can catch the wind.",
       "name": "Sailmaker",
       "icon": "profession_sailmaker.png",
       "description": "Weaves, cuts and treats heavy sailcloth for boats and mills."
     },
     {
       "id": "boatbuilder",
+      "flavor": "A timber frame, planked and sealed, gives a hull that carries goods over water.",
       "name": "Boatbuilder",
       "icon": "profession_boatbuilder.png",
       "description": "Frames, planks and rigs wooden boats."

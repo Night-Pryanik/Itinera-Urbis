@@ -39,8 +39,20 @@ msgid "Not enough coins for the upkeep (%d unpaid)! Grow the population or demol
 msgstr "Не хватает монет на содержание (%d не оплачено)! Увеличьте население или снесите здание/улучшение."
 
 msgctxt ""
+msgid "Products"
+msgstr "Товары"
+
+msgctxt ""
+msgid "Professions"
+msgstr "Профессии"
+
+msgctxt ""
 msgid "The chance that a main river reaching a lake or the sea splits into distributaries at its mouth."
 msgstr "Шанс того, что главная река, впадающая в озеро или море, разделится на рукава у устья."
+
+msgctxt ""
+msgid "Works at:"
+msgstr "Работает:"
 
 msgid "\n\nFound here: %s"
 msgstr "\n\nЗдесь обнаружено: %s"
@@ -9932,3 +9944,195 @@ msgstr "Доход от торговли на внешнем рынке: +10%"
 
 msgid " × %.2f from researched technologies"
 msgstr " × %.2f от изученных технологий"
+
+msgctxt "professions.flavor"
+msgid "A boat and a dock reach fishing grounds the shore cannot reach."
+msgstr "Лодка и причал открывают доступ к промысловым местам, которых не достичь с берега."
+
+msgctxt "professions.flavor"
+msgid "A catchment at a spring saves carrying water from the stream for every vessel."
+msgstr "Захват у родника избавляет от необходимости носить воду из ручья для каждого сосуда."
+
+msgctxt "professions.flavor"
+msgid "A loom turns thread into cloth more evenly than hands alone can."
+msgstr "Ткацкий стан превращает нить в ткань ровнее, чем одни руки."
+
+msgctxt "professions.flavor"
+msgid "A tally of residents lets a town collect its dues without guessing at the headcount."
+msgstr "Перепись жителей позволяет городу собрать пошлины, не гадая о числе голов."
+
+msgctxt "professions.flavor"
+msgid "A timber frame, planked and sealed, gives a hull that carries goods over water."
+msgstr "Деревянный каркас, обшитый досками и законопаченный, даёт корпус, везущий груз по воде."
+
+msgctxt "professions.flavor"
+msgid "A wick dipped again and again in melted fat or wax becomes a candle that stores light."
+msgstr "Фитиль, многократно окунанный в растопленный жир или воск, становится свечой, хранящей свет."
+
+msgctxt "professions.flavor"
+msgid "Beaten plant fibre suspended in water settles into thin sheets on a frame."
+msgstr "Взбитое растительное волокно, взвешенное в воде, оседает тонким листом на раме."
+
+msgctxt "professions.flavor"
+msgid "Clay is dug, left to weather and sorted before a potter can shape or fire it."
+msgstr "Глину выкапывают, выдерживают на воздухе и сортируют, прежде чем гончар возьмётся за неё."
+
+msgctxt "professions.flavor"
+msgid "Coins are struck from weighed metal, and the stamp is a promise the treasury must honour."
+msgstr "Монеты чеканят из взвешенного металла, а клеймо — обещание, которое должна выполнить казна."
+
+msgctxt "professions.flavor"
+msgid "Copying and comparing texts keeps knowledge alive even where no school stands."
+msgstr "Переписывание и сопоставление текстов сохраняет знание даже там, где нет школы."
+
+msgctxt "professions.flavor"
+msgid "Every resident is counted here, whether the day is spent in a workshop or at home; the common needs of the town are shared by all."
+msgstr "Здесь учитываются все жители — заняты ли они в мастерской или дома: общие нужды города делятся между всеми."
+
+msgctxt "professions.flavor"
+msgid "Fields were tilled with hand tools long before the plough; the plough let one household work more ground."
+msgstr "Поля обрабатывали ручными орудиями задолго до плуга; плуг позволил одному двору обрабатывать больше земли."
+
+msgctxt "professions.flavor"
+msgid "Herding follows the seasons: the flock moves to fresh pasture and its heads are counted at the fold."
+msgstr "Выпас идёт за сезонами: стадо переходит на свежие пастбища, а счёт ведут у загона."
+
+msgctxt "professions.flavor"
+msgid "Poultry and small stock stay near the house, where scraps and a roof are enough."
+msgstr "Птица и мелкий скот держатся у дома, где хватает отходов и крыши."
+
+msgctxt "professions.flavor"
+msgid "Pigs root for scraps and can be kept beside the houses instead of out in the fields."
+msgstr "Свини роются в отходах и могут содержаться рядом с домами, а не в поле."
+
+msgctxt "professions.flavor"
+msgid "Ore was followed into the ground with pick and fire; timber props held the galleries open."
+msgstr "Руду догоняли под землю киркой и огнём, а крепи держали штольни открытыми."
+
+msgctxt "professions.flavor"
+msgid "Open cuts supplied stone for walls and roads before deeper galleries were needed."
+msgstr "Открытые выработки давали камень для стен и дорог, пока не понадобились глубокие шахты."
+
+msgctxt "professions.flavor"
+msgid "Hives can stand wherever flowers grow, so wax and honey were carried with the keeper."
+msgstr "Улья можно ставить там, где есть цветы, поэтому воск и мёд кочевали вместе с пасечником."
+
+msgctxt "professions.flavor"
+msgid "Vines are trained and pruned by hand, and the whole harvest arrives in one short season."
+msgstr "Лозу формируют и обрезают вручную, а весь урожай приходит в один короткий сезон."
+
+msgctxt "professions.flavor"
+msgid "Wet turf cut from a bog and stacked to dry becomes fuel that burns slowly and evenly."
+msgstr "Сырой торф, вырезанный из болота и сложенный для сушки, становится топливом, горящим медленно и ровно."
+
+msgctxt "professions.flavor"
+msgid "The wheel and the kiln let one maker turn soft clay into vessels, bricks and tablets."
+msgstr "Круг и печь позволяют одному мастеру превращать мягкую глину в сосуды, кирпичи и таблички."
+
+msgctxt "professions.flavor"
+msgid "Technical and spice crops need seedbeds, weeding and a dry place to keep the harvest."
+msgstr "Технические и пряные культуры требуют рассады, прополки и сухого места для урожая."
+
+msgctxt "professions.flavor"
+msgid "Tar seeps from the ground and certain trees; boiling it down thickens it into pitch."
+msgstr "Смола сочится из земли и некоторых деревьев; варка сгущает её в пек."
+
+msgctxt "professions.flavor"
+msgid "Natural soda is gathered from deposits and plant ash and washed before glass or soap can use it."
+msgstr "Природную соду собирают из месторождений и золы растений и промывают перед использованием в стекле или мыле."
+
+msgctxt "professions.flavor"
+msgid "Trees are felled with axe and saw, then hauled to the plots that need timber."
+msgstr "Деревья валят топором и пилой, затем тянут к участкам, которым нужен лес."
+
+msgctxt "professions.flavor"
+msgid "Wood baked slowly with little air turns to charcoal, which burns hotter than raw wood."
+msgstr "Древесина, томлённая медленно и без доступа воздуха, превращается в уголь, горящий жарче сырого дерева."
+
+msgctxt "professions.flavor"
+msgid "Sand and soda melt in a hot furnace and cool into glass without any finer tool."
+msgstr "Песок и сода плавятся в жаркой печи и остывают стеклом без более сложных орудий."
+
+msgctxt "professions.flavor"
+msgid "Ore and fuel in a heated furnace yield metal; the heat does the work, wherever the furnace stands."
+msgstr "Руда и топливо в нагретой печи дают металл; работу делает жар, а не место печи."
+
+msgctxt "professions.flavor"
+msgid "Metal is hammered while hot and soft; tools and ornaments leave the same hearth."
+msgstr "Металл куют, пока он горяч и мягок; инструменты и украшения выходят из одного горна."
+
+msgctxt "professions.flavor"
+msgid "Grapes are pressed and the juice left to ferment; the vessels matter as much as the fruit."
+msgstr "Виноград давят, а сок оставляют бродить; сосуды важны не менее плода."
+
+msgctxt "professions.flavor"
+msgid "Grain is mashed, boiled with hops and left to ferment in a cool vessel."
+msgstr "Зерно затирают, варят с хмелем и оставляют бродить в прохладном сосуде."
+
+msgctxt "professions.flavor"
+msgid "Olives and oilseeds are crushed and pressed; a press gives more than a hand can."
+msgstr "Оливы и масличные семена размалывают и жмут; пресс даёт больше, чем рука."
+
+msgctxt "professions.flavor"
+msgid "Resins and flowers give their scent when ground, steeped or gently distilled."
+msgstr "Смолы и цветы отдают аромат при растирании, настаивании или осторожной перегонке."
+
+msgctxt "professions.flavor"
+msgid "Roots, bark and insects give colour to cloth when steeped in a mordant bath."
+msgstr "Корни, кора и насекомые окрашивают ткань, если выдержать её в протраве."
+
+msgctxt "professions.flavor"
+msgid "Hides are limed, scraped and stretched dry into a surface that takes ink."
+msgstr "Шкуры известкуют, соскабливают и растягивают на сушку, получая поверхность для чернил."
+
+msgctxt "professions.flavor"
+msgid "Sheets are sewn and covered so that a text can be carried and kept."
+msgstr "Листы сшивают и переплетают, чтобы текст можно было носить и сохранять."
+
+msgctxt "professions.flavor"
+msgid "Hides treated with bark or mineral salts stop rotting and can be sewn into goods."
+msgstr "Шкуры, обработанные корой или минеральными солями, перестают гнить и идут на изделия."
+
+msgctxt "professions.flavor"
+msgid "Timber is sawn and joined with pegs into frames, tools and furniture."
+msgstr "Лес распиливают и соединяют нагелями в каркасы, инструменты и мебель."
+
+msgctxt "professions.flavor"
+msgid "Staves are cut and bound with hoops; a tight barrel keeps goods dry."
+msgstr "Клёпку вырезают и стягивают обручами; плотная бочка бережёт груз от сырости."
+
+msgctxt "professions.flavor"
+msgid "Joinery turns plain timber into pieces that make a house usable and comfortable."
+msgstr "Столярное дело превращает простой лес в вещи, делающие дом удобным."
+
+msgctxt "professions.flavor"
+msgid "Fermented drinks heated in a still give a stronger spirit when the vapour is cooled."
+msgstr "Брожёные напитки, нагретые в перегонном кубе, дают крепкий напиток, когда пар остывает."
+
+msgctxt "professions.flavor"
+msgid "Retorts and gentle heat separate acids and solvents from minerals and plants."
+msgstr "Реторты и умеренный жар отделяют кислоты и растворители от минералов и растений."
+
+msgctxt "professions.flavor"
+msgid "Soft metal is cut and set with stone; the work needs a steady eye more than heavy tools."
+msgstr "Мягкий металл режут и вставляют камни; здесь важнее верный глаз, чем тяжёлые орудия."
+
+msgctxt "professions.flavor"
+msgid "Fat or oil boiled with alkali becomes soap that carries dirt away with water."
+msgstr "Жир или масло, сваренные со щелочью, становятся мылом, которое смывает грязь водой."
+
+msgctxt "professions.flavor"
+msgid "Stone is dressed into blocks that carry weight in walls, whether laid dry or in mortar."
+msgstr "Камень обтёсывают в блоки, которые держат вес стен — насухо или на растворе."
+
+msgctxt "professions.flavor"
+msgid "Fish hung over a slow fire dries and takes smoke, which keeps it through the cold season."
+msgstr "Рыба, подвешенная над медленным огнём, сохнет и пропитывается дымом, что сохраняет её в холод."
+
+msgctxt "professions.flavor"
+msgid "Millstones turn grain into flour; wind, water and animals have all been used to turn them."
+msgstr "Жернова превращают зерно в муку; их вращали ветер, вода и животные."
+
+msgctxt "professions.flavor"
+msgid "Heavy cloth is sewn and treated so a boat or mill can catch the wind."
+msgstr "Плотную ткань шьют и обрабатывают, чтобы лодка или мельница ловили ветер."

@@ -451,6 +451,7 @@ const PROFESSION_FIELDS := {
     "name": LEAF,
     "icon": LEAF,
     "description": LEAF,
+    "flavor": LEAF,
     "pseudo": LEAF,
 }
 

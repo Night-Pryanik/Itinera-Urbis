@@ -270,6 +270,11 @@ static func _make_category_line() -> ColorRect:
     line.mouse_filter = Control.MOUSE_FILTER_IGNORE
     return line
 
+# A rule between the blocks of a description. It is the same hairline as the one
+# beside a category name, so the two lists keep one visual language.
+static func build_separator() -> ColorRect:
+    return _make_category_line()
+
 # The thickness of a hairline — a category line, a separator — in the units of the canvas it
 # is laid out in.
 #

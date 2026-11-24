@@ -619,6 +619,98 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 4
 
+[node name="EncyclopediaPanel" type="Control" parent="ContentPanel" unique_id=1900000801]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="SearchField" type="LineEdit" parent="ContentPanel/EncyclopediaPanel" unique_id=1900000802]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 4.0
+offset_top = 6.0
+offset_right = -8.0
+offset_bottom = 36.0
+grow_horizontal = 2
+placeholder_text = "Search by name"
+clear_button_enabled = true
+
+[node name="Body" type="HBoxContainer" parent="ContentPanel/EncyclopediaPanel" unique_id=1900000803]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = 44.0
+offset_right = -8.0
+offset_bottom = -4.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 8
+
+[node name="SectionsColumn" type="VBoxContainer" parent="ContentPanel/EncyclopediaPanel/Body" unique_id=1900000804]
+custom_minimum_size = Vector2(180, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_constants/separation = 4
+
+[node name="EntitiesColumn" type="VBoxContainer" parent="ContentPanel/EncyclopediaPanel/Body" unique_id=1900000809]
+custom_minimum_size = Vector2(320, 0)
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 6
+
+[node name="TitleLabel" type="Label" parent="ContentPanel/EncyclopediaPanel/Body/EntitiesColumn" unique_id=1900000810]
+layout_mode = 2
+text = "Resources"
+mouse_filter = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="ContentPanel/EncyclopediaPanel/Body/EntitiesColumn" unique_id=1900000811]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="EntityList" type="VBoxContainer" parent="ContentPanel/EncyclopediaPanel/Body/EntitiesColumn/ScrollContainer" unique_id=1900000812]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="DetailColumn" type="VBoxContainer" parent="ContentPanel/EncyclopediaPanel/Body" unique_id=1900000813]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 12
+
+[node name="Icon" type="TextureRect" parent="ContentPanel/EncyclopediaPanel/Body/DetailColumn" unique_id=1900000814]
+custom_minimum_size = Vector2(256, 256)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 3
+size_flags_horizontal = 4
+mouse_filter = 2
+
+[node name="NameLabel" type="Label" parent="ContentPanel/EncyclopediaPanel/Body/DetailColumn" unique_id=1900000815]
+layout_mode = 2
+size_flags_horizontal = 3
+horizontal_alignment = 1
+autowrap_mode = 3
+mouse_filter = 2
+
+[node name="DescriptionScroll" type="ScrollContainer" parent="ContentPanel/EncyclopediaPanel/Body/DetailColumn" unique_id=1900000816]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="Description" type="VBoxContainer" parent="ContentPanel/EncyclopediaPanel/Body/DetailColumn/DescriptionScroll" unique_id=1900000817]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
 [node name="BottomPanel" type="Panel" parent="." unique_id=47910934]
 layout_mode = 1
 anchors_preset = 12

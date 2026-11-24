@@ -39,7 +39,19 @@ msgid "Not enough coins for the upkeep (%d unpaid)! Grow the population or demol
 msgstr ""
 
 msgctxt ""
+msgid "Products"
+msgstr ""
+
+msgctxt ""
+msgid "Professions"
+msgstr ""
+
+msgctxt ""
 msgid "The chance that a main river reaching a lake or the sea splits into distributaries at its mouth."
+msgstr ""
+
+msgctxt ""
+msgid "Works at:"
 msgstr ""
 
 msgid "\n\nFound here: %s"
@@ -9814,4 +9826,196 @@ msgid "External-market trade income: +10%"
 msgstr ""
 
 msgid " × %.2f from researched technologies"
+msgstr ""
+
+msgctxt "professions.flavor"
+msgid "A boat and a dock reach fishing grounds the shore cannot reach."
+msgstr ""
+
+msgctxt "professions.flavor"
+msgid "A catchment at a spring saves carrying water from the stream for every vessel."
+msgstr ""
+
+msgctxt "professions.flavor"
+msgid "A loom turns thread into cloth more evenly than hands alone can."
+msgstr ""
+
+msgctxt "professions.flavor"
+msgid "A tally of residents lets a town collect its dues without guessing at the headcount."
+msgstr ""
+
+msgctxt "professions.flavor"
+msgid "A timber frame, planked and sealed, gives a hull that carries goods over water."
+msgstr ""
+
+msgctxt "professions.flavor"
+msgid "A wick dipped again and again in melted fat or wax becomes a candle that stores light."
+msgstr ""
+
+msgctxt "professions.flavor"
+msgid "Beaten plant fibre suspended in water settles into thin sheets on a frame."
+msgstr ""
+
+msgctxt "professions.flavor"
+msgid "Clay is dug, left to weather and sorted before a potter can shape or fire it."
+msgstr ""
+
+msgctxt "professions.flavor"
+msgid "Coins are struck from weighed metal, and the stamp is a promise the treasury must honour."
+msgstr ""
+
+msgctxt "professions.flavor"
+msgid "Copying and comparing texts keeps knowledge alive even where no school stands."
+msgstr ""
+
+msgctxt "professions.flavor"
+msgid "Every resident is counted here, whether the day is spent in a workshop or at home; the common needs of the town are shared by all."
+msgstr ""
+
+msgctxt "professions.flavor"
+msgid "Fields were tilled with hand tools long before the plough; the plough let one household work more ground."
+msgstr ""
+
+msgctxt "professions.flavor"
+msgid "Herding follows the seasons: the flock moves to fresh pasture and its heads are counted at the fold."
+msgstr ""
+
+msgctxt "professions.flavor"
+msgid "Poultry and small stock stay near the house, where scraps and a roof are enough."
+msgstr ""
+
+msgctxt "professions.flavor"
+msgid "Pigs root for scraps and can be kept beside the houses instead of out in the fields."
+msgstr ""
+
+msgctxt "professions.flavor"
+msgid "Ore was followed into the ground with pick and fire; timber props held the galleries open."
+msgstr ""
+
+msgctxt "professions.flavor"
+msgid "Open cuts supplied stone for walls and roads before deeper galleries were needed."
+msgstr ""
+
+msgctxt "professions.flavor"
+msgid "Hives can stand wherever flowers grow, so wax and honey were carried with the keeper."
+msgstr ""
+
+msgctxt "professions.flavor"
+msgid "Vines are trained and pruned by hand, and the whole harvest arrives in one short season."
+msgstr ""
+
+msgctxt "professions.flavor"
+msgid "Wet turf cut from a bog and stacked to dry becomes fuel that burns slowly and evenly."
+msgstr ""
+
+msgctxt "professions.flavor"
+msgid "The wheel and the kiln let one maker turn soft clay into vessels, bricks and tablets."
+msgstr ""
+
+msgctxt "professions.flavor"
+msgid "Technical and spice crops need seedbeds, weeding and a dry place to keep the harvest."
+msgstr ""
+
+msgctxt "professions.flavor"
+msgid "Tar seeps from the ground and certain trees; boiling it down thickens it into pitch."
+msgstr ""
+
+msgctxt "professions.flavor"
+msgid "Natural soda is gathered from deposits and plant ash and washed before glass or soap can use it."
+msgstr ""
+
+msgctxt "professions.flavor"
+msgid "Trees are felled with axe and saw, then hauled to the plots that need timber."
+msgstr ""
+
+msgctxt "professions.flavor"
+msgid "Wood baked slowly with little air turns to charcoal, which burns hotter than raw wood."
+msgstr ""
+
+msgctxt "professions.flavor"
+msgid "Sand and soda melt in a hot furnace and cool into glass without any finer tool."
+msgstr ""
+
+msgctxt "professions.flavor"
+msgid "Ore and fuel in a heated furnace yield metal; the heat does the work, wherever the furnace stands."
+msgstr ""
+
+msgctxt "professions.flavor"
+msgid "Metal is hammered while hot and soft; tools and ornaments leave the same hearth."
+msgstr ""
+
+msgctxt "professions.flavor"
+msgid "Grapes are pressed and the juice left to ferment; the vessels matter as much as the fruit."
+msgstr ""
+
+msgctxt "professions.flavor"
+msgid "Grain is mashed, boiled with hops and left to ferment in a cool vessel."
+msgstr ""
+
+msgctxt "professions.flavor"
+msgid "Olives and oilseeds are crushed and pressed; a press gives more than a hand can."
+msgstr ""
+
+msgctxt "professions.flavor"
+msgid "Resins and flowers give their scent when ground, steeped or gently distilled."
+msgstr ""
+
+msgctxt "professions.flavor"
+msgid "Roots, bark and insects give colour to cloth when steeped in a mordant bath."
+msgstr ""
+
+msgctxt "professions.flavor"
+msgid "Hides are limed, scraped and stretched dry into a surface that takes ink."
+msgstr ""
+
+msgctxt "professions.flavor"
+msgid "Sheets are sewn and covered so that a text can be carried and kept."
+msgstr ""
+
+msgctxt "professions.flavor"
+msgid "Hides treated with bark or mineral salts stop rotting and can be sewn into goods."
+msgstr ""
+
+msgctxt "professions.flavor"
+msgid "Timber is sawn and joined with pegs into frames, tools and furniture."
+msgstr ""
+
+msgctxt "professions.flavor"
+msgid "Staves are cut and bound with hoops; a tight barrel keeps goods dry."
+msgstr ""
+
+msgctxt "professions.flavor"
+msgid "Joinery turns plain timber into pieces that make a house usable and comfortable."
+msgstr ""
+
+msgctxt "professions.flavor"
+msgid "Fermented drinks heated in a still give a stronger spirit when the vapour is cooled."
+msgstr ""
+
+msgctxt "professions.flavor"
+msgid "Retorts and gentle heat separate acids and solvents from minerals and plants."
+msgstr ""
+
+msgctxt "professions.flavor"
+msgid "Soft metal is cut and set with stone; the work needs a steady eye more than heavy tools."
+msgstr ""
+
+msgctxt "professions.flavor"
+msgid "Fat or oil boiled with alkali becomes soap that carries dirt away with water."
+msgstr ""
+
+msgctxt "professions.flavor"
+msgid "Stone is dressed into blocks that carry weight in walls, whether laid dry or in mortar."
+msgstr ""
+
+msgctxt "professions.flavor"
+msgid "Fish hung over a slow fire dries and takes smoke, which keeps it through the cold season."
+msgstr ""
+
+msgctxt "professions.flavor"
+msgid "Millstones turn grain into flour; wind, water and animals have all been used to turn them."
+msgstr ""
+
+msgctxt "professions.flavor"
+msgid "Heavy cloth is sewn and treated so a boat or mill can catch the wind."
 msgstr ""
