@@ -220,6 +220,13 @@
       "description": "Copies and studies texts in the library and scriptorium, adding to the city's science."
     },
     {
+      "id": "builder",
+      "flavor": "Walls do not rise from loose stone alone: someone must set the courses, mix the binder, keep the tools sharp and move the crew from one site to the next. Organised building crews appear wherever towns grow — in the Nile valley, in the Andes, in the cities of Asia and in the river towns of Africa — each with its own techniques and measures. The work is often temporary, but a yard that keeps the builders and their supplies together makes every site finish sooner.",
+      "name": "Builder",
+      "icon": "profession_builder.png",
+      "description": "Keeps the city's building sites supplied and organised, speeding up construction without producing goods."
+    },
+    {
       "id": "mint_worker",
       "flavor": "Coins appeared independently in several regions — Lydia, China, and the Indian subcontinent among them — as stamped metal pieces whose mark guaranteed weight and purity. Mint workers weighed and assayed bullion, cast or cut blanks, and struck them between dies; the ruler's image turned a lump of metal into trusted money. Techniques spread by trade and conquest, from hammered flakes to milled edges. Debasement and re-striking were recurring temptations, so the assay and the stamp were as much political as technical acts.",
       "name": "Mint Worker",

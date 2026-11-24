@@ -35,6 +35,16 @@
       "unlock_tech": "coinage",
       "icon": "coin_stack.png",
       "virtual": true
+    },
+    {
+      // Construction work — a virtual yield of the Builders' Yard. It is not a good: one unit
+      // of the yard's work means +1% to the speed of every build (see CityData.do_tick).
+      "id": "construction_work",
+      "name": "Construction Work",
+      "type": "product",
+      "category": "other",
+      "icon": "bricks.png",
+      "virtual": true
     }
   ]
 }

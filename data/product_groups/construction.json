@@ -32,9 +32,11 @@
       ]
     },
     {
+      // Binders are not wall material: mortar goes into construction_binders, where the builder
+      // spends it, instead of standing in for dressed stone or bricks here.
       "id": "processed_construction_materials",
       "name": "Processed Building Materials",
-      "products": [ "processed_building_stone", "bricks", "mortar" ]
+      "products": [ "processed_building_stone", "bricks" ]
     }
   ]
 }

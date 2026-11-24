@@ -6,9 +6,9 @@
   // construction) within the last ten ticks. Only the highest reached tier
   // applies; the value is a fraction (0.05 = +5%).
   //
-  // "group_id" names an id from data/product_groups/. "bonus_type" says what
-  // the bonus acts on; currently "construction_speed" is the only implemented
-  // gameplay effect. The tiers are ordered from the smallest threshold to the largest.
+  // "group_id" names an id from data/product_groups/. "bonus_type" says what the bonus acts on:
+  // "construction_speed" changes the speed of builds, "food_variety" is displayed only.
+  // The tiers are ordered from the smallest threshold to the largest.
   "product_group_bonuses": [
     {
       // Rough stone of several kinds in the storeyard speeds up every build,

@@ -78,8 +78,8 @@
       "icon": "planks.png"
     },
     {
-      // Lime mixed with volcanic tuff or quartz sand; serves both as a processed masonry material
-      // and as a binding supply for the mason's workshop.
+      // Lime mixed with volcanic tuff or quartz sand. It binds a wall but is no wall in itself:
+      // the builder spends it as the strongest masonry binder to speed up construction.
       "id": "mortar", "price": 18,
       "name": "Lime Mortar",
       "type": "product",

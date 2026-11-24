@@ -91,12 +91,14 @@
       },
       {
         // The winch and the pulley: the machinery that lifts the ore out of the
-        // shaft. The gears may turn it, the water may turn it, an animal may walk
-        // round it — the hoist itself is the machine.
+        // shaft and the stone onto a wall. The gears may turn it, the water may turn
+        // it, an animal may walk round it — the hoist itself is the machine. In the
+        // Builder's Yard it multiplies the virtual yield that speeds up every build.
         "tech_id": "hoisting_mechanisms",
         "icon": "production_bonus.png",
-        "name": "Mine, quarry: +10% production",
-        "production_multiplier": { "mine": 1.1, "quarry": 1.1 }
+        "name": "Mine, quarry, Builder's Yard: +10% production",
+        "production_multiplier": { "mine": 1.1, "quarry": 1.1 },
+        "building_production_multiplier": { "builders_yard": 1.1 }
       },
       {
         // The craft of the machine itself: the frame that holds the parts, the

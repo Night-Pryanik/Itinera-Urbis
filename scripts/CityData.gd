@@ -378,6 +378,13 @@ var science_breakdown: Dictionary = {}
 # same value. The bonus belongs to the staffed building, not to the technology that unlocked it.
 var tax_collector_share: float = 0.0
 
+# The speed added by staffed Builders' Yards. One virtual unit of "construction_work" of the
+# recipe "construction_work" is +1% of construction speed. It is recomputed from scratch in
+# do_tick(), so the build simulation and the tooltips read the same value of the current tick.
+var builder_construction_share: float = 0.0
+const CITY_CONSTRUCTION_WORK_YIELD_KEY := "construction_work"
+const CONSTRUCTION_WORK_SPEED_PER_UNIT := 0.01
+
 # --- THE LABOUR ---
 # The labour = the rate of the work of the city. 1 citizen = 1 labour/sec.
 # It is NOT accumulated, it is a rate, and not a stock.
@@ -1818,6 +1825,7 @@ func do_tick():
     science_buildings_rate_per_sec = 0.0
     var science_breakdown_buildings: Array = []
     tax_collector_share = 0.0
+    builder_construction_share = 0.0
 
     # The goods a taken branch speeds the making of, and by how much. The map is built once per tick
     # because the loop of the buildings reads it for every slot; it is empty for a city whose branches
@@ -2001,6 +2009,14 @@ func do_tick():
             if recipe_yield.has(CITY_COINAGE_YIELD_KEY):
                 var coinage_units := float(recipe_yield[CITY_COINAGE_YIELD_KEY])
                 tax_collector_share += coinage_units * 0.01 * output_multiplier
+
+            # THE WORK OF THE BUILDERS: a staffed yard speeds up every build, while an idle one
+            # adds nothing. The supplies of the profession (binders, tools) are already folded into
+            # output_multiplier, so a well-supplied yard contributes more than an empty one. The
+            # share is counted per slot: a second yard adds its own.
+            if recipe_yield.has(CITY_CONSTRUCTION_WORK_YIELD_KEY):
+                var work_units := float(recipe_yield[CITY_CONSTRUCTION_WORK_YIELD_KEY])
+                builder_construction_share += work_units * CONSTRUCTION_WORK_SPEED_PER_UNIT * output_multiplier
 
             # THE STRIKE OF THE MINT: the seigniorage of the struck coins.
             # The Mint spends metal on coins and pays the difference between the face value of
@@ -2653,13 +2669,14 @@ func get_diversity_bonuses() -> Array:
         })
     return result
 
-# The multiplier of the speed of every build, from the diversity bonuses of stone.
+# The multiplier of the speed of every build: the diversity of stone plus the work of the
+# staffed Builders' Yards. The builders are optional; a city without them builds at base speed.
 func get_construction_speed_multiplier() -> float:
     var sum := 0.0
     for row in get_diversity_bonuses():
         if str(row.get("bonus_type", "")) == BONUS_CONSTRUCTION_SPEED:
             sum += float(row.get("value", 0.0))
-    return 1.0 + sum
+    return 1.0 + sum + builder_construction_share
 
 # The badge of a production slot a technology grants (the tree and the Effects tab).
 const ICON_PRODUCTION_SLOT := "production_slot.png"

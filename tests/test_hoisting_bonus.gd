@@ -191,6 +191,14 @@ func _test_hoisting_bonus(cdata: Node, state: Dictionary) -> void:
     check(_tech_rows(cdata.get_tech_production_modifiers("lumberjack_hut", false, true),
             HOIST_TECH).is_empty(),
             "the hoist must not touch the woodcutter's camp", state)
+    var yard_rows := _tech_rows(cdata.get_building_production_modifiers("builders_yard", false),
+            HOIST_TECH)
+    check(yard_rows.size() == 1,
+            "the researched hoist must show exactly one row for the Builder's Yard (got %d)"
+                    % yard_rows.size(), state)
+    if not yard_rows.is_empty():
+        check(is_equal_approx(float(yard_rows[0].get("multiplier", 0.0)), 1.1),
+                "the Builder's Yard must get +10%% from the hoist", state)
 
 
 # --- 5. The mechanics ---------------------------------------------------------

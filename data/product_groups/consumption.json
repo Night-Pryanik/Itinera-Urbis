@@ -178,6 +178,14 @@
       "products": [ "floral_water", "perfume", "incense", "attar", "spirit_perfume" ]
     },
     {
+      // What the builders set between the stones: clay and bitumen for a cheap bond,
+      // gypsum plaster and lime mortar for a lasting one. The profession draws one kind
+      // at a time, the strongest first; the per-member bonuses live in the consumption rule.
+      "id": "construction_binders",
+      "name": "Masonry Binders",
+      "products": [ "clay", "bitumen", "plaster", "mortar" ]
+    },
+    {
       // Work tools: the pick of the miner and quarryman, the axe of the lumberjack,
       // the hoe of the farmer and planter, the shovel of the clay digger and the vinedresser,
       // the chisel of the mason, the knife and hook of the butcher. The profession draws

@@ -87,7 +87,7 @@
       "science_cost": 4.0,
       "prerequisites": [ [ "rope_making", "wheel" ] ],
       "icon": "hoisting_mechanisms.png",
-      "description": "+10% to the production of mines and quarries.",
+      "description": "+10% to the production of mines, quarries and the Builder's Yard.",
       "flavor": "A shaft is only as deep as the rope that serves it. A drum on a windlass, a rope over a pulley, a capstan walked round by men or oxen — and in the Chinese mines a treadwheel the size of a house, turning all day like the water wheel it resembles. What the hoist brings up is what the mine is worth: the ore that cannot be lifted stays in the rock."
     },
     {

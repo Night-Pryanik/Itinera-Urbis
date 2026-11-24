@@ -35,6 +35,20 @@
       "description": "The tax collectors tally the citizens and carry the dues into the treasury."
     },
     {
+      // The builders are a non-producing profession: the yard has no output in the warehouse.
+      // Its virtual yield is the speed of the city's builds, one unit being +1% (see CityData.do_tick).
+      // The binder and the tool consumed by the profession raise the multiplier of this yield.
+      "id": "construction_work",
+      "name": "Construction Work",
+      "produced_in": [ "builders_yard" ],
+      "resources": {  },
+      "result": {  },
+      "display_result": { "construction_work": 4 },
+      "time": 5.0,
+      "unlock_tech": "masonry",
+      "description": "The builders keep the city's sites supplied and organised, speeding up every build."
+    },
+    {
       // A recipe without ingredients would mint coins out of nothing, so it waits for the
       // metal: the block does not freeze the container, but the release of the seigniorage
       // follows the progress of the charge (see CityData.do_tick).

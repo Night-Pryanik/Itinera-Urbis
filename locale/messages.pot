@@ -3398,6 +3398,10 @@ msgid "The simplest millstone, grinding grain into flour by hand."
 msgstr ""
 
 msgctxt "buildings.description"
+msgid "The yard where builders keep their tools and binders and direct the work on the city's buildings."
+msgstr ""
+
+msgctxt "buildings.description"
 msgid "Turns milk into cheese, a good that keeps for a long time."
 msgstr ""
 
@@ -3415,6 +3419,10 @@ msgstr ""
 
 msgctxt "buildings.description"
 msgid "Dips rendered tallow and moulds beeswax into candles for households, mines and workshops."
+msgstr ""
+
+msgctxt "buildings.flavor"
+msgid "A building site needs a place where the crew gathers, the tools are kept and the binder is mixed before it is carried to the wall. Such yards appear wherever towns build in stone or brick, from the Nile valley to the cities of Asia and the Andes. A builder here does not make a good for the warehouse: the work is the faster raising of every building in the city."
 msgstr ""
 
 msgctxt "buildings.name"
@@ -3447,6 +3455,10 @@ msgstr ""
 
 msgctxt "buildings.name"
 msgid "Brewer's House"
+msgstr ""
+
+msgctxt "buildings.name"
+msgid "Builder's Yard"
 msgstr ""
 
 msgctxt "buildings.name"
@@ -4256,6 +4268,10 @@ msgid "Soaks ropes in tar to make them waterproof."
 msgstr ""
 
 msgctxt "crafts.description"
+msgid "The builders keep the city's sites supplied and organised, speeding up every build."
+msgstr ""
+
+msgctxt "crafts.description"
 msgid "This slot produces nothing."
 msgstr ""
 
@@ -4737,6 +4753,10 @@ msgstr ""
 
 msgctxt "crafts.name"
 msgid "Coke Smelting"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Construction Work"
 msgstr ""
 
 msgctxt "crafts.name"
@@ -5640,6 +5660,10 @@ msgid "Fresh water passes through in a chain (up to 4 tiles)"
 msgstr ""
 
 msgctxt "modifiers.tech_modifiers.name"
+msgid "Mine, quarry, Builder's Yard: +10% production"
+msgstr ""
+
+msgctxt "modifiers.tech_modifiers.name"
 msgid "Mine, quarry, bloomery, smelter: +25% production only where fresh water is available"
 msgstr ""
 
@@ -5741,6 +5765,10 @@ msgstr ""
 
 msgctxt "product_groups.name"
 msgid "Jewelry"
+msgstr ""
+
+msgctxt "product_groups.name"
+msgid "Masonry Binders"
 msgstr ""
 
 msgctxt "product_groups.name"
@@ -5944,6 +5972,10 @@ msgid "Grows technical and spice crops."
 msgstr ""
 
 msgctxt "professions.description"
+msgid "Keeps the city's building sites supplied and organised, speeding up construction without producing goods."
+msgstr ""
+
+msgctxt "professions.description"
 msgid "Limes, scrapes and dries hides into parchment."
 msgstr ""
 
@@ -6035,6 +6067,10 @@ msgctxt "professions.description"
 msgid "Cures and smokes fish over slow wood fires."
 msgstr ""
 
+msgctxt "professions.flavor"
+msgid "Walls do not rise from loose stone alone: someone must set the courses, mix the binder, keep the tools sharp and move the crew from one site to the next. Organised building crews appear wherever towns grow — in the Nile valley, in the Andes, in the cities of Asia and in the river towns of Africa — each with its own techniques and measures. The work is often temporary, but a yard that keeps the builders and their supplies together makes every site finish sooner."
+msgstr ""
+
 msgctxt "professions.name"
 msgid "All Citizens"
 msgstr ""
@@ -6057,6 +6093,10 @@ msgstr ""
 
 msgctxt "professions.name"
 msgid "Brewer"
+msgstr ""
+
+msgctxt "professions.name"
+msgid "Builder"
 msgstr ""
 
 msgctxt "professions.name"
@@ -6637,6 +6677,10 @@ msgstr ""
 
 msgctxt "resources.name"
 msgid "Commiphora"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Construction Work"
 msgstr ""
 
 msgctxt "resources.name"
@@ -8108,11 +8152,19 @@ msgid "+10% to the production of mines and quarries."
 msgstr ""
 
 msgctxt "technologies.description"
+msgid "+10% to the production of mines, quarries and the Builder's Yard."
+msgstr ""
+
+msgctxt "technologies.description"
 msgid "+20% to resource production on farms and animal mills.\nReduces the effect of distance from the city on the work cost of building improvements by 20%."
 msgstr ""
 
 msgctxt "technologies.description"
 msgid "+25% to resource production on farms and plantations."
+msgstr ""
+
+msgctxt "technologies.description"
+msgid "Allows you to build the quarry, the mason's workshop and the builder's yard."
 msgstr ""
 
 msgctxt "technologies.description"

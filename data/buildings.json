@@ -227,6 +227,20 @@
       "default_recipes": [ "processed_building_stone" ]
     },
     {
+      "id": "builders_yard",
+      "name": "Builder's Yard",
+      "description": "The yard where builders keep their tools and binders and direct the work on the city's buildings.",
+      "flavor": "A building site needs a place where the crew gathers, the tools are kept and the binder is mixed before it is carried to the wall. Such yards appear wherever towns build in stone or brick, from the Nile valley to the cities of Asia and the Andes. A builder here does not make a good for the warehouse: the work is the faster raising of every building in the city.",
+      "work_cost": 35,
+      "maintenance_cost": 24.0,
+      "additional_cost": [ { "planks": 120 }, { "@processed_construction_materials": 40 } ],
+      "icon": "builders_yard.png",
+      "profession": "builder",
+      "production_slots": 1.0,
+      "unlock_tech": "masonry",
+      "default_recipes": [ "construction_work" ]
+    },
+    {
       "id": "leatherworker_house",
       "name": "Tanner's House",
       "description": "Tans hides and sews leather goods.",

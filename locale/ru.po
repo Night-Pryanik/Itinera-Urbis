@@ -3474,6 +3474,10 @@ msgid "The simplest millstone, grinding grain into flour by hand."
 msgstr "Простейший жёрнов для ручного помола зерна в муку."
 
 msgctxt "buildings.description"
+msgid "The yard where builders keep their tools and binders and direct the work on the city's buildings."
+msgstr "Двор, где строители хранят инструменты и связующие материалы и руководят работами на городских стройках."
+
+msgctxt "buildings.description"
 msgid "Turns milk into cheese, a good that keeps for a long time."
 msgstr "Перерабатывает молоко в сыр — продукт, который долго хранится."
 
@@ -3492,6 +3496,10 @@ msgstr "Перегоняет сброженные напитки и сладко
 msgctxt "buildings.description"
 msgid "Dips rendered tallow and moulds beeswax into candles for households, mines and workshops."
 msgstr "Отливает и макает свечи из животного жира и пчелиного воска для домов, шахт и мастерских."
+
+msgctxt "buildings.flavor"
+msgid "A building site needs a place where the crew gathers, the tools are kept and the binder is mixed before it is carried to the wall. Such yards appear wherever towns build in stone or brick, from the Nile valley to the cities of Asia and the Andes. A builder here does not make a good for the warehouse: the work is the faster raising of every building in the city."
+msgstr "Стройке нужно место, где собирается артель, хранятся инструменты и готовится связующее, прежде чем его отнесут к стене. Такие дворы возникают везде, где города строят из камня или кирпича, — от долины Нила до городов Азии и Анд. Строитель здесь не делает товар для склада: его работа — быстрее возводить каждое здание города."
 
 msgctxt "buildings.name"
 msgid "Alchemist's House"
@@ -3524,6 +3532,10 @@ msgstr "Переплётная мастерская"
 msgctxt "buildings.name"
 msgid "Brewer's House"
 msgstr "Дом варщика"
+
+msgctxt "buildings.name"
+msgid "Builder's Yard"
+msgstr "Строительный двор"
 
 msgctxt "buildings.name"
 msgid "Carpenter's Workshop"
@@ -4336,6 +4348,10 @@ msgid "Soaks ropes in tar to make them waterproof."
 msgstr "Пропитывает верёвки смолой для водонепроницаемости"
 
 msgctxt "crafts.description"
+msgid "The builders keep the city's sites supplied and organised, speeding up every build."
+msgstr "Строители снабжают городские стройки и наводят на них порядок, ускоряя каждое строительство."
+
+msgctxt "crafts.description"
 msgid "This slot produces nothing."
 msgstr "Слот не производит ничего"
 
@@ -4818,6 +4834,10 @@ msgstr "Кокс"
 msgctxt "crafts.name"
 msgid "Coke Smelting"
 msgstr "Коксовая плавка"
+
+msgctxt "crafts.name"
+msgid "Construction Work"
+msgstr "Строительные работы"
 
 msgctxt "crafts.name"
 msgid "Copper (from copper ore)"
@@ -5720,6 +5740,10 @@ msgid "Fresh water passes through in a chain (up to 4 tiles)"
 msgstr "Передача пресной воды по цепочке (до 4 гексов)"
 
 msgctxt "modifiers.tech_modifiers.name"
+msgid "Mine, quarry, Builder's Yard: +10% production"
+msgstr "Шахта, каменоломня, строительный двор: +10% к производству"
+
+msgctxt "modifiers.tech_modifiers.name"
 msgid "Mine, quarry, bloomery, smelter: +25% production only where fresh water is available"
 msgstr "Шахта, каменоломня, сыродутная печь, плавильня: +25% к производству только при наличии пресной воды"
 
@@ -5822,6 +5846,10 @@ msgstr "Инструменты"
 msgctxt "product_groups.name"
 msgid "Jewelry"
 msgstr "Украшения"
+
+msgctxt "product_groups.name"
+msgid "Masonry Binders"
+msgstr "Связующие для кладки"
 
 msgctxt "product_groups.name"
 msgid "Millstone Stones"
@@ -6024,6 +6052,10 @@ msgid "Grows technical and spice crops."
 msgstr "Возделывает технические и пряные культуры."
 
 msgctxt "professions.description"
+msgid "Keeps the city's building sites supplied and organised, speeding up construction without producing goods."
+msgstr "Снабжает городские стройки и наводит на них порядок, ускоряя строительство, но не производит товаров."
+
+msgctxt "professions.description"
 msgid "Limes, scrapes and dries hides into parchment."
 msgstr "Обрабатывает известью, скоблит и сушит шкуры в пергамент."
 
@@ -6115,6 +6147,10 @@ msgctxt "professions.description"
 msgid "Cures and smokes fish over slow wood fires."
 msgstr "Засаливает и коптит рыбу на медленном древесном дыму."
 
+msgctxt "professions.flavor"
+msgid "Walls do not rise from loose stone alone: someone must set the courses, mix the binder, keep the tools sharp and move the crew from one site to the next. Organised building crews appear wherever towns grow — in the Nile valley, in the Andes, in the cities of Asia and in the river towns of Africa — each with its own techniques and measures. The work is often temporary, but a yard that keeps the builders and their supplies together makes every site finish sooner."
+msgstr "Стены не поднимаются из рыхлого камня сами собой: кто-то должен выкладывать ряды, готовить связующее, следить за инструментом и переводить артель с одной стройки на другую. Организованные строительные артели возникают там, где растут города, — в долине Нила, в Андах, в городах Азии и в приречных городах Африки; у каждой свои приёмы и меры. Работа эта часто временная, но двор, где строители и их припасы собраны вместе, позволяет каждой стройке завершаться быстрее."
+
 msgctxt "professions.name"
 msgid "All Citizens"
 msgstr "Все жители"
@@ -6138,6 +6174,10 @@ msgstr "Переплётчик"
 msgctxt "professions.name"
 msgid "Brewer"
 msgstr "Варщик"
+
+msgctxt "professions.name"
+msgid "Builder"
+msgstr "Строитель"
 
 msgctxt "professions.name"
 msgid "Butcher"
@@ -6718,6 +6758,10 @@ msgstr "Кокс"
 msgctxt "resources.name"
 msgid "Commiphora"
 msgstr "Коммифора"
+
+msgctxt "resources.name"
+msgid "Construction Work"
+msgstr "Строительные работы"
 
 msgctxt "resources.name"
 msgid "Copper"
@@ -8188,12 +8232,20 @@ msgid "+10% to the production of mines and quarries."
 msgstr "+10% к производству шахт и каменоломен."
 
 msgctxt "technologies.description"
+msgid "+10% to the production of mines, quarries and the Builder's Yard."
+msgstr "+10% к производству шахт, каменоломен и строительного двора."
+
+msgctxt "technologies.description"
 msgid "+20% to resource production on farms and animal mills.\nReduces the effect of distance from the city on the work cost of building improvements by 20%."
 msgstr "+20% к производству на фермах и мельницах с животной тягой.\nСнижает вклад расстояния от города в стоимость труда при строительстве улучшений на 20%."
 
 msgctxt "technologies.description"
 msgid "+25% to resource production on farms and plantations."
 msgstr "+25% к производству на фермах и плантациях."
+
+msgctxt "technologies.description"
+msgid "Allows you to build the quarry, the mason's workshop and the builder's yard."
+msgstr "Даёт возможность строить каменоломню, каменотёсную мастерскую и строительный двор."
 
 msgctxt "technologies.description"
 msgid "Enables water-powered upgrades for the paper workshop and forge. +25% production for mines, quarries, bloomeries and smelters only where fresh water is available."

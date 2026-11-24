@@ -142,7 +142,7 @@
       "science_cost": 3.0,
       "icon": "masonry.png",
       "prerequisites": [ [ "mining" ] ],
-      "description": "Allows you to build the quarry and the mason's workshop.",
+      "description": "Allows you to build the quarry, the mason's workshop and the builder's yard.",
       "flavor": "The skill of laying stone made it possible to build sturdy buildings that outlived centuries.",
       "unlock_effects": [ { "icon": "spring_catchment.png", "name": "Unlocks spring catchments for collecting mineral spring water." } ]
     },
