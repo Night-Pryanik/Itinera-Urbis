@@ -13,6 +13,7 @@
 #     at its native size, and an entity without an icon keeps the picture in place.
 #  6. The page of a profession has its workplaces, its consumption, its description and a
 #     historical note in separate blocks; the links in the first two open the target entity.
+#     The butcher is a professional worker of the slaughterhouse and consumes work tools.
 #  7. A query searches every section at once and survives a refresh and a change of language.
 extends SceneTree
 
@@ -149,6 +150,7 @@ func _run() -> void:
                 "the detail picture never exceeds 256 pixels", state)
 
     column.get_child(5).pressed.emit()
+    _check_butcher(state, panel, list, gdata)
     var profession := _row_with_text(list, str(gdata.get_profession_name("miller")))
     check(profession != null, "the professions section lists the miller", state)
     if profession != null:
@@ -193,6 +195,11 @@ func _run() -> void:
     city_ui.refresh()
     check(str(column.get_child(1).text) == "Products",
             "the sections are relabelled on a change of language", state)
+    check(str(gdata.get_profession_name("butcher")) == "Butcher",
+            "the name of the butcher is translated", state)
+    check(str(gdata.professions.get("butcher", {}).get("flavor", ""))
+            == "A knife, a hook and a steady hand turn a live animal into meat that keeps.",
+            "the historical note of the butcher is translated", state)
     TranslationServer.set_locale(original_locale)
     city_ui.refresh()
 
@@ -217,6 +224,30 @@ func _run() -> void:
     city_ui.hide()
     main_map.queue_free()
     _finish(state)
+
+func _check_butcher(state: Dictionary, panel: Control, list: VBoxContainer, gdata) -> void:
+    check(str(gdata.get_profession_for_building("slaughterhouse")) == "butcher",
+            "the slaughterhouse has the butcher profession", state)
+    var row := _row_with_text(list, str(gdata.get_profession_name("butcher")))
+    check(row != null, "the professions section lists the butcher", state)
+    if row == null:
+        return
+    row.pressed.emit()
+    var box := panel.get_node_or_null(
+            "Body/DetailColumn/DescriptionScroll/Description") as VBoxContainer
+    if box == null:
+        return
+    var labels := _rich_labels(box)
+    check(labels.size() >= 2, "the butcher page has workplace and consumption blocks", state)
+    if labels.size() < 2:
+        return
+    check(str(labels[0].text).contains("[url=buildings:slaughterhouse]"),
+            "the butcher works at the slaughterhouse and the workplace is a link", state)
+    var group_name := str(gdata.get_product_group_name("instruments"))
+    check(group_name != "" and str(labels[1].text).contains(group_name),
+            "the butcher consumes the group of work tools", state)
+    check(not str(labels[1].text).contains("[url="),
+            "a group of goods is not a link to one entity", state)
 
 func _check_miller_description(state: Dictionary, panel: Control, gdata) -> void:
     var box := panel.get_node_or_null(

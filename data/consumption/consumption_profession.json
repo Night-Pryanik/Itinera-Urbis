@@ -120,11 +120,13 @@
       "production_bonus": 0.15
     },
     {
-      // Work tools are a consumable for everyone who digs, fells, mines or shapes: the
+      // Work tools are a consumable for everyone who digs, fells, mines, cuts or shapes:
+      // the knife and the hook of the butcher wear out like the pick and the axe. The
       // rule prefers the strongest tool material in stock. All materials wear out
       // at the same rate.
       "resource": "@instruments",
       "profession": [ 
+        "butcher",
         "miner",
         "quarryman",
         "lumberjack",

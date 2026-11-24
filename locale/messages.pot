@@ -5816,6 +5816,10 @@ msgid "Cultivates the vineyard and gathers the harvest."
 msgstr ""
 
 msgctxt "professions.description"
+msgid "Cuts livestock into meat, hides and tallow for the city."
+msgstr ""
+
+msgctxt "professions.description"
 msgid "Cuts wet turf from the bog and stacks it to dry into fuel."
 msgstr ""
 
@@ -6001,6 +6005,10 @@ msgstr ""
 
 msgctxt "professions.name"
 msgid "Brewer"
+msgstr ""
+
+msgctxt "professions.name"
+msgid "Butcher"
 msgstr ""
 
 msgctxt "professions.name"
@@ -9834,6 +9842,10 @@ msgstr ""
 
 msgctxt "professions.flavor"
 msgid "A catchment at a spring saves carrying water from the stream for every vessel."
+msgstr ""
+
+msgctxt "professions.flavor"
+msgid "A knife, a hook and a steady hand turn a live animal into meat that keeps."
 msgstr ""
 
 msgctxt "professions.flavor"

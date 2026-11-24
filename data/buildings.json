@@ -73,6 +73,7 @@
       "maintenance_cost": 100.0,
       "additional_cost": [ { "planks": 80 } ],
       "icon": "slaughterhouse.png",
+      "profession": "butcher",
       "production_slots": 1.0,
       "unlock_tech": "animal_husbandry",
       "default_recipes": [  ]

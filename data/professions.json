@@ -391,6 +391,13 @@
       "name": "Boatbuilder",
       "icon": "profession_boatbuilder.png",
       "description": "Frames, planks and rigs wooden boats."
+    },
+    {
+      "id": "butcher",
+      "flavor": "A knife, a hook and a steady hand turn a live animal into meat that keeps.",
+      "name": "Butcher",
+      "icon": "slaughterhouse.png",
+      "description": "Cuts livestock into meat, hides and tallow for the city."
     }
   ]
 }

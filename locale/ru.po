@@ -5894,6 +5894,10 @@ msgid "Cultivates the vineyard and gathers the harvest."
 msgstr "Возделывает виноградник, собирает урожай."
 
 msgctxt "professions.description"
+msgid "Cuts livestock into meat, hides and tallow for the city."
+msgstr "Разделывает скот на мясо, шкуры и жир для города."
+
+msgctxt "professions.description"
 msgid "Cuts wet turf from the bog and stacks it to dry into fuel."
 msgstr "Режет сырой торф на болоте и складывает его сушиться на топливо."
 
@@ -6080,6 +6084,10 @@ msgstr "Переплётчик"
 msgctxt "professions.name"
 msgid "Brewer"
 msgstr "Варщик"
+
+msgctxt "professions.name"
+msgid "Butcher"
+msgstr "Мясник"
 
 msgctxt "professions.name"
 msgid "Carpenter"
@@ -9952,6 +9960,10 @@ msgstr "Лодка и причал открывают доступ к промы
 msgctxt "professions.flavor"
 msgid "A catchment at a spring saves carrying water from the stream for every vessel."
 msgstr "Захват у родника избавляет от необходимости носить воду из ручья для каждого сосуда."
+
+msgctxt "professions.flavor"
+msgid "A knife, a hook and a steady hand turn a live animal into meat that keeps."
+msgstr "Нож, крюк и верная рука превращают живую скотину в мясо, которое хранится."
 
 msgctxt "professions.flavor"
 msgid "A loom turns thread into cloth more evenly than hands alone can."

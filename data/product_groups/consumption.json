@@ -180,8 +180,9 @@
     {
       // Work tools: the pick of the miner and quarryman, the axe of the lumberjack,
       // the hoe of the farmer and planter, the shovel of the clay digger and the vinedresser,
-      // the chisel of the mason. The profession draws one tool at a time, rotating
-      // over the kinds that are in stock; the order sets where the rotation starts.
+      // the chisel of the mason, the knife and hook of the butcher. The profession draws
+      // one tool at a time, rotating over the kinds that are in stock; the order sets
+      // where the rotation starts.
       "id": "instruments",
       "name": "Instruments",
       "products": [ "copper_tools", "cast_iron_tools", "bronze_tools", "brass_tools", "iron_tools", "steel_tools", "damascus_tools" ]
