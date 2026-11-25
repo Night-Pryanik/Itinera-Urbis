@@ -5836,10 +5836,6 @@ msgid "Wood for Barrels"
 msgstr ""
 
 msgctxt "product_groups.name"
-msgid "Wool"
-msgstr ""
-
-msgctxt "product_groups.name"
 msgid "Writing Instruments"
 msgstr ""
 
@@ -10579,9 +10575,7 @@ msgstr ""
 
 
 msgctxt "specializations.description"
-msgid ""
-"The wool clothes of the city are asked for by name. Wool goods bring more, "
-"and its workshops produce wool goods and clothes faster."
+msgid "The wool clothes of the city are asked for by name. All clothes bring more, and its workshops produce them faster."
 msgstr ""
 
 
@@ -10637,10 +10631,6 @@ msgid "Weaves the city's finest plant fibers into cloth known by its name."
 msgstr ""
 
 
-msgctxt "product_groups.name"
-msgid "Textiles"
-msgstr ""
-
 
 msgctxt "specializations.name"
 msgid "Textiles"
@@ -10653,9 +10643,7 @@ msgstr ""
 
 
 msgctxt "specializations.description"
-msgid ""
-"The cloth clothes of the city are asked for by name. Textile goods bring "
-"more, and its workshops produce textile goods and clothes faster."
+msgid "The cloth clothes of the city are asked for by name. All clothes bring more, and its workshops produce them faster."
 msgstr ""
 
 

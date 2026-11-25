@@ -5916,10 +5916,6 @@ msgid "Wood for Barrels"
 msgstr "Древесина для бочек"
 
 msgctxt "product_groups.name"
-msgid "Wool"
-msgstr "Шерсть"
-
-msgctxt "product_groups.name"
 msgid "Writing Instruments"
 msgstr "Писчие инструменты"
 
@@ -10700,12 +10696,8 @@ msgstr "Шерсть \"<city_name>\""
 
 
 msgctxt "specializations.description"
-msgid ""
-"The wool clothes of the city are asked for by name. Wool goods bring more, "
-"and its workshops produce wool goods and clothes faster."
-msgstr ""
-"Шерстяную одежду города спрашивают по имени. Шерстяные товары приносят "
-"больше, а мастерские быстрее производят шерстяные товары и одежду."
+msgid "The wool clothes of the city are asked for by name. All clothes bring more, and its workshops produce them faster."
+msgstr "Шерстяную одежду города спрашивают по имени. Вся одежда приносит больше, а мастерские производят её быстрее."
 
 
 msgctxt "resources.name"
@@ -10763,10 +10755,6 @@ msgstr ""
 "Ткёт из лучших растительных волокон ткань, известную под именем города."
 
 
-msgctxt "product_groups.name"
-msgid "Textiles"
-msgstr "Текстиль"
-
 
 msgctxt "specializations.name"
 msgid "Textiles"
@@ -10779,12 +10767,8 @@ msgstr "Специализация текстиля"
 
 
 msgctxt "specializations.description"
-msgid ""
-"The cloth clothes of the city are asked for by name. Textile goods bring "
-"more, and its workshops produce textile goods and clothes faster."
-msgstr ""
-"Тканевую одежду города спрашивают по имени. Текстильные товары приносят "
-"больше, а мастерские быстрее производят текстильные товары и одежду."
+msgid "The cloth clothes of the city are asked for by name. All clothes bring more, and its workshops produce them faster."
+msgstr "Тканевую одежду города спрашивают по имени. Вся одежда приносит больше, а мастерские производят её быстрее."
 
 
 msgctxt "resources.name"

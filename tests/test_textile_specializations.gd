@@ -115,16 +115,14 @@ func _run() -> void:
         _check(fame.is_challenge_completed(str(product["challenge"]["id"])), pid + " completion survives save")
     _check(city.get_pending_specialization_picks() == 2, "both challenges grant their own pick")
     _check(city.choose_specialization("wool_specialization"), "wool specialization can be chosen")
-    for pid in gd.product_groups.get("clothes", []):
-        _check(is_equal_approx(float(city.get_production_product_multipliers().get(pid, 1.0)), 1.2),
-            str(pid) + " receives the wool bonus")
+    _check_textile_bonuses(city, gd, 0.20, 0.15)
     _check(city.choose_specialization("fabric_specialization"), "fabric specialization can also be chosen")
+    _check_textile_bonuses(city, gd, 0.40, 0.30)
+    # Either branch alone must cover the same clothing basket, not its materials.
+    city.chosen_specialization_ids.erase("wool_specialization")
+    _check_textile_bonuses(city, gd, 0.20, 0.15)
+    city.chosen_specialization_ids.append("wool_specialization")
     var multipliers: Dictionary = city.get_production_product_multipliers()
-    for pid in gd.product_groups.get("clothes", []):
-        _check(is_equal_approx(float(multipliers.get(pid, 1.0)), 1.4), str(pid) + " receives both bonuses")
-    _check(is_equal_approx(float(multipliers.get("carpet", 1.0)), 1.0), "the clothing bonus does not affect carpets")
-    _check(is_equal_approx(float(multipliers.get("cashmere", 1.0)), 1.2), "wool goods retain their own bonus")
-    _check(is_equal_approx(float(multipliers.get("linen_byssus", 1.0)), 1.2), "fabric goods receive their own bonus")
 
     # The multiplier map may have been built before the dyed product was registered.
     var variant: String = gd.make_generated_id("wool_clothes", "ochre")
@@ -151,6 +149,8 @@ func _run() -> void:
     _check(is_equal_approx(gd.product_output_multiplier(multipliers, brand_variant), 1.4),
         "dyed branded clothes inherit both bonuses")
     var brand_recipe: Dictionary = gd.get_craft(brand_variant)
+    _check(is_equal_approx(city.get_specialization_product_share("trade_sell_price", brand_variant), 0.30),
+        "dyed branded clothing receives both sale bonuses")
     city.city_storage.clear()
     city.city_quality_detail.clear()
     city.add_to_storage("cashmere", 20, "common")
@@ -175,6 +175,19 @@ func _run() -> void:
 
     main_map.queue_free()
     _finish()
+
+# Both branches cover all clothing for production and town prices, never its inputs.
+func _check_textile_bonuses(city: Node, gd: Node, production: float, price: float) -> void:
+    var multipliers: Dictionary = city.get_production_product_multipliers()
+    for pid in gd.product_groups.get("clothes", []):
+        _check(is_equal_approx(float(multipliers.get(pid, 1.0)), 1.0 + production),
+            str(pid) + " receives the clothing production bonus")
+        _check(is_equal_approx(city.get_specialization_product_share("trade_sell_price", str(pid)), price),
+            str(pid) + " receives the clothing sale bonus")
+    for pid in ["flax", "linen_byssus", "wool", "cashmere", "carpet"]:
+        _check(is_equal_approx(float(multipliers.get(pid, 1.0)), 1.0), str(pid) + " has no clothing production bonus")
+        _check(is_equal_approx(city.get_specialization_product_share("trade_sell_price", pid), 0.0),
+            str(pid) + " has no clothing sale bonus")
 
 func _sell(trade: Node, pid: String, amount: int) -> Dictionary:
     return trade.submit_order({"town_id": "textile_test", "side": "buy",
