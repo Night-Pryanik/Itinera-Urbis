@@ -229,8 +229,8 @@
     {
       "id": "builders_yard",
       "name": "Builder's Yard",
-      "description": "A staffed yard speeds up construction even with empty preparation slots or no ingredients. Mixes lime mortar and concrete for the city's building sites.",
-      "flavor": "A building site needs a place where the crew gathers, the tools are kept and the binder is mixed before it is carried to the wall. Such yards appear wherever towns build in stone or brick, from the Nile valley to the cities of Asia and the Andes. The crew organises the city's construction whether or not it is preparing a fresh batch of mortar; its tools and building mixtures make that work more effective.",
+      "description": "The yard where builders keep their tools and binders and direct the work on the city's buildings.",
+      "flavor": "A building site needs a place where the crew gathers, the tools are kept and the binder is mixed before it is carried to the wall. Such yards appear wherever towns build in stone or brick, from the Nile valley to the cities of Asia and the Andes. A builder here does not make a good for the warehouse: the work is the faster raising of every building in the city.",
       "work_cost": 35,
       "maintenance_cost": 24.0,
       "additional_cost": [ { "planks": 120 }, { "@processed_construction_materials": 40 } ],
@@ -238,8 +238,7 @@
       "profession": "builder",
       "production_slots": 1.0,
       "unlock_tech": "masonry",
-      "additional_yield": { "construction_work": 4 },
-      "default_recipes": [  ]
+      "default_recipes": [ "construction_work" ]
     },
     {
       "id": "leatherworker_house",
@@ -440,8 +439,8 @@
     {
       "id": "lime_kilns",
       "name": "Kiln",
-      "description": "Produces lime from limestone and alum from alunite.",
-      "flavor": "Limestone heated in a kiln becomes quicklime, which goes into plaster, mortar and the preparation of other materials. The operation needs only fire and a stone that is easy to find. The kiln also yields alum from alunite, another example of a raw mineral becoming a workshop material.",
+      "description": "Processes minerals into lime, gypsum plaster and alum, and prepares lime mortar and concrete in the kiln yard.",
+      "flavor": "Limestone heated in a kiln becomes quicklime. In the surrounding yard, workers slake the lime and mix it with sand for mortar, or with reactive volcanic material and stone aggregate for concrete. Firing and mixing are separate operations within the same works. The kiln also processes gypsum and alunite into materials for other workshops.",
       "work_cost": 45,
       "maintenance_cost": 6.8,
       "additional_cost": [ { "planks": 120 }, { "@processed_construction_materials": 60 } ],

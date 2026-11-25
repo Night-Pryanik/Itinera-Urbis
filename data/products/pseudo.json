@@ -37,8 +37,8 @@
       "virtual": true
     },
     {
-      // A staffed yard grants this virtual additional_yield independently of its recipes.
-      // One unit means +1% to the speed of every build (see CityData.do_tick).
+      // Construction work — a virtual yield of the Builders' Yard. It is not a good: one unit
+      // of the yard's work means +1% to the speed of every build (see CityData.do_tick).
       "id": "construction_work",
       "name": "Construction Work",
       "type": "product",

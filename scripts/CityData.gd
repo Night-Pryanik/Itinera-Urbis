@@ -378,8 +378,9 @@ var science_breakdown: Dictionary = {}
 # same value. The bonus belongs to the staffed building, not to the technology that unlocked it.
 var tax_collector_share: float = 0.0
 
-# Staffed yards add their additional_yield.construction_work once per building, independently
-# of recipe slots. One unit is +1% construction speed; do_tick() recomputes the total.
+# The speed added by staffed Builders' Yards. One virtual unit of "construction_work" of the
+# recipe "construction_work" is +1% of construction speed. It is recomputed from scratch in
+# do_tick(), so the build simulation and the tooltips read the same value of the current tick.
 var builder_construction_share: float = 0.0
 const CITY_CONSTRUCTION_WORK_YIELD_KEY := "construction_work"
 const CONSTRUCTION_WORK_SPEED_PER_UNIT := 0.01
@@ -434,7 +435,6 @@ func setup():
     science_buildings_rate_per_sec = 0.0
     science_breakdown = {}
     tax_collector_share = 0.0
-    builder_construction_share = 0.0
     current_era_index = 0
     last_research_messages = []
     city_name = ""
@@ -1132,8 +1132,11 @@ func _get_active_pause() -> Node:
         _active_pause_ref = main_map.get_node_or_null("ActivePause")
     return _active_pause_ref
 
-# Working citizens by profession. A staffed building works when it has a recipe or passive
-# construction work; both kinds spend professional supplies and enter the consumption plan.
+# The number of WORKING citizens by the professions: prof_id -> count. The profession is taken
+# from the building (the field "profession" in data/buildings.json). Only the buildings
+# where there is a citizen AND at least one non-empty slot are taken into account: an idle
+# building does not spend the supplies, therefore its expense does not enter the plan
+# (see worker_manager.get_planned_consumption_map).
 func get_townsfolk_professions_count() -> Dictionary:
     var result: Dictionary = {}
     var tm = _get_townsfolk()
@@ -1142,7 +1145,7 @@ func get_townsfolk_professions_count() -> Dictionary:
     for i in range(city_built_buildings.size()):
         if not tm.has_townsfolk(i):
             continue
-        if is_building_idle(i):
+        if are_all_slots_empty(i):
             continue
         var prof: String = tm.get_profession(i)
         if prof.is_empty():
@@ -1150,7 +1153,9 @@ func get_townsfolk_professions_count() -> Dictionary:
         result[prof] = int(result.get(prof, 0)) + 1
     return result
 
-# Working buildings by id, using the same activity predicate as professional consumption.
+# The number of WORKING built buildings by building id: building_id -> count. Uses the
+# same working condition as get_townsfolk_professions_count (assigned citizen and at
+# least one non-empty slot) so building-scoped consumption rules count only active copies.
 func get_working_buildings_count() -> Dictionary:
     var result: Dictionary = {}
     var tm = _get_townsfolk()
@@ -1159,7 +1164,7 @@ func get_working_buildings_count() -> Dictionary:
     for i in range(city_built_buildings.size()):
         if not tm.has_townsfolk(i):
             continue
-        if is_building_idle(i):
+        if are_all_slots_empty(i):
             continue
         var bld_id := str(city_built_buildings[i].get("id", ""))
         if bld_id.is_empty():
@@ -1280,10 +1285,10 @@ func get_building_planned_production() -> Dictionary:
             continue
         # The bonus of the profession: 1.0 without a profession or without the supplies, otherwise
         # 1.0 + the bonuses (see worker_manager._aggregate_production_bonus).
-        # Construction supplies are excluded from recipe output to avoid self-amplifying mixes.
+        # An idle building (all the slots are empty) receives no bonus.
         var prof_multiplier := 1.0
-        if wm != null and not is_building_idle(i):
-            prof_multiplier = wm.get_building_recipe_production_bonus(i)
+        if wm != null and not are_all_slots_empty(i):
+            prof_multiplier = wm.get_building_production_bonus(i)
         # The same specialization multiplier the tick of the production applies, so that the
         # planned "≈" of the tab "Resources" matches what the building really gives.
         prof_multiplier *= get_specialization_multiplier(SPEC_BUILDING_PRODUCTION)
@@ -1840,6 +1845,8 @@ func do_tick():
     for i in range(city_built_buildings.size()):
         var bld = city_built_buildings[i]
         var slots = bld.get("slots", [])
+        if slots.is_empty():
+            continue
         # The identifier of the building is the common source for the income and the expense of its
         # recipes (it shows "Hand mill", "Brewer's house" in the tooltip of the
         # resources; the label is resolved by ui_helpers by the id).
@@ -1853,24 +1860,26 @@ func do_tick():
         if not has_worker:
             continue # the building does not work
 
-        # Professional supplies are consumed once per active building, including a yard with
-        # no selected recipe: its construction crew still works on the city's sites.
+        # --- THE PROFESSION OF THE CITIZEN (the field "profession" in data/buildings.json) ---
+        # The consumption of the supplies by the profession and the multiplier of its production.
+        # It ticks once per building per tick (and not per slot!) and only for a WORKING
+        # building: at an idle one (all the slots are empty) the supplies are spent in vain.
+        # The multiplier is passed into the CraftContainer below and is applied to
+        # the crediting of the science for a completed cycle. The bonuses of the single records
+        # are summed up, of the group ones the best is taken (see
+        # worker_manager._aggregate_production_bonus).
         var prof_multiplier := 1.0
-        if wm != null and not is_building_idle(i):
+        if wm != null and not are_all_slots_empty(i):
             prof_multiplier = wm.tick_building_consumption(i, SIMULATION_TICK)
 
-        var building_multiplier := get_specialization_multiplier(SPEC_BUILDING_PRODUCTION) \
+        # The specialization of the city speeds up every working building. It is folded into the
+        # output of the recipe and not into prof_multiplier: the science of a library is not a
+        # good of the city, and the rate of the research has a branch of its own.
+        # The water/technology bonuses of the building go into the output for the same reason:
+        # a wheel at the bellows makes iron, not science, and the scholars keep prof_multiplier.
+        var output_multiplier := prof_multiplier \
+                * get_specialization_multiplier(SPEC_BUILDING_PRODUCTION) \
                 * get_building_production_multiplier(str(bld.get("id", "")), city_water)
-        var work_units := get_building_construction_work(i)
-        builder_construction_share += work_units * CONSTRUCTION_WORK_SPEED_PER_UNIT \
-                * prof_multiplier * building_multiplier
-
-        # Binders improve construction work, not the output of fresh mixes. Other professional
-        # supplies (tools) can still improve crafting, just as in other workshops.
-        var recipe_multiplier := prof_multiplier
-        if work_units > 0.0 and wm != null:
-            recipe_multiplier = wm.get_building_recipe_production_bonus(i)
-        var output_multiplier := recipe_multiplier * building_multiplier
 
         # --- THE CONTINUOUS CRAFTING (CraftContainer) ---
         # The priority of the quality of the raw material: from the building or the default. It is passed into the container
@@ -2000,6 +2009,14 @@ func do_tick():
             if recipe_yield.has(CITY_COINAGE_YIELD_KEY):
                 var coinage_units := float(recipe_yield[CITY_COINAGE_YIELD_KEY])
                 tax_collector_share += coinage_units * 0.01 * output_multiplier
+
+            # THE WORK OF THE BUILDERS: a staffed yard speeds up every build, while an idle one
+            # adds nothing. The supplies of the profession (binders, tools) are already folded into
+            # output_multiplier, so a well-supplied yard contributes more than an empty one. The
+            # share is counted per slot: a second yard adds its own.
+            if recipe_yield.has(CITY_CONSTRUCTION_WORK_YIELD_KEY):
+                var work_units := float(recipe_yield[CITY_CONSTRUCTION_WORK_YIELD_KEY])
+                builder_construction_share += work_units * CONSTRUCTION_WORK_SPEED_PER_UNIT * output_multiplier
 
             # THE STRIKE OF THE MINT: the seigniorage of the struck coins.
             # The Mint spends metal on coins and pays the difference between the face value of
@@ -3321,23 +3338,15 @@ func _auto_assign_slots(building_id: String) -> Array:
             result.append("empty")
     return result
 
-# Passive construction work is a building effect, not a recipe or a stockpiled good.
-func get_building_construction_work(b_index: int) -> float:
-    if b_index < 0 or b_index >= city_built_buildings.size():
-        return 0.0
-    var building_id := str(city_built_buildings[b_index].get("id", ""))
-    return float(GameData.get_building_additional_yield(building_id).get(CITY_CONSTRUCTION_WORK_YIELD_KEY, 0.0))
-
-# Callers check staffing separately; a yard remains active with empty preparation slots.
-func is_building_idle(b_index: int) -> bool:
-    return are_all_slots_empty(b_index) and get_building_construction_work(b_index) <= 0.0
-
-# Whether every recipe slot is empty, independently of passive building work.
+# Returns true, if all the slots of the building are empty (the recipe "Empty" or "").
+# It is used for the display of the status "idle".
 func are_all_slots_empty(b_index: int) -> bool:
     if b_index < 0 or b_index >= city_built_buildings.size():
         return false
     var bld = city_built_buildings[b_index]
     var slots = bld.get("slots", [])
+    if slots.is_empty():
+        return false
     for recipe_id in slots:
         if recipe_id != "" and recipe_id != "empty":
             return false

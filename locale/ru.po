@@ -3426,8 +3426,8 @@ msgid "Presses vegetable oil out of oil crops."
 msgstr "Отжим растительного масла из масличных культур."
 
 msgctxt "buildings.description"
-msgid "Produces lime from limestone and alum from alunite."
-msgstr "Производство извести из известняка и квасцов из алунита."
+msgid "Processes minerals into lime, gypsum plaster and alum, and prepares lime mortar and concrete in the kiln yard."
+msgstr "Перерабатывает минералы в известь, строительный гипс и квасцы, а также готовит известковый раствор и бетон на площадке при печи."
 
 msgctxt "buildings.description"
 msgid "Produces papyrus and other goods from papyrus stems."
@@ -3474,8 +3474,8 @@ msgid "The simplest millstone, grinding grain into flour by hand."
 msgstr "Простейший жёрнов для ручного помола зерна в муку."
 
 msgctxt "buildings.description"
-msgid "A staffed yard speeds up construction even with empty preparation slots or no ingredients. Mixes lime mortar and concrete for the city's building sites."
-msgstr "Двор с назначенными строителями ускоряет строительство даже с пустыми производственными ячейками или без сырья. Готовит известковый раствор и бетон для городских строек."
+msgid "The yard where builders keep their tools and binders and direct the work on the city's buildings."
+msgstr "Двор, где строители хранят инструменты и связующие материалы и руководят работами на городских стройках."
 
 msgctxt "buildings.description"
 msgid "Turns milk into cheese, a good that keeps for a long time."
@@ -3498,8 +3498,8 @@ msgid "Dips rendered tallow and moulds beeswax into candles for households, mine
 msgstr "Отливает и макает свечи из животного жира и пчелиного воска для домов, шахт и мастерских."
 
 msgctxt "buildings.flavor"
-msgid "A building site needs a place where the crew gathers, the tools are kept and the binder is mixed before it is carried to the wall. Such yards appear wherever towns build in stone or brick, from the Nile valley to the cities of Asia and the Andes. The crew organises the city's construction whether or not it is preparing a fresh batch of mortar; its tools and building mixtures make that work more effective."
-msgstr "Стройке нужно место, где собирается артель, хранятся инструменты и готовится связующее, прежде чем его отнесут к стене. Такие дворы возникают везде, где города строят из камня или кирпича, — от долины Нила до городов Азии и Анд. Артель организует городское строительство независимо от того, готовит ли она новую порцию раствора; инструменты и строительные смеси делают эту работу эффективнее."
+msgid "A building site needs a place where the crew gathers, the tools are kept and the binder is mixed before it is carried to the wall. Such yards appear wherever towns build in stone or brick, from the Nile valley to the cities of Asia and the Andes. A builder here does not make a good for the warehouse: the work is the faster raising of every building in the city."
+msgstr "Стройке нужно место, где собирается артель, хранятся инструменты и готовится связующее, прежде чем его отнесут к стене. Такие дворы возникают везде, где города строят из камня или кирпича, — от долины Нила до городов Азии и Анд. Строитель здесь не делает товар для склада: его работа — быстрее возводить каждое здание города."
 
 msgctxt "buildings.name"
 msgid "Alchemist's House"
@@ -4348,6 +4348,10 @@ msgid "Soaks ropes in tar to make them waterproof."
 msgstr "Пропитывает верёвки смолой для водонепроницаемости"
 
 msgctxt "crafts.description"
+msgid "The builders keep the city's sites supplied and organised, speeding up every build."
+msgstr "Строители снабжают городские стройки и наводят на них порядок, ускоряя каждое строительство."
+
+msgctxt "crafts.description"
 msgid "This slot produces nothing."
 msgstr "Слот не производит ничего"
 
@@ -4830,6 +4834,10 @@ msgstr "Кокс"
 msgctxt "crafts.name"
 msgid "Coke Smelting"
 msgstr "Коксовая плавка"
+
+msgctxt "crafts.name"
+msgid "Construction Work"
+msgstr "Строительные работы"
 
 msgctxt "crafts.name"
 msgid "Copper (from copper ore)"
@@ -6044,8 +6052,8 @@ msgid "Grows technical and spice crops."
 msgstr "Возделывает технические и пряные культуры."
 
 msgctxt "professions.description"
-msgid "Organises the city's building sites and prepares mortar and concrete. Construction work continues even when no mixture is being made."
-msgstr "Организует городские стройки и готовит раствор и бетон. Строительные работы продолжаются, даже когда смеси не производятся."
+msgid "Keeps the city's building sites supplied and organised, speeding up construction without producing goods."
+msgstr "Снабжает городские стройки и наводит на них порядок, ускоряя строительство, но не производит товаров."
 
 msgctxt "professions.description"
 msgid "Limes, scrapes and dries hides into parchment."
@@ -9567,8 +9575,8 @@ msgid "Precision Instruments"
 msgstr "Точные инструменты"
 
 msgctxt "technologies.description"
-msgid "Unlocks Roman concrete in the builder's yard. Reveals mountain springs and allows you to build aqueducts to bring fresh water to the city."
-msgstr "Открывает производство римского бетона во дворе строителей. Выявляет горные источники и позволяет строить акведуки для подачи пресной воды в город."
+msgid "Unlocks Roman concrete in the kiln yard. Reveals mountain springs and allows you to build aqueducts to bring fresh water to the city."
+msgstr "Открывает производство римского бетона на площадке при обжиговой печи. Выявляет горные источники и позволяет строить акведуки для подачи пресной воды в город."
 
 msgctxt "technologies.description"
 msgid "Unlocks precision instruments crafted from copper, bronze, brass, iron or steel in the forge and the jeweler's house."
@@ -10569,8 +10577,8 @@ msgid "Silk comes from the cocoon of a moth, which must be reeled before the ins
 msgstr "Шёлк даёт кокон мотылька, который надо размотать, пока насекомое не прогрызло его. Шелководство началось в Восточной Азии и через торговлю пришло в другие края; выращивание червей и ткачество нити — разные ремесла. Дом превращает эту нить в ткань."
 
 msgctxt "buildings.flavor"
-msgid "Limestone heated in a kiln becomes quicklime, which goes into plaster, mortar and the preparation of other materials. The operation needs only fire and a stone that is easy to find. The kiln also yields alum from alunite, another example of a raw mineral becoming a workshop material."
-msgstr "Известняк, обожжённый в печи, превращается в негашёную известь, которая идёт в штукатурку, раствор и подготовку других материалов. Для операции нужны лишь огонь и легко доступный камень. Печь даёт также квасцы из алунита — ещё один пример того, как сырой минерал становится предметом ремесла."
+msgid "Limestone heated in a kiln becomes quicklime. In the surrounding yard, workers slake the lime and mix it with sand for mortar, or with reactive volcanic material and stone aggregate for concrete. Firing and mixing are separate operations within the same works. The kiln also processes gypsum and alunite into materials for other workshops."
+msgstr "Известняк при обжиге превращается в негашёную известь. На площадке при печи работники гасят её и смешивают с песком для раствора либо с реакционноспособным вулканическим материалом и каменным заполнителем для бетона. Обжиг и смешивание — разные операции одного производственного двора. Здесь же перерабатывают гипс и алунит в материалы для других мастерских."
 
 msgctxt "buildings.flavor"
 msgid "Papyrus is made by laying strips of the reed's stem in crossing layers and pressing them into a sheet. The craft is tied to a plant that grows in warm wetlands and gave writing a light, cheap surface. The workshop turns a water plant into the material of records."

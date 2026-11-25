@@ -187,7 +187,7 @@ func get_building_profession(b_index: int) -> String:
 # hex (tick_consumption), but scoped to the building's id (so rules with "buildings" apply only to
 # listed buildings), with timers stored in building_consumption_timers under "b<index>". Building
 # indices are stable (no demolition; upgrades preserve the index). Called from CityData.do_tick()
-# only for active staffed buildings (a selected recipe or passive construction work).
+# only for WORKING buildings (an assigned resident and at least one non-empty slot).
 func tick_building_consumption(b_index: int, delta: float) -> float:
     var bld_id := get_building_id(b_index)
     if bld_id.is_empty():
@@ -201,21 +201,14 @@ func tick_building_consumption(b_index: int, delta: float) -> float:
 # the movement of the timers - for the planned production
 # (CityData.get_building_planned_production), so that the mark "=" coincides with
 # the fact. 1.0 - the building has no profession or there are not enough consumables.
-func get_building_production_bonus(b_index: int, excluded_keys: Array = []) -> float:
+func get_building_production_bonus(b_index: int) -> float:
     var bld_id := get_building_id(b_index)
     if bld_id.is_empty():
         return 1.0
     var prof := GameData.get_profession_for_building(bld_id)
     if prof.is_empty():
         return 1.0
-    return 1.0 + _aggregate_production_bonus(GameData.get_profession_consumption(prof, bld_id), excluded_keys)
-
-# Construction mixtures supply the sites, not the manufacture of more mixtures.
-func get_building_recipe_production_bonus(b_index: int) -> float:
-    var excluded_keys: Array = []
-    if CityData.get_building_construction_work(b_index) > 0.0:
-        excluded_keys.append("@construction_binders")
-    return get_building_production_bonus(b_index, excluded_keys)
+    return 1.0 + _aggregate_production_bonus(GameData.get_profession_consumption(prof, bld_id))
 
 # The total production_bonus of a profession by the available consumables:
 #   * The SINGLE records - every available one adds its bonus (they add up):
@@ -227,12 +220,10 @@ func get_building_recipe_production_bonus(b_index: int) -> float:
 # without a write-off there is also no "supply of the profession with the consumables", and otherwise
 # the ban would turn into a free way to keep the multiplier x1.5
 # permanently (there is no expense, and the bonus burns).
-func _aggregate_production_bonus(cons_list: Array, excluded_keys: Array = []) -> float:
+func _aggregate_production_bonus(cons_list: Array) -> float:
     var group_max := 0.0
     var single_sum := 0.0
     for entry in cons_list:
-        if excluded_keys.has(_entry_display_key(entry)):
-            continue
         if not CityData.is_market_consumption_enabled(_entry_display_key(entry)):
             continue
         var b := _entry_effective_bonus(entry)

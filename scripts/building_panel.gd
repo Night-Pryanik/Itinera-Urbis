@@ -267,8 +267,9 @@ func _refresh():
     var tm = main_map.get_node("TownsfolkManager") if main_map else null
 
     # The professional consumption of the buildings of this type: the sum over
-    # active staffed buildings, including yards with empty preparation slots
-    # (see CityData.get_townsfolk_professions_count).
+    # the WORKING buildings (there is a citizen and at least one non-empty slot —
+    # the supplies of an idle building are not spent, see
+    # CityData.get_townsfolk_professions_count).
     # The width of the section takes part in fitting the width of the panel below.
     var consumption_width := _fill_consumption_section(tm, indices)
 
@@ -287,7 +288,7 @@ func _refresh():
         header.add_theme_constant_override("separation", 8)
 
         var has_worker = tm.has_townsfolk(b_index) if tm else false
-        var is_idle = has_worker and CityData.is_building_idle(b_index)
+        var is_idle = has_worker and CityData.are_all_slots_empty(b_index)
         var status = tr(" (idle)") if is_idle else (tr(" (working)") if has_worker else tr(" (not working)"))
 
         var header_label = Label.new()
@@ -593,8 +594,8 @@ func _fill_consumption_section(tm, indices: Array) -> float:
     consumption_box.visible = true
     return content_width
 
-# Buildings of this type that spend supplies: staffed and active through recipes or passive
-# construction work. When there are no such buildings,
+# The number of the buildings of this type that really spend the supplies: there
+# is a citizen and at least one non-empty slot. When there are no such buildings,
 # the section shows the rate "per one building" with the note
 # "(there are no working buildings)".
 func _count_working_buildings(tm, indices: Array) -> int:
@@ -604,7 +605,7 @@ func _count_working_buildings(tm, indices: Array) -> int:
     for b_index in indices:
         if not tm.has_townsfolk(b_index):
             continue
-        if CityData.is_building_idle(b_index):
+        if CityData.are_all_slots_empty(b_index):
             continue
         result += 1
     return result

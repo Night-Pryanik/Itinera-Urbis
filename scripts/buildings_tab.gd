@@ -409,7 +409,7 @@ func _refresh_build_button_text():
         build_button.tooltip_text = ""
 
 # Returns the status of the group of built buildings: the text and the colour for the button.
-# idle — staffed buildings with neither a selected recipe nor passive construction work.
+# idle — the buildings that have a worker, but all the slots are empty (they are idle).
 # The colour coding is preserved: green = working, red = not working,
 # yellow = part of the group is working, orange = idle.
 func _get_built_status_info(working: int, idle: int, total: int) -> Dictionary:
@@ -573,7 +573,7 @@ func _apply_built_status_color(btn: Button, color: Color):
     btn.add_theme_color_override("font_focus_color", color)
 
 # Groups the built buildings by id and counts the working ones.
-# idle — staffed buildings with neither a selected recipe nor passive construction work.
+# idle — the buildings that have a worker, but all the slots are empty (they are idle).
 # upgradeable — how many instances of the group can be upgraded right now
 # (can_upgrade_building checks both that the target is unlocked by a technology and that
 # the upgrade of this instance is not already going).
@@ -598,7 +598,7 @@ func _group_buildings() -> Array:
         g["total"] += 1
         if has_worker:
             g["working"] += 1
-            if CityData.is_building_idle(i):
+            if CityData.are_all_slots_empty(i):
                 g["idle"] += 1
         if CityData.can_upgrade_building(i):
             g["upgradeable"] += 1

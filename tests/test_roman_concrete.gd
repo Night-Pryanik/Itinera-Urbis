@@ -38,7 +38,7 @@ func _run() -> void:
 
     var recipe: Dictionary = city.get_craft_by_id(PRODUCT)
     _check(not recipe.is_empty(), "the concrete recipe exists")
-    _check(recipe.get("produced_in", []) == ["builders_yard"], "only the builders mix concrete")
+    _check(recipe.get("produced_in", []) == ["lime_kilns"], "only the kiln yard mixes concrete")
     _check(recipe.get("unlock_tech", "") == "concrete", "the recipe requires Concrete")
     # JSON quantities are floats; compare numeric values rather than typed dictionaries.
     var outputs: Dictionary = recipe.get("result", {})
@@ -73,11 +73,13 @@ func _run() -> void:
     city.unlocked_technologies.append("concrete")
     _check(city.is_product_available(PRODUCT), "Concrete unlocks the product")
     _check(city.is_craft_available(recipe), "Concrete unlocks the recipe")
-    _check(city.can_craft_in(PRODUCT, "builders_yard"), "the yard accepts the concrete recipe")
-    _check(not city.can_craft_in(PRODUCT, "lime_kilns"), "a kiln does not mix concrete")
+    _check(city.can_craft_in(PRODUCT, "lime_kilns"), "the kiln yard accepts the concrete recipe")
     _check(not city.can_craft_in(PRODUCT, "mason_workshop"), "the mason does not mix concrete")
+    _check(not city.can_craft_in(PRODUCT, "builders_yard"), "builders do not manufacture concrete")
+    _check(mortar.get("produced_in", []) == ["lime_kilns"], "only the kiln yard mixes mortar")
     _check(not city.can_craft_in("mortar", "mason_workshop")
-        and not city.can_craft_in("mortar", "lime_kilns"), "only the yard mixes ordinary mortar")
+        and not city.can_craft_in("mortar", "builders_yard"), "mortar is not made by masons or builders")
+    _check(city.can_craft_in("lime", "lime_kilns"), "the separate lime recipe remains in the kiln")
     _test_production(city, recipe)
 
     print("ROMAN CONCRETE TEST FAILED" if _failed else "ROMAN CONCRETE TEST OK")
@@ -97,7 +99,7 @@ func _test_production(city: Node, recipe: Dictionary) -> void:
 
     for aggregate in AGGREGATES:
         city.city_built_buildings = [
-            {"id": "builders_yard", "slots": [PRODUCT], "quality_priority": "best"}
+            {"id": "lime_kilns", "slots": [PRODUCT], "quality_priority": "best"}
         ]
         city.city_storage.clear()
         city.city_quality_detail.clear()
@@ -115,7 +117,7 @@ func _test_production(city: Node, recipe: Dictionary) -> void:
 
     # Sand or extra aggregate cannot replace the reactive volcanic component.
     city.city_built_buildings = [
-        {"id": "builders_yard", "slots": [PRODUCT], "quality_priority": "best"}
+        {"id": "lime_kilns", "slots": [PRODUCT], "quality_priority": "best"}
     ]
     city.city_storage.clear()
     city.city_quality_detail.clear()
@@ -125,6 +127,22 @@ func _test_production(city: Node, recipe: Dictionary) -> void:
     for _tick in range(ticks * 2):
         city.do_tick()
     _check(city.get_storage_amount(PRODUCT) == 0, "concrete cannot be made without tuff")
+    city.city_built_buildings = [
+        {"id": "lime_kilns", "slots": ["mortar"], "quality_priority": "best"}
+    ]
+    city.city_storage.clear()
+    city.city_quality_detail.clear()
+    city.reset_counters()
+    city.add_to_storage("lime", 10, "common")
+    city.add_to_storage("quartz_sand", 10, "common")
+    var mortar: Dictionary = city.get_craft_by_id("mortar")
+    var mortar_ticks := ceili(float(mortar.get("time", 5.0)) / float(city.SIMULATION_TICK))
+    for _tick in range(mortar_ticks):
+        city.do_tick()
+    _check(city.get_storage_amount("mortar") == 10, "the kiln yard produces lime mortar")
+    _check(city.get_storage_amount("lime") == 0 and city.get_storage_amount("quartz_sand") == 0,
+        "mortar mixing consumes lime and sand")
+    _check(is_zero_approx(city.builder_construction_share), "a kiln never grants construction work")
     city.city_built_buildings.clear()
     tm.assigned_buildings.clear()
     main_map.free()

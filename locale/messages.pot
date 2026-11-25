@@ -3350,7 +3350,7 @@ msgid "Presses vegetable oil out of oil crops."
 msgstr ""
 
 msgctxt "buildings.description"
-msgid "Produces lime from limestone and alum from alunite."
+msgid "Processes minerals into lime, gypsum plaster and alum, and prepares lime mortar and concrete in the kiln yard."
 msgstr ""
 
 msgctxt "buildings.description"
@@ -3398,7 +3398,7 @@ msgid "The simplest millstone, grinding grain into flour by hand."
 msgstr ""
 
 msgctxt "buildings.description"
-msgid "A staffed yard speeds up construction even with empty preparation slots or no ingredients. Mixes lime mortar and concrete for the city's building sites."
+msgid "The yard where builders keep their tools and binders and direct the work on the city's buildings."
 msgstr ""
 
 msgctxt "buildings.description"
@@ -3422,7 +3422,7 @@ msgid "Dips rendered tallow and moulds beeswax into candles for households, mine
 msgstr ""
 
 msgctxt "buildings.flavor"
-msgid "A building site needs a place where the crew gathers, the tools are kept and the binder is mixed before it is carried to the wall. Such yards appear wherever towns build in stone or brick, from the Nile valley to the cities of Asia and the Andes. The crew organises the city's construction whether or not it is preparing a fresh batch of mortar; its tools and building mixtures make that work more effective."
+msgid "A building site needs a place where the crew gathers, the tools are kept and the binder is mixed before it is carried to the wall. Such yards appear wherever towns build in stone or brick, from the Nile valley to the cities of Asia and the Andes. A builder here does not make a good for the warehouse: the work is the faster raising of every building in the city."
 msgstr ""
 
 msgctxt "buildings.name"
@@ -4268,6 +4268,10 @@ msgid "Soaks ropes in tar to make them waterproof."
 msgstr ""
 
 msgctxt "crafts.description"
+msgid "The builders keep the city's sites supplied and organised, speeding up every build."
+msgstr ""
+
+msgctxt "crafts.description"
 msgid "This slot produces nothing."
 msgstr ""
 
@@ -4749,6 +4753,10 @@ msgstr ""
 
 msgctxt "crafts.name"
 msgid "Coke Smelting"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Construction Work"
 msgstr ""
 
 msgctxt "crafts.name"
@@ -5964,7 +5972,7 @@ msgid "Grows technical and spice crops."
 msgstr ""
 
 msgctxt "professions.description"
-msgid "Organises the city's building sites and prepares mortar and concrete. Construction work continues even when no mixture is being made."
+msgid "Keeps the city's building sites supplied and organised, speeding up construction without producing goods."
 msgstr ""
 
 msgctxt "professions.description"
@@ -9487,7 +9495,7 @@ msgid "Precision Instruments"
 msgstr ""
 
 msgctxt "technologies.description"
-msgid "Unlocks Roman concrete in the builder's yard. Reveals mountain springs and allows you to build aqueducts to bring fresh water to the city."
+msgid "Unlocks Roman concrete in the kiln yard. Reveals mountain springs and allows you to build aqueducts to bring fresh water to the city."
 msgstr ""
 
 msgctxt "technologies.description"
@@ -10450,7 +10458,7 @@ msgid "Silk comes from the cocoon of a moth, which must be reeled before the ins
 msgstr ""
 
 msgctxt "buildings.flavor"
-msgid "Limestone heated in a kiln becomes quicklime, which goes into plaster, mortar and the preparation of other materials. The operation needs only fire and a stone that is easy to find. The kiln also yields alum from alunite, another example of a raw mineral becoming a workshop material."
+msgid "Limestone heated in a kiln becomes quicklime. In the surrounding yard, workers slake the lime and mix it with sand for mortar, or with reactive volcanic material and stone aggregate for concrete. Firing and mixing are separate operations within the same works. The kiln also processes gypsum and alunite into materials for other workshops."
 msgstr ""
 
 msgctxt "buildings.flavor"
