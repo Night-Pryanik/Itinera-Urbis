@@ -3398,7 +3398,7 @@ msgid "The simplest millstone, grinding grain into flour by hand."
 msgstr ""
 
 msgctxt "buildings.description"
-msgid "The yard where builders keep their tools and binders and direct the work on the city's buildings."
+msgid "A staffed yard speeds up construction even with empty preparation slots or no ingredients. Mixes lime mortar and concrete for the city's building sites."
 msgstr ""
 
 msgctxt "buildings.description"
@@ -3422,7 +3422,7 @@ msgid "Dips rendered tallow and moulds beeswax into candles for households, mine
 msgstr ""
 
 msgctxt "buildings.flavor"
-msgid "A building site needs a place where the crew gathers, the tools are kept and the binder is mixed before it is carried to the wall. Such yards appear wherever towns build in stone or brick, from the Nile valley to the cities of Asia and the Andes. A builder here does not make a good for the warehouse: the work is the faster raising of every building in the city."
+msgid "A building site needs a place where the crew gathers, the tools are kept and the binder is mixed before it is carried to the wall. Such yards appear wherever towns build in stone or brick, from the Nile valley to the cities of Asia and the Andes. The crew organises the city's construction whether or not it is preparing a fresh batch of mortar; its tools and building mixtures make that work more effective."
 msgstr ""
 
 msgctxt "buildings.name"
@@ -4268,10 +4268,6 @@ msgid "Soaks ropes in tar to make them waterproof."
 msgstr ""
 
 msgctxt "crafts.description"
-msgid "The builders keep the city's sites supplied and organised, speeding up every build."
-msgstr ""
-
-msgctxt "crafts.description"
 msgid "This slot produces nothing."
 msgstr ""
 
@@ -4753,10 +4749,6 @@ msgstr ""
 
 msgctxt "crafts.name"
 msgid "Coke Smelting"
-msgstr ""
-
-msgctxt "crafts.name"
-msgid "Construction Work"
 msgstr ""
 
 msgctxt "crafts.name"
@@ -5972,7 +5964,7 @@ msgid "Grows technical and spice crops."
 msgstr ""
 
 msgctxt "professions.description"
-msgid "Keeps the city's building sites supplied and organised, speeding up construction without producing goods."
+msgid "Organises the city's building sites and prepares mortar and concrete. Construction work continues even when no mixture is being made."
 msgstr ""
 
 msgctxt "professions.description"
@@ -6060,7 +6052,7 @@ msgid "Dips and moulds tallow and beeswax into candles."
 msgstr ""
 
 msgctxt "professions.description"
-msgid "Dresses rough stone into ashlar blocks, tableware and mortar."
+msgid "Dresses rough stone into ashlar blocks and stone tableware."
 msgstr ""
 
 msgctxt "professions.description"
@@ -9495,7 +9487,7 @@ msgid "Precision Instruments"
 msgstr ""
 
 msgctxt "technologies.description"
-msgid "Unlocks Roman concrete in the mason's workshop. Reveals mountain springs and allows you to build aqueducts to bring fresh water to the city."
+msgid "Unlocks Roman concrete in the builder's yard. Reveals mountain springs and allows you to build aqueducts to bring fresh water to the city."
 msgstr ""
 
 msgctxt "technologies.description"

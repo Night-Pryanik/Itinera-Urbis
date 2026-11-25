@@ -392,7 +392,7 @@
     {
       "id": "mortar",
       "name": "Lime Mortar",
-      "produced_in": [ "lime_kilns", "mason_workshop" ],
+      "produced_in": [ "builders_yard" ],
       "resources": { "lime": 10, "quartz_sand": 10 },
       "result": { "mortar": 10 },
       "time": 5.0,
@@ -403,7 +403,7 @@
       // Reactive volcanic tuff supplies the pozzolan; ordinary stone supplies only aggregate.
       "id": "roman_concrete",
       "name": "Roman Concrete",
-      "produced_in": [ "mason_workshop" ],
+      "produced_in": [ "builders_yard" ],
       "resources": [ { "lime": 10 }, { "tuff": 10 }, [ { "basalt": 10 }, { "sandstone": 10 }, { "limestone": 10 } ] ],
       "result": { "roman_concrete": 10 },
       "time": 6.0,

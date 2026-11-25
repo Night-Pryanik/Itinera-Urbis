@@ -224,7 +224,7 @@
       "flavor": "Walls do not rise from loose stone alone: someone must set the courses, mix the binder, keep the tools sharp and move the crew from one site to the next. Organised building crews appear wherever towns grow — in the Nile valley, in the Andes, in the cities of Asia and in the river towns of Africa — each with its own techniques and measures. The work is often temporary, but a yard that keeps the builders and their supplies together makes every site finish sooner.",
       "name": "Builder",
       "icon": "profession_builder.png",
-      "description": "Keeps the city's building sites supplied and organised, speeding up construction without producing goods."
+      "description": "Organises the city's building sites and prepares mortar and concrete. Construction work continues even when no mixture is being made."
     },
     {
       "id": "mint_worker",
@@ -369,7 +369,7 @@
       "flavor": "Stone dressing is prehistoric: hammerstones shaped rough blocks, and communities from the Nile to the Andes raised walls and tombs with them. Mortar was not universal — dry-stone work in many regions needed only skill and patience, while others used mud, lime or gypsum.\n\nMasons quarried, squared and set stone, cutting joints so weight passed cleanly into the wall. Tools changed slowly: bronze and iron chisels, wedges and levers did most of the work for ages. Their craft built houses, bridges, aqueducts and temples, and its proportions were often sacred knowledge passed between masters.",
       "name": "Mason",
       "icon": "profession_mason.png",
-      "description": "Dresses rough stone into ashlar blocks, tableware and mortar."
+      "description": "Dresses rough stone into ashlar blocks and stone tableware."
     },
     {
       "id": "smoker",

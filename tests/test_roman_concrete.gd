@@ -38,7 +38,7 @@ func _run() -> void:
 
     var recipe: Dictionary = city.get_craft_by_id(PRODUCT)
     _check(not recipe.is_empty(), "the concrete recipe exists")
-    _check(recipe.get("produced_in", []) == ["mason_workshop"], "only the mason mixes concrete")
+    _check(recipe.get("produced_in", []) == ["builders_yard"], "only the builders mix concrete")
     _check(recipe.get("unlock_tech", "") == "concrete", "the recipe requires Concrete")
     # JSON quantities are floats; compare numeric values rather than typed dictionaries.
     var outputs: Dictionary = recipe.get("result", {})
@@ -73,8 +73,11 @@ func _run() -> void:
     city.unlocked_technologies.append("concrete")
     _check(city.is_product_available(PRODUCT), "Concrete unlocks the product")
     _check(city.is_craft_available(recipe), "Concrete unlocks the recipe")
-    _check(city.can_craft_in(PRODUCT, "mason_workshop"), "the mason accepts the concrete recipe")
+    _check(city.can_craft_in(PRODUCT, "builders_yard"), "the yard accepts the concrete recipe")
     _check(not city.can_craft_in(PRODUCT, "lime_kilns"), "a kiln does not mix concrete")
+    _check(not city.can_craft_in(PRODUCT, "mason_workshop"), "the mason does not mix concrete")
+    _check(not city.can_craft_in("mortar", "mason_workshop")
+        and not city.can_craft_in("mortar", "lime_kilns"), "only the yard mixes ordinary mortar")
     _test_production(city, recipe)
 
     print("ROMAN CONCRETE TEST FAILED" if _failed else "ROMAN CONCRETE TEST OK")
@@ -94,7 +97,7 @@ func _test_production(city: Node, recipe: Dictionary) -> void:
 
     for aggregate in AGGREGATES:
         city.city_built_buildings = [
-            {"id": "mason_workshop", "slots": [PRODUCT], "quality_priority": "best"}
+            {"id": "builders_yard", "slots": [PRODUCT], "quality_priority": "best"}
         ]
         city.city_storage.clear()
         city.city_quality_detail.clear()
@@ -112,7 +115,7 @@ func _test_production(city: Node, recipe: Dictionary) -> void:
 
     # Sand or extra aggregate cannot replace the reactive volcanic component.
     city.city_built_buildings = [
-        {"id": "mason_workshop", "slots": [PRODUCT], "quality_priority": "best"}
+        {"id": "builders_yard", "slots": [PRODUCT], "quality_priority": "best"}
     ]
     city.city_storage.clear()
     city.city_quality_detail.clear()

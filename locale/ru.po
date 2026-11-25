@@ -3474,8 +3474,8 @@ msgid "The simplest millstone, grinding grain into flour by hand."
 msgstr "Простейший жёрнов для ручного помола зерна в муку."
 
 msgctxt "buildings.description"
-msgid "The yard where builders keep their tools and binders and direct the work on the city's buildings."
-msgstr "Двор, где строители хранят инструменты и связующие материалы и руководят работами на городских стройках."
+msgid "A staffed yard speeds up construction even with empty preparation slots or no ingredients. Mixes lime mortar and concrete for the city's building sites."
+msgstr "Двор с назначенными строителями ускоряет строительство даже с пустыми производственными ячейками или без сырья. Готовит известковый раствор и бетон для городских строек."
 
 msgctxt "buildings.description"
 msgid "Turns milk into cheese, a good that keeps for a long time."
@@ -3498,8 +3498,8 @@ msgid "Dips rendered tallow and moulds beeswax into candles for households, mine
 msgstr "Отливает и макает свечи из животного жира и пчелиного воска для домов, шахт и мастерских."
 
 msgctxt "buildings.flavor"
-msgid "A building site needs a place where the crew gathers, the tools are kept and the binder is mixed before it is carried to the wall. Such yards appear wherever towns build in stone or brick, from the Nile valley to the cities of Asia and the Andes. A builder here does not make a good for the warehouse: the work is the faster raising of every building in the city."
-msgstr "Стройке нужно место, где собирается артель, хранятся инструменты и готовится связующее, прежде чем его отнесут к стене. Такие дворы возникают везде, где города строят из камня или кирпича, — от долины Нила до городов Азии и Анд. Строитель здесь не делает товар для склада: его работа — быстрее возводить каждое здание города."
+msgid "A building site needs a place where the crew gathers, the tools are kept and the binder is mixed before it is carried to the wall. Such yards appear wherever towns build in stone or brick, from the Nile valley to the cities of Asia and the Andes. The crew organises the city's construction whether or not it is preparing a fresh batch of mortar; its tools and building mixtures make that work more effective."
+msgstr "Стройке нужно место, где собирается артель, хранятся инструменты и готовится связующее, прежде чем его отнесут к стене. Такие дворы возникают везде, где города строят из камня или кирпича, — от долины Нила до городов Азии и Анд. Артель организует городское строительство независимо от того, готовит ли она новую порцию раствора; инструменты и строительные смеси делают эту работу эффективнее."
 
 msgctxt "buildings.name"
 msgid "Alchemist's House"
@@ -4348,10 +4348,6 @@ msgid "Soaks ropes in tar to make them waterproof."
 msgstr "Пропитывает верёвки смолой для водонепроницаемости"
 
 msgctxt "crafts.description"
-msgid "The builders keep the city's sites supplied and organised, speeding up every build."
-msgstr "Строители снабжают городские стройки и наводят на них порядок, ускоряя каждое строительство."
-
-msgctxt "crafts.description"
 msgid "This slot produces nothing."
 msgstr "Слот не производит ничего"
 
@@ -4834,10 +4830,6 @@ msgstr "Кокс"
 msgctxt "crafts.name"
 msgid "Coke Smelting"
 msgstr "Коксовая плавка"
-
-msgctxt "crafts.name"
-msgid "Construction Work"
-msgstr "Строительные работы"
 
 msgctxt "crafts.name"
 msgid "Copper (from copper ore)"
@@ -6052,8 +6044,8 @@ msgid "Grows technical and spice crops."
 msgstr "Возделывает технические и пряные культуры."
 
 msgctxt "professions.description"
-msgid "Keeps the city's building sites supplied and organised, speeding up construction without producing goods."
-msgstr "Снабжает городские стройки и наводит на них порядок, ускоряя строительство, но не производит товаров."
+msgid "Organises the city's building sites and prepares mortar and concrete. Construction work continues even when no mixture is being made."
+msgstr "Организует городские стройки и готовит раствор и бетон. Строительные работы продолжаются, даже когда смеси не производятся."
 
 msgctxt "professions.description"
 msgid "Limes, scrapes and dries hides into parchment."
@@ -6140,8 +6132,8 @@ msgid "Dips and moulds tallow and beeswax into candles."
 msgstr "Макает и отливает свечи из животного жира и пчелиного воска."
 
 msgctxt "professions.description"
-msgid "Dresses rough stone into ashlar blocks, tableware and mortar."
-msgstr "Обтёсывает камень в строительные блоки и посуду и готовит раствор."
+msgid "Dresses rough stone into ashlar blocks and stone tableware."
+msgstr "Обрабатывает грубый камень, изготавливая тёсаные блоки и каменную посуду."
 
 msgctxt "professions.description"
 msgid "Cures and smokes fish over slow wood fires."
@@ -9575,8 +9567,8 @@ msgid "Precision Instruments"
 msgstr "Точные инструменты"
 
 msgctxt "technologies.description"
-msgid "Unlocks Roman concrete in the mason's workshop. Reveals mountain springs and allows you to build aqueducts to bring fresh water to the city."
-msgstr "Открывает производство римского бетона в мастерской каменотёса. Выявляет горные источники и позволяет строить акведуки для подачи пресной воды в город."
+msgid "Unlocks Roman concrete in the builder's yard. Reveals mountain springs and allows you to build aqueducts to bring fresh water to the city."
+msgstr "Открывает производство римского бетона во дворе строителей. Выявляет горные источники и позволяет строить акведуки для подачи пресной воды в город."
 
 msgctxt "technologies.description"
 msgid "Unlocks precision instruments crafted from copper, bronze, brass, iron or steel in the forge and the jeweler's house."

@@ -906,7 +906,7 @@ func _test_building_scoped_consumption(state: Dictionary) -> void:
 #
 # IMPORTANT: tick_building_consumption() itself knows nothing about townsfolk/slots —
 # the "building works" condition is checked by the caller CityData.do_tick()
-# (there is a townsfolk AND not all slots are empty). Here this condition is reproduced,
+# (a staffed building with a recipe or passive construction work). This predicate is shared,
 # otherwise the test would call consumption on an idle building, which never happens in the game.
 func _tick_interval(interval: float) -> void:
     if not _is_building_working(0):
@@ -920,7 +920,7 @@ func _tick_interval(interval: float) -> void:
 func _is_building_working(b_index: int) -> bool:
     if not _tm.has_townsfolk(b_index):
         return false
-    return not _cdata.are_all_slots_empty(b_index)
+    return not _cdata.is_building_idle(b_index)
 
 
 # Fills the storage with the resource and a margin, returns the resulting amount.

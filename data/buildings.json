@@ -229,8 +229,8 @@
     {
       "id": "builders_yard",
       "name": "Builder's Yard",
-      "description": "The yard where builders keep their tools and binders and direct the work on the city's buildings.",
-      "flavor": "A building site needs a place where the crew gathers, the tools are kept and the binder is mixed before it is carried to the wall. Such yards appear wherever towns build in stone or brick, from the Nile valley to the cities of Asia and the Andes. A builder here does not make a good for the warehouse: the work is the faster raising of every building in the city.",
+      "description": "A staffed yard speeds up construction even with empty preparation slots or no ingredients. Mixes lime mortar and concrete for the city's building sites.",
+      "flavor": "A building site needs a place where the crew gathers, the tools are kept and the binder is mixed before it is carried to the wall. Such yards appear wherever towns build in stone or brick, from the Nile valley to the cities of Asia and the Andes. The crew organises the city's construction whether or not it is preparing a fresh batch of mortar; its tools and building mixtures make that work more effective.",
       "work_cost": 35,
       "maintenance_cost": 24.0,
       "additional_cost": [ { "planks": 120 }, { "@processed_construction_materials": 40 } ],
@@ -238,7 +238,8 @@
       "profession": "builder",
       "production_slots": 1.0,
       "unlock_tech": "masonry",
-      "default_recipes": [ "construction_work" ]
+      "additional_yield": { "construction_work": 4 },
+      "default_recipes": [  ]
     },
     {
       "id": "leatherworker_house",
