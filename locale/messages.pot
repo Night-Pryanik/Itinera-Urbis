@@ -9511,7 +9511,7 @@ msgid "Unlocks the water mill: the running water sets the millstones in motion."
 msgstr ""
 
 msgctxt "technologies.flavor"
-msgid "Lime mixed with reactive volcanic ash or ground tuff forms a binder that can set in water. Stone aggregate turns it into a concrete mass for walls, vaults and waterworks. Roman builders made extensive use of such mixtures; a watertight channel can carry mountain water to a city without a river of its own."
+msgid "Lime mixed with reactive volcanic ash or ground tuff forms a binder that can set in water. Stone aggregate turns it into a concrete mass for walls, vaults and waterworks. A watertight channel can carry mountain water to a city without a river of its own. The same idea arose independently elsewhere: Greek and Minoan builders worked volcanic ash and crushed pottery into their mortar, Maya masons burned limestone into a lime concrete for pyramids and roads, and Indus Valley and later Indian builders used ground brick, surkhi, as a pozzolan."
 msgstr ""
 
 msgctxt "technologies.flavor"
