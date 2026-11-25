@@ -78,14 +78,22 @@
       "icon": "planks.png"
     },
     {
-      // Lime mixed with volcanic tuff or quartz sand. It binds a wall but is no wall in itself:
-      // the builder spends it as the strongest masonry binder to speed up construction.
+      // Lime and sand bind masonry; builders consume the mixture to speed up construction.
       "id": "mortar", "price": 18,
       "name": "Lime Mortar",
       "type": "product",
       "category": "construction_material",
       "unlock_tech": "limestone_burning",
       "icon": "mortar.png"
+    },
+    {
+      // Tuff stands for reactive volcanic pozzolan; the finished mix includes stone aggregate.
+      "id": "roman_concrete", "price": 26,
+      "name": "Roman Concrete",
+      "type": "product",
+      "category": "construction_material",
+      "unlock_tech": "concrete",
+      "icon": "concrete.png"
     },
     {
       // Calcined gypsum or alabaster powder used for casting moulds, stucco and coagulating tofu.

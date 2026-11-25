@@ -439,8 +439,8 @@
     {
       "id": "lime_kilns",
       "name": "Kiln",
-      "description": "Produces lime from limestone and alum from alunite.",
-      "flavor": "Limestone heated in a kiln becomes quicklime, which goes into plaster, mortar and the preparation of other materials. The operation needs only fire and a stone that is easy to find. The kiln also yields alum from alunite, another example of a raw mineral becoming a workshop material.",
+      "description": "Processes minerals into lime, gypsum plaster and alum, and prepares lime mortar and concrete in the kiln yard.",
+      "flavor": "Limestone heated in a kiln becomes quicklime. In the surrounding yard, workers slake the lime and mix it with sand for mortar, or with reactive volcanic material and stone aggregate for concrete. Firing and mixing are separate operations within the same works. The kiln also processes gypsum and alunite into materials for other workshops.",
       "work_cost": 45,
       "maintenance_cost": 6.8,
       "additional_cost": [ { "planks": 120 }, { "@processed_construction_materials": 60 } ],
