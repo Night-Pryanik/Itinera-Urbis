@@ -40,7 +40,10 @@ func _run() -> void:
     _check(not recipe.is_empty(), "the concrete recipe exists")
     _check(recipe.get("produced_in", []) == ["mason_workshop"], "only the mason mixes concrete")
     _check(recipe.get("unlock_tech", "") == "concrete", "the recipe requires Concrete")
-    _check(recipe.get("result", {}) == {"roman_concrete": 10}, "one cycle yields ten units of concrete")
+    # JSON quantities are floats; compare numeric values rather than typed dictionaries.
+    var outputs: Dictionary = recipe.get("result", {})
+    _check(outputs.keys() == [PRODUCT] and float(outputs.get(PRODUCT, 0)) == 10.0,
+        "one cycle yields ten units of concrete")
     _check(float(recipe.get("time", 0)) > 0, "concrete has a positive cycle time")
     var ingredients: Array = gd.craft_alternatives(recipe)
     _check(ingredients.size() == 3, "lime, pozzolan and aggregate are all mandatory")
@@ -53,7 +56,9 @@ func _run() -> void:
             _check(int(variant.get("amount", 0)) == 10, "each aggregate needs ten units")
         _check(aggregate_ids == AGGREGATES, "ordinary stone alternatives supply aggregate only")
     var mortar: Dictionary = city.get_craft_by_id("mortar")
-    _check(mortar.get("resources", {}) == {"lime": 10, "quartz_sand": 10},
+    var mortar_inputs: Dictionary = mortar.get("resources", {})
+    _check(mortar_inputs.size() == 2 and float(mortar_inputs.get("lime", 0)) == 10.0
+        and float(mortar_inputs.get("quartz_sand", 0)) == 10.0,
         "ordinary lime mortar uses sand, not pozzolan")
     _check(mortar.get("unlock_tech", "") == "limestone_burning", "ordinary mortar keeps its earlier gate")
     _check((gd.product_groups.get("construction_binders", []) as Array).has(PRODUCT),
