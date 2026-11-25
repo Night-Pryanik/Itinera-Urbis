@@ -5916,10 +5916,6 @@ msgid "Wood for Barrels"
 msgstr "Древесина для бочек"
 
 msgctxt "product_groups.name"
-msgid "Wool"
-msgstr "Шерсть"
-
-msgctxt "product_groups.name"
 msgid "Writing Instruments"
 msgstr "Писчие инструменты"
 
@@ -6364,10 +6360,6 @@ msgid "A thousand units of steel weapons of exceptional quality sold to the town
 msgstr "Тысяча единиц стального оружия исключительного качества, проданных городкам, — и оружие начинают спрашивать по имени города."
 
 msgctxt "resources.challenge.description"
-msgid "A thousand units of wool of exceptional quality sold to the towns — and the cloth begins to be asked by the name of the town."
-msgstr "Тысяча единиц шерсти исключительного качества, проданных городкам, — и ткань начинают спрашивать по имени города."
-
-msgctxt "resources.challenge.description"
 msgid "A thousand vessels of clay of exceptional quality sold to the towns — and they are known by the mark of the town."
 msgstr "Тысяча изделий из глины исключительного качества, проданных городкам, — и их узнают по клейму города."
 
@@ -6382,10 +6374,6 @@ msgstr "Клеймо на обожженной глине"
 msgctxt "resources.challenge.name"
 msgid "Gouda, Cheddar and Camembert"
 msgstr "Гауда, Чеддер и Камамбер"
-
-msgctxt "resources.challenge.name"
-msgid "Wool the Towns Ask for by Name"
-msgstr "Шерсть, которую спрашивают по имени"
 
 msgctxt "resources.name"
 msgid "<city_name>-steel Weapons"
@@ -7776,10 +7764,6 @@ msgid "Wool Clothes"
 msgstr "Шерстяная одежда"
 
 msgctxt "resources.name"
-msgid "Wool of <city_name>"
-msgstr "Шерсть <city_name>"
-
-msgctxt "resources.name"
 msgid "Writing Set"
 msgstr "Письменный набор"
 
@@ -8138,10 +8122,6 @@ msgstr "Город живёт своим рынком. Горожане плат
 msgctxt "specializations.description"
 msgid "The city lives off the land. Every improvement on the map — a farm, a mine, a quarry, a woodcutter's camp — yields more."
 msgstr "Город живёт за счёт земли. Каждое улучшение на карте — ферма, шахта, карьер, хижина лесоруба — даёт больше."
-
-msgctxt "specializations.description"
-msgid "The fleeces of the city are asked for by name. Wool brings more, and the looms of the city work it faster."
-msgstr "Руно города спрашивают по имени. Шерсть приносит больше, а станки ткут её быстрее."
 
 msgctxt "specializations.description"
 msgid "The forges of the city have a name among the smiths. Blades bring more, and the forges of the city strike them faster."
@@ -10695,3 +10675,127 @@ msgstr "Пуццолановый бетон"
 msgctxt "crafts.description"
 msgid "Burns limestone with furnace fuel, slakes the resulting lime and mixes it with volcanic tuff and stone aggregate into pozzolanic concrete in one production cycle."
 msgstr "За один производственный цикл обжигает известняк с печным топливом, гасит полученную известь и смешивает её с вулканическим туфом и каменным заполнителем в пуццолановый бетон."
+
+msgctxt "resources.challenge.description"
+msgid ""
+"A thousand units of wool clothes of exceptional quality sold to the towns "
+"earn the city a name for its wool."
+msgstr ""
+"Тысяча единиц шерстяной одежды исключительного качества, проданных городкам,"
+" прославит шерсть города."
+
+
+msgctxt "resources.challenge.name"
+msgid "Wool Clothes the Towns Ask for by Name"
+msgstr "Шерстяная одежда, которую спрашивают по имени"
+
+
+msgctxt "resources.name"
+msgid "Wool \"<city_name>\""
+msgstr "Шерсть \"<city_name>\""
+
+
+msgctxt "specializations.description"
+msgid "The wool clothes of the city are asked for by name. All clothes bring more, and its workshops produce them faster."
+msgstr "Шерстяную одежду города спрашивают по имени. Вся одежда приносит больше, а мастерские производят её быстрее."
+
+
+msgctxt "resources.name"
+msgid "Pen Shell"
+msgstr "Пинна (виссонный моллюск)"
+
+
+msgctxt "resources.name"
+msgid "Sea Silk"
+msgstr "Морской шёлк"
+
+
+msgctxt "resources.name"
+msgid "Sea Silk Clothes"
+msgstr "Одежда из морского шёлка"
+
+
+msgctxt "crafts.name"
+msgid "Sea Silk Clothes"
+msgstr "Одежда из морского шёлка"
+
+
+msgctxt "crafts.description"
+msgid "Makes delicate garments from lustrous sea silk."
+msgstr "Изготавливает изящную одежду из блестящего морского шёлка."
+
+
+msgctxt "resources.challenge.name"
+msgid "Cloth Clothes the Towns Ask for by Name"
+msgstr "Тканевая одежда, которую спрашивают по имени"
+
+
+msgctxt "resources.challenge.description"
+msgid ""
+"A thousand units of cloth clothes of exceptional quality sold to the towns "
+"earn the city a name for its textiles."
+msgstr ""
+"Тысяча единиц тканевой одежды исключительного качества, проданных городкам, "
+"прославит ткани города."
+
+
+msgctxt "resources.name"
+msgid "Cloth \"<city_name>\""
+msgstr "Ткань \"<city_name>\""
+
+
+msgctxt "crafts.name"
+msgid "Byssus"
+msgstr "Виссон"
+
+
+msgctxt "crafts.description"
+msgid "Weaves the city's finest plant fibers into cloth known by its name."
+msgstr ""
+"Ткёт из лучших растительных волокон ткань, известную под именем города."
+
+
+
+msgctxt "specializations.name"
+msgid "Textiles"
+msgstr "Текстиль"
+
+
+msgctxt "specializations.full_name"
+msgid "Specialization of textiles"
+msgstr "Специализация текстиля"
+
+
+msgctxt "specializations.description"
+msgid "The cloth clothes of the city are asked for by name. All clothes bring more, and its workshops produce them faster."
+msgstr "Тканевую одежду города спрашивают по имени. Вся одежда приносит больше, а мастерские производят её быстрее."
+
+
+msgctxt "resources.name"
+msgid "Cloth Clothes \"<city_name>\""
+msgstr "Тканевая одежда \"<city_name>\""
+
+
+msgctxt "resources.name"
+msgid "Wool Clothes \"<city_name>\""
+msgstr "Шерстяная одежда \"<city_name>\""
+
+
+msgctxt "crafts.name"
+msgid "Branded Cloth Clothes"
+msgstr "Брендовая тканевая одежда"
+
+
+msgctxt "crafts.name"
+msgid "Branded Wool Clothes"
+msgstr "Брендовая шерстяная одежда"
+
+
+msgctxt "crafts.description"
+msgid "Makes branded clothes from the city's finest cloth."
+msgstr "Изготавливает брендовую одежду из лучшей ткани города."
+
+
+msgctxt "crafts.description"
+msgid "Makes branded clothes from the city's finest wool."
+msgstr "Изготавливает брендовую одежду из лучшей шерсти города."

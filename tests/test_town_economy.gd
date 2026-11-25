@@ -297,7 +297,7 @@ func _test_import_isolated_from_sell() -> void:
         var sell: Array = pools["sell_pool"]
         var buy: Array = pools["buy_pool"]
         for pid in buy:
-            _check(not sell.has(pid),
+            _check(not sell.has(pid) or _resident_demand(str(pid)),
                 "imported good \"%s\" must not land in the sell pool" % pid)
 
 
@@ -783,7 +783,7 @@ func _test_live_map() -> void:
                 % str(town.get("id", "")))
         # Import must not leak into the sale.
         for pid in town.get("buy_pool", []):
-            _check(not sell.has(pid),
+            _check(not sell.has(pid) or _resident_demand(str(pid)),
                 "in town %s the bought good \"%s\" landed in the sale"
                     % [str(town.get("id", "")), pid])
         first[str(town.get("id", ""))] = [sell.duplicate(), town.get("buy_pool", []).duplicate()]
@@ -814,7 +814,7 @@ func _test_live_map() -> void:
                     % [key, pid])
         # Bought goods are not put into storage: what is bought is raw material, not a good.
         for pid in town.get("buy_pool", []):
-            _check(not storage.has(str(pid)),
+            _check(not storage.has(str(pid)) or _resident_demand(str(pid)),
                 "in town %s the bought good \"%s\" landed in storage" % [key, pid])
         # The storage mirrors the sell pool one-to-one: it has nothing extra and
         # nothing missing. The pool is computed TWICE on a new game, and between
@@ -1419,3 +1419,14 @@ func _assert_pool_grouped(container, ui, pool: Array) -> void:
     _check(row_count == expected.size(),
         "there must be as many rows as goods in the pool (%d, got %d)"
             % [expected.size(), row_count])
+
+# Resident consumption is independent of the production import cascade.
+func _resident_demand(key: String) -> bool:
+    var gd = get_root().get_node("GameData")
+    for entry in gd.get_profession_consumption("all"):
+        if bool(entry.get("is_group", false)) and bool(entry.get("consume_all", false)):
+            if key in entry.get("group_members", []):
+                return true
+        elif key == str(entry.get("display_key", "")):
+            return true
+    return false

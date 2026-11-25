@@ -171,6 +171,38 @@
       "description": "Combles and spins the fleece of the city into the softest cloth a town will ask for."
     },
     {
+      "id": "linen_byssus",
+      "name": "Byssus",
+      "produced_in": [ "weaver_house", "weaver_workshop" ],
+      "resources": { "@textile_crops": 20 },
+      "result": { "linen_byssus": 10 },
+      "time": 12,
+      "unlock_tech": "weaving",
+      "description": "Weaves the city's finest plant fibers into cloth known by its name."
+    },
+    {
+      "id": "branded_fabric_clothes",
+      "name": "Branded Cloth Clothes",
+      "produced_in": [ "weaver_house", "weaver_workshop" ],
+      "resources": { "linen_byssus": 20 },
+      "result": { "branded_fabric_clothes": 10 },
+      "extra_kinds": ["dye"],
+      "time": 6.0,
+      "unlock_tech": "weaving",
+      "description": "Makes branded clothes from the city's finest cloth."
+    },
+    {
+      "id": "branded_wool_clothes",
+      "name": "Branded Wool Clothes",
+      "produced_in": [ "weaver_house", "weaver_workshop" ],
+      "resources": { "cashmere": 20 },
+      "result": { "branded_wool_clothes": 10 },
+      "extra_kinds": ["dye"],
+      "time": 6.0,
+      "unlock_tech": "weaving",
+      "description": "Makes branded clothes from the city's finest wool."
+    },
+    {
       "id": "silk_clothes",
       "name": "Silk Clothes",
       "produced_in": [ "weaver_house", "weaver_workshop" ],
@@ -180,6 +212,16 @@
       "time": 4.0,
       "unlock_tech": "sericulture",
       "description": "Weaves clothes out of silk."
+    },
+    {
+      "id": "sea_silk_clothes",
+      "name": "Sea Silk Clothes",
+      "produced_in": [ "weaver_house", "weaver_workshop" ],
+      "resources": { "sea_silk": 20 },
+      "result": { "sea_silk_clothes": 10 },
+      "time": 8.0,
+      "unlock_tech": "weaving",
+      "description": "Makes delicate garments from lustrous sea silk."
     },
     {
       "id": "leather_clothes",
