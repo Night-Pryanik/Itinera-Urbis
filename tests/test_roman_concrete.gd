@@ -44,11 +44,15 @@ func _run() -> void:
     var outputs: Dictionary = recipe.get("result", {})
     _check(outputs.keys() == [PRODUCT] and float(outputs.get(PRODUCT, 0)) == 10.0,
         "one cycle yields ten units of concrete")
-    _check(float(recipe.get("time", 0)) > 0, "concrete has a positive cycle time")
+    _check(is_equal_approx(float(recipe.get("time", 0)), 11.0),
+        "concrete cycle includes five seconds of firing and six of mixing")
     var ingredients: Array = gd.craft_alternatives(recipe)
-    _check(ingredients.size() == 3, "lime, pozzolan and aggregate are all mandatory")
-    if ingredients.size() == 3:
-        _check(ingredients[0] == [{"key": "lime", "amount": 10}], "lime is mandatory")
+    _check(ingredients.size() == 4, "limestone, pozzolan, aggregate and fuel are mandatory")
+    if ingredients.size() == 4:
+        _check(ingredients[0] == [{"key": "limestone", "amount": 20}],
+            "the integrated cycle burns twenty units of limestone")
+        _check(ingredients[3] == [{"key": "@smelting_fuel", "amount": 10}],
+            "the integrated cycle requires furnace fuel")
         _check(ingredients[1] == [{"key": "tuff", "amount": 10}], "tuff supplies the pozzolan")
         var aggregate_ids: Array = []
         for variant in ingredients[2]:
@@ -57,9 +61,12 @@ func _run() -> void:
         _check(aggregate_ids == AGGREGATES, "ordinary stone alternatives supply aggregate only")
     var mortar: Dictionary = city.get_craft_by_id("mortar")
     var mortar_inputs: Dictionary = mortar.get("resources", {})
-    _check(mortar_inputs.size() == 2 and float(mortar_inputs.get("lime", 0)) == 10.0
-        and float(mortar_inputs.get("quartz_sand", 0)) == 10.0,
-        "ordinary lime mortar uses sand, not pozzolan")
+    _check(mortar_inputs.size() == 3 and float(mortar_inputs.get("limestone", 0)) == 20.0
+        and float(mortar_inputs.get("quartz_sand", 0)) == 10.0
+        and float(mortar_inputs.get("@smelting_fuel", 0)) == 10.0,
+        "mortar is made directly from limestone, sand and furnace fuel")
+    _check(is_equal_approx(float(mortar.get("time", 0)), 10.0),
+        "mortar cycle includes firing and mixing")
     _check(mortar.get("unlock_tech", "") == "limestone_burning", "ordinary mortar keeps its earlier gate")
     _check((gd.product_groups.get("construction_binders", []) as Array).has(PRODUCT),
         "builders can consume prepared concrete")
@@ -95,57 +102,74 @@ func _test_production(city: Node, recipe: Dictionary) -> void:
     city.total_population = 1
     city.idle_population = 0
     tm.assigned_buildings = {"0": true}
-    var ticks := ceili(float(recipe.get("time", 6.0)) / float(city.SIMULATION_TICK))
+    var ticks := ceili(float(recipe.get("time", 11.0)) / float(city.SIMULATION_TICK))
 
     for aggregate in AGGREGATES:
-        city.city_built_buildings = [
-            {"id": "lime_kilns", "slots": [PRODUCT], "quality_priority": "best"}
-        ]
-        city.city_storage.clear()
-        city.city_quality_detail.clear()
-        city.reset_counters()
-        for pid in ["lime", "tuff", aggregate]:
-            city.add_to_storage(pid, 10, "common")
+        var inputs := {"limestone": 20, "tuff": 10, "charcoal": 10}
+        inputs[aggregate] = int(inputs.get(aggregate, 0)) + 10
+        _prepare_kiln(city, PRODUCT, inputs)
         for _tick in range(ticks):
             city.do_tick()
         _check(city.get_storage_amount(PRODUCT) == 10, "one cycle produces concrete using " + aggregate)
-        for pid in ["lime", "tuff", aggregate]:
+        for pid in inputs:
             _check(city.get_storage_amount(pid) == 0, "the cycle consumes its input: " + pid)
+        _check(city.get_storage_amount("lime") == 0, "the full cycle needs no warehouse stock of lime")
         for _tick in range(ticks):
             city.do_tick()
         _check(city.get_storage_amount(PRODUCT) == 10, "concrete production stops without fresh inputs")
 
-    # Sand or extra aggregate cannot replace the reactive volcanic component.
-    city.city_built_buildings = [
-        {"id": "lime_kilns", "slots": [PRODUCT], "quality_priority": "best"}
-    ]
-    city.city_storage.clear()
-    city.city_quality_detail.clear()
-    city.reset_counters()
-    for pid in ["lime", "quartz_sand", "basalt"]:
-        city.add_to_storage(pid, 100, "common")
+    # Missing components are tested independently; stored lime cannot replace limestone.
+    var full_inputs := {"limestone": 20, "tuff": 10, "basalt": 10, "charcoal": 10}
+    for missing in ["limestone", "tuff", "charcoal"]:
+        var partial: Dictionary = full_inputs.duplicate()
+        partial.erase(missing)
+        partial["lime"] = 100
+        _prepare_kiln(city, PRODUCT, partial)
+        for _tick in range(ticks * 2):
+            city.do_tick()
+        _check(city.get_storage_amount(PRODUCT) == 0, "concrete requires " + missing)
+        _check(city.get_storage_amount("lime") == 100, "stored lime is not used in the direct recipe")
+
+    # The same limestone cannot count as both fired binder feedstock and aggregate.
+    _prepare_kiln(city, PRODUCT, {"limestone": 20, "tuff": 10, "charcoal": 10})
     for _tick in range(ticks * 2):
         city.do_tick()
-    _check(city.get_storage_amount(PRODUCT) == 0, "concrete cannot be made without tuff")
-    city.city_built_buildings = [
-        {"id": "lime_kilns", "slots": ["mortar"], "quality_priority": "best"}
-    ]
-    city.city_storage.clear()
-    city.city_quality_detail.clear()
-    city.reset_counters()
-    city.add_to_storage("lime", 10, "common")
-    city.add_to_storage("quartz_sand", 10, "common")
+    _check(city.get_storage_amount(PRODUCT) < 10,
+        "limestone aggregate needs thirty units in total, not twenty")
+
     var mortar: Dictionary = city.get_craft_by_id("mortar")
-    var mortar_ticks := ceili(float(mortar.get("time", 5.0)) / float(city.SIMULATION_TICK))
+    var mortar_ticks := ceili(float(mortar.get("time", 10.0)) / float(city.SIMULATION_TICK))
+    var mortar_inputs := {"limestone": 20, "quartz_sand": 10, "charcoal": 10}
+    _prepare_kiln(city, "mortar", mortar_inputs)
     for _tick in range(mortar_ticks):
         city.do_tick()
-    _check(city.get_storage_amount("mortar") == 10, "the kiln yard produces lime mortar")
-    _check(city.get_storage_amount("lime") == 0 and city.get_storage_amount("quartz_sand") == 0,
-        "mortar mixing consumes lime and sand")
+    _check(city.get_storage_amount("mortar") == 10, "the kiln yard produces mortar directly from limestone")
+    for pid in mortar_inputs:
+        _check(city.get_storage_amount(pid) == 0, "mortar cycle consumes " + pid)
+    _check(city.get_storage_amount("lime") == 0, "mortar needs no warehouse stock of lime")
+    for missing in mortar_inputs:
+        var partial: Dictionary = mortar_inputs.duplicate()
+        partial.erase(missing)
+        partial["lime"] = 100
+        _prepare_kiln(city, "mortar", partial)
+        for _tick in range(mortar_ticks * 2):
+            city.do_tick()
+        _check(city.get_storage_amount("mortar") == 0, "mortar requires " + missing)
+        _check(city.get_storage_amount("lime") == 100, "mortar does not consume stored lime")
     _check(is_zero_approx(city.builder_construction_share), "a kiln never grants construction work")
     city.city_built_buildings.clear()
     tm.assigned_buildings.clear()
     main_map.free()
+
+func _prepare_kiln(city: Node, recipe_id: String, inputs: Dictionary) -> void:
+    city.city_built_buildings = [
+        {"id": "lime_kilns", "slots": [recipe_id], "quality_priority": "best"}
+    ]
+    city.city_storage.clear()
+    city.city_quality_detail.clear()
+    city.reset_counters()
+    for pid in inputs:
+        city.add_to_storage(pid, int(inputs[pid]), "common")
 
 func _check(condition: bool, message: String) -> void:
     if condition:

@@ -393,22 +393,24 @@
       "id": "mortar",
       "name": "Lime Mortar",
       "produced_in": [ "lime_kilns" ],
-      "resources": { "lime": 10, "quartz_sand": 10 },
+      // One slot covers firing limestone, slaking the lime and mixing the mortar.
+      "resources": { "limestone": 20, "quartz_sand": 10, "@smelting_fuel": 10 },
       "result": { "mortar": 10 },
-      "time": 5.0,
+      "time": 10.0,
       "unlock_tech": "limestone_burning",
-      "description": "Mixes lime with quartz sand into ordinary lime mortar."
+      "description": "Burns limestone with furnace fuel, slakes the resulting lime and mixes it with quartz sand into lime mortar in one production cycle."
     },
     {
-      // Reactive volcanic tuff supplies the pozzolan; ordinary stone supplies only aggregate.
+      // The full cycle includes firing 20 limestone into lime, then slaking and mixing.
+      // Limestone chosen as aggregate needs another 10 units in addition to the firing input.
       "id": "roman_concrete",
       "name": "Roman Concrete",
       "produced_in": [ "lime_kilns" ],
-      "resources": [ { "lime": 10 }, { "tuff": 10 }, [ { "basalt": 10 }, { "sandstone": 10 }, { "limestone": 10 } ] ],
+      "resources": [ { "limestone": 20 }, { "tuff": 10 }, [ { "basalt": 10 }, { "sandstone": 10 }, { "limestone": 10 } ], { "@smelting_fuel": 10 } ],
       "result": { "roman_concrete": 10 },
-      "time": 6.0,
+      "time": 11.0,
       "unlock_tech": "concrete",
-      "description": "Mixes lime with volcanic tuff and stone aggregate into pozzolanic concrete that can set in water."
+      "description": "Burns limestone with furnace fuel, slakes the resulting lime and mixes it with volcanic tuff and stone aggregate into pozzolanic concrete in one production cycle."
     },
     {
       "id": "plaster",

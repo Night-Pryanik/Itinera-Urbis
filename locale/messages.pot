@@ -4492,7 +4492,7 @@ msgid "Burns broadleaf hardwood timber, leaches the ash and calcines the lye int
 msgstr ""
 
 msgctxt "crafts.description"
-msgid "Mixes lime with quartz sand into ordinary lime mortar."
+msgid "Burns limestone with furnace fuel, slakes the resulting lime and mixes it with quartz sand into lime mortar in one production cycle."
 msgstr ""
 
 msgctxt "crafts.description"
@@ -10570,5 +10570,5 @@ msgid "Roman Concrete"
 msgstr ""
 
 msgctxt "crafts.description"
-msgid "Mixes lime with volcanic tuff and stone aggregate into pozzolanic concrete that can set in water."
+msgid "Burns limestone with furnace fuel, slakes the resulting lime and mixes it with volcanic tuff and stone aggregate into pozzolanic concrete in one production cycle."
 msgstr ""

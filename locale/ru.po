@@ -4572,8 +4572,8 @@ msgid "Burns broadleaf hardwood timber, leaches the ash and calcines the lye int
 msgstr "Пережигает лиственную древесину на золу, выщелачивает её и прокаливает щёлок в поташ."
 
 msgctxt "crafts.description"
-msgid "Mixes lime with quartz sand into ordinary lime mortar."
-msgstr "Смешивает известь с кварцевым песком в обычный известковый раствор."
+msgid "Burns limestone with furnace fuel, slakes the resulting lime and mixes it with quartz sand into lime mortar in one production cycle."
+msgstr "За один производственный цикл обжигает известняк с печным топливом, гасит полученную известь и смешивает её с кварцевым песком в известковый раствор."
 
 msgctxt "crafts.description"
 msgid "Calcines gypsum or alabaster into fine setting plaster for moulds and stucco."
@@ -10689,5 +10689,5 @@ msgid "Roman Concrete"
 msgstr "Римский бетон"
 
 msgctxt "crafts.description"
-msgid "Mixes lime with volcanic tuff and stone aggregate into pozzolanic concrete that can set in water."
-msgstr "Смешивает известь с вулканическим туфом и каменным заполнителем в пуццолановый бетон, способный твердеть в воде."
+msgid "Burns limestone with furnace fuel, slakes the resulting lime and mixes it with volcanic tuff and stone aggregate into pozzolanic concrete in one production cycle."
+msgstr "За один производственный цикл обжигает известняк с печным топливом, гасит полученную известь и смешивает её с вулканическим туфом и каменным заполнителем в пуццолановый бетон."
