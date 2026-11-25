@@ -32,7 +32,12 @@
     {
       "id": "wool_goods",
       "name": "Wool",
-      "products": [ "wool", "cashmere" ]
+      "products": [ "wool", "cashmere", "wool_clothes", "branded_wool_clothes" ]
+    },
+    {
+      "id": "flax_goods",
+      "name": "Textiles",
+      "products": [ "flax", "linen_byssus", "fabric_clothes", "branded_fabric_clothes" ]
     },
     {
       // The branch of the smiths is a branch of blades of every metal the forge knows, not of the bar,

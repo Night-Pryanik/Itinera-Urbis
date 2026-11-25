@@ -1318,7 +1318,7 @@ func get_building_planned_production() -> Dictionary:
                 # of the production at the improvements on the map. A branch scoped to a good multiplies
                 # the same output of that good only.
                 var good_multiplier := prof_multiplier * water_multiplier \
-                        * float(production_multipliers.get(res, 1.0))
+                        * GameData.product_output_multiplier(production_multipliers, str(res))
                 if good_multiplier != 1.0:
                     amount = int(round(float(amount) * good_multiplier))
                     if amount <= 0:

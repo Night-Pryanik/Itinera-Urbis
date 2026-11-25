@@ -174,12 +174,24 @@
       "id": "wool_specialization",
       "name": "Wool",
       "full_name": "Specialization of wool",
-      "description": "The fleeces of the city are asked for by name. Wool brings more, and the looms of the city work it faster.",
+      "description": "The wool clothes of the city are asked for by name. Wool goods bring more, and its workshops produce wool goods and clothes faster.",
       "icon": "wool.png",
       "unlock": { "type": "challenge", "id": "wool_challenge" },
       "bonuses": [
         { "type": "trade_sell_price", "value": 0.15, "products": ["@wool_goods"] },
-        { "type": "building_production", "value": 0.20, "products": ["@wool_goods"] }
+        { "type": "building_production", "value": 0.20, "products": ["@wool_goods", "@clothes"] }
+      ]
+    },
+    {
+      "id": "flax_specialization",
+      "name": "Textiles",
+      "full_name": "Specialization of textiles",
+      "description": "The cloth clothes of the city are asked for by name. Textile goods bring more, and its workshops produce textile goods and clothes faster.",
+      "icon": "flax.png",
+      "unlock": { "type": "challenge", "id": "flax_challenge" },
+      "bonuses": [
+        { "type": "trade_sell_price", "value": 0.15, "products": ["@flax_goods"] },
+        { "type": "building_production", "value": 0.20, "products": ["@flax_goods", "@clothes"] }
       ]
     },
     {

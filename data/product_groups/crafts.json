@@ -93,6 +93,16 @@
       ]
     },
     {
+      "id": "plant_fibers",
+      "name": "Plant Fibers",
+      "products": [ "@textile_crops", "@rope_fibers" ]
+    },
+    {
+      "id": "wools",
+      "name": "Wools",
+      "products": [ "wool" ]
+    },
+    {
       "id": "textile_crops",
       "name": "Textile Crops",
       "products": [ "cotton", "flax", "hemp", "jute", "ramie", "kenaf", "yucca" ]

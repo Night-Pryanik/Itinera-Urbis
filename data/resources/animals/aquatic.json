@@ -63,6 +63,29 @@
       "breedable": false
     },
     {
+      // Water has no climate zone, so this rare shellfish is placed in any shallow sea.
+      // Fishing boats gather and prepare its byssus as usable sea silk.
+      "id": "pen_shell",
+      "price": 40,
+      "name": "Pen Shell",
+      "type": "raw",
+      "category": "animals",
+      "group": "aquatic_animals",
+      "subgroup": "misc_fish",
+      "strategic": true,
+      "tech_required": "fishing",
+      "allowed_terrain": [ "shallow_sea" ],
+      "allowed_cover": [ "none" ],
+      "improved_by": "fishing_boats",
+      "produces": { "sea_silk": 5 },
+      "feed_consumption": 0,
+      "time_to_mature": 0,
+      "icon": "pen_shell.png",
+      "color": [ 155, 125, 80 ],
+      "breedable": false,
+      "spawn_count": [ 2, 4 ]
+    },
+    {
       "id": "cuttlefish",
       "price": 40,
       "name": "Cuttlefish",

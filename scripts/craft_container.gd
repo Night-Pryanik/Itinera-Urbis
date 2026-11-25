@@ -251,7 +251,7 @@ func tick(delta: float, is_active: bool, quality_priority: String = "best",
             if full_amount <= 0:
                 continue
             var per_release: float = float(full_amount) * delta / craft_time * output_multiplier \
-                    * float(product_multipliers.get(pid, 1.0))
+                    * GameData.product_output_multiplier(product_multipliers, str(pid))
             var frac: float = float(release_fractional.get(pid, 0.0)) + per_release
             var floor_amount: int = int(floor(frac))
             frac = frac - float(floor_amount)

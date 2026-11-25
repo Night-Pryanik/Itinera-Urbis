@@ -6284,10 +6284,6 @@ msgid "A thousand units of steel weapons of exceptional quality sold to the town
 msgstr ""
 
 msgctxt "resources.challenge.description"
-msgid "A thousand units of wool of exceptional quality sold to the towns — and the cloth begins to be asked by the name of the town."
-msgstr ""
-
-msgctxt "resources.challenge.description"
 msgid "A thousand vessels of clay of exceptional quality sold to the towns — and they are known by the mark of the town."
 msgstr ""
 
@@ -6301,10 +6297,6 @@ msgstr ""
 
 msgctxt "resources.challenge.name"
 msgid "Gouda, Cheddar and Camembert"
-msgstr ""
-
-msgctxt "resources.challenge.name"
-msgid "Wool the Towns Ask for by Name"
 msgstr ""
 
 msgctxt "resources.name"
@@ -7696,10 +7688,6 @@ msgid "Wool Clothes"
 msgstr ""
 
 msgctxt "resources.name"
-msgid "Wool of <city_name>"
-msgstr ""
-
-msgctxt "resources.name"
 msgid "Writing Set"
 msgstr ""
 
@@ -8057,10 +8045,6 @@ msgstr ""
 
 msgctxt "specializations.description"
 msgid "The city lives off the land. Every improvement on the map — a farm, a mine, a quarry, a woodcutter's camp — yields more."
-msgstr ""
-
-msgctxt "specializations.description"
-msgid "The fleeces of the city are asked for by name. Wool brings more, and the looms of the city work it faster."
 msgstr ""
 
 msgctxt "specializations.description"
@@ -10575,4 +10559,141 @@ msgstr ""
 
 msgctxt "crafts.description"
 msgid "Burns limestone with furnace fuel, slakes the resulting lime and mixes it with volcanic tuff and stone aggregate into pozzolanic concrete in one production cycle."
+msgstr ""
+
+msgctxt "resources.challenge.description"
+msgid ""
+"A thousand units of wool clothes of exceptional quality sold to the towns "
+"earn the city a name for its wool."
+msgstr ""
+
+
+msgctxt "resources.challenge.name"
+msgid "Wool Clothes the Towns Ask for by Name"
+msgstr ""
+
+
+msgctxt "resources.name"
+msgid "Wool \"<city_name>\""
+msgstr ""
+
+
+msgctxt "specializations.description"
+msgid ""
+"The wool clothes of the city are asked for by name. Wool goods bring more, "
+"and its workshops produce wool goods and clothes faster."
+msgstr ""
+
+
+msgctxt "resources.name"
+msgid "Pen Shell"
+msgstr ""
+
+
+msgctxt "resources.name"
+msgid "Sea Silk"
+msgstr ""
+
+
+msgctxt "resources.name"
+msgid "Sea Silk Clothes"
+msgstr ""
+
+
+msgctxt "crafts.name"
+msgid "Sea Silk Clothes"
+msgstr ""
+
+
+msgctxt "crafts.description"
+msgid "Makes delicate garments from lustrous sea silk."
+msgstr ""
+
+
+msgctxt "resources.challenge.name"
+msgid "Cloth Clothes the Towns Ask for by Name"
+msgstr ""
+
+
+msgctxt "resources.challenge.description"
+msgid ""
+"A thousand units of cloth clothes of exceptional quality sold to the towns "
+"earn the city a name for its textiles."
+msgstr ""
+
+
+msgctxt "resources.name"
+msgid "Cloth \"<city_name>\""
+msgstr ""
+
+
+msgctxt "crafts.name"
+msgid "Byssus"
+msgstr ""
+
+
+msgctxt "crafts.description"
+msgid "Weaves the city's finest plant fibers into cloth known by its name."
+msgstr ""
+
+
+msgctxt "product_groups.name"
+msgid "Textiles"
+msgstr ""
+
+
+msgctxt "specializations.name"
+msgid "Textiles"
+msgstr ""
+
+
+msgctxt "specializations.full_name"
+msgid "Specialization of textiles"
+msgstr ""
+
+
+msgctxt "specializations.description"
+msgid ""
+"The cloth clothes of the city are asked for by name. Textile goods bring "
+"more, and its workshops produce textile goods and clothes faster."
+msgstr ""
+
+
+msgctxt "resources.name"
+msgid "Cloth Clothes \"<city_name>\""
+msgstr ""
+
+
+msgctxt "resources.name"
+msgid "Wool Clothes \"<city_name>\""
+msgstr ""
+
+
+msgctxt "crafts.name"
+msgid "Branded Cloth Clothes"
+msgstr ""
+
+
+msgctxt "crafts.name"
+msgid "Branded Wool Clothes"
+msgstr ""
+
+
+msgctxt "crafts.description"
+msgid "Makes branded clothes from the city's finest cloth."
+msgstr ""
+
+
+msgctxt "crafts.description"
+msgid "Makes branded clothes from the city's finest wool."
+msgstr ""
+
+
+msgctxt "product_groups.name"
+msgid "Plant Fibers"
+msgstr ""
+
+
+msgctxt "product_groups.name"
+msgid "Wools"
 msgstr ""
