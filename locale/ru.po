@@ -4388,6 +4388,10 @@ msgid "Twists ropes and cables from fibers."
 msgstr "Свивает верёвки и канаты из волокон"
 
 msgctxt "crafts.description"
+msgid "Washes, combs and spins the byssus threads of pen shells into sea silk."
+msgstr "Промывает, вычёсывает и прядёт нити виссона пинн в морской шёлк."
+
+msgctxt "crafts.description"
 msgid "Weaves and stitches heavy sailcloth from plant fibers."
 msgstr "Ткёт и сшивает плотную парусину из растительных волокон."
 
@@ -4406,6 +4410,10 @@ msgstr "Ткёт одежду из шерсти"
 msgctxt "crafts.description"
 msgid "Weaves durable carpets from wool or plant fibers."
 msgstr "Ткёт долговечные ковры из шерсти или растительных волокон."
+
+msgctxt "crafts.description"
+msgid "Weaves light, golden clothes out of sea silk."
+msgstr "Ткёт лёгкую золотистую одежду из морского шёлка."
 
 msgctxt "crafts.description"
 msgid "Distils unhopped beer or rice sake into a strong grain spirit."
@@ -5134,6 +5142,14 @@ msgstr "Саке"
 msgctxt "crafts.name"
 msgid "Science"
 msgstr "Наука"
+
+msgctxt "crafts.name"
+msgid "Sea Silk"
+msgstr "Морской шёлк"
+
+msgctxt "crafts.name"
+msgid "Sea Silk Clothes"
+msgstr "Одежда из морского шёлка"
 
 msgctxt "crafts.name"
 msgid "Sepia"
@@ -6552,6 +6568,10 @@ msgid "Buffalo"
 msgstr "Буйволы"
 
 msgctxt "resources.name"
+msgid "Byssus"
+msgstr "Виссон"
+
+msgctxt "resources.name"
 msgid "Camel Meat"
 msgstr "Верблюжатина"
 
@@ -7280,6 +7300,10 @@ msgid "Peat"
 msgstr "Торф"
 
 msgctxt "resources.name"
+msgid "Pen Shells"
+msgstr "Пинны"
+
+msgctxt "resources.name"
 msgid "Perfume"
 msgstr "Духи"
 
@@ -7494,6 +7518,14 @@ msgstr "Песчаник"
 msgctxt "resources.name"
 msgid "Science"
 msgstr "Наука"
+
+msgctxt "resources.name"
+msgid "Sea Silk"
+msgstr "Морской шёлк"
+
+msgctxt "resources.name"
+msgid "Sea Silk Clothes"
+msgstr "Одежда из морского шёлка"
 
 msgctxt "resources.name"
 msgid "Sepia"

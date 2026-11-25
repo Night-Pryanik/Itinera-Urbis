@@ -4308,6 +4308,10 @@ msgid "Twists ropes and cables from fibers."
 msgstr ""
 
 msgctxt "crafts.description"
+msgid "Washes, combs and spins the byssus threads of pen shells into sea silk."
+msgstr ""
+
+msgctxt "crafts.description"
 msgid "Weaves and stitches heavy sailcloth from plant fibers."
 msgstr ""
 
@@ -4325,6 +4329,10 @@ msgstr ""
 
 msgctxt "crafts.description"
 msgid "Weaves durable carpets from wool or plant fibers."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Weaves light, golden clothes out of sea silk."
 msgstr ""
 
 msgctxt "crafts.description"
@@ -5053,6 +5061,14 @@ msgstr ""
 
 msgctxt "crafts.name"
 msgid "Science"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Sea Silk"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Sea Silk Clothes"
 msgstr ""
 
 msgctxt "crafts.name"
@@ -6472,6 +6488,10 @@ msgid "Buffalo"
 msgstr ""
 
 msgctxt "resources.name"
+msgid "Byssus"
+msgstr ""
+
+msgctxt "resources.name"
 msgid "Camel Meat"
 msgstr ""
 
@@ -7200,6 +7220,10 @@ msgid "Peat"
 msgstr ""
 
 msgctxt "resources.name"
+msgid "Pen Shells"
+msgstr ""
+
+msgctxt "resources.name"
 msgid "Perfume"
 msgstr ""
 
@@ -7413,6 +7437,14 @@ msgstr ""
 
 msgctxt "resources.name"
 msgid "Science"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Sea Silk"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Sea Silk Clothes"
 msgstr ""
 
 msgctxt "resources.name"

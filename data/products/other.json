@@ -25,6 +25,14 @@
       "icon": "murex.png"
     },
     {
+      "id": "byssus",
+      "price": 40,
+      "name": "Byssus",
+      "type": "product",
+      "category": "material",
+      "icon": "byssus.png"
+    },
+    {
       "id": "raw_cuttlefish",
       "price": 10,
       "name": "Cuttlefish",

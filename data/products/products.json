@@ -105,6 +105,15 @@
       "icon": "silk_clothes.png"
     },
     {
+      "id": "sea_silk_clothes",
+      "price": 160,
+      "name": "Sea Silk Clothes",
+      "type": "product",
+      "category": "clothes",
+      "unlock_tech": "weaving",
+      "icon": "sea_silk_clothes.png"
+    },
+    {
       "id": "vegetable_oil",
       "price": 10,
       "name": "Vegetable Oil",

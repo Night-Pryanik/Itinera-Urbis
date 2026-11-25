@@ -219,6 +219,14 @@
       "special_yield": { "science": 3 }
     },
     {
+      "id": "sea_silk", "price": 100,
+      "name": "Sea Silk",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "weaving",
+      "icon": "sea_silk.png"
+    },
+    {
       "id": "alunite", "price": 5,
       "name": "Alunite",
       "type": "product",

@@ -149,6 +149,16 @@
       "description": "Weaves heavy sailcloth from plant fibers on a hand loom."
     },
     {
+      "id": "sea_silk",
+      "name": "Sea Silk",
+      "produced_in": [ "weaver_house", "weaver_workshop" ],
+      "resources": { "byssus": 20 },
+      "result": { "sea_silk": 10 },
+      "time": 10.0,
+      "unlock_tech": "weaving",
+      "description": "Washes, combs and spins the byssus threads of pen shells into sea silk."
+    },
+    {
       "id": "canvas",
       "name": "Canvas",
       "produced_in": [ "sailmaker_house" ],
@@ -180,6 +190,18 @@
       "time": 4.0,
       "unlock_tech": "sericulture",
       "description": "Weaves clothes out of silk."
+    },
+    {
+      // Sea silk keeps the golden sheen of the raw byssus, and that colour is its whole value,
+      // so the recipe takes no dye.
+      "id": "sea_silk_clothes",
+      "name": "Sea Silk Clothes",
+      "produced_in": [ "weaver_house", "weaver_workshop" ],
+      "resources": { "sea_silk": 20 },
+      "result": { "sea_silk_clothes": 10 },
+      "time": 8.0,
+      "unlock_tech": "weaving",
+      "description": "Weaves light, golden clothes out of sea silk."
     },
     {
       "id": "leather_clothes",

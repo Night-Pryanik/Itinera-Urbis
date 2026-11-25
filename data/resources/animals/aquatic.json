@@ -63,6 +63,28 @@
       "breedable": false
     },
     {
+      // The pen shell anchors itself in the sandy bottom with a tuft of fine threads, the byssus,
+      // which divers cut off and the weaver spins into sea silk.
+      "id": "pen_shell",
+      "price": 40,
+      "name": "Pen Shells",
+      "type": "raw",
+      "category": "animals",
+      "group": "aquatic_animals",
+      "subgroup": "misc_fish",
+      "strategic": true,
+      "tech_required": "fishing",
+      "allowed_terrain": [ "shallow_sea" ],
+      "allowed_cover": [ "none" ],
+      "improved_by": "fishing_boats",
+      "produces": { "byssus": 10 },
+      "feed_consumption": 0,
+      "time_to_mature": 0,
+      "icon": "byssus.png",
+      "color": [ 190, 150, 70 ],
+      "breedable": false
+    },
+    {
       "id": "cuttlefish",
       "price": 40,
       "name": "Cuttlefish",
