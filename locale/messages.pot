@@ -4164,7 +4164,7 @@ msgid "Makes wooden barrels."
 msgstr ""
 
 msgctxt "crafts.description"
-msgid "Makes simple furniture from common timber."
+msgid "Makes simple furniture from common timber or bamboo."
 msgstr ""
 
 msgctxt "crafts.description"
@@ -6377,6 +6377,10 @@ msgstr ""
 
 msgctxt "resources.name"
 msgid "Attar"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Bamboo"
 msgstr ""
 
 msgctxt "resources.name"

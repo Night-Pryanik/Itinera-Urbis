@@ -177,6 +177,14 @@
       "icon": "velvetleaf.png"
     },
     {
+      "id": "bamboo", "price": 5,
+      "name": "Bamboo",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "plantations",
+      "icon": "bamboo.png"
+    },
+    {
       "id": "mulberry_bark", "price": 6,
       "name": "Mulberry Bark",
       "type": "product",
