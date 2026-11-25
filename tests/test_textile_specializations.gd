@@ -56,7 +56,8 @@ func _run() -> void:
     _check(local["sell_pool"].has("wool_clothes") and local["buy_pool"].has("wool_clothes"),
         "residents buy wool clothes even where they are produced")
     var byssus_recipe: Dictionary = gd.find_craft("linen_byssus")
-    _check(byssus_recipe.get("resources", {}) == {"@textile_crops": 20},
+    var byssus_inputs: Dictionary = byssus_recipe.get("resources", {})
+    _check(byssus_inputs.size() == 1 and int(byssus_inputs.get("@textile_crops", 0)) == 20,
         "byssus uses only textile crops")
     for fiber in gd.product_groups.get("textile_crops", []):
         _check(_town_economy.is_recipe_ready(byssus_recipe, {fiber: true}), "byssus accepts " + str(fiber))
@@ -64,7 +65,9 @@ func _run() -> void:
     # remain valid because they are explicitly part of the textile group.
     for fiber in ["sisal", "papyrus", "velvetleaf", "coir"]:
         _check(not _town_economy.is_recipe_ready(byssus_recipe, {fiber: true}), "byssus rejects rope-only fiber " + fiber)
-    _check(gd.find_craft("cashmere").get("resources", {}) == {"wool": 20}, "cashmere uses wool directly")
+    var cashmere_inputs: Dictionary = gd.find_craft("cashmere").get("resources", {})
+    _check(cashmere_inputs.size() == 1 and int(cashmere_inputs.get("wool", 0)) == 20,
+        "cashmere uses wool directly")
 
     var town := {"id": "textile_test", "name": "Testville", "treasury": 1000000,
         "buy_pool": pools.get("buy_pool", [])}
