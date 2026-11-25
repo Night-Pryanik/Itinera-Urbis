@@ -2,9 +2,9 @@
 extends SceneTree
 
 const WATCHDOG = preload("res://tests/watchdog.gd")
-const TownEconomy = preload("res://scripts/town_economy.gd")
 
 var _failed := false
+var _town_economy = null
 
 func _initialize() -> void:
     WATCHDOG.arm(self)
@@ -17,6 +17,8 @@ func _run() -> void:
     await process_frame
     var gd = root.get_node("GameData")
     var city = root.get_node("CityData")
+    # Load after the autoloads are ready, as town_economy references GameData.
+    _town_economy = load("res://scripts/town_economy.gd")
     var fame = main_map.get("challenge_manager")
     var trade = main_map.get("town_trade_manager")
     if fame == null or trade == null:
@@ -35,8 +37,8 @@ func _run() -> void:
 
     # Resident demand is independent of the production closure and includes
     # each member of a consume-all basket, even if the town makes that member.
-    var pools: Dictionary = TownEconomy.build_pools("textile_test", [])
-    var local: Dictionary = TownEconomy.build_pools("textile_local", ["flax", "wool"])
+    var pools: Dictionary = _town_economy.build_pools("textile_test", [])
+    var local: Dictionary = _town_economy.build_pools("textile_local", ["flax", "wool"])
     for entry in gd.get_profession_consumption("all"):
         if float(entry.get("interval", 0.0)) <= 0.0:
             continue
@@ -53,15 +55,21 @@ func _run() -> void:
     _check(not pools["buy_pool"].has("wool"), "no fixed wool import")
     _check(local["sell_pool"].has("wool_clothes") and local["buy_pool"].has("wool_clothes"),
         "residents buy wool clothes even where they are produced")
-    for fiber in ["cotton", "flax", "hemp", "jute", "ramie", "kenaf", "yucca", "sisal", "papyrus", "velvetleaf", "coir"]:
-        _check(gd.product_groups.get("plant_fibers", []).has(fiber), "byssus accepts " + fiber)
-    _check(gd.find_craft("linen_byssus")["resources"].has("@plant_fibers"), "byssus uses plant fibers")
-    _check(gd.find_craft("cashmere")["resources"].has("@wools"), "cashmere uses wool group")
+    var byssus_recipe: Dictionary = gd.find_craft("linen_byssus")
+    _check(byssus_recipe.get("resources", {}) == {"@textile_crops": 20},
+        "byssus uses only textile crops")
+    for fiber in gd.product_groups.get("textile_crops", []):
+        _check(_town_economy.is_recipe_ready(byssus_recipe, {fiber: true}), "byssus accepts " + str(fiber))
+    # These rope fibers are not textile crops; overlapping fibers such as hemp
+    # remain valid because they are explicitly part of the textile group.
+    for fiber in ["sisal", "papyrus", "velvetleaf", "coir"]:
+        _check(not _town_economy.is_recipe_ready(byssus_recipe, {fiber: true}), "byssus rejects rope-only fiber " + fiber)
+    _check(gd.find_craft("cashmere").get("resources", {}) == {"wool": 20}, "cashmere uses wool directly")
 
     var town := {"id": "textile_test", "name": "Testville", "treasury": 1000000,
         "buy_pool": pools.get("buy_pool", [])}
     main_map.town_manager.towns.append(town)
-    for line in [["fabric_clothes", "linen_byssus", "flax_specialization", "branded_fabric_clothes"],
+    for line in [["fabric_clothes", "linen_byssus", "fabric_specialization", "branded_fabric_clothes"],
                  ["wool_clothes", "cashmere", "wool_specialization", "branded_wool_clothes"]]:
         var pid: String = line[0]
         var prestige: String = line[1]
@@ -107,13 +115,13 @@ func _run() -> void:
     for pid in gd.product_groups.get("clothes", []):
         _check(is_equal_approx(float(city.get_production_product_multipliers().get(pid, 1.0)), 1.2),
             str(pid) + " receives the wool bonus")
-    _check(city.choose_specialization("flax_specialization"), "flax specialization can also be chosen")
+    _check(city.choose_specialization("fabric_specialization"), "fabric specialization can also be chosen")
     var multipliers: Dictionary = city.get_production_product_multipliers()
     for pid in gd.product_groups.get("clothes", []):
         _check(is_equal_approx(float(multipliers.get(pid, 1.0)), 1.4), str(pid) + " receives both bonuses")
     _check(is_equal_approx(float(multipliers.get("carpet", 1.0)), 1.0), "the clothing bonus does not affect carpets")
     _check(is_equal_approx(float(multipliers.get("cashmere", 1.0)), 1.2), "wool goods retain their own bonus")
-    _check(is_equal_approx(float(multipliers.get("linen_byssus", 1.0)), 1.2), "flax goods receive their own bonus")
+    _check(is_equal_approx(float(multipliers.get("linen_byssus", 1.0)), 1.2), "fabric goods receive their own bonus")
 
     # The multiplier map may have been built before the dyed product was registered.
     var variant: String = gd.make_generated_id("wool_clothes", "ochre")

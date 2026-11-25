@@ -10687,13 +10687,3 @@ msgstr ""
 msgctxt "crafts.description"
 msgid "Makes branded clothes from the city's finest wool."
 msgstr ""
-
-
-msgctxt "product_groups.name"
-msgid "Plant Fibers"
-msgstr ""
-
-
-msgctxt "product_groups.name"
-msgid "Wools"
-msgstr ""

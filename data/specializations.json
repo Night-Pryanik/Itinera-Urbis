@@ -183,15 +183,15 @@
       ]
     },
     {
-      "id": "flax_specialization",
+      "id": "fabric_specialization",
       "name": "Textiles",
       "full_name": "Specialization of textiles",
       "description": "The cloth clothes of the city are asked for by name. Textile goods bring more, and its workshops produce textile goods and clothes faster.",
       "icon": "flax.png",
-      "unlock": { "type": "challenge", "id": "flax_challenge" },
+      "unlock": { "type": "challenge", "id": "fabric_challenge" },
       "bonuses": [
-        { "type": "trade_sell_price", "value": 0.15, "products": ["@flax_goods"] },
-        { "type": "building_production", "value": 0.20, "products": ["@flax_goods", "@clothes"] }
+        { "type": "trade_sell_price", "value": 0.15, "products": ["@fabric_goods"] },
+        { "type": "building_production", "value": 0.20, "products": ["@fabric_goods", "@clothes"] }
       ]
     },
     {

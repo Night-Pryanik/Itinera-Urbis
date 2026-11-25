@@ -82,13 +82,13 @@
         ]
       },
       "challenge": {
-        "id": "flax_challenge",
+        "id": "fabric_challenge",
         "threshold": 1000,
         "trigger": "sell",
         "min_quality": "exceptional",
         "name": "Cloth Clothes the Towns Ask for by Name",
         "description": "A thousand units of cloth clothes of exceptional quality sold to the towns earn the city a name for its textiles.",
-        "reward": { "type": "specialization", "id": "flax_specialization" }
+        "reward": { "type": "specialization", "id": "fabric_specialization" }
       }
     },
     {

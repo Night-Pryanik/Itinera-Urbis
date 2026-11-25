@@ -10815,13 +10815,3 @@ msgstr "Изготавливает брендовую одежду из лучш
 msgctxt "crafts.description"
 msgid "Makes branded clothes from the city's finest wool."
 msgstr "Изготавливает брендовую одежду из лучшей шерсти города."
-
-
-msgctxt "product_groups.name"
-msgid "Plant Fibers"
-msgstr "Растительные волокна"
-
-
-msgctxt "product_groups.name"
-msgid "Wools"
-msgstr "Шерсть"

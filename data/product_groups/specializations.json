@@ -35,7 +35,7 @@
       "products": [ "wool", "cashmere", "wool_clothes", "branded_wool_clothes" ]
     },
     {
-      "id": "flax_goods",
+      "id": "fabric_goods",
       "name": "Textiles",
       "products": [ "flax", "linen_byssus", "fabric_clothes", "branded_fabric_clothes" ]
     },
