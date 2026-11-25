@@ -10681,12 +10681,12 @@ msgid "A wooden boat needs a frame, planking and a way to seal the seams, all of
 msgstr "Деревянному судну нужны каркас, обшивка и способ законопатить швы — всё это верфь может держать в порядке. Судостроение возникало независимо на реках, озёрах и побережьях по всему свету. Верфь строит корпус, а паруса и снасти поставляют другие мастерские."
 
 msgctxt "crafts.name"
-msgid "Roman Concrete"
-msgstr "Римский бетон"
+msgid "Pozzolanic Concrete"
+msgstr "Пуццолановый бетон"
 
 msgctxt "resources.name"
-msgid "Roman Concrete"
-msgstr "Римский бетон"
+msgid "Pozzolanic Concrete"
+msgstr "Пуццолановый бетон"
 
 msgctxt "crafts.description"
 msgid "Burns limestone with furnace fuel, slakes the resulting lime and mixes it with volcanic tuff and stone aggregate into pozzolanic concrete in one production cycle."

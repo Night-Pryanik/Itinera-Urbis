@@ -167,7 +167,7 @@
         "bitumen": { "production_bonus": 0.08 },
         "plaster": { "production_bonus": 0.15 },
         "mortar": { "production_bonus": 0.20 },
-        "roman_concrete": { "production_bonus": 0.25 }
+        "pozzolanic_concrete": { "production_bonus": 0.25 }
       }
     },
     {

@@ -1,9 +1,9 @@
 # Headless regression test of the pozzolanic concrete chain and its technology gate.
-#   godot --headless --path . --script res://tests/test_roman_concrete.gd
+#   godot --headless --path . --script res://tests/test_pozzolanic_concrete.gd
 extends SceneTree
 
 const WATCHDOG = preload("res://tests/watchdog.gd")
-const PRODUCT := "roman_concrete"
+const PRODUCT := "pozzolanic_concrete"
 const AGGREGATES := ["basalt", "sandstone", "limestone"]
 
 var _failed := false

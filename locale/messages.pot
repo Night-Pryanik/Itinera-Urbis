@@ -10562,11 +10562,11 @@ msgid "A wooden boat needs a frame, planking and a way to seal the seams, all of
 msgstr ""
 
 msgctxt "crafts.name"
-msgid "Roman Concrete"
+msgid "Pozzolanic Concrete"
 msgstr ""
 
 msgctxt "resources.name"
-msgid "Roman Concrete"
+msgid "Pozzolanic Concrete"
 msgstr ""
 
 msgctxt "crafts.description"
