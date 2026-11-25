@@ -88,8 +88,8 @@
     },
     {
       // Tuff stands for reactive volcanic pozzolan; the finished mix includes stone aggregate.
-      "id": "roman_concrete", "price": 26,
-      "name": "Roman Concrete",
+      "id": "pozzolanic_concrete", "price": 26,
+      "name": "Pozzolanic Concrete",
       "type": "product",
       "category": "construction_material",
       "unlock_tech": "concrete",

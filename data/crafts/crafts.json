@@ -403,11 +403,11 @@
     {
       // The full cycle includes firing 20 limestone into lime, then slaking and mixing.
       // Limestone chosen as aggregate needs another 10 units in addition to the firing input.
-      "id": "roman_concrete",
-      "name": "Roman Concrete",
+      "id": "pozzolanic_concrete",
+      "name": "Pozzolanic Concrete",
       "produced_in": [ "lime_kilns" ],
       "resources": [ { "limestone": 20 }, { "tuff": 10 }, [ { "basalt": 10 }, { "sandstone": 10 }, { "limestone": 10 } ], { "@smelting_fuel": 10 } ],
-      "result": { "roman_concrete": 10 },
+      "result": { "pozzolanic_concrete": 10 },
       "time": 11.0,
       "unlock_tech": "concrete",
       "description": "Burns limestone with furnace fuel, slakes the resulting lime and mixes it with volcanic tuff and stone aggregate into pozzolanic concrete in one production cycle."

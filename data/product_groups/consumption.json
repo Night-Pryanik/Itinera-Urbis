@@ -182,7 +182,7 @@
       // Per-member bonuses live in the consumption rule.
       "id": "construction_binders",
       "name": "Construction Mixes and Binders",
-      "products": [ "clay", "bitumen", "plaster", "mortar", "roman_concrete" ]
+      "products": [ "clay", "bitumen", "plaster", "mortar", "pozzolanic_concrete" ]
     },
     {
       // Work tools: the pick of the miner and quarryman, the axe of the lumberjack,

@@ -218,8 +218,8 @@
       "science_cost": 4.0,
       "icon": "concrete.png",
       "prerequisites": [ [ "limestone_burning" ] ],
-      "description": "Unlocks Roman concrete in the kiln yard. Reveals mountain springs and allows you to build aqueducts to bring fresh water to the city.",
-      "flavor": "Lime mixed with reactive volcanic ash or ground tuff forms a binder that can set in water. Stone aggregate turns it into a concrete mass for walls, vaults and waterworks. Roman builders made extensive use of such mixtures; a watertight channel can carry mountain water to a city without a river of its own.",
+      "description": "Unlocks pozzolanic concrete in the kiln yard. Reveals mountain springs and allows you to build aqueducts to bring fresh water to the city.",
+      "flavor": "Lime mixed with reactive volcanic ash or ground tuff forms a binder that can set in water. Stone aggregate turns it into a concrete mass for walls, vaults and waterworks. A watertight channel can carry mountain water to a city without a river of its own. The same idea arose independently elsewhere: Greek and Minoan builders worked volcanic ash and crushed pottery into their mortar, Maya masons burned limestone into a lime concrete for pyramids and roads, and Indus Valley and later Indian builders used ground brick, surkhi, as a pozzolan.",
       "unlock_effects": [ { "icon": "water_chain.png", "name": "Reveals mountain springs and allows you to build aqueducts to the city." } ]
     },
     {

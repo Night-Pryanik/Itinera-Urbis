@@ -9591,8 +9591,8 @@ msgid "Unlocks the water mill: the running water sets the millstones in motion."
 msgstr "Открывает водяную мельницу: течение воды приводит в движение мельничные жернова."
 
 msgctxt "technologies.flavor"
-msgid "Lime mixed with reactive volcanic ash or ground tuff forms a binder that can set in water. Stone aggregate turns it into a concrete mass for walls, vaults and waterworks. Roman builders made extensive use of such mixtures; a watertight channel can carry mountain water to a city without a river of its own."
-msgstr "Известь в смеси с реакционноспособным вулканическим пеплом или измельчённым туфом образует связующее, способное твердеть в воде. Каменный заполнитель превращает его в бетонную массу для стен, сводов и водных сооружений. Римские строители широко применяли такие смеси; водонепроницаемый канал может доставить горную воду в город, у которого нет своей реки."
+msgid "Lime mixed with reactive volcanic ash or ground tuff forms a binder that can set in water. Stone aggregate turns it into a concrete mass for walls, vaults and waterworks. A watertight channel can carry mountain water to a city without a river of its own. The same idea arose independently elsewhere: Greek and Minoan builders worked volcanic ash and crushed pottery into their mortar, Maya masons burned limestone into a lime concrete for pyramids and roads, and Indus Valley and later Indian builders used ground brick, surkhi, as a pozzolan."
+msgstr "Известь в смеси с реакционноспособным вулканическим пеплом или измельчённым туфом образует связующее, способное твердеть в воде. Каменный заполнитель превращает его в бетонную массу для стен, сводов и водных сооружений. Водонепроницаемый канал может доставить горную воду в город, у которого нет своей реки. Та же идея возникала независимо и в других местах: греческие и минойские строители вводили в раствор вулканический пепел и толчёную керамику, майя обжигали известняк в известковый бетон для пирамид и дорог, а в долине Инда и позднее в Индии в качестве пуццолана использовали молотый кирпич — суркхи."
 
 msgctxt "technologies.flavor"
 msgid "Between the smith's hammer and the scholar's theorem lies a quiet threshold: the moment a hand learns to divide a circle evenly, balance a beam to a grain and file a pivot that does not wobble. Once geometry, gearing and clean metalwork met at one bench — in Han bronze calipers and armillary rings, in Hellenistic dioptras and geared spheres, in the assay balances of al-Khazini and the astrolabe-makers' workshops — any sound metal could be turned into an instrument that measured rather than guessed."
@@ -10681,12 +10681,12 @@ msgid "A wooden boat needs a frame, planking and a way to seal the seams, all of
 msgstr "Деревянному судну нужны каркас, обшивка и способ законопатить швы — всё это верфь может держать в порядке. Судостроение возникало независимо на реках, озёрах и побережьях по всему свету. Верфь строит корпус, а паруса и снасти поставляют другие мастерские."
 
 msgctxt "crafts.name"
-msgid "Roman Concrete"
-msgstr "Римский бетон"
+msgid "Pozzolanic Concrete"
+msgstr "Пуццолановый бетон"
 
 msgctxt "resources.name"
-msgid "Roman Concrete"
-msgstr "Римский бетон"
+msgid "Pozzolanic Concrete"
+msgstr "Пуццолановый бетон"
 
 msgctxt "crafts.description"
 msgid "Burns limestone with furnace fuel, slakes the resulting lime and mixes it with volcanic tuff and stone aggregate into pozzolanic concrete in one production cycle."
