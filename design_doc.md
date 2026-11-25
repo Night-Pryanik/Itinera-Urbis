@@ -326,7 +326,23 @@ Two independent fields:
 - Action time = f(cost in the data, current labour speed, modifiers such as satiety, the Wheel).
 - **The Wheel:** −30% to the influence of distance from the city on the labour cost when building improvements.
 
-### 5.4. Trade and specialisations
+### 5.4. Production capacity and workforce abstraction
+
+A resident assigned to a building represents an **abstract labour unit**, not a single physical worker. The actual number of people represented by this unit depends on the building's scale and the nature of its production:
+
+- A small mill may require only a miller and an assistant.
+- A workshop may represent a group of craftsmen and apprentices.
+- A large metallurgical facility may represent hundreds of workers.
+
+The game does not model the exact number of people employed by each building. Instead, each occupied building accounts for **one resident unit**, regardless of the actual workforce required to operate it.
+
+**Production slots** represent a building's production capacity, not the number of physical workplaces or employees. A building with multiple production slots does not represent several separate workstations, nor does it mean that its assigned resident unit has been divided among them. The slots abstract the building's ability to perform more production through improved processes, better methods, more efficient organisation, specialised equipment, mechanisation, or automation. Additional production slots therefore increase a building's productive capacity **without** increasing its population requirement.
+
+**Building upgrades** that grant additional production slots represent improvements in how a building operates. They may introduce more efficient production methods, better equipment, improved workflows, or technological advances. Such upgrades increase output without necessarily requiring additional labour, and should not be interpreted as adding physical workstations or expanding the workforce.
+
+**Core principle:** population represents the number of **abstract labour units** assigned to buildings; production slots represent the **productive capacity** of those buildings. These are two distinct dimensions of the economic model and should not be conflated.
+
+### 5.5. Trade and specialisations
 
 - Domestic/foreign market, prices, imports for chains.
 - **Reputation / "known for X"** from volumes → a soft bonus.
