@@ -222,6 +222,18 @@ To keep a file local, list it in the working-tree `.gitignore` and drop it from 
 
 A new chain therefore has to be removed whole: the recipe, the product it makes, and every goods group that lists the product. The group is rewritten by the mod itself (`mods/blacklist_example/data/product_groups.json`), and the list it writes must hold exactly the members that survive — a member left out of the list is not an error, but a member of a removed product in the list is.
 
+## Production Capacity and Workforce Abstraction
+
+**Population represents the number of abstract labor units assigned to buildings; production slots represent the productive capacity of those buildings.** These are distinct dimensions of the economic model and must not be conflated.
+
+A resident assigned to a building is an abstract labor unit, not one physical worker. Depending on the scale of the building, it may represent a miller and an assistant, a group of craftsmen and apprentices, or hundreds of industrial workers. Each occupied building accounts for one resident unit regardless of its actual workforce or number of production slots.
+
+Production slots are not physical workplaces, separate workstations, or additional employees. The assigned labor unit is not divided among them. Additional slots represent greater productive capacity through improved processes, organization, specialized equipment, mechanization, or automation, without increasing the population requirement.
+
+Building upgrades and technologies that grant production slots improve how the building operates; they do not necessarily expand its workforce. Do not reject or redesign a slot-based production bonus on the assumption that another slot requires another worker or physical workstation.
+
+The full design statement is in `design_doc.md`, section "Production Capacity and Workforce Abstraction".
+
 ## City Consumption: the Goods, Not the Material
 
 A group of goods that the citizens write off (`data/consumption/`) holds the goods the citizens use, not the material these goods are made of. The citizens do not eat the raw resin of the perfumer's art while the perfume, the incense and the attar made out of it are in the storage: the raw material belongs to the workshop, and the workshop is the one that turns it into the goods of the town.
