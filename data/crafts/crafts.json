@@ -476,11 +476,11 @@
       "id": "charcoal",
       "name": "Charcoal",
       "produced_in": [ "charcoal_kiln" ],
-      "resources": { "wood": 20 },
+      "resources": [ [ { "wood": 20 }, { "bamboo": 20 } ] ],
       "result": { "charcoal": 10 },
       "time": 5.0,
       "unlock_tech": "native_metals",
-      "description": "Burns wood into charcoal."
+      "description": "Burns wood or bamboo into charcoal."
     },
     {
       "id": "coke",

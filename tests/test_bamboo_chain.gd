@@ -35,13 +35,20 @@ func _run() -> void:
     _check((gd.product_groups.get("paper_fibers", []) as Array).has("bamboo"), "paper fibers include bamboo")
     var paper: Dictionary = gd.find_craft("paper")
     var furniture: Dictionary = gd.find_craft("furniture")
-    _check(not paper.is_empty() and not furniture.is_empty(), "both recipes exist")
-    if not paper.is_empty() and not furniture.is_empty():
+    var charcoal: Dictionary = gd.find_craft("charcoal")
+    _check(not paper.is_empty() and not furniture.is_empty() and not charcoal.is_empty(), "all recipes exist")
+    if not paper.is_empty() and not furniture.is_empty() and not charcoal.is_empty():
         _test_cycle(city, paper, {"bamboo": 10, "lime": 10}, "paper", "paper from bamboo")
         _test_cycle(city, paper, {"hemp": 10, "lime": 10}, "paper", "paper from hemp")
         _test_cycle(city, paper, {"bamboo": 10}, "paper", "paper still needs lime", false)
         _test_cycle(city, furniture, {"bamboo": 20}, "furniture", "furniture from bamboo")
         _test_cycle(city, furniture, {"wood": 20}, "furniture", "furniture from wood")
+        _check(charcoal.get("produced_in", []) == ["charcoal_kiln"], "charcoal is made in the charcoal kiln")
+        _check(str(charcoal.get("unlock_tech", "")) == "native_metals", "charcoal retains its technology gate")
+        _check(float(charcoal.get("time", 0)) == 5.0, "charcoal retains its production time")
+        _check(int(charcoal.get("result", {}).get("charcoal", 0)) == 10, "charcoal retains its yield")
+        _test_cycle(city, charcoal, {"bamboo": 20}, "charcoal", "charcoal from bamboo")
+        _test_cycle(city, charcoal, {"wood": 20}, "charcoal", "charcoal from wood")
 
     WATCHDOG.report_skipped()
     print("BAMBOO CHAIN TEST FAILED" if _failed else "BAMBOO CHAIN TEST OK")

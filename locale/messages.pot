@@ -3306,7 +3306,7 @@ msgid "Builds sturdy wooden boats rigged with cloth sails and rope."
 msgstr ""
 
 msgctxt "buildings.description"
-msgid "Burns wood in a sealed kiln to produce charcoal."
+msgid "Burns wood or bamboo in a sealed kiln to produce charcoal."
 msgstr ""
 
 msgctxt "buildings.description"
@@ -3900,7 +3900,7 @@ msgid "Burns limestone into lime."
 msgstr ""
 
 msgctxt "crafts.description"
-msgid "Burns wood into charcoal."
+msgid "Burns wood or bamboo into charcoal."
 msgstr ""
 
 msgctxt "crafts.description"
@@ -5884,7 +5884,7 @@ msgid "A pseudo-profession that covers the whole population of the city, includi
 msgstr ""
 
 msgctxt "professions.description"
-msgid "Burns wood into charcoal."
+msgid "Burns wood or bamboo into charcoal."
 msgstr ""
 
 msgctxt "professions.description"

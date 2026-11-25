@@ -3382,8 +3382,8 @@ msgid "Builds sturdy wooden boats rigged with cloth sails and rope."
 msgstr "Строит прочные деревянные лодки с парусом и канатной оснасткой."
 
 msgctxt "buildings.description"
-msgid "Burns wood in a sealed kiln to produce charcoal."
-msgstr "Обжиг древесины в закрытой печи для получения древесного угля."
+msgid "Burns wood or bamboo in a sealed kiln to produce charcoal."
+msgstr "Обжиг древесины или бамбука в закрытой печи для получения угля."
 
 msgctxt "buildings.description"
 msgid "Butchers livestock for meat, hides and bones to feed the city's crafts."
@@ -3980,8 +3980,8 @@ msgid "Burns limestone into lime."
 msgstr "Обжигает известняк в известь"
 
 msgctxt "crafts.description"
-msgid "Burns wood into charcoal."
-msgstr "Обжигает древесину в древесный уголь."
+msgid "Burns wood or bamboo into charcoal."
+msgstr "Обжигает древесину или бамбук для получения угля."
 
 msgctxt "crafts.description"
 msgid "Casts molten iron into thick-walled cauldrons, kettles and skillets."
@@ -5964,8 +5964,8 @@ msgid "A pseudo-profession that covers the whole population of the city, includi
 msgstr "Псевдо-профессия: охватывает всё население города, включая занятых жителей."
 
 msgctxt "professions.description"
-msgid "Burns wood into charcoal."
-msgstr "Обжигает древесину в древесный уголь."
+msgid "Burns wood or bamboo into charcoal."
+msgstr "Обжигает древесину или бамбук для получения угля."
 
 msgctxt "professions.description"
 msgid "Copies and studies texts in the library and scriptorium, adding to the city's science."
