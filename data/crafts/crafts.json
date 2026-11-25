@@ -476,11 +476,11 @@
       "id": "charcoal",
       "name": "Charcoal",
       "produced_in": [ "charcoal_kiln" ],
-      "resources": { "wood": 20 },
+      "resources": [ [ { "wood": 20 }, { "bamboo": 20 } ] ],
       "result": { "charcoal": 10 },
       "time": 5.0,
       "unlock_tech": "native_metals",
-      "description": "Burns wood into charcoal."
+      "description": "Burns wood or bamboo into charcoal."
     },
     {
       "id": "coke",
@@ -578,11 +578,11 @@
       "id": "furniture",
       "name": "Furniture",
       "produced_in": [ "furniture_maker_house" ],
-      "resources": { "wood": 20 },
+      "resources": [ [ { "wood": 20 }, { "bamboo": 20 } ] ],
       "result": { "furniture": 10 },
       "time": 8.0,
       "unlock_tech": "wood_processing",
-      "description": "Makes simple furniture from common timber."
+      "description": "Makes simple furniture from common timber or bamboo."
     },
     {
       "id": "luxury_furniture",

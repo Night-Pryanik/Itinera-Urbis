@@ -189,7 +189,7 @@
       "flavor": "Charcoal making is nearly as old as controlled fire: wood heated slowly with little air drives off water and tar, leaving a light, hot-burning fuel. The technique appears independently wherever metalworkers needed high heat — in African and Asian furnaces as well as European forests — usually in conical pits or earth-covered mounds tended for days. Burners watched smoke colour and sealed cracks to control air. Even after coal and coke displaced charcoal in heavy industry, the same craft survived for forge fuel and cooking.",
       "name": "Charcoal Burner",
       "icon": "profession_charcoal_burner.png",
-      "description": "Burns wood into charcoal."
+      "description": "Burns wood or bamboo into charcoal."
     },
     {
       "id": "glassmaker",

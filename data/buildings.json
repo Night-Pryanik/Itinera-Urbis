@@ -100,7 +100,7 @@
     {
       "id": "charcoal_kiln",
       "name": "Charcoal Kiln",
-      "description": "Burns wood in a sealed kiln to produce charcoal.",
+      "description": "Burns wood or bamboo in a sealed kiln to produce charcoal.",
       "flavor": "Wood burns hotter and cleaner when it is first turned to charcoal in a sealed kiln. The operation is simple enough to be known wherever wood was plentiful, and it made metalworking possible with a small amount of fuel. A kiln turns a bulky forest product into one a smith can carry.",
       "work_cost": 30,
       "maintenance_cost": 9.0,
