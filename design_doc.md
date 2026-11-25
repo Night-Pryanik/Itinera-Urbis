@@ -11,7 +11,7 @@
 
 **Itinera Urbis: Hearth to Horizon** is an economic-resource simulator of the development of **a single city** on a hex map across several historical eras.
 
-The player does not micromanage individual residents and does not draw a street grid in the spirit of Cities: Skylines. **The city is the main character:** it extracts, processes, researches, expands and trades. Residents are "cogs" (workers/slots), not characters.
+The player does not micromanage individual residents and does not draw a street grid in the spirit of Cities: Skylines. **The city is the main character:** it extracts, processes, researches, expands and trades. Assigned residents represent abstract labor units, not individual characters or production slots.
 
 ### Fantasy
 
@@ -311,8 +311,42 @@ Two independent fields:
 
 - **Improvements** on hexes: farms, pastures, mines, tar pits… — mostly raw materials (and restrictions by terrain/cover).
 - **City buildings**: processing, production slots, recipes (butchery, cheese dairy, forge…).
-- One worker (slot) per improvement/building — the base employment model.
-- Production slots: a list of buildings → slots → what they produce; switching a slot/building off without micromanaging every resident.
+- A staffed improvement or building uses one resident unit, representing an abstract workforce rather than one physical person. A building's population requirement does not grow with its number of production slots.
+- Production slots configure productive capacity: buildings → slots → recipes. A slot can be left empty without removing the building's workforce assignment; switching off the building releases its assigned resident unit.
+
+#### Production Capacity and Workforce Abstraction
+
+##### Workforce Representation
+
+A resident assigned to a building represents an abstract labor unit, not a single physical worker. The actual number of people represented by this unit depends on the building's scale and the nature of its production.
+
+For example:
+
+- A small mill may require only a miller and an assistant.
+- A workshop may represent a group of craftsmen and apprentices.
+- A large metallurgical facility may represent hundreds of workers.
+
+The game does not model the exact number of people employed by each building. Instead, each occupied building accounts for one resident unit, regardless of the actual workforce required to operate it.
+
+##### Production Slots
+
+Production slots represent a building's production capacity, not the number of physical workplaces or employees.
+
+A building with multiple production slots does not represent several separate workstations, nor does it mean that its assigned resident unit has been divided among them. The slots abstract the building's ability to perform more production through improved processes, better methods, more efficient organization, specialized equipment, mechanization, or automation.
+
+Additional production slots therefore increase a building's productive capacity without increasing its population requirement.
+
+##### Building Upgrades
+
+Upgrades that grant additional production slots represent improvements in how a building operates. They may introduce more efficient production methods, better equipment, improved workflows, or technological advances.
+
+Such upgrades increase output without necessarily requiring additional labor. They should not be interpreted as adding physical workstations or expanding the workforce.
+
+##### Core Principle
+
+**Population represents the number of abstract labor units assigned to buildings; production slots represent the productive capacity of those buildings.**
+
+These are two distinct dimensions of the economic model and should not be conflated.
 
 ### 5.2. Food and growth
 
