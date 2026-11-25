@@ -57,8 +57,8 @@ func _run() -> void:
             "construction work must be a virtual product", state)
 
     var binders: Array = gdata.product_groups.get("construction_binders", [])
-    check(binders.size() == 4, "the binders group must hold four kinds", state)
-    for pid in ["clay", "bitumen", "plaster", "mortar"]:
+    check(binders.size() == 5, "the mixes and binders group must hold five kinds", state)
+    for pid in ["clay", "bitumen", "plaster", "mortar", "roman_concrete"]:
         check(binders.has(pid), "the binders group must hold \"%s\"" % pid, state)
     var cons: Array = gdata.get_profession_consumption("builder", "builders_yard")
     var binder_rule: Dictionary = {}
@@ -74,6 +74,11 @@ func _run() -> void:
         check(is_equal_approx(gdata.get_entry_member_bonus(binder_rule, "clay"), 0.05)
                 and is_equal_approx(gdata.get_entry_member_bonus(binder_rule, "mortar"), 0.20),
                 "lime mortar must beat clay in the tier ladder of binders", state)
+        check(is_equal_approx(gdata.get_entry_member_bonus(binder_rule, "roman_concrete"), 0.25),
+                "Roman concrete must give the builder +25% production", state)
+        var mixes: Array = gdata.get_entry_members_ordered_by_tier(binder_rule)
+        check(not mixes.is_empty() and str(mixes[0]) == "roman_concrete",
+                "the builder must prefer Roman concrete over other mixes and binders", state)
     if not tool_rule.is_empty():
         var tiers: Array = gdata.get_entry_members_ordered_by_tier(tool_rule)
         check(not tiers.is_empty() and str(tiers[0]) == "damascus_tools",
@@ -106,6 +111,27 @@ func _run() -> void:
     city.do_tick()
     check(absf(city.builder_construction_share - 0.048) < 0.0001,
             "mortar (+20%%) must be the best group bonus, got %f" % city.builder_construction_share, state)
+
+    city.city_storage.clear()
+    city.city_quality_detail.clear()
+    city.reset_counters()
+    city.add_to_storage("roman_concrete", 100)
+    city.add_to_storage("mortar", 100)
+    city.add_to_storage("clay", 100)
+    city.do_tick()
+    check(absf(city.builder_construction_share - 0.05) < 0.0001,
+            "concrete (+25%%) must raise the yard share to 5%% without stacking binders, got %f"
+            % city.builder_construction_share, state)
+    check(city.get_storage_amount("roman_concrete") < 100,
+            "the builder must consume concrete when it is available", state)
+    check(city.get_storage_amount("mortar") == 100 and city.get_storage_amount("clay") == 100,
+            "concrete must spare the weaker binders", state)
+    city.city_storage.erase("roman_concrete")
+    city.city_quality_detail.erase("roman_concrete")
+    city.do_tick()
+    check(absf(city.builder_construction_share - 0.048) < 0.0001,
+            "when concrete runs out the builder must fall back to mortar, got %f"
+            % city.builder_construction_share, state)
 
     # A cheap clay gives a smaller bonus, and the empty binder shelf drops the share back.
     city.city_storage.clear()

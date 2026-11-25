@@ -393,11 +393,22 @@
       "id": "mortar",
       "name": "Lime Mortar",
       "produced_in": [ "lime_kilns", "mason_workshop" ],
-      "resources": [ { "lime": 10 }, [ { "tuff": 10 }, { "quartz_sand": 10 } ] ],
+      "resources": { "lime": 10, "quartz_sand": 10 },
       "result": { "mortar": 10 },
       "time": 5.0,
       "unlock_tech": "limestone_burning",
-      "description": "Slakes lime with volcanic tuff or quartz sand into durable hydraulic mortar."
+      "description": "Mixes lime with quartz sand into ordinary lime mortar."
+    },
+    {
+      // Reactive volcanic tuff supplies the pozzolan; ordinary stone supplies only aggregate.
+      "id": "roman_concrete",
+      "name": "Roman Concrete",
+      "produced_in": [ "mason_workshop" ],
+      "resources": [ { "lime": 10 }, { "tuff": 10 }, [ { "basalt": 10 }, { "sandstone": 10 }, { "limestone": 10 } ] ],
+      "result": { "roman_concrete": 10 },
+      "time": 6.0,
+      "unlock_tech": "concrete",
+      "description": "Mixes lime with volcanic tuff and stone aggregate into pozzolanic concrete that can set in water."
     },
     {
       "id": "plaster",

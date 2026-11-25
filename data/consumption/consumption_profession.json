@@ -155,9 +155,8 @@
       }
     },
     {
-      // A builder spends the binder that sets the joints. The stronger the binder, the faster the
-      // yard works; the rule draws one kind at a time, best first, so a cheap clay is not wasted
-      // while lime mortar is in store. The bonus reaches the city through the yard's virtual yield.
+      // Prepared mixes share a consumption rule with binders so their bonuses do not stack.
+      // The yard draws one kind at a time, best first, and passes its bonus through the virtual yield.
       "resource": "@construction_binders",
       "profession": [ "builder" ],
       "buildings": [ "builders_yard" ],
@@ -167,7 +166,8 @@
         "clay": { "production_bonus": 0.05 },
         "bitumen": { "production_bonus": 0.08 },
         "plaster": { "production_bonus": 0.15 },
-        "mortar": { "production_bonus": 0.20 }
+        "mortar": { "production_bonus": 0.20 },
+        "roman_concrete": { "production_bonus": 0.25 }
       }
     },
     {

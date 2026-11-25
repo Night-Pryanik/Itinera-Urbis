@@ -4492,7 +4492,7 @@ msgid "Burns broadleaf hardwood timber, leaches the ash and calcines the lye int
 msgstr ""
 
 msgctxt "crafts.description"
-msgid "Slakes lime with volcanic tuff or quartz sand into durable hydraulic mortar."
+msgid "Mixes lime with quartz sand into ordinary lime mortar."
 msgstr ""
 
 msgctxt "crafts.description"
@@ -5768,7 +5768,7 @@ msgid "Jewelry"
 msgstr ""
 
 msgctxt "product_groups.name"
-msgid "Masonry Binders"
+msgid "Construction Mixes and Binders"
 msgstr ""
 
 msgctxt "product_groups.name"
@@ -9495,7 +9495,7 @@ msgid "Precision Instruments"
 msgstr ""
 
 msgctxt "technologies.description"
-msgid "Reveals the mountain springs and allows you to build aqueducts: a channel of concrete brings fresh water from a spring to the city."
+msgid "Unlocks Roman concrete in the mason's workshop. Reveals mountain springs and allows you to build aqueducts to bring fresh water to the city."
 msgstr ""
 
 msgctxt "technologies.description"
@@ -9511,7 +9511,7 @@ msgid "Unlocks the water mill: the running water sets the millstones in motion."
 msgstr ""
 
 msgctxt "technologies.flavor"
-msgid "Lime burned in a kiln, mixed with sand and stone, sets into a mass harder than the rock it came from. A channel lined with it keeps its slope and its walls for generations, so water can leave the mountain and reach a city that has no river of its own."
+msgid "Lime mixed with reactive volcanic ash or ground tuff forms a binder that can set in water. Stone aggregate turns it into a concrete mass for walls, vaults and waterworks. Roman builders made extensive use of such mixtures; a watertight channel can carry mountain water to a city without a river of its own."
 msgstr ""
 
 msgctxt "technologies.flavor"
@@ -10559,4 +10559,16 @@ msgstr ""
 
 msgctxt "buildings.flavor"
 msgid "A wooden boat needs a frame, planking and a way to seal the seams, all of which a yard can keep in repair. Boatbuilding traditions arose independently on rivers, lakes and coasts across the world. The yard builds the hull; the sailmaker and the ropemaker supply the rest."
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Roman Concrete"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Roman Concrete"
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Mixes lime with volcanic tuff and stone aggregate into pozzolanic concrete that can set in water."
 msgstr ""
