@@ -69,6 +69,15 @@ var raw_data: Dictionary = {}
 # ._validate_blacklist).
 var blacklisted: Dictionary = {}
 
+# The identifiers of the fame tasks and the era tasks the blacklists removed, {id: true}.
+# A removed good carries its challenge tier with it, and a mod that removes a chain may leave
+# a branch or a recipe waiting for that task — the wait is dormant, not a broken reference
+# (the same forgiveness as a recipe tied to a blacklisted building, see the produced_in check
+# of data_validator). The identifiers are remembered here, where the removed records are still
+# in hand: the validator cannot derive an id the author wrote explicitly from the identifier
+# alone.
+var removed_challenge_ids: Dictionary = {}
+
 # The data fields whose value the player sees. data/*.json holds the English
 # source text, and the translation is applied here, when reading the files: the translation key
 # is the English text itself. Thanks to this the rest of the code does
@@ -795,10 +804,39 @@ func _apply_blacklist(target: Dictionary, mod_data: Dictionary) -> void:
             var id := str(entry.get(id_field, ""))
             if banned.has(id):
                 removed[id] = true
+                _record_removed_challenge_id(name, id, entry)
                 continue
             kept.append(entry)
         target[name] = kept
         blacklisted[name] = removed
+
+# Remembers the identifier of the fame task or the era task a removed entry carried, so that
+# the validator can forgive the branches and the recipes that wait for it (see
+# removed_challenge_ids). The era tasks of the "challenges" collection are addressed by the
+# identifier of their record; the fame task of a good is addressed by the one the author wrote
+# or by the one derived from the identifier of the good (the suffix is the constant of
+# ChallengeManager, read here the way data_validator reads it).
+func _record_removed_challenge_id(collection: String, id: String, entry: Dictionary) -> void:
+    if str(id).is_empty():
+        return
+    if collection == "challenges":
+        removed_challenge_ids[id] = true
+        return
+    if collection != "resources":
+        return
+    var block = entry.get("challenge", null)
+    if not (block is Dictionary):
+        return
+    var written := str(block.get("id", ""))
+    if not written.is_empty():
+        removed_challenge_ids[written] = true
+    var script = load("res://scripts/challenge_manager.gd")
+    var suffix := "_challenge"
+    if script != null:
+        suffix = str(script.get("CHALLENGE_ID_SUFFIX"))
+        if suffix == "":
+            suffix = "_challenge"
+    removed_challenge_ids["%s%s" % [id, suffix]] = true
 
 # A value that is either a list of identifiers or a single identifier — the same
 # forgiveness as the manifest's authors/author (mod_manager._string_list).

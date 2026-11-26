@@ -1273,6 +1273,14 @@ func validate(gd: Object) -> Array:
     var blacklisted: Dictionary = gd.get("blacklisted")
     var blacklisted_buildings: Dictionary = blacklisted.get("buildings", {})
     var blacklisted_resources: Dictionary = blacklisted.get("resources", {})
+    # The fame tasks and the era tasks the blacklists removed (data_loader
+    # ._record_removed_challenge_id). A branch or a recipe that waits for a removed task is
+    # dormant, not a broken reference — the author of the mod removed the task on purpose, and
+    # the wait is what the removal leaves behind (the same forgiveness as a recipe tied to a
+    # blacklisted building, see the produced_in check below).
+    var removed_challenge_ids: Dictionary = gd.get("removed_challenge_ids")
+    if not (removed_challenge_ids is Dictionary):
+        removed_challenge_ids = {}
     var challenges := _index_by_id(gd.get("challenges"))
     # The task identifiers the gates of the data may name: the challenges of the era and the tiers of
     # the fame of a good. Built before the recipes, which are checked against them.
@@ -1282,7 +1290,7 @@ func validate(gd: Object) -> Array:
     _validate_identifiers(gd, problems)
     _validate_blacklist(gd, problems)
     _validate_crafts(gd.crafts, buildings, blacklisted_buildings, technologies,
-            all_resources, product_groups, challenge_ids, problems)
+            all_resources, product_groups, challenge_ids, removed_challenge_ids, problems)
     _validate_craft_extras(gd, all_resources, technologies, problems)
     _validate_buildings(gd.buildings, technologies, professions, problems)
     _validate_improvements(improvements, technologies, professions, problems)
@@ -1294,7 +1302,7 @@ func validate(gd: Object) -> Array:
     _validate_technologies(technologies, problems)
     _validate_tech_modifiers(gd.modifiers, technologies, problems)
     _validate_specializations(gd.specializations, improvements, all_resources, product_groups,
-            challenge_ids, problems)
+            challenge_ids, removed_challenge_ids, problems)
     _validate_fame(all_resources, _quality_levels(gd), _index_by_id(gd.specializations),
             challenges, _known_challenge_conditions(), problems)
     _validate_roads(gd.roads, technologies, problems)
@@ -1940,7 +1948,7 @@ func _validate_cover_belts(covers: Dictionary, problems: Array) -> void:
 # unlock_challenge.
 func _validate_crafts(crafts, buildings: Dictionary, blacklisted_buildings: Dictionary,
         technologies: Dictionary, all_resources: Dictionary, product_groups: Dictionary,
-        challenge_ids: Dictionary, problems: Array) -> void:
+        challenge_ids: Dictionary, removed_challenge_ids: Dictionary, problems: Array) -> void:
     for craft in crafts:
         if not (craft is Dictionary):
             continue
@@ -1992,8 +2000,9 @@ func _validate_crafts(crafts, buildings: Dictionary, blacklisted_buildings: Dict
         _check_tech_ref(craft.get("unlock_tech", ""), technologies, problems,
                 "recipe", craft_name, craft_id, "unlock_tech")
         # The task the recipe waits for. A wrong identifier locks the recipe for good: the gate is
-        # never paid, and the city is left with a row it can never work.
-        _check_challenge_ref(craft.get("unlock_challenge", ""), challenge_ids, problems,
+        # never paid, and the city is left with a row it can never work. A task a blacklist removed
+        # leaves the recipe dormant rather than broken (see removed_challenge_ids).
+        _check_challenge_ref(craft.get("unlock_challenge", ""), challenge_ids, removed_challenge_ids, problems,
                 "recipe", craft_name, craft_id, "unlock_challenge")
 
 
@@ -2410,7 +2419,7 @@ func _validate_tech_modifiers(modifiers: Dictionary, technologies: Dictionary,
 # the bonus acts on nothing), so the author has to hear about it here.
 func _validate_specializations(specializations: Array, improvements: Dictionary,
         products: Dictionary, groups: Dictionary, challenge_ids: Dictionary,
-        problems: Array) -> void:
+        removed_challenge_ids: Dictionary, problems: Array) -> void:
     var by_id := {}
     for spec in specializations:
         if spec is Dictionary and not str(spec.get("id", "")).is_empty():
@@ -2425,7 +2434,10 @@ func _validate_specializations(specializations: Array, improvements: Dictionary,
         for condition in _unlock_conditions(spec):
             if str(condition.get("type", "")) != "challenge":
                 continue
-            _check_challenge_ref(condition.get("id", ""), challenge_ids, problems,
+            # A branch that waits for a task a blacklist removed stands dormant, not broken: the
+            # branch can never be taken in this game, and the author of the mod has no way to
+            # remove a branch (see removed_challenge_ids).
+            _check_challenge_ref(condition.get("id", ""), challenge_ids, removed_challenge_ids, problems,
                     "specialization", name, spec_id, "unlock", "specialization_challenge")
         for bonus in spec.get("bonuses", []):
             if not (bonus is Dictionary):
@@ -2626,11 +2638,12 @@ func _check_tech_ref(value, technologies: Dictionary, problems: Array,
 # A reference to a task of the fame (data/challenges.json or the challenge tier of a good). The
 # gate of a recipe and the unlock of a branch are both answered by the identifier of the task, and a
 # wrong one closes what it names forever — silently, because nothing in the data points back.
-func _check_challenge_ref(value, challenge_ids: Dictionary, problems: Array,
-        source_kind: String, source_name: String, source_id: String, field: String,
-        kind: String = "recipe_challenge") -> void:
+func _check_challenge_ref(value, challenge_ids: Dictionary, removed_challenge_ids: Dictionary,
+        problems: Array, source_kind: String, source_name: String, source_id: String,
+        field: String, kind: String = "recipe_challenge") -> void:
     var challenge_id := _as_id(value)
-    if challenge_id.is_empty() or challenge_ids.has(challenge_id):
+    if challenge_id.is_empty() or challenge_ids.has(challenge_id) \
+            or removed_challenge_ids.has(challenge_id):
         return
     _add(problems, kind, "challenge", challenge_id,
             source_kind, source_name, source_id, field)

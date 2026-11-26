@@ -10,9 +10,13 @@
   // recipe without its building or feedstock cannot run, and a product with no recipe left
   // has no source (fruit_brandy stays because its cider recipe needs no winemaking):
   //   winemaker_house -> wine, fruit_wine, carob_wine -> brandy, fruit_brandy
+  //
+  // The brand of the brandy line goes with the chain it is worked from: the prestige good
+  // of the line is the work of the same recipes, and its recipe spends the same removed
+  // wine, so it is removed as a recipe and as a product.
   "blacklist": {
     "buildings": [ "winemaker_house" ],
-    "crafts": [ "wine", "fruit_wine", "carob_wine", "brandy", "fruit_brandy" ],
-    "resources": [ "wine", "fruit_wine", "carob_wine", "brandy" ]
+    "crafts": [ "wine", "fruit_wine", "carob_wine", "brandy", "fruit_brandy", "city_brandy" ],
+    "resources": [ "wine", "fruit_wine", "carob_wine", "brandy", "city_brandy" ]
   }
 }
