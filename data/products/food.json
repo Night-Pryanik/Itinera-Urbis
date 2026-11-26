@@ -98,7 +98,7 @@
       "brand": {
         "threshold": 500,
         "trigger": "sell",
-        "min_quality": "exceptional",
+        "min_quality": "fine",
         "reward": { "type": "brand_product", "product": "aged_cheese" }
       },
       "challenge": {

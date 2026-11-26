@@ -231,25 +231,28 @@ func _test_counters(state: Dictionary) -> void:
     var product: Dictionary = _gdata.products[LADDER_GOOD]
     var reputation: Dictionary = product["reputation"]
     var brand: Dictionary = product["brand"]
+    var brand_quality := str(brand.get("min_quality", ""))
+    var levels: Array = _gdata.get_quality_levels()
+    var rank: int = levels.find(brand_quality)
+    var below: String = str(levels[rank - 1]) if rank > 0 else ""
 
-    _mgr.record_sale(LADDER_GOOD, {"common": 40})
-    _mgr.record_sale(LADDER_GOOD, {"fine": 10})
-    check(_mgr.tier_counter(product, reputation) == 50,
+    _mgr.record_sale(LADDER_GOOD, {below: 40})
+    check(_mgr.tier_counter(product, reputation) == 40,
             "a rung without a quality filter counts every unit given away", state)
     check(_mgr.tier_counter(product, brand) == 0,
             "a rung that waits for a quality must not count the units below it", state)
 
-    _mgr.record_sale(LADDER_GOOD, {"exceptional": 7})
-    check(_mgr.tier_counter(product, brand) == 7,
+    _mgr.record_sale(LADDER_GOOD, {brand_quality: 10})
+    check(_mgr.tier_counter(product, brand) == 10,
             "the units of the awaited quality must count", state)
-    check(_mgr.tier_counter(product, reputation) == 57,
+    check(_mgr.tier_counter(product, reputation) == 50,
             "one counter is shared by the rungs of a good", state)
 
     # The second trigger is a different ledger: what the city made is not what it sold.
     _mgr.record_production(LADDER_GOOD, 25, "common")
     check(_mgr.tier_counter(product, {"trigger": "produce"}) == 25,
             "the trigger \"produce\" counts what the city made", state)
-    check(_mgr.tier_counter(product, reputation) == 57,
+    check(_mgr.tier_counter(product, reputation) == 50,
             "a sale and a production are not the same counter", state)
 
     check(_mgr.tier_counter(product, {"trigger": "gift"}) == 0,

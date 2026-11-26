@@ -16,7 +16,7 @@
       "brand": {
         "threshold": 500,
         "trigger": "sell",
-        "min_quality": "exceptional",
+        "min_quality": "fine",
         "reward": { "type": "brand_product", "product": "porcelain" }
       },
       "challenge": {
@@ -75,7 +75,7 @@
       "brand": {
         "threshold": 500,
         "trigger": "sell",
-        "min_quality": "exceptional",
+        "min_quality": "fine",
         "reward": [
           { "type": "brand_product", "product": "linen_byssus" },
           { "type": "brand_product", "product": "branded_fabric_clothes" }
@@ -107,7 +107,7 @@
       "brand": {
         "threshold": 500,
         "trigger": "sell",
-        "min_quality": "exceptional",
+        "min_quality": "fine",
         "reward": [
           { "type": "brand_product", "product": "cashmere" },
           { "type": "brand_product", "product": "branded_wool_clothes" }
