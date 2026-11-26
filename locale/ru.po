@@ -4428,8 +4428,8 @@ msgid "Distils apple cider into fruit brandy."
 msgstr "Перегоняет яблочный сидр во фруктовый дистиллят."
 
 msgctxt "crafts.description"
-msgid "Distils palm toddy or a fermented sweet juice into arrack."
-msgstr "Перегоняет пальмовый тодди или сброженный сладкий сок в арак."
+msgid "Distils palm toddy with rice or a sweetener into arrack."
+msgstr "Перегоняет пальмовый тодди с рисом или подсластителем в арак."
 
 msgctxt "crafts.description"
 msgid "Distils fermented agave drink into mezcal."
@@ -5306,6 +5306,10 @@ msgstr "Фруктовый дистиллят (из сидра)"
 msgctxt "crafts.name"
 msgid "Arrack"
 msgstr "Арак"
+
+msgctxt "crafts.name"
+msgid "Rum"
+msgstr "Ром"
 
 msgctxt "crafts.name"
 msgid "Mezcal"
@@ -7830,6 +7834,10 @@ msgstr "Фруктовый дистиллят"
 msgctxt "resources.name"
 msgid "Arrack"
 msgstr "Арак"
+
+msgctxt "resources.name"
+msgid "Rum"
+msgstr "Ром"
 
 msgctxt "resources.name"
 msgid "Mezcal"

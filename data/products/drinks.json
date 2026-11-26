@@ -215,8 +215,8 @@
       "icon": "fruit_brandy.png"
     },
     {
-      // Consolidates spirits distilled from palm toddy, sugar cane and maple sap
-      // across warm and cold climates, mirroring how sugar unites their juices.
+      // Distilled from palm toddy with rice or a sweetener, the spirit of the
+      // palm countries.
       "id": "arrack",
       "price": 24,
       "name": "Arrack",
@@ -224,6 +224,18 @@
       "category": "drinks",
       "unlock_tech": "distillation",
       "icon": "arrack.png"
+    },
+    {
+      // The spirit of the sugar fields: fermented cane juice distilled to a clean,
+      // strong rum. It stands on its own line from arrack, which shares the cane
+      // among several warm-climate juices.
+      "id": "rum",
+      "price": 28,
+      "name": "Rum",
+      "type": "product",
+      "category": "drinks",
+      "unlock_tech": "distillation",
+      "icon": "rum.png"
     },
     {
       "id": "mezcal",

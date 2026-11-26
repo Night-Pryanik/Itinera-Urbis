@@ -4348,7 +4348,7 @@ msgid "Distils apple cider into fruit brandy."
 msgstr ""
 
 msgctxt "crafts.description"
-msgid "Distils palm toddy or a fermented sweet juice into arrack."
+msgid "Distils palm toddy with rice or a sweetener into arrack."
 msgstr ""
 
 msgctxt "crafts.description"
@@ -5225,6 +5225,10 @@ msgstr ""
 
 msgctxt "crafts.name"
 msgid "Arrack"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Rum"
 msgstr ""
 
 msgctxt "crafts.name"
@@ -7749,6 +7753,10 @@ msgstr ""
 
 msgctxt "resources.name"
 msgid "Arrack"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Rum"
 msgstr ""
 
 msgctxt "resources.name"
