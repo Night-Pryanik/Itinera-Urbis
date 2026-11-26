@@ -477,6 +477,19 @@
       "description": "Distils palm toddy or a fermented sweet juice into arrack."
     },
     {
+      // Rum is the dedicated spirit of the cane fields: the distillery ferments
+      // the cane juice and distils it in one workshop cycle, leaving arrack to
+      // blend the cane with the other warm-climate sweet juices.
+      "id": "rum",
+      "name": "Rum",
+      "produced_in": [ "distillery" ],
+      "resources": { "sugar_cane": 20 },
+      "result": { "rum": 10 },
+      "time": 8.0,
+      "unlock_tech": "distillation",
+      "description": "Distils fermented sugar cane juice into rum."
+    },
+    {
       "id": "mezcal",
       "name": "Mezcal",
       "produced_in": [ "distillery" ],

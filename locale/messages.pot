@@ -5228,6 +5228,10 @@ msgid "Arrack"
 msgstr ""
 
 msgctxt "crafts.name"
+msgid "Rum"
+msgstr ""
+
+msgctxt "crafts.name"
 msgid "Mezcal"
 msgstr ""
 
@@ -7749,6 +7753,10 @@ msgstr ""
 
 msgctxt "resources.name"
 msgid "Arrack"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Rum"
 msgstr ""
 
 msgctxt "resources.name"

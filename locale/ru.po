@@ -5308,6 +5308,10 @@ msgid "Arrack"
 msgstr "Арак"
 
 msgctxt "crafts.name"
+msgid "Rum"
+msgstr "Ром"
+
+msgctxt "crafts.name"
 msgid "Mezcal"
 msgstr "Мескаль"
 
@@ -7830,6 +7834,10 @@ msgstr "Фруктовый дистиллят"
 msgctxt "resources.name"
 msgid "Arrack"
 msgstr "Арак"
+
+msgctxt "resources.name"
+msgid "Rum"
+msgstr "Ром"
 
 msgctxt "resources.name"
 msgid "Mezcal"
