@@ -2,6 +2,7 @@
 extends "res://scripts/main_map/windows.gd"
 
 const UiScale = preload("res://scripts/ui_scale.gd")
+const AndroidBack = preload("res://scripts/android_back.gd")
 
 # The map of the game: the node of scenes/MainMap.tscn.
 #
@@ -33,6 +34,7 @@ func _ready():
         map_renderer.queue_redraw()
         return
 
+    AndroidBack.disable_auto_quit()
     _load_map_config()
 
     # A tileset changes the pictures of the whole interface, and the map keeps its own copy
@@ -567,6 +569,10 @@ func _report_missing_mods() -> void:
     hud.show_message(tr("Mods from this save are missing and were not loaded: %s") %
             ", ".join(PackedStringArray(ids)), GameData.HUD_MESSAGE_IMPORTANT)
     SaveManager.missing_mods.clear()
+
+func _notification(what: int) -> void:
+    if what == NOTIFICATION_WM_GO_BACK_REQUEST:
+        AndroidBack.forward_to_escape()
 
 # The keys of the debug menu (F9, ESC, the digits of the items) are handled by the
 # menu node itself: it stays alive during the pause, while this node stops with the

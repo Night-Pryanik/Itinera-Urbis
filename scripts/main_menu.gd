@@ -13,6 +13,7 @@ const ModListScene = preload("res://scenes/mod_list.tscn")
 const WorldPreview = preload("res://scripts/world_preview.gd")
 const DisplaySettings = preload("res://scripts/display_settings.gd")
 const UiScale = preload("res://scripts/ui_scale.gd")
+const AndroidBack = preload("res://scripts/android_back.gd")
 
 # The width of the city name field. It does not follow anything else: the name column is
 # sized to it.
@@ -162,6 +163,7 @@ var _preview_timer: Timer = null
 var _preview_build: Dictionary = {}
 
 func _ready():
+    AndroidBack.disable_auto_quit()
     # The saved window is applied before the menu is shown, so a player who chose a
     # resolution or a window mode does not see the project default first.
     DisplaySettings.apply_saved()
@@ -180,6 +182,10 @@ func _ready():
     settings_button.pressed.connect(_on_settings)
     about_button.pressed.connect(_on_about)
     quit_button.pressed.connect(_on_quit)
+
+func _notification(what: int) -> void:
+    if what == NOTIFICATION_WM_GO_BACK_REQUEST:
+        AndroidBack.forward_to_escape()
 
 # Divides the offsets and button font sizes of the splash by the interface multiplier, so
 # the logo and the buttons keep their physical size however large the in-game interface is
