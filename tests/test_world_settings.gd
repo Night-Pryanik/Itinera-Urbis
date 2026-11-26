@@ -339,7 +339,9 @@ func _run() -> void:
     menu._on_map_size_selected(1)
 
     # --- 5. The step buttons and the proportional count ---
-    check(menu.proportional_check != null, "the row owns a proportional checkbox", state)
+    check(menu.proportional_check != null and menu.proportional_check.toggle_mode
+            and menu.proportional_check.icon != null,
+            "the row owns an icon toggle for the proportional count", state)
     check(not menu.proportional_check.button_pressed, "the count is manual here", state)
     check(menu.town_count_edit.editable, "the field takes input while manual", state)
     check(not menu.town_count_minus.disabled and not menu.town_count_plus.disabled,
@@ -816,9 +818,11 @@ func _run() -> void:
     var count_row: HBoxContainer = menu.proportional_river_check.get_parent()
     var count_label: Label = count_row.get_child(0) as Label
     check(count_label.text == tr("Number of rivers")
-            and menu.proportional_river_check.text == tr("Proportional"),
-            "the count row reads 'Number of rivers' with a 'Proportional' checkbox (got %s / %s)"
-                    % [count_label.text, menu.proportional_river_check.text], state)
+            and menu.proportional_river_check.toggle_mode
+            and menu.proportional_river_check.icon != null
+            and menu.proportional_river_check.tooltip_text == tr("Proportional to the map size"),
+            "the count row has the proportional icon toggle (got %s)"
+                    % [count_label.text], state)
     var river_defaults: Dictionary = menu._selected_river_config()
     check(int(river_defaults["num_main_rivers"]) == 6
             and int(river_defaults["num_tributaries"]) == 10

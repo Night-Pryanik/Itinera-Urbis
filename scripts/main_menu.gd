@@ -148,8 +148,8 @@ var town_count_edit: LineEdit = null
 var town_count_minus: Button = null
 var town_count_plus: Button = null
 # The count of towns can follow the map size instead of being chosen. While it does, the
-# field is read-only and the step buttons are off.
-var proportional_check: CheckBox = null
+# field is read-only and the step buttons are off. The link button is the toggle.
+var proportional_check: Button = null
 # How many resource specimens the world spawns, as a multiplier of the standard amount.
 var resource_density_option: OptionButton = null
 # The climate belt the city starts in.
@@ -162,8 +162,8 @@ var sea_rows: Array = []
 # The "Rivers" section of the world settings, keyed by its field in CityData.world_rivers.
 var river_controls: Dictionary = {}
 # The rivers can follow the map size like the towns do. While they do, the two count fields
-# are read only and their step buttons are off.
-var proportional_river_check: CheckBox = null
+# are read only and their step buttons are off. The link button is the toggle.
+var proportional_river_check: Button = null
 # The map previews, one on the City tab and one on the World tab. Both show the same world,
 # so they are refreshed together.
 var world_previews: Array = []
@@ -802,6 +802,20 @@ func _roll_preview_seed() -> int:
 func _on_climate_selected(_index: int) -> void:
     _refresh_preview()
 
+# The link means the count is tied to the map size. A square icon toggle takes less room
+# than the old checkbox with its label, and the tooltip still names what the link does.
+func _make_proportional_button() -> Button:
+    var button := Button.new()
+    button.toggle_mode = true
+    button.button_pressed = true
+    button.icon = IconRegistry.get_texture("proportional_toggle.png")
+    button.expand_icon = true
+    button.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+    button.custom_minimum_size = Vector2(SETTING_CONTROL_HEIGHT, SETTING_CONTROL_HEIGHT)
+    button.tooltip_text = tr("Proportional to the map size")
+    button.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+    return button
+
 # The world settings of a new game: the map size, the number of towns, the climate, the
 # resource density, the seas and the rivers. Every setting is one line of the list, and the
 # list grows downwards.
@@ -850,15 +864,11 @@ func _build_world_settings(column: VBoxContainer):
     town_count_minus = stepper.get_child(0)
     town_count_plus = stepper.get_child(2)
 
-    # The checkbox ties the count to the map size. The number is then computed, and neither
+    # The link ties the count to the map size. The number is then computed, and neither
     # the field nor the buttons take input.
-    proportional_check = CheckBox.new()
-    proportional_check.text = tr("Proportional")
-    proportional_check.tooltip_text = tr("Proportional to the map size")
-    proportional_check.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+    proportional_check = _make_proportional_button()
     # Set before the signal is wired so building the layout does not rebuild the preview;
     # the fields are refreshed once the dialog opens.
-    proportional_check.button_pressed = true
     proportional_check.toggled.connect(_on_proportional_toggled)
 
     var towns_control := HBoxContainer.new()
@@ -984,11 +994,7 @@ func _build_sea_settings(column: VBoxContainer):
 # Only the counts can follow the map size; the minimum lengths stay a manual choice.
 func _build_river_settings(column: VBoxContainer):
     _add_section_header(column, tr("Rivers"))
-    proportional_river_check = CheckBox.new()
-    proportional_river_check.text = tr("Proportional")
-    proportional_river_check.tooltip_text = tr("Proportional to the map size")
-    proportional_river_check.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-    proportional_river_check.button_pressed = true
+    proportional_river_check = _make_proportional_button()
     proportional_river_check.toggled.connect(_on_proportional_rivers_toggled)
     _add_setting_row(column, tr("Number of rivers"), proportional_river_check)
     _add_river_int_row(column, "num_main_rivers", tr("Main rivers"),
