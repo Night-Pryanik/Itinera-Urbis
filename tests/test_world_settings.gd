@@ -127,6 +127,9 @@ func _run() -> void:
             picture_scroll.custom_minimum_size.x,
             float(menu.PREVIEW_WIDTH) + float(menu.SCROLL_GUTTER) * 2.0),
             "the picture keeps its designed width when both columns fit", state)
+    check(is_equal_approx(menu.town_count_edit.custom_minimum_size.x,
+            float(menu.STEP_FIELD_WIDTH)),
+            "number fields keep their designed width at 100%", state)
     check(settings_scroll != null and not settings_scroll.get_h_scroll_bar().visible,
             "the settings do not scroll sideways when there is room", state)
     check(picture_scroll != null and not picture_scroll.get_h_scroll_bar().visible,

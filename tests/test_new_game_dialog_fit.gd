@@ -53,6 +53,17 @@ func _run() -> void:
             UiScale.base_factor() * UiScale.MAXIMUM),
             "the interface multiplier is still applied to the canvas", state)
 
+    var narrow := maxi(menu.MIN_NUMBER_FIELD_WIDTH,
+            roundi(float(menu.STEP_FIELD_WIDTH) / UiScale.MAXIMUM))
+    var sea_edit: LineEdit = menu.sea_controls["max_sea_depth"]["control"]
+    _check(menu.town_count_edit.custom_minimum_size.x == float(narrow)
+            and sea_edit.custom_minimum_size.x == float(narrow),
+            "number fields give up their extra canvas width at 200%% (got %d)"
+                    % narrow, state)
+    _check(menu.town_count_edit.get_combined_minimum_size().x <= float(narrow) + 8.0
+            and sea_edit.get_combined_minimum_size().x <= float(narrow) + 8.0,
+            "the fields actually shrink, not only their custom minimum", state)
+
     _check(menu.tab_container.custom_minimum_size.x < float(menu.DIALOG_CONTENT_WIDTH)
             and menu.tab_container.custom_minimum_size.y < float(menu.DIALOG_CONTENT_HEIGHT),
             "the tabs are fitted to the screen", state)

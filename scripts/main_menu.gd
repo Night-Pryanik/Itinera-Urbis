@@ -39,6 +39,7 @@ const PREVIEW_WIDTH := 360
 const SETTING_ROW_HEIGHT := 32
 const SETTING_CONTROL_HEIGHT := 30
 const STEP_FIELD_WIDTH := 58
+const MIN_NUMBER_FIELD_WIDTH := 32
 
 # The relief of the picture is the generator's own work on the whole map, and a giant map costs
 # seconds per rebuild. It is kept while the settings that shape it are unchanged, and a number
@@ -135,6 +136,9 @@ var city_preview_padding: MarginContainer = null
 var city_preview_column: Control = null
 var regenerate_button: Button = null
 var city_name_edit: LineEdit = null
+# Every numeric field of the world settings. Their canvas width follows the interface
+# multiplier, so a large size does not turn a two-digit value into a huge input box.
+var number_fields: Array[LineEdit] = []
 # The world settings of a new game (the map size and the number of towns). They are read
 # once, when the game starts.
 var map_size_option: OptionButton = null
@@ -354,6 +358,7 @@ func _popup_new_game_dialog():
     # The title bar, the panel and the buttons take their share before the tabs get the rest.
     var chrome := Vector2(new_game_dialog.size) - Vector2(tab_container.custom_minimum_size)
     var available := room - chrome
+    _apply_number_field_widths()
     # Measure the two columns at their designed widths, then give the window the room
     # they need when the screen has it: a wide window has no reason to scroll sideways.
     _apply_world_fit(false)
@@ -817,7 +822,8 @@ func _build_world_settings(column: VBoxContainer):
             tr("The side of the square map, in hexes."))
 
     custom_size_edit = LineEdit.new()
-    custom_size_edit.custom_minimum_size = Vector2(STEP_FIELD_WIDTH, SETTING_CONTROL_HEIGHT)
+    custom_size_edit.custom_minimum_size = Vector2(_number_field_width(), SETTING_CONTROL_HEIGHT)
+    number_fields.append(custom_size_edit)
     custom_size_edit.max_length = 3
     custom_size_edit.alignment = HORIZONTAL_ALIGNMENT_CENTER
     custom_size_edit.tooltip_text = tr("A whole number from %d to %d.") % [MIN_MAP_SIZE, MAX_MAP_SIZE]
@@ -831,7 +837,8 @@ func _build_world_settings(column: VBoxContainer):
     # The towns: a number that can be typed or stepped with the buttons beside it. The map
     # size decides how many of them fit, so the field is not tied to the presets above it.
     town_count_edit = LineEdit.new()
-    town_count_edit.custom_minimum_size = Vector2(STEP_FIELD_WIDTH, SETTING_CONTROL_HEIGHT)
+    town_count_edit.custom_minimum_size = Vector2(_number_field_width(), SETTING_CONTROL_HEIGHT)
+    number_fields.append(town_count_edit)
     town_count_edit.max_length = 3
     town_count_edit.text = str(DEFAULT_TOWN_COUNT)
     town_count_edit.alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -1112,6 +1119,25 @@ func _add_sea_row(column: VBoxContainer, key: String, label: String, control: Co
     spec["row"] = row
     sea_controls[key] = spec
 
+func _number_field_width() -> int:
+    return maxi(MIN_NUMBER_FIELD_WIDTH,
+            roundi(float(STEP_FIELD_WIDTH) / maxf(UiScale.current(), 0.01)))
+
+func _apply_number_field_widths() -> void:
+    var width := _number_field_width()
+    for edit in number_fields:
+        if edit == null or not is_instance_valid(edit):
+            continue
+        # A LineEdit reserves room for this many wide characters regardless of the text
+        # it holds. The default reserves thousands; these fields only hold tens.
+        var font := edit.get_theme_font("font")
+        var em := 1.0
+        if font != null:
+            em = maxf(font.get_char_size(87, edit.get_theme_font_size("font_size")).x, 1.0)
+        edit.add_theme_constant_override("minimum_character_width",
+                maxi(1, floori(float(width) / em)))
+        edit.custom_minimum_size.x = width
+
 # A number field of the world settings. A whole number keeps the digits, a fraction also
 # keeps a single decimal point and a leading minus. The field is rewritten only when the input
 # really holds something else, so the caret does not jump on every keystroke. The normalizer
@@ -1119,7 +1145,8 @@ func _add_sea_row(column: VBoxContainer, key: String, label: String, control: Co
 func _make_number_field(value: String, fractional: bool, tooltip: String,
         normalizer: Callable) -> LineEdit:
     var edit := LineEdit.new()
-    edit.custom_minimum_size = Vector2(STEP_FIELD_WIDTH, SETTING_CONTROL_HEIGHT)
+    edit.custom_minimum_size = Vector2(_number_field_width(), SETTING_CONTROL_HEIGHT)
+    number_fields.append(edit)
     edit.max_length = 6
     edit.alignment = HORIZONTAL_ALIGNMENT_CENTER
     edit.text = value
