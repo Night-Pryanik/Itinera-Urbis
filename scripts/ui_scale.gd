@@ -16,6 +16,8 @@ const KEY := "ui_scale"
 const DEFAULT := 1.0
 const MINIMUM := 1.0
 const MAXIMUM := 2.0
+# Through this size the dialogs and the settings fit the screen at the sizes offered below.
+const SUPPORTED_MAX := 1.5
 
 # The offered choices. A value edited by hand in settings.cfg is clamped to the range but
 # need not be one of these: the dropdown shows the closest step when a saved value is off it.
@@ -69,6 +71,9 @@ static func save(value: float) -> void:
     config.set_value(SECTION, KEY, clamp_scale(value))
     config.save(SETTINGS_PATH)
     apply(value)
+
+static func is_experimental(value: float) -> bool:
+    return clamp_scale(value) > SUPPORTED_MAX
 
 static func is_step(value: float) -> bool:
     for step in STEPS:

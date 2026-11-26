@@ -1623,6 +1623,9 @@ msgstr "Интерфейс"
 msgid "Interface size"
 msgstr "Размер интерфейса"
 
+msgid "Experimental"
+msgstr "Экспериментально"
+
 msgid "Interface theme"
 msgstr "Тема оформления"
 

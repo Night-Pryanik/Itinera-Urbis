@@ -54,7 +54,8 @@ func _run() -> void:
             "the interface multiplier is still applied to the canvas", state)
 
     var narrow := maxi(menu.MIN_NUMBER_FIELD_WIDTH,
-            roundi(float(menu.STEP_FIELD_WIDTH) / UiScale.MAXIMUM))
+            roundi(float(menu.STEP_FIELD_WIDTH) / UiScale.MAXIMUM)
+                    + menu.NUMBER_FIELD_SCALE_EXTRA)
     var sea_edit: LineEdit = menu.sea_controls["max_sea_depth"]["control"]
     _check(menu.town_count_edit.custom_minimum_size.x == float(narrow)
             and sea_edit.custom_minimum_size.x == float(narrow),
@@ -92,11 +93,12 @@ func _run() -> void:
                 "the settings end before the scrollbar starts", state)
         var regenerate := menu.find_child("RegeneratePreviewButton", true, false) as Button
         if regenerate != null:
-            var limit := regenerate.get_combined_minimum_size().x \
-                    + float(menu.PREVIEW_SIDE_MARGIN) * 2.0 \
-                    + float(menu.SCROLL_GUTTER) * 2.0 + 1.0
-            _check(float(preview_scroll.custom_minimum_size.x) <= limit,
-                    "the picture column is only as wide as its button", state)
+            var legend := float(menu._legend_width(menu.world_previews[1]))
+            var limit := maxf(float(regenerate.get_combined_minimum_size().x), legend) \
+                    + float(menu.PREVIEW_SIDE_MARGIN) * 4.0 + 5.0
+            var width := float(preview_scroll.custom_minimum_size.x)
+            _check(width >= legend + float(menu.PREVIEW_SIDE_MARGIN) * 2.0 + 3.0 and width <= limit,
+                    "the picture column fits the legend (got %f, legend %f)" % [width, legend], state)
 
     var world_preview_rect := preview_scroll.get_global_rect() if preview_scroll != null else Rect2()
     menu.tab_container.current_tab = menu.TAB_CITY

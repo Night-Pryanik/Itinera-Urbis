@@ -24,7 +24,7 @@ const NAME_FIELD_WIDTH := 340
 # the window keeps it on every tab.
 const DIALOG_CONTENT_WIDTH := 860
 const DIALOG_CONTENT_HEIGHT := 520
-const DIALOG_EDGE_MARGIN := 24
+const DIALOG_EDGE_MARGIN := 10
 # The least room a page keeps when the window is fitted to a small screen.
 const PAGE_MIN_WIDTH := 160
 const PAGE_MIN_HEIGHT := 120
@@ -32,14 +32,23 @@ const PAGE_MIN_HEIGHT := 120
 # The space kept between a scrollbar and the rows it scrolls, and beside the controls of
 # the picture. The picture column is only as wide as its widest control plus these sides.
 const SCROLL_GUTTER := 20
+# The room beside the window edge, before the text of a page starts.
+const PAGE_SIDE_PADDING := 8
 const PREVIEW_SIDE_MARGIN := 8
+const PREVIEW_MIN_HEIGHT := 240
 # The width of the picture when both columns have room. In a squeezed window it is
 # narrowed down to the regenerate button instead.
 const PREVIEW_WIDTH := 360
 const SETTING_ROW_HEIGHT := 32
+# Long labels wrap instead of making the whole settings column wide. The controls then
+# sit closer to their text and the picture column keeps more room for its legend.
+const SETTING_LABEL_WIDTH := 160
 const SETTING_CONTROL_HEIGHT := 30
 const STEP_FIELD_WIDTH := 58
 const MIN_NUMBER_FIELD_WIDTH := 32
+# A few extra canvas units at a zoomed interface keep four-character values such as
+# "0.03" visible in full.
+const NUMBER_FIELD_SCALE_EXTRA := 4
 
 # The relief of the picture is the generator's own work on the whole map, and a giant map costs
 # seconds per rebuild. It is kept while the settings that shape it are unchanged, and a number
@@ -366,6 +375,10 @@ func _popup_new_game_dialog():
             + preview_padding.get_combined_minimum_size().x + 16.0 + 24.0
     var wanted := Vector2(maxf(float(DIALOG_CONTENT_WIDTH), natural_width),
             float(DIALOG_CONTENT_HEIGHT))
+    # A little slack keeps the scrollbar's own width from turning into horizontal
+    # scrolling when the window has room to spare.
+    if available.x >= wanted.x + 24.0:
+        wanted.x += 24.0
     # Squeeze only if even that width does not fit beside the other column.
     var squeezed := available.x < wanted.x - 1.0 or available.y < wanted.y - 1.0
     if squeezed:
@@ -381,9 +394,12 @@ func _popup_new_game_dialog():
     var target := (screen - deco) / 2
     new_game_dialog.position += target - new_game_dialog.get_position_with_decorations()
     # A window smaller than its decorations can still end up half outside the screen.
-    # The buttons sit at its bottom edge, so keep that edge inside the screen.
-    new_game_dialog.position = new_game_dialog.position.clamp(Vector2i.ZERO,
-            Vector2i(maxi(0, screen.x - deco.x), maxi(0, screen.y - deco.y)))
+    # Work in the coordinates of the decorated rect: the title bar is drawn above the
+    # reported one, so clamping the bare position would push it off the top.
+    var deco_now := Vector2(new_game_dialog.get_position_with_decorations())
+    var deco_pos := deco_now.clamp(Vector2.ZERO,
+            Vector2(maxf(0.0, screen.x - deco.x), maxf(0.0, screen.y - deco.y)))
+    new_game_dialog.position += Vector2i(deco_pos - deco_now)
 
 # Each page scrolls on its own. A narrow fitted window then keeps its buttons in place
 # and never drags another page's scrollbar past the edge of the screen.
@@ -403,16 +419,32 @@ func _page_scroll(name: String, content: Control, follow_focus: bool = false) ->
 func _apply_world_fit(squeezed: bool) -> void:
     if settings_padding == null:
         return
-    settings_padding.add_theme_constant_override("margin_left", SCROLL_GUTTER)
+    settings_padding.add_theme_constant_override("margin_left", PAGE_SIDE_PADDING)
     settings_padding.add_theme_constant_override("margin_right", SCROLL_GUTTER)
     settings_padding.add_theme_constant_override("margin_bottom", SCROLL_GUTTER)
 
     var pane_width := PREVIEW_WIDTH
-    if squeezed and regenerate_button != null:
-        pane_width = ceili(regenerate_button.get_combined_minimum_size().x) \
-                + PREVIEW_SIDE_MARGIN * 2
+    if squeezed and world_previews.size() > 1:
+        # The widest control of the picture is the row of five colour names in its legend,
+        # not the regenerate button. Keep that row on the panel before taking room from
+        # the settings, whose labels wrap to make space.
+        var widest := _legend_width(world_previews[1])
+        if regenerate_button != null:
+            widest = maxi(widest, ceili(regenerate_button.get_combined_minimum_size().x))
+        pane_width = widest + PREVIEW_SIDE_MARGIN * 2
     _fit_preview(preview_scroll, preview_padding, preview_column, pane_width)
     _fit_preview(city_preview_scroll, city_preview_padding, city_preview_column, pane_width)
+
+# The legend draws five colour names in one row; they need more width than the button.
+func _legend_width(preview: Control) -> int:
+    var font := preview.get_theme_font("font", "Label")
+    var labels := [tr("Sea"), tr("Shallows"), tr("Beach"), tr("Lake"), tr("Wetland")]
+    var total := 0.0
+    for label in labels:
+        total += WorldPreview.LEGEND_SWATCH.x + WorldPreview.LEGEND_GAP * 2.0 \
+                + font.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1,
+                        WorldPreview.LEGEND_FONT_SIZE).x
+    return ceili(total)
 
 func _fit_preview(scroll: ScrollContainer, padding: MarginContainer, column: Control,
         pane_width: int) -> void:
@@ -423,11 +455,13 @@ func _fit_preview(scroll: ScrollContainer, padding: MarginContainer, column: Con
     padding.size_flags_horizontal = Control.SIZE_EXPAND_FILL
     padding.size_flags_vertical = Control.SIZE_EXPAND_FILL
     column.size_flags_vertical = Control.SIZE_EXPAND_FILL
-    padding.add_theme_constant_override("margin_left", SCROLL_GUTTER)
-    padding.add_theme_constant_override("margin_right", SCROLL_GUTTER)
-    padding.add_theme_constant_override("margin_bottom", SCROLL_GUTTER)
+    padding.add_theme_constant_override("margin_left", PAGE_SIDE_PADDING)
+    padding.add_theme_constant_override("margin_right", PAGE_SIDE_PADDING)
+    padding.add_theme_constant_override("margin_bottom", PAGE_SIDE_PADDING)
     column.custom_minimum_size.x = pane_width
-    scroll.custom_minimum_size.x = pane_width + SCROLL_GUTTER * 2
+    # The picture needs only its side margins plus a little slack: its scrollbar is
+    # gone at the supported sizes, so the rest goes to the settings on the left.
+    scroll.custom_minimum_size.x = pane_width + PREVIEW_SIDE_MARGIN * 2 + 4
     for child in column.get_children():
         if child.name == "WorldPreview" or child.name == "PreviewDisclaimerLabel":
             child.custom_minimum_size.x = pane_width - PREVIEW_SIDE_MARGIN * 2
@@ -595,12 +629,13 @@ func _page_margin(page: Control) -> Control:
     margin.add_theme_constant_override("margin_left", 12)
     margin.add_theme_constant_override("margin_top", 10)
     margin.add_theme_constant_override("margin_right", 12)
-    margin.add_theme_constant_override("margin_bottom", 12)
+    margin.add_theme_constant_override("margin_bottom", PAGE_SIDE_PADDING)
     margin.add_child(page)
     return margin
 
 # One line of the settings list: the name of the setting on the left, its control on the
-# right. The controls keep their own width, so their right edges line up.
+# right. The controls keep their own width, so their right edges line up. The name wraps
+# instead of forcing the whole column to the width of the longest Russian phrase.
 #
 # The hint of a row is long enough to need breaking, and the engine's own tooltip never
 # breaks a line (see scripts/wrapped_tooltip.gd), so it is wrapped.
@@ -613,6 +648,8 @@ func _add_setting_row(column: VBoxContainer, text: String, control: Control,
     var label := Label.new()
     label.text = text
     label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+    label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+    label.custom_minimum_size.x = SETTING_LABEL_WIDTH
     if not tooltip.is_empty():
         WrappedTooltip.attach(label, tooltip)
     row.add_child(label)
@@ -640,7 +677,7 @@ func _make_preview() -> Control:
 
     var preview = WorldPreview.new()
     preview.name = "WorldPreview"
-    preview.custom_minimum_size = Vector2(PREVIEW_WIDTH, 260)
+    preview.custom_minimum_size = Vector2(PREVIEW_WIDTH, PREVIEW_MIN_HEIGHT)
     preview.size_flags_horizontal = Control.SIZE_EXPAND_FILL
     preview.size_flags_vertical = Control.SIZE_EXPAND_FILL
     preview.max_map_size = MAX_MAP_SIZE
@@ -1131,8 +1168,10 @@ func _add_sea_row(column: VBoxContainer, key: String, label: String, control: Co
     sea_controls[key] = spec
 
 func _number_field_width() -> int:
+    var scale := maxf(UiScale.current(), 0.01)
+    var extra := NUMBER_FIELD_SCALE_EXTRA if scale > 1.01 else 0
     return maxi(MIN_NUMBER_FIELD_WIDTH,
-            roundi(float(STEP_FIELD_WIDTH) / maxf(UiScale.current(), 0.01)))
+            roundi(float(STEP_FIELD_WIDTH) / scale) + extra)
 
 func _apply_number_field_widths() -> void:
     var width := _number_field_width()

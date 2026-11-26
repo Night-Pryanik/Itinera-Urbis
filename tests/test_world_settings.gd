@@ -134,7 +134,7 @@ func _run() -> void:
                     % bottom_gap, state)
     check(picture_scroll != null and is_equal_approx(
             picture_scroll.custom_minimum_size.x,
-            float(menu.PREVIEW_WIDTH) + float(menu.SCROLL_GUTTER) * 2.0),
+            float(menu.PREVIEW_WIDTH) + float(menu.PREVIEW_SIDE_MARGIN) * 2.0 + 4.0),
             "the picture keeps its designed width when both columns fit", state)
     check(is_equal_approx(menu.town_count_edit.custom_minimum_size.x,
             float(menu.STEP_FIELD_WIDTH)),

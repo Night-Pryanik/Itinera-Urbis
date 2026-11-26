@@ -243,7 +243,10 @@ func _setup_ui_scale_option():
     ui_scale_option_button.clear()
     for value in UiScale.STEPS:
         var index := ui_scale_option_button.item_count
-        ui_scale_option_button.add_item("%d%%" % int(round(value * 100.0)), index)
+        var label := "%d%%" % int(round(value * 100.0))
+        if UiScale.is_experimental(value):
+            label += " · " + tr("Experimental")
+        ui_scale_option_button.add_item(label, index)
         ui_scale_option_button.set_item_metadata(index, value)
     var saved := UiScale.read_saved()
     if UiScale.is_step(saved):
@@ -252,7 +255,10 @@ func _setup_ui_scale_option():
         # A hand-edited value stays visible and selectable instead of being silently replaced
         # by the nearest offered step when the window opens.
         var index := ui_scale_option_button.item_count
-        ui_scale_option_button.add_item("%d%%" % int(round(saved * 100.0)), index)
+        var label := "%d%%" % int(round(saved * 100.0))
+        if UiScale.is_experimental(saved):
+            label += " · " + tr("Experimental")
+        ui_scale_option_button.add_item(label, index)
         ui_scale_option_button.set_item_metadata(index, saved)
         ui_scale_option_button.select(index)
     # select() does not send item_selected: opening the window shows the applied size
