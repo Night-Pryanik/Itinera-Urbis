@@ -3843,6 +3843,10 @@ msgid "Awards the milk of the city to the cheese the world asks for by the name 
 msgstr ""
 
 msgctxt "crafts.description"
+msgid "Awards the wine of the city to the brandy the world asks for by the name of the city."
+msgstr ""
+
+msgctxt "crafts.description"
 msgid "Bakes coal without air into hard, clean-burning metallurgical coke."
 msgstr ""
 
@@ -4347,7 +4351,7 @@ msgid "Distils apple cider into fruit brandy."
 msgstr ""
 
 msgctxt "crafts.description"
-msgid "Distils palm toddy or a fermented sweet juice into arrack."
+msgid "Distils palm toddy with rice or a sweetener into arrack."
 msgstr ""
 
 msgctxt "crafts.description"
@@ -4732,6 +4736,10 @@ msgstr ""
 
 msgctxt "crafts.name"
 msgid "Cinnabar"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "City Brandy"
 msgstr ""
 
 msgctxt "crafts.name"
@@ -5220,6 +5228,10 @@ msgstr ""
 
 msgctxt "crafts.name"
 msgid "Arrack"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Rum"
 msgstr ""
 
 msgctxt "crafts.name"
@@ -6275,6 +6287,10 @@ msgid "Perfect"
 msgstr ""
 
 msgctxt "resources.challenge.description"
+msgid "A thousand units of brandy of exceptional quality sold to the towns — and the strong spirits begin to be asked by the name of the town."
+msgstr ""
+
+msgctxt "resources.challenge.description"
 msgid "A thousand units of cheese of exceptional quality sold to the towns — and cheese begins to be asked by the name of the town."
 msgstr ""
 
@@ -6292,6 +6308,10 @@ msgstr ""
 
 msgctxt "resources.challenge.name"
 msgid "A Mark on Fired Clay"
+msgstr ""
+
+msgctxt "resources.challenge.name"
+msgid "Cognac, Tequila and Sherry"
 msgstr ""
 
 msgctxt "resources.challenge.name"
@@ -7727,11 +7747,19 @@ msgid "Brandy"
 msgstr ""
 
 msgctxt "resources.name"
+msgid "Brandy of <city_name>"
+msgstr ""
+
+msgctxt "resources.name"
 msgid "Fruit Brandy"
 msgstr ""
 
 msgctxt "resources.name"
 msgid "Arrack"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Rum"
 msgstr ""
 
 msgctxt "resources.name"
@@ -8063,6 +8091,10 @@ msgid "The world knows the cellars of the city. Cheese brings more, and the dair
 msgstr ""
 
 msgctxt "specializations.description"
+msgid "The world knows the stills of the city. Strong spirits bring more, and the distilleries of the city fill them faster."
+msgstr ""
+
+msgctxt "specializations.description"
 msgid "Workshops and mills of the city work faster. Every building that turns raw materials into goods produces more."
 msgstr ""
 
@@ -8080,6 +8112,10 @@ msgstr ""
 
 msgctxt "specializations.full_name"
 msgid "Specialization of the domestic market"
+msgstr ""
+
+msgctxt "specializations.full_name"
+msgid "Specialization of strong spirits"
 msgstr ""
 
 msgctxt "specializations.full_name"
@@ -8124,6 +8160,10 @@ msgstr ""
 
 msgctxt "specializations.name"
 msgid "Science"
+msgstr ""
+
+msgctxt "specializations.name"
+msgid "Strong Spirits"
 msgstr ""
 
 msgctxt "specializations.name"

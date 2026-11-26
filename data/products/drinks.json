@@ -163,12 +163,45 @@
       "icon": "grain_spirit.png"
     },
     {
+      // The fame of the brandy line is earned by the spirit, and the ladder of it opens the
+      // brand the city signs with its own name — see the header comment of data/products/food.json.
       "id": "brandy",
       "price": 44,
       "name": "Brandy",
       "type": "product",
       "category": "drinks",
       "unlock_tech": "distillation",
+      "icon": "brandy.png",
+      "reputation": {
+        "threshold": 200,
+        "trigger": "sell",
+        "reward": { "type": "trade_price", "value": 0.10 }
+      },
+      "brand": {
+        "threshold": 500,
+        "trigger": "sell",
+        "min_quality": "exceptional",
+        "reward": { "type": "brand_product", "product": "city_brandy" }
+      },
+      "challenge": {
+        "id": "brandy_challenge",
+        "threshold": 1000,
+        "trigger": "sell",
+        "min_quality": "exceptional",
+        "name": "Cognac, Tequila and Sherry",
+        "description": "A thousand units of brandy of exceptional quality sold to the towns — and the strong spirits begin to be asked by the name of the town.",
+        "reward": { "type": "specialization", "id": "spirits_specialization" }
+      }
+    },
+    {
+      // The brand good of the brandy line — the brand the city earns by the fame of its brandy
+      // (see the header comment of data/products/food.json).
+      "id": "city_brandy",
+      "price": 110,
+      "name": "Brandy of <city_name>",
+      "type": "product",
+      "category": "drinks",
+      "brand_of": "brandy",
       "icon": "brandy.png"
     },
     {
@@ -182,8 +215,8 @@
       "icon": "fruit_brandy.png"
     },
     {
-      // Consolidates spirits distilled from palm toddy, sugar cane and maple sap
-      // across warm and cold climates, mirroring how sugar unites their juices.
+      // Distilled from palm toddy with rice or a sweetener, the spirit of the
+      // palm countries.
       "id": "arrack",
       "price": 24,
       "name": "Arrack",
@@ -191,6 +224,18 @@
       "category": "drinks",
       "unlock_tech": "distillation",
       "icon": "arrack.png"
+    },
+    {
+      // The spirit of the sugar fields: fermented cane juice distilled to a clean,
+      // strong rum. It stands on its own line from arrack, which shares the cane
+      // among several warm-climate juices.
+      "id": "rum",
+      "price": 28,
+      "name": "Rum",
+      "type": "product",
+      "category": "drinks",
+      "unlock_tech": "distillation",
+      "icon": "rum.png"
     },
     {
       "id": "mezcal",

@@ -5,6 +5,10 @@
   // broken reference, and the data check would refuse the whole mod. Only "products" is
   // written here — the name of the group keeps its vanilla value.
   //
+  // The same cleanup covers the group the spirits specialization is scoped to: it listed
+  // the brand of the brandy line, and with the chain removed the brand is dropped, while
+  // the group keeps referencing the rewritten "spirits" one.
+  //
   // The "winemaker" profession is NOT touched: nothing refers to a profession from the
   // side of the buildings, so a profession without a building of its own is not an error.
   "product_groups": [
@@ -15,6 +19,10 @@
     {
       "id": "spirits",
       "products": [ "arkhi", "mezcal", "arrack", "grain_spirit", "honey_spirit", "fruit_brandy", "cordial" ]
+    },
+    {
+      "id": "spirits_goods",
+      "products": [ "@spirits" ]
     }
   ]
 }

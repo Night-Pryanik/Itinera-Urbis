@@ -208,6 +208,21 @@
         { "type": "trade_sell_price", "value": 0.15, "products": ["@weapons_goods"] },
         { "type": "building_production", "value": 0.20, "products": ["@weapons_goods"] }
       ]
+    },
+    {
+      // The branch of the distillers: the fame that earns it is the fame of the brandy the city
+      // sells, and its bonus reaches every strong spirit the data knows — the ladder of the brandy
+      // line and the brand it opens, and every other distilled drink of the cellars.
+      "id": "spirits_specialization",
+      "name": "Strong Spirits",
+      "full_name": "Specialization of strong spirits",
+      "description": "The world knows the stills of the city. Strong spirits bring more, and the distilleries of the city fill them faster.",
+      "icon": "distillation.png",
+      "unlock": { "type": "challenge", "id": "brandy_challenge" },
+      "bonuses": [
+        { "type": "trade_sell_price", "value": 0.15, "products": ["@spirits_goods"] },
+        { "type": "building_production", "value": 0.20, "products": ["@spirits_goods"] }
+      ]
     }
   ]
 }
