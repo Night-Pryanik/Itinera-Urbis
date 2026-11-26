@@ -465,16 +465,16 @@
       "description": "Distils apple cider into fruit brandy."
     },
     {
-      // Palm toddy goes in already fermented, while crushed cane and tapped maple
-      // sap are fermented and distilled in one workshop cycle.
+      // Palm toddy goes in already fermented; rice or a sweetener is added to
+      // it, and the mixture is distilled in one workshop cycle.
       "id": "arrack",
       "name": "Arrack",
       "produced_in": [ "distillery" ],
-      "resources": [ [ { "toddy": 20 }, { "sugar_cane": 20 }, { "maple_sap": 20 } ] ],
+      "resources": [ { "toddy": 20 }, [ { "rice": 20 }, { "@sweeteners": 20 } ] ],
       "result": { "arrack": 10 },
       "time": 8.0,
       "unlock_tech": "distillation",
-      "description": "Distils palm toddy or a fermented sweet juice into arrack."
+      "description": "Distils palm toddy with rice or a sweetener into arrack."
     },
     {
       // Rum is the dedicated spirit of the cane fields: the distillery ferments

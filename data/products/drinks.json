@@ -215,8 +215,8 @@
       "icon": "fruit_brandy.png"
     },
     {
-      // Consolidates spirits distilled from palm toddy, sugar cane and maple sap
-      // across warm and cold climates, mirroring how sugar unites their juices.
+      // Distilled from palm toddy with rice or a sweetener, the spirit of the
+      // palm countries.
       "id": "arrack",
       "price": 24,
       "name": "Arrack",
