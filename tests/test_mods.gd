@@ -540,8 +540,8 @@ func _test_new_game_flow(state: Dictionary) -> void:
         return
     check(dialog.visible, "the dialog is shown", state)
     check(menu.mod_list != null, "the dialog owns the mod list", state)
-    check(menu.tab_container.get_tab_control(menu.TAB_MODS) == menu.mod_list,
-            "the mod list IS the mods tab", state)
+    check(menu.tab_container.get_tab_control(menu.TAB_MODS).is_ancestor_of(menu.mod_list),
+            "the mods tab holds the mod list", state)
     check(menu.tab_container.get_tab_title(menu.TAB_MODS) == tr("Mods"),
             "a game without mods says so on the tab", state)
 

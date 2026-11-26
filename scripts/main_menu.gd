@@ -25,9 +25,16 @@ const NAME_FIELD_WIDTH := 340
 const DIALOG_CONTENT_WIDTH := 860
 const DIALOG_CONTENT_HEIGHT := 520
 const DIALOG_EDGE_MARGIN := 24
+# The least room a page keeps when the window is fitted to a small screen.
+const PAGE_MIN_WIDTH := 160
+const PAGE_MIN_HEIGHT := 120
 
-# The room the map preview takes on the right of the City and World tabs, and the height of
-# one line of the settings list.
+# The space kept between a scrollbar and the rows it scrolls, and beside the controls of
+# the picture. The picture column is only as wide as its widest control plus these sides.
+const SCROLL_GUTTER := 20
+const PREVIEW_SIDE_MARGIN := 8
+# The width of the picture when both columns have room. In a squeezed window it is
+# narrowed down to the regenerate button instead.
 const PREVIEW_WIDTH := 360
 const SETTING_ROW_HEIGHT := 32
 const SETTING_CONTROL_HEIGHT := 30
@@ -118,9 +125,15 @@ var save_load_window: CanvasLayer = null
 # mods). It is built once and kept — the choice of mods survives a "Back".
 var new_game_dialog: ConfirmationDialog = null
 var tab_container: TabContainer = null
-# The tabs keep their designed size; on a small canvas the scroll gives them room while
-# the OK and Cancel buttons stay at the bottom of the window.
-var content_scroll: ScrollContainer = null
+var settings_padding: MarginContainer = null
+var settings_column: VBoxContainer = null
+var preview_scroll: ScrollContainer = null
+var preview_padding: MarginContainer = null
+var preview_column: Control = null
+var city_preview_scroll: ScrollContainer = null
+var city_preview_padding: MarginContainer = null
+var city_preview_column: Control = null
+var regenerate_button: Button = null
 var city_name_edit: LineEdit = null
 # The world settings of a new game (the map size and the number of towns). They are read
 # once, when the game starts.
@@ -321,19 +334,15 @@ func _on_viewport_resized() -> void:
     if new_game_dialog != null and new_game_dialog.visible:
         _popup_new_game_dialog()
 
-# The window keeps ONE size on all three tabs. The width comes from the mod list, the
-# widest of them; a window that resized itself when the player switched tabs would jump
-# under the cursor.
+# The window keeps ONE size on all three tabs: a window that resized itself when the
+# player switched tabs would jump under the cursor. The pages keep their controls at the
+# chosen interface size and scroll inside the room the window has.
 #
 # The frame of a window (the title bar and the shadow) is drawn OUTSIDE the rect this
 # node reports, and the frame is what the player sees, so the margins are kept for the
 # decorated rect: a window sized by the bare rect alone would touch the screen edge.
 func _popup_new_game_dialog():
-    # The tabs keep the size they were laid out for, so their controls and fonts follow
-    # the chosen interface size. Only the scroll around them gives up room on a small
-    # canvas; the window itself keeps the global scale.
     tab_container.custom_minimum_size = Vector2(DIALOG_CONTENT_WIDTH, DIALOG_CONTENT_HEIGHT)
-    content_scroll.custom_minimum_size = Vector2(DIALOG_CONTENT_WIDTH, DIALOG_CONTENT_HEIGHT)
     new_game_dialog.reset_size()
     new_game_dialog.popup_centered()
 
@@ -343,11 +352,23 @@ func _popup_new_game_dialog():
     var frame := new_game_dialog.get_size_with_decorations() - new_game_dialog.size
     var room := Vector2(screen - Vector2i(DIALOG_EDGE_MARGIN * 2, DIALOG_EDGE_MARGIN * 2) - frame)
     # The title bar, the panel and the buttons take their share before the tabs get the rest.
-    var chrome := Vector2(new_game_dialog.size) - Vector2(content_scroll.custom_minimum_size)
+    var chrome := Vector2(new_game_dialog.size) - Vector2(tab_container.custom_minimum_size)
     var available := room - chrome
-    content_scroll.custom_minimum_size = Vector2(
-            maxf(minf(float(DIALOG_CONTENT_WIDTH), available.x), 160.0),
-            maxf(minf(float(DIALOG_CONTENT_HEIGHT), available.y), 120.0))
+    # Measure the two columns at their designed widths, then give the window the room
+    # they need when the screen has it: a wide window has no reason to scroll sideways.
+    _apply_world_fit(false)
+    var natural_width := settings_padding.get_combined_minimum_size().x \
+            + preview_padding.get_combined_minimum_size().x + 16.0 + 24.0
+    var wanted := Vector2(maxf(float(DIALOG_CONTENT_WIDTH), natural_width),
+            float(DIALOG_CONTENT_HEIGHT))
+    # Squeeze only if even that width does not fit beside the other column.
+    var squeezed := available.x < wanted.x - 1.0 or available.y < wanted.y - 1.0
+    if squeezed:
+        _apply_world_fit(true)
+    var fitted := Vector2(
+            maxf(minf(wanted.x, available.x), float(PAGE_MIN_WIDTH)),
+            maxf(minf(wanted.y, available.y), float(PAGE_MIN_HEIGHT)))
+    tab_container.custom_minimum_size = fitted
     new_game_dialog.reset_size()
     new_game_dialog.popup_centered()
 
@@ -359,28 +380,64 @@ func _popup_new_game_dialog():
     new_game_dialog.position = new_game_dialog.position.clamp(Vector2i.ZERO,
             Vector2i(maxi(0, screen.x - deco.x), maxi(0, screen.y - deco.y)))
 
+# Each page scrolls on its own. A narrow fitted window then keeps its buttons in place
+# and never drags another page's scrollbar past the edge of the screen.
+func _page_scroll(name: String, content: Control, follow_focus: bool = false) -> ScrollContainer:
+    var scroll := ScrollContainer.new()
+    scroll.name = name
+    scroll.custom_minimum_size = Vector2(PAGE_MIN_WIDTH, PAGE_MIN_HEIGHT)
+    scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+    scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+    scroll.follow_focus = follow_focus
+    scroll.add_child(content)
+    return scroll
+
+# The scrollbars are drawn inside their scrolls, so the rows always keep a gutter beside
+# them. The picture is narrowed down to its button only when the two columns cannot share
+# the window at their designed size.
+func _apply_world_fit(squeezed: bool) -> void:
+    if settings_padding == null:
+        return
+    settings_padding.add_theme_constant_override("margin_left", SCROLL_GUTTER)
+    settings_padding.add_theme_constant_override("margin_right", SCROLL_GUTTER)
+    settings_padding.add_theme_constant_override("margin_bottom", SCROLL_GUTTER)
+
+    var pane_width := PREVIEW_WIDTH
+    if squeezed and regenerate_button != null:
+        pane_width = ceili(regenerate_button.get_combined_minimum_size().x) \
+                + PREVIEW_SIDE_MARGIN * 2
+    _fit_preview(preview_scroll, preview_padding, preview_column, pane_width)
+    _fit_preview(city_preview_scroll, city_preview_padding, city_preview_column, pane_width)
+
+func _fit_preview(scroll: ScrollContainer, padding: MarginContainer, column: Control,
+        pane_width: int) -> void:
+    if scroll == null or padding == null or column == null:
+        return
+    padding.add_theme_constant_override("margin_left", SCROLL_GUTTER)
+    padding.add_theme_constant_override("margin_right", SCROLL_GUTTER)
+    padding.add_theme_constant_override("margin_bottom", SCROLL_GUTTER)
+    column.custom_minimum_size.x = pane_width
+    scroll.custom_minimum_size.x = pane_width + SCROLL_GUTTER * 2
+    for child in column.get_children():
+        if child.name == "WorldPreview" or child.name == "PreviewDisclaimerLabel":
+            child.custom_minimum_size.x = pane_width - PREVIEW_SIDE_MARGIN * 2
+
 func _build_new_game_dialog():
     var dialog = ConfirmationDialog.new()
     dialog.title = tr("New game")
     dialog.ok_button_text = tr("Start")
     dialog.cancel_button_text = tr("Back")
 
-    # AcceptDialog stretches its single child to the content area. The scroll is that
-    # child: it lets the tabs keep their designed size on a small canvas without pushing
-    # the buttons past the bottom edge. The tab container paints no background of its
-    # own: the pages would otherwise sit on a darker plate than the buttons under them.
-    content_scroll = ScrollContainer.new()
-    content_scroll.name = "ContentScroll"
-    content_scroll.follow_focus = true
-    dialog.add_child(content_scroll)
-
+    # AcceptDialog stretches its single child to the content area, so the tabs own the
+    # whole window. The tab container paints no background of its own: the pages would
+    # otherwise sit on a darker plate than the buttons under them.
     tab_container = TabContainer.new()
     tab_container.add_theme_stylebox_override("panel", StyleBoxEmpty.new())
-    content_scroll.add_child(tab_container)
+    dialog.add_child(tab_container)
 
     tab_container.add_child(_page_margin(_build_city_tab()))
     tab_container.add_child(_page_margin(_build_world_tab()))
-    tab_container.add_child(_build_mods_tab())
+    tab_container.add_child(_page_scroll("ModsScroll", _build_mods_tab()))
     tab_container.set_tab_title(TAB_CITY, tr("City"))
     tab_container.set_tab_title(TAB_WORLD, tr("World"))
     tab_container.set_tab_title(TAB_MODS, tr("Mods"))
@@ -395,12 +452,23 @@ func _build_new_game_dialog():
 func _build_city_tab() -> Control:
     var page := HBoxContainer.new()
     page.name = "CityTab"
+    page.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+    page.size_flags_vertical = Control.SIZE_EXPAND_FILL
     page.add_theme_constant_override("separation", 16)
+
+    var fields_scroll := ScrollContainer.new()
+    fields_scroll.name = "CityFieldsScroll"
+    fields_scroll.custom_minimum_size = Vector2(PAGE_MIN_WIDTH, PAGE_MIN_HEIGHT)
+    fields_scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+    fields_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+    fields_scroll.size_flags_stretch_ratio = 1.2
+    fields_scroll.follow_focus = true
+    page.add_child(fields_scroll)
 
     var column := VBoxContainer.new()
     column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
     column.add_theme_constant_override("separation", 10)
-    page.add_child(column)
+    fields_scroll.add_child(column)
 
     var name_row = HBoxContainer.new()
     name_row.custom_minimum_size = Vector2(0, SETTING_CONTROL_HEIGHT)
@@ -441,39 +509,70 @@ func _build_city_tab() -> Control:
     hint.custom_minimum_size = Vector2(300, 0)
     column.add_child(hint)
 
-    page.add_child(_make_preview())
+    # The same column geometry as on the World tab keeps the picture in one place when
+    # the player switches between the two questions.
+    city_preview_scroll = ScrollContainer.new()
+    city_preview_scroll.name = "CityPreviewScroll"
+    city_preview_scroll.custom_minimum_size = Vector2(
+            PREVIEW_WIDTH + SCROLL_GUTTER * 2, PAGE_MIN_HEIGHT)
+    city_preview_scroll.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+    city_preview_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+    page.add_child(city_preview_scroll)
+
+    city_preview_padding = MarginContainer.new()
+    city_preview_scroll.add_child(city_preview_padding)
+    city_preview_column = _make_preview()
+    city_preview_padding.add_child(city_preview_column)
     return page
 
-# The world tab: the settings, one line each, and the preview of what they produce. The
-# list scrolls, so the tab takes any number of settings without growing the window.
+# The world tab: the settings and the picture they produce stand side by side, each in
+# its own scroll. Moving one never moves the other, so the settings stay where the player
+# left them while the picture is scrolled, and neither scrollbar leaves its own column.
 func _build_world_tab() -> Control:
     var page := HBoxContainer.new()
     page.name = "WorldTab"
+    page.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+    page.size_flags_vertical = Control.SIZE_EXPAND_FILL
     page.add_theme_constant_override("separation", 16)
 
-    var scroll := ScrollContainer.new()
-    scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-    scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-    page.add_child(scroll)
+    var settings_scroll := ScrollContainer.new()
+    settings_scroll.name = "SettingsScroll"
+    settings_scroll.custom_minimum_size = Vector2(PAGE_MIN_WIDTH, PAGE_MIN_HEIGHT)
+    settings_scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+    settings_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+    settings_scroll.size_flags_stretch_ratio = 1.2
+    settings_scroll.follow_focus = true
+    page.add_child(settings_scroll)
 
     # A scroll container clips at its own edge, and a control that ends exactly there loses
-    # the border the focus ring draws on it. The padding keeps every row off the edge.
-    var padding := MarginContainer.new()
-    padding.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-    padding.add_theme_constant_override("margin_right", 6)
-    scroll.add_child(padding)
+    # the border the focus ring draws on it. The padding keeps every row off the edge and
+    # clear of the scrollbar drawn on that edge.
+    settings_padding = MarginContainer.new()
+    settings_padding.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+    settings_scroll.add_child(settings_padding)
 
-    var column := VBoxContainer.new()
-    column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-    column.add_theme_constant_override("separation", 8)
-    padding.add_child(column)
+    settings_column = VBoxContainer.new()
+    settings_column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+    settings_column.add_theme_constant_override("separation", 8)
+    settings_padding.add_child(settings_column)
+    _build_world_settings(settings_column)
 
-    _build_world_settings(column)
-    page.add_child(_make_preview())
+    preview_scroll = ScrollContainer.new()
+    preview_scroll.name = "PreviewScroll"
+    preview_scroll.custom_minimum_size = Vector2(PREVIEW_WIDTH, PAGE_MIN_HEIGHT)
+    # The picture keeps its own width; the rest goes to the settings.
+    preview_scroll.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+    preview_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+    page.add_child(preview_scroll)
+
+    preview_padding = MarginContainer.new()
+    preview_scroll.add_child(preview_padding)
+    preview_column = _make_preview()
+    preview_padding.add_child(preview_column)
     return page
 
-# The mods tab. The list IS the tab: it is 860 px wide, and that is what sets the width of
-# the whole window. It takes no margins — it was laid out for a window of its own.
+# The mods tab. The list was laid out for a window of its own, so it keeps its width and
+# scrolls inside the tab when the dialog has less room. It takes no margins.
 func _build_mods_tab() -> Control:
     mod_list = ModListScene.instantiate()
     mod_list.selection_changed.connect(_on_mods_changed)
@@ -518,6 +617,12 @@ func _add_setting_row(column: VBoxContainer, text: String, control: Control,
 # The map preview of a tab. Both tabs that have room for one get their own copy: the tabs
 # are separate subtrees, and a node cannot be in two of them at once.
 func _make_preview() -> Control:
+    regenerate_button = Button.new()
+    regenerate_button.name = "RegeneratePreviewButton"
+    regenerate_button.text = tr("Regenerate")
+    regenerate_button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+    regenerate_button.pressed.connect(_regenerate_preview)
+
     var column := VBoxContainer.new()
     column.custom_minimum_size = Vector2(PREVIEW_WIDTH, 0)
     column.size_flags_horizontal = Control.SIZE_SHRINK_END
@@ -531,12 +636,6 @@ func _make_preview() -> Control:
     preview.max_map_size = MAX_MAP_SIZE
     world_previews.append(preview)
     column.add_child(preview)
-
-    var regenerate_button := Button.new()
-    regenerate_button.name = "RegeneratePreviewButton"
-    regenerate_button.text = tr("Regenerate")
-    regenerate_button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-    regenerate_button.pressed.connect(_regenerate_preview)
     column.add_child(regenerate_button)
 
     var disclaimer := Label.new()

@@ -39,6 +39,7 @@ extends SceneTree
 
 const WATCHDOG = preload("res://tests/watchdog.gd")
 const WRAPPED_TOOLTIP = preload("res://scripts/wrapped_tooltip.gd")
+const UiScale = preload("res://scripts/ui_scale.gd")
 
 const MENU_SCENE := "res://scenes/main_menu.tscn"
 const SCREEN := Vector2i(1920, 1080)
@@ -58,16 +59,16 @@ func _run() -> void:
     var WorldPreview = load("res://scripts/world_preview.gd")
     _preview_script = WorldPreview
 
-    # The headless window is 64x64 by default; the dialog is sized from the screen, so the
-    # test asks for the size of the real game window.
+    var menu = load(MENU_SCENE).instantiate()
+    get_root().add_child(menu)
+    await process_frame
+    # The menu applies the saved scale and resolution on ready; the fit is checked at the
+    # default size, in the real game window, whatever the player's settings.cfg holds.
+    UiScale.apply(UiScale.DEFAULT)
     get_root().size = SCREEN
     await process_frame
     var screen: Vector2 = get_root().get_visible_rect().size
     check(screen.y > 200.0, "the test window is big enough (got %s)" % str(screen), state)
-
-    var menu = load(MENU_SCENE).instantiate()
-    get_root().add_child(menu)
-    await process_frame
 
     menu._on_new_game()
     await process_frame
@@ -110,6 +111,28 @@ func _run() -> void:
                     % [deco_size.y, int(screen.y)], state)
     check(deco_size.x >= menu.DIALOG_CONTENT_WIDTH,
             "the window is as wide as its widest tab (got %d)" % deco_size.x, state)
+    check(tabs.custom_minimum_size.x >= float(menu.DIALOG_CONTENT_WIDTH)
+            and is_equal_approx(tabs.custom_minimum_size.y,
+                    float(menu.DIALOG_CONTENT_HEIGHT)),
+            "the window grows when both columns need more room", state)
+    tabs.current_tab = menu.TAB_WORLD
+    await process_frame
+    await process_frame
+    var world_control := tabs.get_tab_control(menu.TAB_WORLD)
+    var settings_scroll := world_control.find_child(
+            "SettingsScroll", true, false) as ScrollContainer
+    var picture_scroll := world_control.find_child(
+            "PreviewScroll", true, false) as ScrollContainer
+    check(picture_scroll != null and is_equal_approx(
+            picture_scroll.custom_minimum_size.x,
+            float(menu.PREVIEW_WIDTH) + float(menu.SCROLL_GUTTER) * 2.0),
+            "the picture keeps its designed width when both columns fit", state)
+    check(settings_scroll != null and not settings_scroll.get_h_scroll_bar().visible,
+            "the settings do not scroll sideways when there is room", state)
+    check(picture_scroll != null and not picture_scroll.get_h_scroll_bar().visible,
+            "the picture does not scroll sideways when there is room", state)
+    tabs.current_tab = menu.TAB_CITY
+    await process_frame
     var centre := Vector2(deco_pos) + Vector2(deco_size) / 2.0
     check(absf(centre.y - screen.y / 2.0) <= 1.0,
             "the dialog is centred vertically (centre %s)" % str(centre), state)
@@ -132,8 +155,8 @@ func _run() -> void:
             "the map size lives on the world tab", state)
     check(tabs.get_tab_control(menu.TAB_WORLD).is_ancestor_of(menu.town_count_edit),
             "the town count lives on the world tab", state)
-    check(tabs.get_tab_control(menu.TAB_MODS) == menu.mod_list,
-            "the mod list IS the mods tab", state)
+    check(tabs.get_tab_control(menu.TAB_MODS).is_ancestor_of(menu.mod_list),
+            "the mods tab holds the mod list", state)
     check(menu.world_previews.size() == 2,
             "the city and the world tabs each have a preview (got %d)"
                     % menu.world_previews.size(), state)

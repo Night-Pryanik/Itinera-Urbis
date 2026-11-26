@@ -38,8 +38,8 @@ func _run() -> void:
     _check(screen.y <= 400.0, "the zoomed canvas is small enough to need a fit (got %s)" % str(screen), state)
 
     menu._on_new_game()
-    await process_frame
-    await process_frame
+    for _i in 4:
+        await process_frame
 
     var dialog = menu.new_game_dialog
     _check(dialog != null and dialog.visible, "the new game dialog is open", state)
@@ -53,11 +53,53 @@ func _run() -> void:
             UiScale.base_factor() * UiScale.MAXIMUM),
             "the interface multiplier is still applied to the canvas", state)
 
-    _check(menu.tab_container.custom_minimum_size.x == float(menu.DIALOG_CONTENT_WIDTH),
-            "the tabs keep the size their controls were laid out for", state)
-    _check(menu.content_scroll.custom_minimum_size.x < float(menu.DIALOG_CONTENT_WIDTH)
-            and menu.content_scroll.custom_minimum_size.y < float(menu.DIALOG_CONTENT_HEIGHT),
-            "the content scrolls instead of shrinking the controls", state)
+    _check(menu.tab_container.custom_minimum_size.x < float(menu.DIALOG_CONTENT_WIDTH)
+            and menu.tab_container.custom_minimum_size.y < float(menu.DIALOG_CONTENT_HEIGHT),
+            "the tabs are fitted to the screen", state)
+
+    menu.tab_container.current_tab = menu.TAB_WORLD
+    await process_frame
+    await process_frame
+    var world: Node = menu.tab_container.get_tab_control(menu.TAB_WORLD)
+    var settings_scroll := world.find_child("SettingsScroll", true, false) as ScrollContainer
+    var preview_scroll := world.find_child("PreviewScroll", true, false) as ScrollContainer
+    _check(settings_scroll != null and preview_scroll != null,
+            "the world tab has a scroll for the settings and one for the picture", state)
+    if settings_scroll != null and preview_scroll != null:
+        var origin := Vector2(dialog.position)
+        var left := Rect2(origin + settings_scroll.get_global_rect().position,
+                settings_scroll.get_global_rect().size)
+        var right := Rect2(origin + preview_scroll.get_global_rect().position,
+                preview_scroll.get_global_rect().size)
+        _check(left.end.x <= right.position.x + 1.0,
+                "the two scrolls stay side by side", state)
+        _check(left.position.x >= -1.0 and right.end.x <= screen.x + 1.0
+                and left.position.y >= -1.0 and right.end.y <= screen.y + 1.0,
+                "both scrolls stay inside the screen (%s / %s)" % [str(left), str(right)], state)
+        var padding := settings_scroll.get_child(0) as MarginContainer
+        _check(padding != null and padding.get_theme_constant("margin_right") >= menu.SCROLL_GUTTER,
+                "the settings end before the scrollbar starts", state)
+        var regenerate := menu.find_child("RegeneratePreviewButton", true, false) as Button
+        if regenerate != null:
+            var limit := regenerate.get_combined_minimum_size().x \
+                    + float(menu.PREVIEW_SIDE_MARGIN) * 2.0 \
+                    + float(menu.SCROLL_GUTTER) * 2.0 + 1.0
+            _check(float(preview_scroll.custom_minimum_size.x) <= limit,
+                    "the picture column is only as wide as its button", state)
+
+    var world_preview_rect := preview_scroll.get_global_rect() if preview_scroll != null else Rect2()
+    menu.tab_container.current_tab = menu.TAB_CITY
+    await process_frame
+    await process_frame
+    var city_control: Node = menu.tab_container.get_tab_control(menu.TAB_CITY)
+    var city_preview := city_control.find_child("CityPreviewScroll", true, false) as ScrollContainer
+    if city_preview != null and preview_scroll != null:
+        var city_rect := city_preview.get_global_rect()
+        _check(absf(city_rect.position.x - world_preview_rect.position.x) <= 1.0
+                and absf(city_rect.size.x - world_preview_rect.size.x) <= 1.0,
+                "the previews share one column position on both tabs", state)
+    menu.tab_container.current_tab = menu.TAB_WORLD
+    await process_frame
 
     var pos := Vector2(dialog.get_position_with_decorations())
     var size := Vector2(dialog.get_size_with_decorations())
