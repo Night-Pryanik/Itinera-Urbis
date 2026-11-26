@@ -852,6 +852,8 @@ func _string_set(value) -> Dictionary:
         out[value] = true
     return out
 
+# Folds the data of one mod into the merged target: a key the mod does not
+# carry is left alone, and shared arrays and nested objects are merged in place.
 func _merge_mod_data(target: Dictionary, mod: Dictionary) -> void:
     for key in mod.keys():
         var value = mod[key]
