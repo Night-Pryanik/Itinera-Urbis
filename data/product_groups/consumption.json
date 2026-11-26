@@ -215,6 +215,13 @@
       ]
     },
     {
+      // Lenses ground from glass: the scholar draws one optical aid at a time,
+      // the plainer magnifier first and the finer spectacles last.
+      "id": "optical_instruments",
+      "name": "Optical Instruments",
+      "products": [ "magnifying_glass", "spectacles" ]
+    },
+    {
       // Furniture the citizens write off: both the everyday piece and the
       // costly one are used when in stock.
       "id": "furniture",

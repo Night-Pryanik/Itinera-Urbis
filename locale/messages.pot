@@ -4007,7 +4007,15 @@ msgid "Foldes the bloom of the city into the watered bar the smiths of other tow
 msgstr ""
 
 msgctxt "crafts.description"
+msgid "Fuses lead-potash flint glass and grinds two matched lenses into spectacles."
+msgstr ""
+
+msgctxt "crafts.description"
 msgid "Grinds a fragrant material with charcoal into a powder for the hearth."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Grinds and polishes a clear glass lens into a magnifier."
 msgstr ""
 
 msgctxt "crafts.description"
@@ -4915,6 +4923,10 @@ msgid "Iron (from cast iron)"
 msgstr ""
 
 msgctxt "crafts.name"
+msgid "Magnifying Glass"
+msgstr ""
+
+msgctxt "crafts.name"
 msgid "Millstones"
 msgstr ""
 
@@ -5116,6 +5128,10 @@ msgstr ""
 
 msgctxt "crafts.name"
 msgid "Soap"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Spectacles"
 msgstr ""
 
 msgctxt "crafts.name"
@@ -5824,6 +5840,10 @@ msgstr ""
 
 msgctxt "product_groups.name"
 msgid "Oil Crops"
+msgstr ""
+
+msgctxt "product_groups.name"
+msgid "Optical Instruments"
 msgstr ""
 
 msgctxt "product_groups.name"
@@ -7079,6 +7099,10 @@ msgid "Madder Root"
 msgstr ""
 
 msgctxt "resources.name"
+msgid "Magnifying Glass"
+msgstr ""
+
+msgctxt "resources.name"
 msgid "Mahogany"
 msgstr ""
 
@@ -7528,6 +7552,10 @@ msgstr ""
 
 msgctxt "resources.name"
 msgid "Soybean"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Spectacles"
 msgstr ""
 
 msgctxt "resources.name"
@@ -8447,6 +8475,10 @@ msgid "Unlocks glass mirrors backed with a mercury-tin amalgam."
 msgstr ""
 
 msgctxt "technologies.description"
+msgid "Unlocks ground lenses: magnifying glasses and spectacles for the scholar's work."
+msgstr ""
+
+msgctxt "technologies.description"
 msgid "Unlocks mirrors made by depositing a film of silver on glass."
 msgstr ""
 
@@ -8532,6 +8564,10 @@ msgstr ""
 
 msgctxt "technologies.flavor"
 msgid "A bundle of reeds floats only until it swells with water; a planked hull keeps the water outside. Sawn boards joined edge to edge over curved ribs, stayed with twisted cordage and driven by a square of heavy canvas let boatmen leave the shallows behind, work deeper fishing grounds in rough weather and carry timber and grain along every river and coast."
+msgstr ""
+
+msgctxt "technologies.flavor"
+msgid "A drop of glass bends a ray as surely as a lever lifts a stone. Grinders working crystal and the clear bath of a glass furnace learned to curve a surface until distant letters swam into focus; two such curves set in a frame gave a scholar back the years his eyes had lost. The instrument was small, but the boundary it moved — between what could be read and what could only be guessed — was enormous."
 msgstr ""
 
 msgctxt "technologies.flavor"
@@ -9000,6 +9036,10 @@ msgstr ""
 
 msgctxt "technologies.name"
 msgid "Oil Making"
+msgstr ""
+
+msgctxt "technologies.name"
+msgid "Optics"
 msgstr ""
 
 msgctxt "technologies.name"

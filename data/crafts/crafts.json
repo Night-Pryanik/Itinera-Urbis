@@ -353,6 +353,32 @@
       "description": "Melts quartz sand with soda or potash into glass and deposits a film of silver on it."
     },
     {
+      "id": "magnifying_glass",
+      "name": "Magnifying Glass",
+      "produced_in": [ "glassmaker_house" ],
+      "resources": [
+        { "quartz_sand": 20 },
+        [ { "soda": 10 }, { "potash": 10 } ],
+        { "pumice": 10 }
+      ],
+      "result": { "magnifying_glass": 10 },
+      "time": 12.0,
+      "unlock_tech": "optics",
+      "description": "Grinds and polishes a clear glass lens into a magnifier."
+    },
+    {
+      // Flint glass: lead raises the refractive index, which lets matched lenses be
+      // ground thin enough for a frame. Lead belongs in optics, not in mirrors.
+      "id": "spectacles",
+      "name": "Spectacles",
+      "produced_in": [ "glassmaker_house" ],
+      "resources": { "quartz_sand": 20, "potash": 10, "lead": 10, "pumice": 10 },
+      "result": { "spectacles": 10 },
+      "time": 16.0,
+      "unlock_tech": "optics",
+      "description": "Fuses lead-potash flint glass and grinds two matched lenses into spectacles."
+    },
+    {
       "id": "ropes",
       "name": "Ropes and Cables",
       "produced_in": [ "ropemaker_house", "ropewalk" ],

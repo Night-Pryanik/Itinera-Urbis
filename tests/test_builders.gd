@@ -126,8 +126,9 @@ func _run() -> void:
     city.add_to_storage("mortar", 100)
     city.add_to_storage("copper_tools", 100)
     city.do_tick()
-    check(absf(city.builder_construction_share - 0.048) < 0.0001,
-            "mortar (+20%%) must be the best group bonus, got %f" % city.builder_construction_share, state)
+    check(absf(city.builder_construction_share - 0.052) < 0.0001,
+            "mortar (+20%%) and copper tools (+10%%) must stack across groups, got %f"
+            % city.builder_construction_share, state)
 
     city.city_storage.clear()
     city.city_quality_detail.clear()

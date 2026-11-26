@@ -125,6 +125,20 @@
       "flavor": "Between the smith's hammer and the scholar's theorem lies a quiet threshold: the moment a hand learns to divide a circle evenly, balance a beam to a grain and file a pivot that does not wobble. Once geometry, gearing and clean metalwork met at one bench — in Han bronze calipers and armillary rings, in Hellenistic dioptras and geared spheres, in the assay balances of al-Khazini and the astrolabe-makers' workshops — any sound metal could be turned into an instrument that measured rather than guessed."
     },
     {
+      // Lens grinding is the same craft that polishes a mirror face; what makes it
+      // a technology is the knowledge of curving glass to bend light, not the
+      // date spectacles reached any one region. Unlike astronomy, the knowledge
+      // alone grants no scholar bonus: the good must reach the scholar's shelf.
+      "id": "optics",
+      "name": "Optics",
+      "era": "antiquity",
+      "science_cost": 5.0,
+      "icon": "optics.png",
+      "prerequisites": [ [ "glassmaking", "precision_instruments" ] ],
+      "description": "Unlocks ground lenses: magnifying glasses and spectacles for the scholar's work.",
+      "flavor": "A drop of glass bends a ray as surely as a lever lifts a stone. Grinders working crystal and the clear bath of a glass furnace learned to curve a surface until distant letters swam into focus; two such curves set in a frame gave a scholar back the years his eyes had lost. The instrument was small, but the boundary it moved — between what could be read and what could only be guessed — was enormous."
+    },
+    {
       "id": "paper",
       "name": "Paper",
       "era": "antiquity",

@@ -4087,8 +4087,16 @@ msgid "Foldes the bloom of the city into the watered bar the smiths of other tow
 msgstr "Слиток города коётся в полосу с узором, которую просят кузнецы других городков."
 
 msgctxt "crafts.description"
+msgid "Fuses lead-potash flint glass and grinds two matched lenses into spectacles."
+msgstr "Сплавляет свинцово-поташное стекло и шлифует две согласованные линзы в очки."
+
+msgctxt "crafts.description"
 msgid "Grinds a fragrant material with charcoal into a powder for the hearth."
 msgstr "Измельчает ароматическое сырьё с углём в порошок для очага."
+
+msgctxt "crafts.description"
+msgid "Grinds and polishes a clear glass lens into a magnifier."
+msgstr "Шлифует и полирует прозрачную стеклянную линзу до увеличительного стекла."
 
 msgctxt "crafts.description"
 msgid "Makes a batch of weapons to defend the city."
@@ -4995,6 +5003,10 @@ msgid "Iron (from cast iron)"
 msgstr "Железо (из чугуна)"
 
 msgctxt "crafts.name"
+msgid "Magnifying Glass"
+msgstr "Увеличительное стекло"
+
+msgctxt "crafts.name"
 msgid "Millstones"
 msgstr "Мельничные жернова"
 
@@ -5197,6 +5209,10 @@ msgstr "Копченая рыба"
 msgctxt "crafts.name"
 msgid "Soap"
 msgstr "Мыло"
+
+msgctxt "crafts.name"
+msgid "Spectacles"
+msgstr "Очки"
 
 msgctxt "crafts.name"
 msgid "Steel"
@@ -5905,6 +5921,10 @@ msgstr "Орехи"
 msgctxt "product_groups.name"
 msgid "Oil Crops"
 msgstr "Масличные культуры"
+
+msgctxt "product_groups.name"
+msgid "Optical Instruments"
+msgstr "Оптические приборы"
 
 msgctxt "product_groups.name"
 msgid "Paper Fibers"
@@ -7159,6 +7179,10 @@ msgid "Madder Root"
 msgstr "Корень марены"
 
 msgctxt "resources.name"
+msgid "Magnifying Glass"
+msgstr "Увеличительное стекло"
+
+msgctxt "resources.name"
 msgid "Mahogany"
 msgstr "Махагони"
 
@@ -7609,6 +7633,10 @@ msgstr "Сорго"
 msgctxt "resources.name"
 msgid "Soybean"
 msgstr "Соя"
+
+msgctxt "resources.name"
+msgid "Spectacles"
+msgstr "Очки"
 
 msgctxt "resources.name"
 msgid "Sponge"
@@ -8527,6 +8555,10 @@ msgid "Unlocks glass mirrors backed with a mercury-tin amalgam."
 msgstr "Открывает стеклянные зеркала с амальгамной подложкой из ртути и олова."
 
 msgctxt "technologies.description"
+msgid "Unlocks ground lenses: magnifying glasses and spectacles for the scholar's work."
+msgstr "Открывает шлифованные линзы: увеличительные стёкла и очки для работы учёного."
+
+msgctxt "technologies.description"
 msgid "Unlocks mirrors made by depositing a film of silver on glass."
 msgstr "Открывает зеркала с плёнкой серебра, нанесённой на стекло."
 
@@ -8613,6 +8645,10 @@ msgstr "Сыродутная печь никогда не плавила жел�
 msgctxt "technologies.flavor"
 msgid "A bundle of reeds floats only until it swells with water; a planked hull keeps the water outside. Sawn boards joined edge to edge over curved ribs, stayed with twisted cordage and driven by a square of heavy canvas let boatmen leave the shallows behind, work deeper fishing grounds in rough weather and carry timber and grain along every river and coast."
 msgstr "Связка тростника держится на плаву лишь пока не напитается водой; дощатый корпус оставляет воду снаружи. Пилёные доски, подогнанные кромка к кромке поверх гнутых шпангоутов, стянутые витым такелажем и влекомые прямым полотнищем плотной парусины, позволили лодочникам уйти с мелководий, промышлять на глубоких плёсах в непогоду и возить лес и зерно по каждой реке и вдоль морских берегов."
+
+msgctxt "technologies.flavor"
+msgid "A drop of glass bends a ray as surely as a lever lifts a stone. Grinders working crystal and the clear bath of a glass furnace learned to curve a surface until distant letters swam into focus; two such curves set in a frame gave a scholar back the years his eyes had lost. The instrument was small, but the boundary it moved — between what could be read and what could only be guessed — was enormous."
+msgstr "Капля стекла изгибает луч так же верно, как рычаг поднимает камень. Шлифовщики, работавшие с хрусталём и чистым расплавом стекольной печи, научились гнуть поверхность так, что далёкие буквы проступали резко; две такие кривые, вставленные в оправу, возвращали учёному годы, потраченные глазами. Инструмент был мал, но граница, которую он сдвинул — между тем, что можно прочесть, и тем, что оставалось лишь догадкой, — была огромна."
 
 msgctxt "technologies.flavor"
 msgid "A field sown with the same grain year after year gives less with every harvest until the earth lies spent. Alternating winter and spring cereals with pulses, fodder and rested fallow — practiced across Chinese bean-and-millet fields, the irrigated gardens of the Islamic world and the three-field manors of medieval Europe — returned strength to the soil and raised more from the same land."
@@ -9081,6 +9117,10 @@ msgstr "Самородные металлы"
 msgctxt "technologies.name"
 msgid "Oil Making"
 msgstr "Маслоделие"
+
+msgctxt "technologies.name"
+msgid "Optics"
+msgstr "Оптика"
 
 msgctxt "technologies.name"
 msgid "Paper"

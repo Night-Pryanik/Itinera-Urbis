@@ -329,6 +329,26 @@ func _run() -> void:
         check(is_equal_approx(copper_only, 0.10),
             "the copper instruments alone must grant +0.10, got +%.2f" % copper_only, state)
 
+    # --- Different groups add up; one group still grants only its best tier ---
+    _clear_stock(city)
+    _set_one(city, "copper_precision_instruments", 30)
+    _set_one(city, "copper_tools", 30)
+    var two_groups: float = wm._aggregate_production_bonus([precision, instruments])
+    check(is_equal_approx(two_groups, 0.20),
+        "two different groups must grant +0.10 + +0.10, got +%.2f" % two_groups, state)
+    var one_group: float = wm._aggregate_production_bonus([precision])
+    check(is_equal_approx(one_group, 0.10),
+        "the members of one group must not stack, got +%.2f" % one_group, state)
+
+    var writing_set = _find(scholar_rules, "writing_set")
+    check(writing_set != null, "the scholar must consume writing sets", state)
+    if writing_set != null:
+        _set_one(city, "writing_set", 30)
+        var group_and_single: float = wm._aggregate_production_bonus([precision, writing_set])
+        check(is_equal_approx(group_and_single, 0.35),
+            "a group and a single record must grant +0.10 + +0.25, got +%.2f"
+                % group_and_single, state)
+
     # --- Tiered group ("members"): wooden_boat takes priority over reed_boat ---
     stub.tile_data = [[{"improvement": "fishing_boats"}]]
     wm.consumption_timers.clear()

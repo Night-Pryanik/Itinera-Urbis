@@ -25,10 +25,11 @@
   //   interval          — the period between write-offs in seconds (fractions allowed).
   //   production_bonus  — an addition to the production multiplier of the object
   //                       while the resource is enough in storage. 0.5 = +50% (x1.5).
-  //                       The bonuses of SINGLE entries add up to each other,
-  //                       while among GROUP ones the best available one is taken (just one):
-  //                       the "Boats" group gives the bonus of the best of the
-  //                       available members, not of all of them at once.
+  //                       The bonuses of SINGLE entries add up to each other.
+  //                       Inside a GROUP only the best available member counts:
+  //                       the "Boats" group gives the bonus of its best boat, not of all boats.
+  //                       Bonuses of DIFFERENT groups add up: each group is a separate
+  //                       supply chain, and supplying several of them earns several bonuses.
   //                       It does not apply to the pseudo-profession "all" (0.0):
   //                       city consumption gives no bonus at all.
   //   consume_all       — for a group resource only. true (the default for

@@ -1865,8 +1865,8 @@ func do_tick():
         # It ticks once per building per tick (and not per slot!) and only for a WORKING
         # building: at an idle one (all the slots are empty) the supplies are spent in vain.
         # The multiplier is passed into the CraftContainer below and is applied to
-        # the crediting of the science for a completed cycle. The bonuses of the single records
-        # are summed up, of the group ones the best is taken (see
+        # the crediting of the science for a completed cycle. Every single record and the
+        # best member of every group contribute their bonus (see
         # worker_manager._aggregate_production_bonus).
         var prof_multiplier := 1.0
         if wm != null and not are_all_slots_empty(i):

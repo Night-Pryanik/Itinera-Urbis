@@ -158,8 +158,9 @@ func get_profession(row: int, col: int) -> String:
 #     consume_all, in which case the full amount is taken from every member. If there
 #     is no resource - the timer is not reset, on the appearance of the resource the
 #     write-off happens at once.
-#   * The bonuses of the single records of a profession add up, for the group ones the best
-#     available is taken (see _aggregate_production_bonus).
+#   * The bonuses of the single records add up, and so do the best bonuses of the
+#     group records: each group is a different supply chain, so paying for several
+#     of them earns several bonuses (see _aggregate_production_bonus).
 # An improvement NEVER "stops": it always gives at least the base
 # production. The bonus is an extra for the supply of the profession with the consumables.
 func tick_consumption(row: int, col: int, delta: float) -> float:
@@ -211,17 +212,20 @@ func get_building_production_bonus(b_index: int) -> float:
     return 1.0 + _aggregate_production_bonus(GameData.get_profession_consumption(prof, bld_id))
 
 # The total production_bonus of a profession by the available consumables:
-#   * The SINGLE records - every available one adds its bonus (they add up):
+#   * The SINGLE records - every available one adds its bonus:
 #     the feathers +25% and the ink +25% -> +50%;
-#   * The GROUP records - only the maximum of the available ones: the group "Boats"
-#     gives the bonus from the best available member of the group, and not from all of them at once.
+#   * The GROUP records - within ONE group only the best available member counts:
+#     the "Boats" group gives the bonus of its best boat, not a sum over the boats.
+#     Bonuses of DIFFERENT groups add up: work tools and binders are separate
+#     supply chains and both are paid for. Several chains stocked at once are
+#     rare, so the combined bonus is earned rather than routine.
 # "Available" means that the storage has a full pack of amount (see _can_consume_full).
 # A record forbidden on the inner market (the toggle of the "Trade") gives no bonus:
 # without a write-off there is also no "supply of the profession with the consumables", and otherwise
 # the ban would turn into a free way to keep the multiplier x1.5
 # permanently (there is no expense, and the bonus burns).
 func _aggregate_production_bonus(cons_list: Array) -> float:
-    var group_max := 0.0
+    var group_sum := 0.0
     var single_sum := 0.0
     for entry in cons_list:
         if not CityData.is_market_consumption_enabled(_entry_display_key(entry)):
@@ -230,10 +234,11 @@ func _aggregate_production_bonus(cons_list: Array) -> float:
         if b <= 0.0:
             continue
         if entry.get("is_group", false):
-            group_max = maxf(group_max, b)
+            # _entry_effective_bonus already picked the best tier of this group.
+            group_sum += b
         else:
             single_sum += b
-    return group_max + single_sum
+    return group_sum + single_sum
 
 # True when a group entry carries per-member interval/bonus overrides ("members") and
 # draws one member at a time rather than a whole basket.

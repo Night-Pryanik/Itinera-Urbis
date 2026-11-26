@@ -458,6 +458,26 @@
       "icon": "silvered_mirror.png"
     },
     {
+      // A ground lens is a tool, not a finished vessel. Its batch competes with
+      // other glass goods only for raw sand and alkali.
+      "id": "magnifying_glass",
+      "price": 40,
+      "name": "Magnifying Glass",
+      "type": "product",
+      "category": "tools",
+      "unlock_tech": "optics",
+      "icon": "magnifying_glass.png"
+    },
+    {
+      "id": "spectacles",
+      "price": 70,
+      "name": "Spectacles",
+      "type": "product",
+      "category": "tools",
+      "unlock_tech": "optics",
+      "icon": "spectacles.png"
+    },
+    {
       // Heavy cast cauldrons, pots and skillets poured from molten cast iron.
       "id": "cast_iron_cookware",
       "price": 36,
