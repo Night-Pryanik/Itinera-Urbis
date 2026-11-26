@@ -24,7 +24,6 @@ const NAME_FIELD_WIDTH := 340
 # the window keeps it on every tab.
 const DIALOG_CONTENT_WIDTH := 860
 const DIALOG_CONTENT_HEIGHT := 520
-const DIALOG_MIN_CONTENT_HEIGHT := 360
 const DIALOG_EDGE_MARGIN := 24
 
 # The room the map preview takes on the right of the City and World tabs, and the height of
@@ -182,6 +181,7 @@ func _ready():
     settings_button.pressed.connect(_on_settings)
     about_button.pressed.connect(_on_about)
     quit_button.pressed.connect(_on_quit)
+    get_viewport().size_changed.connect(_on_viewport_resized)
 
 func _notification(what: int) -> void:
     if what == NOTIFICATION_WM_GO_BACK_REQUEST:
@@ -312,6 +312,12 @@ func _on_new_game():
     city_name_edit.grab_focus()
     city_name_edit.select_all()
 
+# A phone can be turned while the dialog is open, and the room it has changes with the
+# canvas. The fit is recomputed so the buttons never end up below the new edge.
+func _on_viewport_resized() -> void:
+    if new_game_dialog != null and new_game_dialog.visible:
+        _popup_new_game_dialog()
+
 # The window keeps ONE size on all three tabs. The width comes from the mod list, the
 # widest of them; a window that resized itself when the player switched tabs would jump
 # under the cursor.
@@ -320,25 +326,34 @@ func _on_new_game():
 # node reports, and the frame is what the player sees, so the margins are kept for the
 # decorated rect: a window sized by the bare rect alone would touch the screen edge.
 func _popup_new_game_dialog():
-    var screen := Vector2i(get_viewport().get_visible_rect().size)
     tab_container.custom_minimum_size = Vector2(DIALOG_CONTENT_WIDTH, DIALOG_CONTENT_HEIGHT)
+    # The dialog owns its own canvas. Its content scale makes every control, including the
+    # OK and Cancel buttons, occupy less of the parent canvas while the controls keep the
+    # layout they were built for. Without this a large interface multiplier pushes the
+    # buttons past the bottom edge of a small screen, where they cannot be reached.
+    new_game_dialog.content_scale_factor = 1.0
+    new_game_dialog.reset_size()
     new_game_dialog.popup_centered()
 
-    # A screen too short for the full window takes the height from the content instead of
-    # pushing the buttons off the edge.
-    if screen.y > 0:
-        var frame := new_game_dialog.get_size_with_decorations().y - new_game_dialog.size.y
-        var room := float(screen.y - DIALOG_EDGE_MARGIN * 2) - frame
-        if room < float(DIALOG_CONTENT_HEIGHT):
-            tab_container.custom_minimum_size.y = maxf(room, float(DIALOG_MIN_CONTENT_HEIGHT))
-            new_game_dialog.reset_size()
-            new_game_dialog.popup_centered()
-
+    var screen := Vector2i(get_viewport().get_visible_rect().size)
     if screen.x <= 0 or screen.y <= 0:
         return
+    var frame := new_game_dialog.get_size_with_decorations() - new_game_dialog.size
+    var room := Vector2(screen - Vector2i(DIALOG_EDGE_MARGIN * 2, DIALOG_EDGE_MARGIN * 2) - frame)
+    var fit := minf(float(room.x) / maxf(float(new_game_dialog.size.x), 1.0),
+            float(room.y) / maxf(float(new_game_dialog.size.y), 1.0))
+    if fit < 1.0:
+        new_game_dialog.content_scale_factor = clampf(fit, 0.1, 1.0)
+        new_game_dialog.reset_size()
+        new_game_dialog.popup_centered()
+
     var deco := new_game_dialog.get_size_with_decorations()
     var target := (screen - deco) / 2
     new_game_dialog.position += target - new_game_dialog.get_position_with_decorations()
+    # A window smaller than its decorations can still end up half outside the screen.
+    # The buttons sit at its bottom edge, so keep that edge inside the screen.
+    new_game_dialog.position = new_game_dialog.position.clamp(Vector2i.ZERO,
+            Vector2i(maxi(0, screen.x - deco.x), maxi(0, screen.y - deco.y)))
 
 func _build_new_game_dialog():
     var dialog = ConfirmationDialog.new()

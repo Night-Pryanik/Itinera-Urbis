@@ -791,7 +791,7 @@ func get_product_name(pid: String) -> String:
 #
 # A display name in data/*.json carries the tag "<city_name>" where the phrase has to read the name
 # of the city, and the phrase itself belongs to the data: "Cheese of <city_name>" in the source
-# language, «Сыр <city_name>» in the Russian one. The code substitutes the name and nothing else, so
+# language, "Сыр «<city_name>»" in the Russian one. The code substitutes the name and nothing else, so
 # every language keeps its own word order in the catalog and no rule of naming lives in the code.
 #
 # The substitution happens at display time, never when the files are read: the data is loaded before
@@ -816,7 +816,7 @@ func _city_name() -> String:
 # capitalised again. This state is not reachable in the game — the name is picked before the city
 # exists — it only keeps a raw "<city_name>" out of the interface.
 func _text_left_by_an_unnamed_city(text: String) -> String:
-    var unquoted := text.replace("\"" + TAG_CITY_NAME + "\"", " ")
+    var unquoted := text.replace("\"" + TAG_CITY_NAME + "\"", " ").replace("«" + TAG_CITY_NAME + "»", " ")
     var out := " ".join(unquoted.replace(TAG_CITY_NAME, " ").split(" ", false))
     while out.length() > 0 and out[0] in " -–—:,;":
         out = out.substr(1)

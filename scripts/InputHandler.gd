@@ -46,6 +46,22 @@ var _pinch_start_distance: float = 1.0
 var _pinch_start_zoom: float = 1.0
 var _pinch_ended_msec: int = -PINCH_RELEASE_GRACE_MSEC
 
+# --- The long tap of the map ---
+# A finger has no hover: the emulated mouse of a single touch gives the map a click, but
+# nothing feeds the "wait on a hex" timer of the ordinary tooltip. A held finger therefore
+# starts its own timer from the raw touch and opens the same tooltip. It stays after the
+# finger is lifted — there is no cursor to keep a hover tooltip alive — until the next
+# gesture or a pan removes it.
+const LONG_TAP_MOVE_TOLERANCE: float = 12.0
+const LONG_TAP_RELEASE_GRACE_MSEC: int = 250
+var _long_tap_index: int = -1
+var _long_tap_pos: Vector2 = Vector2.ZERO
+var _long_tap_elapsed: float = 0.0
+var _long_tap_shown: bool = false
+var _long_tap_ended_msec: int = -LONG_TAP_RELEASE_GRACE_MSEC
+var _touch_tooltip: bool = false
+var _touch_tooltip_pos: Vector2 = Vector2.ZERO
+
 var tooltip_delay: float = 0.5
 var extended_tooltip_delay: float = 1.0
 # The speed of the movement of the map — both by the cursor standing at the edge of the
@@ -247,6 +263,11 @@ func handle_process(delta: float):
         _hide_tooltip()
         return
 
+    # The hold of a finger is timed here, before the checks of the mouse position below:
+    # on a touch screen the emulated mouse is only a shadow of the finger, and the map
+    # under the finger is what matters.
+    _process_long_tap(delta)
+
     # The arrow keys move the map independently of the cursor, therefore they are handled
     # before the cursor checks below: the sticky treasury tooltip and the corner panel stop
     # the MOUSE interaction with the map, not the keyboard.
@@ -258,7 +279,7 @@ func handle_process(delta: float):
     # the map does not react (the hex tooltip does not pop up through the tooltip and the
     # chunk is not highlighted, and there is no edge scrolling either). _hide_tooltip() kills
     # the hover state as well, so the hex tooltip will not appear on the delay either.
-    if _is_mouse_over_treasury_tooltip(mouse_pos_ui):
+    if not _long_tap_pending() and _is_mouse_over_treasury_tooltip(mouse_pos_ui):
         _hide_tooltip()
         # We remove the chunk highlight as well: the tooltip could have "stuck"
         # under an already stationary cursor (the panel at the screen edge shifts inwards).
@@ -267,7 +288,7 @@ func handle_process(delta: float):
 
     # The same for the panel of the pause button and the menu button: the corner is
     # at the very edge of the screen, where the edge scrolling would run through them.
-    if _is_mouse_over_top_right(mouse_pos_ui):
+    if not _long_tap_pending() and _is_mouse_over_top_right(mouse_pos_ui):
         _hide_tooltip()
         expansion_manager.clear_hovered_chunk()
         return
@@ -279,13 +300,13 @@ func handle_process(delta: float):
     # deliberately not gated by this: the panel is anchored to the bottom edge of the
     # screen and stretches across the whole of it, so gating the scrolling here would
     # make the downward direction unreachable.
-    if main_map.control_panel \
+    if not _long_tap_pending() and main_map.control_panel \
             and main_map.control_panel.get_global_rect().has_point(mouse_pos_ui):
         _hide_tooltip()
         return
 
     # The tooltip
-    if hud.get_global_rect().has_point(main_map.get_global_mouse_position()):
+    if not _long_tap_pending() and hud.get_global_rect().has_point(main_map.get_global_mouse_position()):
         _hide_tooltip()
     if _hovered_hex != null:
         _hover_start_time += delta
@@ -295,7 +316,12 @@ func handle_process(delta: float):
             hex_tooltip.visible = true
         if _tooltip_visible:
             _tooltip_visible_time += delta
-            var tip_pos = main_map.get_viewport().get_mouse_position() + Vector2(15, 15)
+            # A touch tooltip belongs to the finger, not to the emulated mouse. The mouse
+            # stays at the point of the touch, but the next gesture can move it long before
+            # the player has read the tooltip; the anchor is kept from the moment of the hold.
+            var pointer_pos: Vector2 = _touch_tooltip_pos if _touch_tooltip \
+                    else main_map.get_viewport().get_mouse_position()
+            var tip_pos = pointer_pos + Vector2(15, 15)
             var vbox = hex_tooltip.get_node("TooltipVBox")
             var total_height = 0.0
             for child in vbox.get_children():
@@ -307,9 +333,9 @@ func handle_process(delta: float):
             hex_tooltip.size = Vector2(total_width + 12, total_height + 12)
             tooltip_text_label.position = Vector2(6, 4)
             if tip_pos.x + hex_tooltip.size.x > main_map.get_viewport_rect().size.x:
-                tip_pos.x = main_map.get_viewport().get_mouse_position().x - hex_tooltip.size.x - 15
+                tip_pos.x = pointer_pos.x - hex_tooltip.size.x - 15
             if tip_pos.y + hex_tooltip.size.y > main_map.get_viewport_rect().size.y:
-                tip_pos.y = main_map.get_viewport().get_mouse_position().y - hex_tooltip.size.y - 15
+                tip_pos.y = pointer_pos.y - hex_tooltip.size.y - 15
             tip_pos.x = max(0, tip_pos.x)
             tip_pos.y = max(0, tip_pos.y)
             hex_tooltip.position = tip_pos
@@ -333,7 +359,9 @@ func handle_process(delta: float):
                 if _tooltip_content_refresh_timer >= CityData.resource_display_interval:
                     _tooltip_content_refresh_timer = 0.0
                     main_map.update_tooltip_text(_hovered_hex.row, _hovered_hex.col)
-    else:
+    elif not _long_tap_pending():
+        # An empty hover on the mouse means "no tooltip". A held finger with no hex under
+        # it is still waiting: the hold has its own timer and its own hit test below.
         _hide_tooltip()
 
 # The scrolling of the map by the cursor standing at the edge of the screen.
@@ -341,7 +369,7 @@ func handle_process(delta: float):
 # control panel covers the whole bottom edge of the screen, so the downward
 # direction would be unreachable.
 func _process_edge_scrolling(delta: float):
-    if is_dragging or _pinching or not main_map.use_edge_scrolling:
+    if is_dragging or _pinching or _long_tap_pending() or not main_map.use_edge_scrolling:
         return
 
     var mouse_pos = main_map.get_viewport().get_mouse_position()
@@ -428,18 +456,31 @@ func _handle_touch(event: InputEvent) -> void:
     if event is InputEventScreenTouch:
         var touch := event as InputEventScreenTouch
         if touch.pressed:
+            # A new gesture dismisses the tooltip left by the previous long tap.
+            _hide_tooltip()
             _touches[touch.index] = touch.position
             if _touches.size() == 2 and not _pinching:
                 _begin_pinch()
+            elif _touches.size() == 1 and _map_input_allowed_at(touch.position):
+                _begin_long_tap(touch.index, touch.position)
         else:
             _touches.erase(touch.index)
             if _pinching and _touches.size() < 2:
                 _end_pinch()
+            if touch.index == _long_tap_index:
+                _end_long_tap()
         return
     if event is InputEventScreenDrag:
         var drag := event as InputEventScreenDrag
         if _touches.has(drag.index):
             _touches[drag.index] = drag.position
+        if drag.index == _long_tap_index \
+                and drag.position.distance_to(_long_tap_pos) > LONG_TAP_MOVE_TOLERANCE:
+            # A moving finger is panning the map, not inspecting a hex: there is no
+            # hold to time and no tooltip to leave behind under the moving picture.
+            _cancel_long_tap()
+            if _touch_tooltip:
+                _hide_tooltip()
         if _pinching:
             if not _map_input_allowed():
                 _end_pinch()
@@ -466,7 +507,66 @@ func _map_input_allowed_at(pos: Vector2) -> bool:
         return false
     return true
 
+func _begin_long_tap(index: int, pos: Vector2) -> void:
+    _long_tap_index = index
+    _long_tap_pos = pos
+    _long_tap_elapsed = 0.0
+    _long_tap_shown = false
+
+func _cancel_long_tap() -> void:
+    _long_tap_index = -1
+    _long_tap_elapsed = 0.0
+    _long_tap_shown = false
+
+func _end_long_tap() -> void:
+    if _long_tap_shown:
+        # The emulated release of the finger must not select the hex: a long tap
+        # inspects it, a short tap selects it. The grace also covers the order of
+        # the two events if the emulated mouse arrives before the raw release.
+        _long_tap_ended_msec = Time.get_ticks_msec()
+    _cancel_long_tap()
+
+func _long_tap_grace_active() -> bool:
+    return Time.get_ticks_msec() - _long_tap_ended_msec < LONG_TAP_RELEASE_GRACE_MSEC
+
+# While a finger is held (or its tooltip is still on screen), the emulated mouse is
+# irrelevant: its position is not where the player is looking. The mouse-only zones of
+# the map must not cancel the hold before it has had time to fire.
+func _long_tap_pending() -> bool:
+    return _long_tap_index >= 0 or _touch_tooltip
+
+# The hold is timed from the raw touch and fed by handle_process, which also runs
+# during the active pause. Once the ordinary hover delay has passed, the very same
+# tooltip machinery takes over: the hex is marked as hovered, the timer is already
+# spent, and the panel is anchored at the finger instead of at the emulated mouse.
+func _process_long_tap(delta: float) -> void:
+    if _long_tap_index < 0 or _long_tap_shown:
+        return
+    if not _touches.has(_long_tap_index) or not _map_input_allowed_at(_long_tap_pos):
+        _cancel_long_tap()
+        return
+    _long_tap_elapsed += delta
+    if _long_tap_elapsed < tooltip_delay:
+        return
+    var hex = _interactive_hex_at(_long_tap_pos.x, _long_tap_pos.y)
+    if hex == null or main_map.is_hex_in_fog(hex.row, hex.col):
+        _cancel_long_tap()
+        return
+    _long_tap_shown = true
+    _touch_tooltip = true
+    _touch_tooltip_pos = _long_tap_pos
+    _hovered_hex = hex
+    _hover_start_time = tooltip_delay
+    _tooltip_visible = false
+    _tooltip_visible_time = 0.0
+    _extended_tooltip_shown = false
+    _tooltip_content_refresh_timer = 0.0
+    if main_map.has_method("clear_extended_tooltip"):
+        main_map.clear_extended_tooltip()
+    main_map.update_tooltip_text(hex.row, hex.col)
+
 func _begin_pinch() -> void:
+    _cancel_long_tap()
     var pair := _pinch_pair()
     if pair.is_empty():
         return
@@ -520,8 +620,10 @@ func _pinch_just_ended() -> bool:
     return Time.get_ticks_msec() - _pinch_ended_msec < PINCH_RELEASE_GRACE_MSEC
 
 func _handle_mouse_button(event: InputEventMouseButton):
-    if _pinching or _pinch_just_ended():
+    if _pinching or _pinch_just_ended() or _long_tap_shown or _long_tap_grace_active():
         # The emulated mouse events of a pinch must not select a hex or start a drag.
+        # The release after a long tap is only the end of the gesture: a long tap
+        # inspects a hex, a short tap selects it.
         return
 
     # The wheel zooms the map around the cursor. The map keeps drawing at a fixed hex
@@ -598,7 +700,7 @@ func _handle_mouse_button(event: InputEventMouseButton):
                 main_map.clear_selection()
 
 func _handle_mouse_motion(event: InputEventMouseMotion):
-    if _pinching or _pinch_just_ended():
+    if _pinching or _pinch_just_ended() or _long_tap_shown or _long_tap_grace_active():
         return
     if town_ui.visible or city_ui.visible or pause_menu.visible:
         return
@@ -609,6 +711,8 @@ func _handle_mouse_motion(event: InputEventMouseMotion):
             if (mouse_pos - drag_start_mouse).length() > 1.0:
                 is_dragging = true
         if is_dragging:
+            if _touch_tooltip:
+                _hide_tooltip()
             var delta = mouse_pos - drag_start_mouse
             # The map must stay glued to the cursor: the delta is in screen pixels, and
             # one screen pixel covers 1 / zoom world units.
@@ -671,6 +775,8 @@ func _is_mouse_over_top_right(pos: Vector2) -> bool:
     return panel.get_global_rect().has_point(pos)
 
 func _hide_tooltip():
+    _touch_tooltip = false
+    _cancel_long_tap()
     hex_tooltip.visible = false
     _tooltip_visible = false
     _tooltip_visible_time = 0.0

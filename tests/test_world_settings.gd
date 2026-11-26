@@ -41,7 +41,7 @@ const WATCHDOG = preload("res://tests/watchdog.gd")
 const WRAPPED_TOOLTIP = preload("res://scripts/wrapped_tooltip.gd")
 
 const MENU_SCENE := "res://scenes/main_menu.tscn"
-const SCREEN := Vector2i(1152, 768)
+const SCREEN := Vector2i(1920, 1080)
 
 # The script of the preview, loaded in _run(): its cell codes are what _is_water compares.
 var _preview_script = null
