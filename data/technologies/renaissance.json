@@ -13,6 +13,16 @@
       "prerequisites": [ [ "distillation" ] ],
       "description": "Unlocks direct synthesis of sulfuric acid from sulfur, higher-yield hydrochloric and nitric acids displaced by sulfuric acid, compounded aqua regia, synthetic potash alum from clay, and lead crystal glassware.",
       "flavor": "Where the alchemist sought a secret in the smoke of one vessel, the chemist weighed what went in and weighed what came out. Sulfur burned under moist bells into oil of vitriol, sulfuric acid drove fuming spirits of salt and nitre cleanly from common salts, clay yielded alum without alunite stone, and measured charges of potash and lead cleared glass into crystal. Matter ceased to be a riddle of sympathies and became a craft of proportions."
+    },
+    {
+      "id": "silvered_glass",
+      "name": "Silvered Glass",
+      "era": "renaissance",
+      "science_cost": 8.0,
+      "icon": "silvered_glass.png",
+      "prerequisites": [ [ "chemistry", "mirror_making" ] ],
+      "description": "Unlocks mirrors made by depositing a film of silver on glass.",
+      "flavor": "The amalgam mirror was bright, but its vapour sickened the room that made it and its film darkened with age. Chemistry offered a cleaner answer: silver dissolved in acid and laid down as a thin, even layer on clear glass. The reflection was truer, and it lasted."
     }
   ]
 }

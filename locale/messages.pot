@@ -3911,6 +3911,10 @@ msgid "Burns wood or bamboo into charcoal."
 msgstr ""
 
 msgctxt "crafts.description"
+msgid "Casts a bronze disc and polishes its face with pumice into a reflecting surface."
+msgstr ""
+
+msgctxt "crafts.description"
 msgid "Casts molten iron into thick-walled cauldrons, kettles and skillets."
 msgstr ""
 
@@ -4180,6 +4184,14 @@ msgstr ""
 
 msgctxt "crafts.description"
 msgid "Makes wooden tablets with a hollow filled with wax."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Melts quartz sand with soda or potash into glass and backs it with a mercury-tin amalgam."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Melts quartz sand with soda or potash into glass and deposits a film of silver on it."
 msgstr ""
 
 msgctxt "crafts.description"
@@ -4659,6 +4671,10 @@ msgid "Bronze Jewelry"
 msgstr ""
 
 msgctxt "crafts.name"
+msgid "Bronze Mirror"
+msgstr ""
+
+msgctxt "crafts.name"
 msgid "Bronze Tools"
 msgstr ""
 
@@ -4836,6 +4852,10 @@ msgstr ""
 
 msgctxt "crafts.name"
 msgid "Glass Jewelry"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Glass Mirror"
 msgstr ""
 
 msgctxt "crafts.name"
@@ -5084,6 +5104,10 @@ msgstr ""
 
 msgctxt "crafts.name"
 msgid "Silver Jewelry"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Silvered Mirror"
 msgstr ""
 
 msgctxt "crafts.name"
@@ -5791,6 +5815,10 @@ msgid "Millstone Stones"
 msgstr ""
 
 msgctxt "product_groups.name"
+msgid "Mirrors"
+msgstr ""
+
+msgctxt "product_groups.name"
 msgid "Nuts"
 msgstr ""
 
@@ -6467,6 +6495,10 @@ msgid "Bronze Jewelry"
 msgstr ""
 
 msgctxt "resources.name"
+msgid "Bronze Mirror"
+msgstr ""
+
+msgctxt "resources.name"
 msgid "Bronze Tools"
 msgstr ""
 
@@ -6836,6 +6868,10 @@ msgstr ""
 
 msgctxt "resources.name"
 msgid "Glass Jewelry"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Glass Mirror"
 msgstr ""
 
 msgctxt "resources.name"
@@ -7464,6 +7500,10 @@ msgstr ""
 
 msgctxt "resources.name"
 msgid "Silver Ore"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Silvered Mirror"
 msgstr ""
 
 msgctxt "resources.name"
@@ -8403,6 +8443,14 @@ msgid "Unlocks Paved Roads (road level 3): up to 50 units/sec per section."
 msgstr ""
 
 msgctxt "technologies.description"
+msgid "Unlocks glass mirrors backed with a mercury-tin amalgam."
+msgstr ""
+
+msgctxt "technologies.description"
+msgid "Unlocks mirrors made by depositing a film of silver on glass."
+msgstr ""
+
+msgctxt "technologies.description"
 msgid "Unlocks parchment and allows you to create written material."
 msgstr ""
 
@@ -8555,6 +8603,10 @@ msgid "Clay tablets became the first carrier of information, letting people pass
 msgstr ""
 
 msgctxt "technologies.flavor"
+msgid "Clear glass alone gives back a feeble reflection. A foil of tin wetted with mercury and laid against its back gave an image no polished metal could match. The still supplied the mercury and the smelter the tin; the new craft taught glass to look back."
+msgstr ""
+
+msgctxt "technologies.flavor"
 msgid "Draft animals let people harness animal strength for heavy work, greatly raising output and efficiency in farming and construction."
 msgstr ""
 
@@ -8672,6 +8724,10 @@ msgstr ""
 
 msgctxt "technologies.flavor"
 msgid "Tar sealed ships, ropes and leather, and it came both from a burning pine heap and from the bituminous ground."
+msgstr ""
+
+msgctxt "technologies.flavor"
+msgid "The amalgam mirror was bright, but its vapour sickened the room that made it and its film darkened with age. Chemistry offered a cleaner answer: silver dissolved in acid and laid down as a thin, even layer on clear glass. The reflection was truer, and it lasted."
 msgstr ""
 
 msgctxt "technologies.flavor"
@@ -8931,6 +8987,10 @@ msgid "Mining"
 msgstr ""
 
 msgctxt "technologies.name"
+msgid "Mirror Making"
+msgstr ""
+
+msgctxt "technologies.name"
 msgid "Money"
 msgstr ""
 
@@ -9000,6 +9060,10 @@ msgstr ""
 
 msgctxt "technologies.name"
 msgid "Shipbuilding"
+msgstr ""
+
+msgctxt "technologies.name"
+msgid "Silvered Glass"
 msgstr ""
 
 msgctxt "technologies.name"

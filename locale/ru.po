@@ -3991,6 +3991,10 @@ msgid "Burns wood or bamboo into charcoal."
 msgstr "Обжигает древесину или бамбук для получения угля."
 
 msgctxt "crafts.description"
+msgid "Casts a bronze disc and polishes its face with pumice into a reflecting surface."
+msgstr "Отливает бронзовый диск и полирует его поверхность пемзой до зеркального блеска."
+
+msgctxt "crafts.description"
 msgid "Casts molten iron into thick-walled cauldrons, kettles and skillets."
 msgstr "Отливает из расплавленного чугуна толстостенные котлы, котелки и сковороды."
 
@@ -4261,6 +4265,14 @@ msgstr "Изготавливает изящную мебель из ценных
 msgctxt "crafts.description"
 msgid "Makes wooden tablets with a hollow filled with wax."
 msgstr "Создает деревянные таблички с углублением, в которое залит воск"
+
+msgctxt "crafts.description"
+msgid "Melts quartz sand with soda or potash into glass and backs it with a mercury-tin amalgam."
+msgstr "Плавит кварцевый песок с содой или поташом в стекло и покрывает его оборотную сторону амальгамой ртути с оловом."
+
+msgctxt "crafts.description"
+msgid "Melts quartz sand with soda or potash into glass and deposits a film of silver on it."
+msgstr "Плавит кварцевый песок с содой или поташом в стекло и наносит на него плёнку серебра."
 
 msgctxt "crafts.description"
 msgid "Pours molten cast iron into moulds to make large batches of plowshares, hoes and heavy tools."
@@ -4739,6 +4751,10 @@ msgid "Bronze Jewelry"
 msgstr "Бронзовые украшения"
 
 msgctxt "crafts.name"
+msgid "Bronze Mirror"
+msgstr "Бронзовое зеркало"
+
+msgctxt "crafts.name"
 msgid "Bronze Tools"
 msgstr "Бронзовые инструменты"
 
@@ -4917,6 +4933,10 @@ msgstr "Стеклянная бутылка"
 msgctxt "crafts.name"
 msgid "Glass Jewelry"
 msgstr "Стеклянные украшения"
+
+msgctxt "crafts.name"
+msgid "Glass Mirror"
+msgstr "Стеклянное зеркало"
 
 msgctxt "crafts.name"
 msgid "Glassware"
@@ -5165,6 +5185,10 @@ msgstr "Серебро"
 msgctxt "crafts.name"
 msgid "Silver Jewelry"
 msgstr "Серебряные украшения"
+
+msgctxt "crafts.name"
+msgid "Silvered Mirror"
+msgstr "Серебряное зеркало"
 
 msgctxt "crafts.name"
 msgid "Smoked Fish"
@@ -5871,6 +5895,10 @@ msgid "Millstone Stones"
 msgstr "Камни для мельничных жерновов"
 
 msgctxt "product_groups.name"
+msgid "Mirrors"
+msgstr "Зеркала"
+
+msgctxt "product_groups.name"
 msgid "Nuts"
 msgstr "Орехи"
 
@@ -6547,6 +6575,10 @@ msgid "Bronze Jewelry"
 msgstr "Бронзовые украшения"
 
 msgctxt "resources.name"
+msgid "Bronze Mirror"
+msgstr "Бронзовое зеркало"
+
+msgctxt "resources.name"
 msgid "Bronze Tools"
 msgstr "Бронзовые инструменты"
 
@@ -6917,6 +6949,10 @@ msgstr "Стеклянная бутылка"
 msgctxt "resources.name"
 msgid "Glass Jewelry"
 msgstr "Стеклянные украшения"
+
+msgctxt "resources.name"
+msgid "Glass Mirror"
+msgstr "Стеклянное зеркало"
 
 msgctxt "resources.name"
 msgid "Glassware"
@@ -7545,6 +7581,10 @@ msgstr "Серебряный самородок"
 msgctxt "resources.name"
 msgid "Silver Ore"
 msgstr "Серебряная руда"
+
+msgctxt "resources.name"
+msgid "Silvered Mirror"
+msgstr "Серебряное зеркало"
 
 msgctxt "resources.name"
 msgid "Sisal"
@@ -8483,6 +8523,14 @@ msgid "Unlocks Paved Roads (road level 3): up to 50 units/sec per section."
 msgstr "Открывает мощеные дороги (дорога 3-го уровня): до 50 ед./с на участок."
 
 msgctxt "technologies.description"
+msgid "Unlocks glass mirrors backed with a mercury-tin amalgam."
+msgstr "Открывает стеклянные зеркала с амальгамной подложкой из ртути и олова."
+
+msgctxt "technologies.description"
+msgid "Unlocks mirrors made by depositing a film of silver on glass."
+msgstr "Открывает зеркала с плёнкой серебра, нанесённой на стекло."
+
+msgctxt "technologies.description"
 msgid "Unlocks parchment and allows you to create written material."
 msgstr "Открывает пергамент и позволяет создавать письменные материалы."
 
@@ -8635,6 +8683,10 @@ msgid "Clay tablets became the first carrier of information, letting people pass
 msgstr "Глиняные таблички стали первым носителем информации, позволив людям передавать знания через века."
 
 msgctxt "technologies.flavor"
+msgid "Clear glass alone gives back a feeble reflection. A foil of tin wetted with mercury and laid against its back gave an image no polished metal could match. The still supplied the mercury and the smelter the tin; the new craft taught glass to look back."
+msgstr "Одно прозрачное стекло даёт лишь слабое отражение. Оловянная фольга, смоченная ртутью и приложенная к его оборотной стороне, возвращала изображение, какого не давал никакой полированный металл. Ртуть давал перегонный куб, олово — плавильня; новое ремесло научило стекло смотреть в ответ."
+
+msgctxt "technologies.flavor"
 msgid "Draft animals let people harness animal strength for heavy work, greatly raising output and efficiency in farming and construction."
 msgstr "Тягловые животные позволили людям использовать силу животных для выполнения тяжелой работы, что значительно увеличило производительность и эффективность в сельском хозяйстве и строительстве."
 
@@ -8753,6 +8805,10 @@ msgstr "Выделка кожи дала людям прочный и гибки
 msgctxt "technologies.flavor"
 msgid "Tar sealed ships, ropes and leather, and it came both from a burning pine heap and from the bituminous ground."
 msgstr "Смолой пропитывали корабли, канаты и кожу, и получали её и из горящей сосновой кучи, и из битуминозной земли."
+
+msgctxt "technologies.flavor"
+msgid "The amalgam mirror was bright, but its vapour sickened the room that made it and its film darkened with age. Chemistry offered a cleaner answer: silver dissolved in acid and laid down as a thin, even layer on clear glass. The reflection was truer, and it lasted."
+msgstr "Амальгамное зеркало было ярким, но его пары отравляли мастерскую, а плёнка темнела с годами. Химия предлагала более чистый способ: серебро, растворённое в кислоте, ложилось тонким ровным слоем на прозрачное стекло. Отражение было точнее и служило дольше."
 
 msgctxt "technologies.flavor"
 msgid "The art of exploring the land and drawing maps of it."
@@ -9011,6 +9067,10 @@ msgid "Mining"
 msgstr "Горное дело"
 
 msgctxt "technologies.name"
+msgid "Mirror Making"
+msgstr "Изготовление зеркал"
+
+msgctxt "technologies.name"
 msgid "Money"
 msgstr "Деньги"
 
@@ -9081,6 +9141,10 @@ msgstr "Шёлководство"
 msgctxt "technologies.name"
 msgid "Shipbuilding"
 msgstr "Кораблестроение"
+
+msgctxt "technologies.name"
+msgid "Silvered Glass"
+msgstr "Серебрение стекла"
 
 msgctxt "technologies.name"
 msgid "Soap Making"

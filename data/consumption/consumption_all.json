@@ -202,6 +202,15 @@
       "production_bonus": 0.0
     },
     {
+      // Mirrors are durable furnishings: citizens replace them as rarely as furniture.
+      // The order of the @mirrors members decides which kind is written off first.
+      "resource": "@mirrors",
+      "profession": [ "all" ],
+      "amount": 10,
+      "interval": 20,
+      "production_bonus": 0.0
+    },
+    {
       // Everyday lighting of all citizens, like the lamp oils of @consumer_goods: no production
       // bonus goes with it. Both kinds are written off together at a moderate rate.
       "resource": "@candles",

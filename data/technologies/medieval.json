@@ -92,6 +92,16 @@
       "flavor": "To boil a liquid and to catch its breath in a cold vessel is to take the spirit of a thing and leave the thing behind. The still stood in the workshops of Alexandria and in the courts of the caliphate, and the physicians of Song China distilled the liquor of the millet. What came out of the alembic was worth more than what was poured into it."
     },
     {
+      "id": "mirror_making",
+      "name": "Mirror Making",
+      "era": "medieval",
+      "science_cost": 5.0,
+      "icon": "mirror_making.png",
+      "prerequisites": [ [ "glassblowing", "distillation" ] ],
+      "description": "Unlocks glass mirrors backed with a mercury-tin amalgam.",
+      "flavor": "Clear glass alone gives back a feeble reflection. A foil of tin wetted with mercury and laid against its back gave an image no polished metal could match. The still supplied the mercury and the smelter the tin; the new craft taught glass to look back."
+    },
+    {
       // The press multiplies one setting of type: the workshop pulls sheet after
       // sheet from the same forme and binds them while the ink dries.
       "id": "printing",

@@ -427,6 +427,37 @@
       "icon": "crystal_glassware.png"
     },
     {
+      // The mirror ladder follows the technique that makes the reflecting surface rather
+      // than the date a kind of mirror reached any one region: polishing bronze is known
+      // from ancient workshops on several continents, a mercury-tin backing needs the
+      // retort of distillation, and a durable silver film needs systematic chemistry.
+      "id": "bronze_mirror",
+      "price": 25,
+      "name": "Bronze Mirror",
+      "type": "product",
+      "category": "household_items",
+      "unlock_tech": "jewelry",
+      "icon": "bronze_mirror.png"
+    },
+    {
+      "id": "glass_mirror",
+      "price": 45,
+      "name": "Glass Mirror",
+      "type": "product",
+      "category": "household_items",
+      "unlock_tech": "mirror_making",
+      "icon": "glass_mirror.png"
+    },
+    {
+      "id": "silvered_mirror",
+      "price": 80,
+      "name": "Silvered Mirror",
+      "type": "product",
+      "category": "household_items",
+      "unlock_tech": "silvered_glass",
+      "icon": "silvered_mirror.png"
+    },
+    {
       // Heavy cast cauldrons, pots and skillets poured from molten cast iron.
       "id": "cast_iron_cookware",
       "price": 36,

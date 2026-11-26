@@ -308,6 +308,51 @@
       "description": "Fuses quartz sand with lead and potash into clear, brilliant crystal tableware."
     },
     {
+      "id": "bronze_mirror",
+      "name": "Bronze Mirror",
+      "produced_in": [ "jeweler_house" ],
+      "resources": { "bronze": 10, "pumice": 10 },
+      "result": { "bronze_mirror": 10 },
+      "time": 12.0,
+      "unlock_tech": "jewelry",
+      "description": "Casts a bronze disc and polishes its face with pumice into a reflecting surface."
+    },
+    {
+      // The mirror recipes melt their own glass from raw batch. Spending finished
+      // glassware or crystal would make the mirror line compete with the citizens
+      // for the same household good in storage, as it does with lime in the kilns.
+      // Either alkali makes a mirror glass here: the reflecting layer is what matters,
+      // so clarity, durability and hygroscopicity of the glass are not simulated.
+      "id": "glass_mirror",
+      "name": "Glass Mirror",
+      "produced_in": [ "glassmaker_house" ],
+      "resources": [
+        { "quartz_sand": 20 },
+        [ { "soda": 10 }, { "potash": 10 } ],
+        { "mercury": 10 },
+        { "tin": 10 }
+      ],
+      "result": { "glass_mirror": 10 },
+      "time": 10.0,
+      "unlock_tech": "mirror_making",
+      "description": "Melts quartz sand with soda or potash into glass and backs it with a mercury-tin amalgam."
+    },
+    {
+      "id": "silvered_mirror",
+      "name": "Silvered Mirror",
+      "produced_in": [ "alchemist_house" ],
+      "resources": [
+        { "quartz_sand": 20 },
+        [ { "soda": 10 }, { "potash": 10 } ],
+        { "silver": 10 },
+        { "nitric_acid": 10 }
+      ],
+      "result": { "silvered_mirror": 10 },
+      "time": 16.0,
+      "unlock_tech": "silvered_glass",
+      "description": "Melts quartz sand with soda or potash into glass and deposits a film of silver on it."
+    },
+    {
       "id": "ropes",
       "name": "Ropes and Cables",
       "produced_in": [ "ropemaker_house", "ropewalk" ],

@@ -222,6 +222,13 @@
       "products": [ "furniture", "luxury_furniture" ]
     },
     {
+      // A mirror is a finished household good, not the metal or glass it is made of.
+      // The everyday polished bronze is taken first, the costly silvered glass last.
+      "id": "mirrors",
+      "name": "Mirrors",
+      "products": [ "bronze_mirror", "glass_mirror", "silvered_mirror" ]
+    },
+    {
       // Domestic candles: both kinds are burned together when in stock.
       "id": "candles",
       "name": "Candles",
