@@ -42,6 +42,17 @@
         "steel_weapons",
         "damascus_weapons"
       ]
+    },
+    {
+      // The branch of the distillers is a branch of every strong spirit the data knows, not of the
+      // brandy alone: the @spirits list of the consumption rules names the distilled drinks the
+      // cellars hold, and the brand the fame of the brandy opens joins the line with it.
+      "id": "spirits_goods",
+      "name": "Strong Spirits",
+      "products": [
+        "@spirits",
+        "city_brandy"
+      ]
     }
   ]
 }
