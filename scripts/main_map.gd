@@ -269,7 +269,9 @@ func _ready():
         # (including the hexes under the fog) the hexes of the player remain his.
         town_manager.set_player_start_area(start_region_start_row, start_region_end_row,
                 start_region_start_col, start_region_end_col)
-        town_manager.compute_all_town_influences(tile_data, map_rows, map_cols)
+        # The pools are rebuilt only once, after the decorative improvements below: the
+        # rings already stand in the save, and the second pass would repeat the same work.
+        town_manager.compute_all_town_influences(tile_data, map_rows, map_cols, true)
         # We fill the rings of the towns with the decorative improvements and also for the old
         # saves, where these marks were still absent.
         town_manager._place_decorative_town_improvements(tile_data, map_rows, map_cols)

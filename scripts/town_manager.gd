@@ -754,12 +754,16 @@ func _restore_hex_list(entries: Array) -> Array:
 #                          area of the SECOND era (the Ring_2 + the Region_2).
 #                          It is used as the "mandatory zone" for the
 #                          guarantee of "at least 1 town in era 2".
+#   skip_pool_refresh    - skips the rebuild of the trade pools in the influence pass.
+#                          The world setup follows it with the placement of the decorative
+#                          improvements, which rebuilds the pools once with the final ring.
 func generate_towns(tile_data: Array, rows: int, cols: int,
         city_row: int, city_col: int,
         exclusion_start_row: int, exclusion_end_row: int,
         exclusion_start_col: int, exclusion_end_col: int,
         era2_region_start_row: int, era2_region_end_row: int,
-        era2_region_start_col: int, era2_region_end_col: int) -> void:
+        era2_region_start_col: int, era2_region_end_col: int,
+        skip_pool_refresh: bool = false) -> void:
     # We clear the previous state (in case of a repeated call) and
     # remove the flag has_town from all the hexes - a repeated generation must not
     # "accumulate" the old marks. We reset both the master list towns, and the
@@ -873,7 +877,7 @@ func generate_towns(tile_data: Array, rows: int, cols: int,
     # the radius, only the starting area of the player is cut out of it (which never
     # changes) and the rings of the neighbouring towns, and what of the ring is visible
     # to the player is decided by the renderer (the fog of war + the epoch).
-    compute_all_town_influences(tile_data, rows, cols)
+    compute_all_town_influences(tile_data, rows, cols, skip_pool_refresh)
 
     # After the building of the rings we fill them with the decorative improvements. They
     # belong to the towns, do not require the workers and never participate in the
@@ -1901,19 +1905,16 @@ func load_towns(data) -> void:
 # the decorative improvements - that is, the player on his own initial land can
 # build, improve the resources and buy the chunks without looking back at the towns.
 #
-# IMPORTANT: the ring is NOT clipped by the CURRENT Region. Earlier the hexes of the ring
-# which fell into the Region were thrown out - so that a foreign town would not "give away"
-# itself in the unexplored zone of the 1st era. But such a cut FROZE the ring at the borders
-# of the 1st era forever: with the growth of the Region (a change of the epoch) the fill of the town remained
-# a scrap - only the part of the ring which fell into the NEW Region was drawn, and the cut
-# part did not return (the measured losses are up to 18% of the hexes of the fill, a town at
-# the left border of the Region lost 5 hexes out of 18). Now the ring is stored entirely
-# (minus the starting area of the player, which never changes, and minus the rings
-# of the neighbouring towns), and the visibility is decided by the renderer: the fill and the outline are drawn
-# only on the hexes outside the fog (main_map.is_hex_in_fog) and not before the era
-# of the Antiquity - exactly there where the town itself is (see
-# map_renderer._ensure_town_influence_cache).
-func compute_all_town_influences(tile_data: Array, map_rows: int, map_cols: int) -> void:
+# IMPORTANT: the ring is NOT clipped by the CURRENT Region. It is stored in full (minus the
+# starting area of the player, which never changes, and minus the rings of the neighbouring
+# towns): clipping it by the Region would freeze the fill at the border of that era.
+# The visibility is decided by the renderer - the fill and the outline are drawn only on the
+# hexes outside the fog (main_map.is_hex_in_fog) and not before the era of the Antiquity,
+# exactly where the town itself is (see map_renderer._ensure_town_influence_cache).
+# skip_pool_refresh lets the caller rebuild the trade pools only once, after the decorative
+# improvements are in place.
+func compute_all_town_influences(tile_data: Array, map_rows: int, map_cols: int,
+        skip_pool_refresh: bool = false) -> void:
     # Before the recalculation we remove the old flags in_town_influence from ALL the hexes -
     # otherwise on a change of the composition of the towns (for example, a deletion/an addition)
     # the old marks will remain on the hexes which no longer belong to any
@@ -1979,7 +1980,8 @@ func compute_all_town_influences(tile_data: Array, map_rows: int, map_cols: int)
     # so that the neighbouring towns do not get a resource which remained in the ring of another
     # town. The calculation of the closure of the production and of the import is in
     # scripts/town_economy.gd (the pure functions over the data of the recipes).
-    _refresh_sell_pools(tile_data)
+    if not skip_pool_refresh:
+        _refresh_sell_pools(tile_data)
     print("town_manager: the total number of the hexes in the rings of the influence=",
             town_influence_hexes.size(), " (the towns=", towns.size(), ")")
     if clipped_by_player > 0:

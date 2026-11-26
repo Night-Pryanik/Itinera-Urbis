@@ -224,11 +224,14 @@ func _initialize_map():
     var era2_region_bounds: Dictionary = _compute_era2_region_bounds()
     _update_loading_progress(0.95, tr("Founding towns..."))
     await _yield_loading_frame()
+    # The trade pools are rebuilt by _place_decorative_town_improvements at the end of
+    # generate_towns; the first pass over the rings would be repeated with the same result.
     town_manager.generate_towns(tile_data, map_rows, map_cols, city_row, city_col,
             start_region_start_row, start_region_end_row,
             start_region_start_col, start_region_end_col,
             era2_region_bounds.start_row, era2_region_bounds.end_row,
-            era2_region_bounds.start_col, era2_region_bounds.end_col)
+            era2_region_bounds.start_col, era2_region_bounds.end_col,
+            true)
 
     # The mirrors town_hexes / town_influence_hexes are built ONLY AFTER generate_towns:
     # town_manager calls compute_all_town_influences at the end of generate_towns, and only

@@ -31,6 +31,12 @@ var craft_extra_kinds: Array = []
 # The data is read once per load, so a generated recipe is as stable as a plain one; the cache
 # is dropped together with the data.
 var _craft_cache: Dictionary = {}
+# Changes when the loaded data is replaced, so that consumers can drop derived caches
+# without knowing which files a mod has changed. The counter is shared by all the
+# instances (including the detached mod probes), so two different datasets never
+# carry the same version.
+static var _next_data_version: int = 0
+var data_version: int = 0
 var buildings: Array = []
 var categories: Array = []
 var technologies: Array = []
@@ -146,6 +152,8 @@ func _assign_from(loader) -> void:
     craft_extras = loader.craft_extras
     craft_extra_kinds = loader.craft_extra_kinds
     _craft_cache.clear()
+    _next_data_version += 1
+    data_version = _next_data_version
     buildings = loader.buildings
     categories = loader.categories
     technologies = loader.technologies

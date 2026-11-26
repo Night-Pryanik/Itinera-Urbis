@@ -50,9 +50,8 @@
 #     the game is unavailable.
 #
 # --- DETERMINISM ---
-# The purchase decision is a probability roll, therefore it must be STABLE:
-# _refresh_sell_pools is called twice in a row (from compute_all_town_influences and
-# from _place_decorative_town_improvements) and both times on loading the save.
+# The purchase decision is a probability roll, therefore it must be STABLE: the pools
+# are recomputed from the save on every load (after the decorative improvements are in place).
 # A global randi() here would give the town a different buy_pool on every load,
 # and "what it buys" would jump from save to save. Therefore all the rolls
 # and the choice of the @-group representative go through local RandomNumberGenerator with
@@ -320,10 +319,9 @@ static func get_storage_limit() -> int:
 # [town_storage_initial_min, town_storage_initial_max] from data/game_balance.json.
 #
 # The value is derived from (the town id, the product id) through _seed_for, and not
-# from the global RNG: the pools are recalculated twice on a new game and on every
-# load of a save (see the determinism note in the header), and a roll would give the
-# warehouse a different starting stock each time. Two towns differ, and the same town
-# is always the same.
+# from the global RNG: the pools are recomputed on every load of a save (see the
+# determinism note in the header), and a roll would give the warehouse a different
+# starting stock each time. Two towns differ, and the same town is always the same.
 static func get_initial_stock(town_id: String, product_id: String) -> int:
     var low := int(GameData.game_balance.get("town_storage_initial_min", 100))
     var high := int(GameData.game_balance.get("town_storage_initial_max", 500))
@@ -664,13 +662,33 @@ static func _has_producer_in_game(craft: Dictionary) -> bool:
             return true
     return false
 
-# Whether the recipe is fully assembled by the pool: EVERY OR-group of the
-# ingredients must have at least one available variant (see the alternative
-# ingredients in GameData.gd). A recipe without the ingredients is trivially closed.
-static func is_recipe_ready(craft: Dictionary, pool: Dictionary) -> bool:
-    if not _has_producer_in_game(craft):
-        return false
-    var alternatives: Array = GameData.craft_alternatives(craft)
+# The recipes of GameData.crafts in the form the pool loops need: normalized
+# alternatives, the result ids and the producer check, all computed once per load.
+# The order is the order of GameData.crafts — the closure still adds goods recipe by
+# recipe in that order, so a good obtainable from several recipes keeps the quality
+# of the first recipe that yields it.
+static var _recipe_desc: Array = []
+static var _recipe_desc_version := -1
+
+static func _ensure_recipe_desc() -> void:
+    if _recipe_desc_version == GameData.data_version:
+        return
+    _recipe_desc = []
+    for craft in GameData.crafts:
+        var results: Array = []
+        for pid in craft.get("result", {}):
+            results.append(str(pid))
+        var alternatives: Array = GameData.craft_alternatives(craft)
+        _recipe_desc.append({
+            "id": str(craft.get("id", "")),
+            "alternatives": alternatives,
+            "results": results,
+            "usable": not results.is_empty() and _has_producer_in_game(craft),
+        })
+    _recipe_desc_version = GameData.data_version
+
+# The check of a recipe by its already normalized alternatives.
+static func _recipe_ready(alternatives: Array, pool: Dictionary) -> bool:
     for or_group in alternatives:
         var ready := false
         for variant in or_group:
@@ -681,12 +699,23 @@ static func is_recipe_ready(craft: Dictionary, pool: Dictionary) -> bool:
             return false
     return true
 
+# Whether the recipe is fully assembled by the pool: EVERY OR-group of the
+# ingredients must have at least one available variant (see the alternative
+# ingredients in GameData.gd). A recipe without the ingredients is trivially closed.
+static func is_recipe_ready(craft: Dictionary, pool: Dictionary) -> bool:
+    if not _has_producer_in_game(craft):
+        return false
+    return _recipe_ready(GameData.craft_alternatives(craft), pool)
+
 # The readable ingredient keys of the recipe for the "missing" lists of the import
 # cascade: for every OR-group the FIRST not yet closed variant is chosen — it is
 # exactly the one the town will "buy".
 static func _missing_representatives(craft: Dictionary, pool: Dictionary) -> Array:
+    return _missing_from(GameData.craft_alternatives(craft), pool)
+
+static func _missing_from(alternatives: Array, pool: Dictionary) -> Array:
     var missing: Array = []
-    for or_group in GameData.craft_alternatives(craft):
+    for or_group in alternatives:
         var closed := false
         var first_open := ""
         for variant in or_group:
@@ -713,22 +742,22 @@ static func _missing_representatives(craft: Dictionary, pool: Dictionary) -> Arr
 # to hang at the start of the game.
 static func _close_pool(pool: Dictionary, made: Dictionary,
         qualities: Dictionary = {}) -> void:
+    _ensure_recipe_desc()
     var guard := 0
     while guard < 1000:
         guard += 1
         var grew := false
-        for craft in GameData.crafts:
-            var result: Dictionary = craft.get("result", {})
+        for desc in _recipe_desc:
             # The pseudo-recipes (empty, science) have no result — there is nothing
             # to add for them to the pool, and their ingredients do not describe a production.
-            if result.is_empty():
+            if not bool(desc.usable):
                 continue
-            if not is_recipe_ready(craft, pool):
+            if not _recipe_ready(desc.alternatives, pool):
                 continue
             # The quality of the result is the standard craft rule of the city
             # (a weighted average of the ingredients), see craft_result_quality.
-            var result_quality := craft_result_quality(craft, pool, qualities)
-            for pid in result:
+            var result_quality := _quality_from(desc.alternatives, pool, qualities)
+            for pid in desc.results:
                 var produced := str(pid)
                 if pool.has(produced):
                     continue
@@ -755,9 +784,13 @@ static func _close_pool(pool: Dictionary, made: Dictionary,
 # counts as the ordinary level, so the stars never point outside the scale.
 static func craft_result_quality(craft: Dictionary, pool: Dictionary,
         qualities: Dictionary) -> String:
+    return _quality_from(GameData.craft_alternatives(craft), pool, qualities)
+
+static func _quality_from(alternatives: Array, pool: Dictionary,
+        qualities: Dictionary) -> String:
     var total := 0
     var weighted := 0.0
-    for or_group in GameData.craft_alternatives(craft):
+    for or_group in alternatives:
         var picked := ""
         for variant in or_group:
             var key := str(variant.get("key", ""))
@@ -825,7 +858,9 @@ static func readiness_percent(recipe_id: String, pool: Dictionary) -> int:
     return 0
 
 static func _readiness_of(craft: Dictionary, pool: Dictionary) -> int:
-    var alternatives: Array = GameData.craft_alternatives(craft)
+    return _readiness_from(GameData.craft_alternatives(craft), pool)
+
+static func _readiness_from(alternatives: Array, pool: Dictionary) -> int:
     var total := alternatives.size()
     if total == 0:
         return 0
@@ -939,24 +974,21 @@ static func build_pools(town_id: String, base_ids: Array,
     while guard < 200:
         guard += 1
         var bought: Dictionary = {}
-        for craft in GameData.crafts:
-            var recipe_id := str(craft.get("id", ""))
-            if recipe_id.is_empty():
-                continue
-            if not _has_producer_in_game(craft):
-                continue
+        for desc in _recipe_desc:
+            var recipe_id := str(desc.id)
             # A recipe without ingredients and a pseudo-recipe without a result in the purchase
             # do not participate: there is nothing to buy or nothing to produce.
-            var alternatives: Array = GameData.craft_alternatives(craft)
-            if alternatives.is_empty() or craft.get("result", {}).is_empty():
+            if recipe_id.is_empty() or not bool(desc.usable) \
+                    or desc.alternatives.is_empty():
                 continue
-            var missing: Array = _missing_representatives(craft, pool)
+            var alternatives: Array = desc.alternatives
+            var missing: Array = _missing_from(alternatives, pool)
             # A fully closed recipe is not a candidate. A recipe without a single
             # available ingredient — neither: buying EVERYTHING at once is meaningless,
             # the town is interested in production, and not in reselling the raw material.
             if missing.is_empty() or missing.size() == alternatives.size():
                 continue
-            if not _roll_import(town_id, recipe_id, _readiness_of(craft, pool), rolls):
+            if not _roll_import(town_id, recipe_id, _readiness_from(alternatives, pool), rolls):
                 continue
             var index := 0
             for key in missing:
@@ -1012,6 +1044,7 @@ static func build_pools(town_id: String, base_ids: Array,
 # Rebuilds the trade pools of ALL the towns. It is moved out of town_manager, so that
 # the latter deals with the placement and the rings, and the pools are computed here.
 static func refresh_all_towns(town_list: Array, tile_data: Array) -> void:
+    _ensure_recipe_desc()
     for town in town_list:
         refresh_town(town, tile_data)
 
@@ -1050,15 +1083,12 @@ static func refresh_town(town: Dictionary, tile_data: Array) -> void:
     # The warehouse holds exactly the goods of the sell pool.
     #
     # A product that has just entered the pool gets a starting stock, and a product
-    # that is no longer for sale is dropped. The pruning is not cosmetic: the pools
-    # are recalculated twice on a new game, and the ring gains its decorative fields
-    # in between, so a product seeded on the first pass can turn into an import on the
-    # second. Without the pruning it would sit on the warehouse forever as goods the
-    # town neither gathered nor made.
+    # no longer for sale is dropped: a reload must not keep goods the town neither
+    # gathers nor makes.
     #
-    # The stock of a product that stays in the pool is kept: the recalculation happens
-    # twice on a new game and on every load of a save, and the units a town has sold
-    # must not come back on every reload.
+    # The stock of a product that stays in the pool is kept: the pools are recomputed
+    # on every load of a save, and the units a town has sold must not come back on
+    # every reload.
     var storage: Dictionary = town.get("storage", {})
     var for_sale: Dictionary = {}
     for pid in pools["sell_pool"]:
