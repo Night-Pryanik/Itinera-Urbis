@@ -6377,7 +6377,7 @@ msgstr "Гауда, Чеддер и Камамбер"
 
 msgctxt "resources.name"
 msgid "<city_name>-steel Weapons"
-msgstr "Оружие из стали <city_name>"
+msgstr "Оружие из стали «<city_name>»"
 
 msgctxt "resources.name"
 msgid "Agave"
@@ -6641,7 +6641,7 @@ msgstr "Сыр"
 
 msgctxt "resources.name"
 msgid "Cheese of <city_name>"
-msgstr "Сыр <city_name>"
+msgstr "Сыр «<city_name>»"
 
 msgctxt "resources.name"
 msgid "Chestnut Bark"
@@ -7305,7 +7305,7 @@ msgstr "Гранаты"
 
 msgctxt "resources.name"
 msgid "Porcelain of <city_name>"
-msgstr "Фарфор <city_name>"
+msgstr "Фарфор «<city_name>»"
 
 msgctxt "resources.name"
 msgid "Pork"
@@ -7573,7 +7573,7 @@ msgstr "Стальное оружие"
 
 msgctxt "resources.name"
 msgid "Steel of <city_name>"
-msgstr "Сталь <city_name>"
+msgstr "Сталь «<city_name>»"
 
 msgctxt "resources.name"
 msgid "Stone Tableware"
@@ -8041,7 +8041,7 @@ msgstr "Стальные точные инструменты"
 
 msgctxt "resources.name"
 msgid "<city_name>-steel Precision Instruments"
-msgstr "Точные инструменты из стали <city_name>"
+msgstr "Точные инструменты из стали «<city_name>»"
 
 msgctxt "roads.description"
 msgid "A leveled road for carts. Three times the load of a trail."
@@ -10692,7 +10692,7 @@ msgstr "Шерстяная одежда, которую спрашивают п�
 
 msgctxt "resources.name"
 msgid "Wool \"<city_name>\""
-msgstr "Шерсть \"<city_name>\""
+msgstr "Шерсть «<city_name>»"
 
 
 msgctxt "specializations.description"
@@ -10741,7 +10741,7 @@ msgstr ""
 
 msgctxt "resources.name"
 msgid "Cloth \"<city_name>\""
-msgstr "Ткань \"<city_name>\""
+msgstr "Ткань «<city_name>»"
 
 
 msgctxt "crafts.name"
@@ -10773,12 +10773,12 @@ msgstr "Тканевую одежду города спрашивают по и�
 
 msgctxt "resources.name"
 msgid "Cloth Clothes \"<city_name>\""
-msgstr "Тканевая одежда \"<city_name>\""
+msgstr "Одежда из ткани «<city_name>»"
 
 
 msgctxt "resources.name"
 msgid "Wool Clothes \"<city_name>\""
-msgstr "Шерстяная одежда \"<city_name>\""
+msgstr "Одежда из шерсти «<city_name>»"
 
 
 msgctxt "crafts.name"

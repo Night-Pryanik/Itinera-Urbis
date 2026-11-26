@@ -168,7 +168,7 @@ func _run() -> void:
     TranslationServer.set_locale("ru")
     var named := str(TranslationServer.translate('Cloth "<city_name>"', "resources.name"))
     city.city_name = "Тестоград"
-    _check(gd.resolve_display_tags(named) == 'Ткань "Тестоград"', "linen prestige carries the city name")
+    _check(gd.resolve_display_tags(named) == 'Ткань «Тестоград»', "linen prestige carries the city name")
     city.city_name = ""
     _check(gd.resolve_display_tags(named) == "Ткань", "an unnamed city leaves no empty quotes")
     TranslationServer.set_locale(locale)
