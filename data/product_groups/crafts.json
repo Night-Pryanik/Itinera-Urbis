@@ -105,7 +105,7 @@
     {
       "id": "paper_fibers",
       "name": "Paper Fibers",
-      "products": [ "mulberry_bark", "hemp", "ramie", "sisal", "kenaf", "yucca", "velvetleaf" ]
+      "products": [ "mulberry_bark", "hemp", "ramie", "sisal", "kenaf", "yucca", "velvetleaf", "bamboo" ]
     },
     {
       // all sweet fruits that don't have their own specific fermentation drinks, like grape wine, pulque etc.

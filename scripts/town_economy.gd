@@ -40,6 +40,8 @@
 #   5. What is imported does NOT go into the SALE pool (a design requirement): the town
 #      buys in order to organize production, and not in order to resell
 #      the raw material. Only what it produced itself goes on sale.
+#   6. Residents also buy all goods in the city-wide consumption rules, independently
+#      of local production. These purchases do not expand the production closure.
 #
 # --- WHAT IS DELIBERATELY NOT CHECKED ---
 #   - the unlock_tech of the recipe. The town has no tech tree of its own, and a gate by
@@ -1027,6 +1029,28 @@ static func build_pools(town_id: String, base_ids: Array,
     var sell_ids: Array = sell.keys()
     sell_ids.sort()
     var buy_ids: Array = _buy_keys_without_covered(wanted)
+    # Citizens buy for consumption even when their town makes the same good.
+    # A basket consumed member-by-member gets a separate row for each base good;
+    # a rotating basket remains a single group row. Generated variants are already
+    # included by the trade manager when a base-good row is fulfilled.
+    for entry in GameData.get_profession_consumption("all"):
+        if float(entry.get("interval", 0.0)) <= 0.0:
+            continue
+        var keys: Array = []
+        if bool(entry.get("is_group", false)):
+            if bool(entry.get("consume_all", false)):
+                keys = entry.get("group_members", [])
+            else:
+                keys = [entry.get("display_key", "")]
+        else:
+            keys = [entry.get("product_id", "")]
+        for raw_key in keys:
+            var key := str(raw_key)
+            if key.is_empty() or not GameData.parse_generated_id(key).is_empty():
+                continue
+            if not buy_ids.has(key):
+                buy_ids.append(key)
+    buy_ids.sort()
     # The quality of the CRAFTED goods on sale: an imported raw material is consumed by
     # the town and is never put on the stock, so only the made ids are read here. The
     # quality of the raw goods of the ring is filled by refresh_town, which alone has the

@@ -66,7 +66,30 @@
       "type": "product",
       "category": "clothes",
       "unlock_tech": "weaving",
-      "icon": "fabric_clothes.png"
+      "icon": "fabric_clothes.png",
+      "reputation": {
+        "threshold": 200,
+        "trigger": "sell",
+        "reward": { "type": "trade_price", "value": 0.10 }
+      },
+      "brand": {
+        "threshold": 500,
+        "trigger": "sell",
+        "min_quality": "exceptional",
+        "reward": [
+          { "type": "brand_product", "product": "linen_byssus" },
+          { "type": "brand_product", "product": "branded_fabric_clothes" }
+        ]
+      },
+      "challenge": {
+        "id": "fabric_challenge",
+        "threshold": 1000,
+        "trigger": "sell",
+        "min_quality": "exceptional",
+        "name": "Cloth Clothes the Towns Ask for by Name",
+        "description": "A thousand units of cloth clothes of exceptional quality sold to the towns earn the city a name for its textiles.",
+        "reward": { "type": "specialization", "id": "fabric_specialization" }
+      }
     },
     {
       "id": "wool_clothes",
@@ -74,6 +97,49 @@
       "name": "Wool Clothes",
       "type": "product",
       "category": "clothes",
+      "unlock_tech": "weaving",
+      "icon": "wool_clothes.png",
+      "reputation": {
+        "threshold": 200,
+        "trigger": "sell",
+        "reward": { "type": "trade_price", "value": 0.10 }
+      },
+      "brand": {
+        "threshold": 500,
+        "trigger": "sell",
+        "min_quality": "exceptional",
+        "reward": [
+          { "type": "brand_product", "product": "cashmere" },
+          { "type": "brand_product", "product": "branded_wool_clothes" }
+        ]
+      },
+      "challenge": {
+        "id": "wool_challenge",
+        "threshold": 1000,
+        "trigger": "sell",
+        "min_quality": "exceptional",
+        "name": "Wool Clothes the Towns Ask for by Name",
+        "description": "A thousand units of wool clothes of exceptional quality sold to the towns earn the city a name for its wool.",
+        "reward": { "type": "specialization", "id": "wool_specialization" }
+      }
+    },
+    {
+      "id": "branded_fabric_clothes",
+      "price": 60,
+      "name": "Cloth Clothes \"<city_name>\"",
+      "type": "product",
+      "category": "clothes",
+      "brand_of": "fabric_clothes",
+      "unlock_tech": "weaving",
+      "icon": "fabric_clothes.png"
+    },
+    {
+      "id": "branded_wool_clothes",
+      "price": 60,
+      "name": "Wool Clothes \"<city_name>\"",
+      "type": "product",
+      "category": "clothes",
+      "brand_of": "wool_clothes",
       "unlock_tech": "weaving",
       "icon": "wool_clothes.png"
     },
@@ -103,6 +169,15 @@
       "category": "clothes",
       "unlock_tech": "sericulture",
       "icon": "silk_clothes.png"
+    },
+    {
+      "id": "sea_silk_clothes",
+      "price": 160,
+      "name": "Sea Silk Clothes",
+      "type": "product",
+      "category": "clothes",
+      "unlock_tech": "weaving",
+      "icon": "sea_silk_clothes.png"
     },
     {
       "id": "vegetable_oil",

@@ -693,6 +693,16 @@ func parse_generated_id(pid: String) -> Dictionary:
         return {}
     return {"base": pid.substr(0, at), "extra": extra}
 
+# A generated good inherits its base output multiplier even before its dynamic record has
+# been registered in the product groups. An explicit multiplier for the variant takes priority.
+func product_output_multiplier(multipliers: Dictionary, pid: String) -> float:
+    if multipliers.has(pid):
+        return float(multipliers[pid])
+    var generated := parse_generated_id(pid)
+    if not generated.is_empty():
+        return float(multipliers.get(str(generated.get("base", "")), 1.0))
+    return 1.0
+
 # The id of a good with the given addition. An empty or unknown addition — the base id itself.
 func make_generated_id(base: String, extra: String) -> String:
     if extra.is_empty() or not craft_extras.has(extra):
@@ -806,7 +816,8 @@ func _city_name() -> String:
 # capitalised again. This state is not reachable in the game — the name is picked before the city
 # exists — it only keeps a raw "<city_name>" out of the interface.
 func _text_left_by_an_unnamed_city(text: String) -> String:
-    var out := " ".join(text.replace(TAG_CITY_NAME, " ").split(" ", false))
+    var unquoted := text.replace("\"" + TAG_CITY_NAME + "\"", " ")
+    var out := " ".join(unquoted.replace(TAG_CITY_NAME, " ").split(" ", false))
     while out.length() > 0 and out[0] in " -–—:,;":
         out = out.substr(1)
     while out.length() > 0 and out[out.length() - 1] in " -–—:,;":

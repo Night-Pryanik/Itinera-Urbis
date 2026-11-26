@@ -123,7 +123,10 @@
         "wool_clothes",
         "fabric_clothes",
         "leather_clothes",
-        "silk_clothes"
+        "silk_clothes",
+        "sea_silk_clothes",
+        "branded_fabric_clothes",
+        "branded_wool_clothes"
       ]
     },
     {
@@ -178,12 +181,11 @@
       "products": [ "floral_water", "perfume", "incense", "attar", "spirit_perfume" ]
     },
     {
-      // What the builders set between the stones: clay and bitumen for a cheap bond,
-      // gypsum plaster and lime mortar for a lasting one. The profession draws one kind
-      // at a time, the strongest first; the per-member bonuses live in the consumption rule.
+      // Builders use binders or prepared concrete mixes, one kind at a time, strongest first.
+      // Per-member bonuses live in the consumption rule.
       "id": "construction_binders",
-      "name": "Masonry Binders",
-      "products": [ "clay", "bitumen", "plaster", "mortar" ]
+      "name": "Construction Mixes and Binders",
+      "products": [ "clay", "bitumen", "plaster", "mortar", "pozzolanic_concrete" ]
     },
     {
       // Work tools: the pick of the miner and quarryman, the axe of the lumberjack,

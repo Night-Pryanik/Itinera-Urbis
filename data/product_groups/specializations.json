@@ -30,11 +30,6 @@
       "products": [ "pottery", "amphora", "fine_ceramics", "porcelain" ]
     },
     {
-      "id": "wool_goods",
-      "name": "Wool",
-      "products": [ "wool", "cashmere" ]
-    },
-    {
       // The branch of the smiths is a branch of blades of every metal the forge knows, not of the bar,
       // so the group is the weapons and not the iron. A weapon of a metal the data adds later joins
       // the line only when it is written here: nothing derives the list from the "weapons" category.

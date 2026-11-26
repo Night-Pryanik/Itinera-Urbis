@@ -2,34 +2,7 @@
   "resources": [
     { "id": "hide", "price": 5, "name": "Hide", "type": "product", "category": "material", "icon": "hide.png" },
     { "id": "tallow", "price": 5, "name": "Tallow", "type": "product", "category": "material", "icon": "tallow.png" },
-    {
-      "id": "wool",
-      "price": 8,
-      "name": "Wool",
-      "type": "product",
-      "category": "material",
-      "icon": "wool.png",
-      "reputation": {
-        "threshold": 200,
-        "trigger": "sell",
-        "reward": { "type": "trade_price", "value": 0.10 }
-      },
-      "brand": {
-        "threshold": 500,
-        "trigger": "sell",
-        "min_quality": "exceptional",
-        "reward": { "type": "brand_product", "product": "cashmere" }
-      },
-      "challenge": {
-        "id": "wool_challenge",
-        "threshold": 1000,
-        "trigger": "sell",
-        "min_quality": "exceptional",
-        "name": "Wool the Towns Ask for by Name",
-        "description": "A thousand units of wool of exceptional quality sold to the towns — and the cloth begins to be asked by the name of the town.",
-        "reward": { "type": "specialization", "id": "wool_specialization" }
-      }
-    },
+    { "id": "wool", "price": 8, "name": "Wool", "type": "product", "category": "material", "icon": "wool.png" },
     { "id": "wax", "price": 9, "name": "Wax", "type": "product", "category": "material", "icon": "wax.png" },
     {
       // The brand good of the wool line (see data/challenges.json for the mechanic and the
@@ -37,10 +10,10 @@
       // tag in it stands for the city that earned the brand.
       "id": "cashmere",
       "price": 24,
-      "name": "Wool of <city_name>",
+      "name": "Wool \"<city_name>\"",
       "type": "product",
       "category": "material",
-      "brand_of": "wool",
+      "brand_of": "wool_clothes",
       "icon": "wool.png"
     },
     { "id": "feathers", "price": 4, "name": "Feathers", "type": "product", "category": "material", "icon": "feathers.png" },
@@ -61,6 +34,14 @@
       "type": "product",
       "category": "material",
       "unlock_tech": "weaving",
+      "icon": "flax.png"
+    },
+    {
+      "id": "linen_byssus", "price": 24,
+      "name": "Cloth \"<city_name>\"",
+      "type": "product",
+      "category": "material",
+      "brand_of": "fabric_clothes",
       "icon": "flax.png"
     },
     {
@@ -177,6 +158,14 @@
       "icon": "velvetleaf.png"
     },
     {
+      "id": "bamboo", "price": 5,
+      "name": "Bamboo",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "plantations",
+      "icon": "bamboo.png"
+    },
+    {
       "id": "mulberry_bark", "price": 6,
       "name": "Mulberry Bark",
       "type": "product",
@@ -192,6 +181,14 @@
       "unlock_tech": "paper",
       "icon": "paper.png",
       "special_yield": { "science": 5 }
+    },
+    {
+      "id": "sea_silk", "price": 70,
+      "name": "Sea Silk",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "fishing",
+      "icon": "sea_silk.png"
     },
     {
       "id": "silk_cocoon", "price": 30,

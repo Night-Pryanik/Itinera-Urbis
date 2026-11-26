@@ -55,10 +55,12 @@ func _run() -> void:
             "the construction work must give 4 units of the virtual yield", state)
     check(gdata.is_virtual_product("construction_work"),
             "construction work must be a virtual product", state)
+    check(not yard.get("additional_yield", {}).has("construction_work"),
+            "the building must not grant passive construction work", state)
 
     var binders: Array = gdata.product_groups.get("construction_binders", [])
-    check(binders.size() == 4, "the binders group must hold four kinds", state)
-    for pid in ["clay", "bitumen", "plaster", "mortar"]:
+    check(binders.size() == 5, "the mixes and binders group must hold five kinds", state)
+    for pid in ["clay", "bitumen", "plaster", "mortar", "pozzolanic_concrete"]:
         check(binders.has(pid), "the binders group must hold \"%s\"" % pid, state)
     var cons: Array = gdata.get_profession_consumption("builder", "builders_yard")
     var binder_rule: Dictionary = {}
@@ -74,6 +76,11 @@ func _run() -> void:
         check(is_equal_approx(gdata.get_entry_member_bonus(binder_rule, "clay"), 0.05)
                 and is_equal_approx(gdata.get_entry_member_bonus(binder_rule, "mortar"), 0.20),
                 "lime mortar must beat clay in the tier ladder of binders", state)
+        check(is_equal_approx(gdata.get_entry_member_bonus(binder_rule, "pozzolanic_concrete"), 0.25),
+                "Roman concrete must give the builder +25% production", state)
+        var mixes: Array = gdata.get_entry_members_ordered_by_tier(binder_rule)
+        check(not mixes.is_empty() and str(mixes[0]) == "pozzolanic_concrete",
+                "the builder must prefer Roman concrete over other mixes and binders", state)
     if not tool_rule.is_empty():
         var tiers: Array = gdata.get_entry_members_ordered_by_tier(tool_rule)
         check(not tiers.is_empty() and str(tiers[0]) == "damascus_tools",
@@ -97,6 +104,21 @@ func _run() -> void:
     check(is_equal_approx(city.get_construction_speed_multiplier(), 1.04),
             "the builder bonus must reach the construction speed", state)
 
+    city.city_built_buildings[0]["slots"] = ["construction_work", "construction_work"]
+    city.do_tick()
+    check(absf(city.builder_construction_share - 0.08) < 0.0001,
+            "two construction recipe slots must add 8%%, got %f" % city.builder_construction_share, state)
+    city.city_built_buildings[0]["slots"] = ["empty"]
+    city.add_to_storage("mortar", 100)
+    city.do_tick()
+    check(is_zero_approx(city.builder_construction_share),
+            "a staffed yard without a construction recipe must grant no bonus", state)
+    check(city.get_storage_amount("mortar") == 100,
+            "an idle yard must not consume construction supplies", state)
+    check(int(city.get_townsfolk_professions_count().get("builder", 0)) == 0,
+            "an idle yard must not enter professional supply demand", state)
+    city.city_built_buildings[0]["slots"] = ["construction_work"]
+
     # --- The supplies of the builder raise the share through the virtual yield ---
     city.city_storage.clear()
     city.city_quality_detail.clear()
@@ -106,6 +128,27 @@ func _run() -> void:
     city.do_tick()
     check(absf(city.builder_construction_share - 0.048) < 0.0001,
             "mortar (+20%%) must be the best group bonus, got %f" % city.builder_construction_share, state)
+
+    city.city_storage.clear()
+    city.city_quality_detail.clear()
+    city.reset_counters()
+    city.add_to_storage("pozzolanic_concrete", 100)
+    city.add_to_storage("mortar", 100)
+    city.add_to_storage("clay", 100)
+    city.do_tick()
+    check(absf(city.builder_construction_share - 0.05) < 0.0001,
+            "concrete (+25%%) must raise the yard share to 5%% without stacking binders, got %f"
+            % city.builder_construction_share, state)
+    check(city.get_storage_amount("pozzolanic_concrete") < 100,
+            "the builder must consume concrete when it is available", state)
+    check(city.get_storage_amount("mortar") == 100 and city.get_storage_amount("clay") == 100,
+            "concrete must spare the weaker binders", state)
+    city.city_storage.erase("pozzolanic_concrete")
+    city.city_quality_detail.erase("pozzolanic_concrete")
+    city.do_tick()
+    check(absf(city.builder_construction_share - 0.048) < 0.0001,
+            "when concrete runs out the builder must fall back to mortar, got %f"
+            % city.builder_construction_share, state)
 
     # A cheap clay gives a smaller bonus, and the empty binder shelf drops the share back.
     city.city_storage.clear()

@@ -197,6 +197,13 @@ func _on_territory_expanded(_row: int, _col: int, _cost) -> void:
 func record_sale(pid: String, breakdown: Dictionary) -> void:
     _accumulate(sold_by_quality, pid, breakdown)
     _check_product_tiers(pid)
+    # A dyed variant is a sale of the underlying good as well as its own record.
+    var base := str(GameData.parse_generated_id(pid).get("base", ""))
+    if not base.is_empty() and GameData.products.has(base):
+        var product: Dictionary = GameData.products[base]
+        if product.has("reputation") or product.has("brand") or product.has("challenge"):
+            _accumulate(sold_by_quality, base, breakdown)
+            _check_product_tiers(base)
 
 
 # The units of a good the city has made.
@@ -242,7 +249,7 @@ func tier_counter(product: Dictionary, block: Dictionary) -> int:
         for quality in by_quality:
             plain += int(by_quality[quality])
         return plain
-    return _units_at_or_above(by_quality, minimum)
+    return _units_at_or_above(GameData.quality_level_totals(by_quality), minimum)
 
 
 # The units of the levels at `quality` and better. The order of the levels is the order of the data

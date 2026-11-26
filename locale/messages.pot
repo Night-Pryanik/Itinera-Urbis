@@ -3306,7 +3306,7 @@ msgid "Builds sturdy wooden boats rigged with cloth sails and rope."
 msgstr ""
 
 msgctxt "buildings.description"
-msgid "Burns wood in a sealed kiln to produce charcoal."
+msgid "Burns wood or bamboo in a sealed kiln to produce charcoal."
 msgstr ""
 
 msgctxt "buildings.description"
@@ -3350,7 +3350,7 @@ msgid "Presses vegetable oil out of oil crops."
 msgstr ""
 
 msgctxt "buildings.description"
-msgid "Produces lime from limestone and alum from alunite."
+msgid "Processes minerals into lime, gypsum plaster and alum, and prepares lime mortar and concrete in the kiln yard."
 msgstr ""
 
 msgctxt "buildings.description"
@@ -3900,7 +3900,7 @@ msgid "Burns limestone into lime."
 msgstr ""
 
 msgctxt "crafts.description"
-msgid "Burns wood into charcoal."
+msgid "Burns wood or bamboo into charcoal."
 msgstr ""
 
 msgctxt "crafts.description"
@@ -4164,7 +4164,7 @@ msgid "Makes wooden barrels."
 msgstr ""
 
 msgctxt "crafts.description"
-msgid "Makes simple furniture from common timber."
+msgid "Makes simple furniture from common timber or bamboo."
 msgstr ""
 
 msgctxt "crafts.description"
@@ -4492,7 +4492,7 @@ msgid "Burns broadleaf hardwood timber, leaches the ash and calcines the lye int
 msgstr ""
 
 msgctxt "crafts.description"
-msgid "Slakes lime with volcanic tuff or quartz sand into durable hydraulic mortar."
+msgid "Burns limestone with furnace fuel, slakes the resulting lime and mixes it with quartz sand into lime mortar in one production cycle."
 msgstr ""
 
 msgctxt "crafts.description"
@@ -5768,7 +5768,7 @@ msgid "Jewelry"
 msgstr ""
 
 msgctxt "product_groups.name"
-msgid "Masonry Binders"
+msgid "Construction Mixes and Binders"
 msgstr ""
 
 msgctxt "product_groups.name"
@@ -5836,10 +5836,6 @@ msgid "Wood for Barrels"
 msgstr ""
 
 msgctxt "product_groups.name"
-msgid "Wool"
-msgstr ""
-
-msgctxt "product_groups.name"
 msgid "Writing Instruments"
 msgstr ""
 
@@ -5884,7 +5880,7 @@ msgid "A pseudo-profession that covers the whole population of the city, includi
 msgstr ""
 
 msgctxt "professions.description"
-msgid "Burns wood into charcoal."
+msgid "Burns wood or bamboo into charcoal."
 msgstr ""
 
 msgctxt "professions.description"
@@ -6060,7 +6056,7 @@ msgid "Dips and moulds tallow and beeswax into candles."
 msgstr ""
 
 msgctxt "professions.description"
-msgid "Dresses rough stone into ashlar blocks, tableware and mortar."
+msgid "Dresses rough stone into ashlar blocks and stone tableware."
 msgstr ""
 
 msgctxt "professions.description"
@@ -6284,10 +6280,6 @@ msgid "A thousand units of steel weapons of exceptional quality sold to the town
 msgstr ""
 
 msgctxt "resources.challenge.description"
-msgid "A thousand units of wool of exceptional quality sold to the towns — and the cloth begins to be asked by the name of the town."
-msgstr ""
-
-msgctxt "resources.challenge.description"
 msgid "A thousand vessels of clay of exceptional quality sold to the towns — and they are known by the mark of the town."
 msgstr ""
 
@@ -6301,10 +6293,6 @@ msgstr ""
 
 msgctxt "resources.challenge.name"
 msgid "Gouda, Cheddar and Camembert"
-msgstr ""
-
-msgctxt "resources.challenge.name"
-msgid "Wool the Towns Ask for by Name"
 msgstr ""
 
 msgctxt "resources.name"
@@ -6377,6 +6365,10 @@ msgstr ""
 
 msgctxt "resources.name"
 msgid "Attar"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Bamboo"
 msgstr ""
 
 msgctxt "resources.name"
@@ -7692,10 +7684,6 @@ msgid "Wool Clothes"
 msgstr ""
 
 msgctxt "resources.name"
-msgid "Wool of <city_name>"
-msgstr ""
-
-msgctxt "resources.name"
 msgid "Writing Set"
 msgstr ""
 
@@ -8053,10 +8041,6 @@ msgstr ""
 
 msgctxt "specializations.description"
 msgid "The city lives off the land. Every improvement on the map — a farm, a mine, a quarry, a woodcutter's camp — yields more."
-msgstr ""
-
-msgctxt "specializations.description"
-msgid "The fleeces of the city are asked for by name. Wool brings more, and the looms of the city work it faster."
 msgstr ""
 
 msgctxt "specializations.description"
@@ -9495,7 +9479,7 @@ msgid "Precision Instruments"
 msgstr ""
 
 msgctxt "technologies.description"
-msgid "Reveals the mountain springs and allows you to build aqueducts: a channel of concrete brings fresh water from a spring to the city."
+msgid "Unlocks Roman concrete in the kiln yard. Reveals mountain springs and allows you to build aqueducts to bring fresh water to the city."
 msgstr ""
 
 msgctxt "technologies.description"
@@ -9511,7 +9495,7 @@ msgid "Unlocks the water mill: the running water sets the millstones in motion."
 msgstr ""
 
 msgctxt "technologies.flavor"
-msgid "Lime burned in a kiln, mixed with sand and stone, sets into a mass harder than the rock it came from. A channel lined with it keeps its slope and its walls for generations, so water can leave the mountain and reach a city that has no river of its own."
+msgid "Lime mixed with reactive volcanic ash or ground tuff forms a binder that can set in water. Stone aggregate turns it into a concrete mass for walls, vaults and waterworks. A watertight channel can carry mountain water to a city without a river of its own. The same idea arose independently elsewhere: Greek and Minoan builders worked volcanic ash and crushed pottery into their mortar, Maya masons burned limestone into a lime concrete for pyramids and roads, and Indus Valley and later Indian builders used ground brick, surkhi, as a pozzolan."
 msgstr ""
 
 msgctxt "technologies.flavor"
@@ -10458,7 +10442,7 @@ msgid "Silk comes from the cocoon of a moth, which must be reeled before the ins
 msgstr ""
 
 msgctxt "buildings.flavor"
-msgid "Limestone heated in a kiln becomes quicklime, which goes into plaster, mortar and the preparation of other materials. The operation needs only fire and a stone that is easy to find. The kiln also yields alum from alunite, another example of a raw mineral becoming a workshop material."
+msgid "Limestone heated in a kiln becomes quicklime. In the surrounding yard, workers slake the lime and mix it with sand for mortar, or with reactive volcanic material and stone aggregate for concrete. Firing and mixing are separate operations within the same works. The kiln also processes gypsum and alunite into materials for other workshops."
 msgstr ""
 
 msgctxt "buildings.flavor"
@@ -10559,4 +10543,135 @@ msgstr ""
 
 msgctxt "buildings.flavor"
 msgid "A wooden boat needs a frame, planking and a way to seal the seams, all of which a yard can keep in repair. Boatbuilding traditions arose independently on rivers, lakes and coasts across the world. The yard builds the hull; the sailmaker and the ropemaker supply the rest."
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Pozzolanic Concrete"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Pozzolanic Concrete"
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Burns limestone with furnace fuel, slakes the resulting lime and mixes it with volcanic tuff and stone aggregate into pozzolanic concrete in one production cycle."
+msgstr ""
+
+msgctxt "resources.challenge.description"
+msgid ""
+"A thousand units of wool clothes of exceptional quality sold to the towns "
+"earn the city a name for its wool."
+msgstr ""
+
+
+msgctxt "resources.challenge.name"
+msgid "Wool Clothes the Towns Ask for by Name"
+msgstr ""
+
+
+msgctxt "resources.name"
+msgid "Wool \"<city_name>\""
+msgstr ""
+
+
+msgctxt "specializations.description"
+msgid "The wool clothes of the city are asked for by name. All clothes bring more, and its workshops produce them faster."
+msgstr ""
+
+
+msgctxt "resources.name"
+msgid "Pen Shell"
+msgstr ""
+
+
+msgctxt "resources.name"
+msgid "Sea Silk"
+msgstr ""
+
+
+msgctxt "resources.name"
+msgid "Sea Silk Clothes"
+msgstr ""
+
+
+msgctxt "crafts.name"
+msgid "Sea Silk Clothes"
+msgstr ""
+
+
+msgctxt "crafts.description"
+msgid "Makes delicate garments from lustrous sea silk."
+msgstr ""
+
+
+msgctxt "resources.challenge.name"
+msgid "Cloth Clothes the Towns Ask for by Name"
+msgstr ""
+
+
+msgctxt "resources.challenge.description"
+msgid ""
+"A thousand units of cloth clothes of exceptional quality sold to the towns "
+"earn the city a name for its textiles."
+msgstr ""
+
+
+msgctxt "resources.name"
+msgid "Cloth \"<city_name>\""
+msgstr ""
+
+
+msgctxt "crafts.name"
+msgid "Byssus"
+msgstr ""
+
+
+msgctxt "crafts.description"
+msgid "Weaves the city's finest plant fibers into cloth known by its name."
+msgstr ""
+
+
+
+msgctxt "specializations.name"
+msgid "Textiles"
+msgstr ""
+
+
+msgctxt "specializations.full_name"
+msgid "Specialization of textiles"
+msgstr ""
+
+
+msgctxt "specializations.description"
+msgid "The cloth clothes of the city are asked for by name. All clothes bring more, and its workshops produce them faster."
+msgstr ""
+
+
+msgctxt "resources.name"
+msgid "Cloth Clothes \"<city_name>\""
+msgstr ""
+
+
+msgctxt "resources.name"
+msgid "Wool Clothes \"<city_name>\""
+msgstr ""
+
+
+msgctxt "crafts.name"
+msgid "Branded Cloth Clothes"
+msgstr ""
+
+
+msgctxt "crafts.name"
+msgid "Branded Wool Clothes"
+msgstr ""
+
+
+msgctxt "crafts.description"
+msgid "Makes branded clothes from the city's finest cloth."
+msgstr ""
+
+
+msgctxt "crafts.description"
+msgid "Makes branded clothes from the city's finest wool."
 msgstr ""

@@ -189,7 +189,7 @@
       "flavor": "Charcoal making is nearly as old as controlled fire: wood heated slowly with little air drives off water and tar, leaving a light, hot-burning fuel. The technique appears independently wherever metalworkers needed high heat — in African and Asian furnaces as well as European forests — usually in conical pits or earth-covered mounds tended for days. Burners watched smoke colour and sealed cracks to control air. Even after coal and coke displaced charcoal in heavy industry, the same craft survived for forge fuel and cooking.",
       "name": "Charcoal Burner",
       "icon": "profession_charcoal_burner.png",
-      "description": "Burns wood into charcoal."
+      "description": "Burns wood or bamboo into charcoal."
     },
     {
       "id": "glassmaker",
@@ -369,7 +369,7 @@
       "flavor": "Stone dressing is prehistoric: hammerstones shaped rough blocks, and communities from the Nile to the Andes raised walls and tombs with them. Mortar was not universal — dry-stone work in many regions needed only skill and patience, while others used mud, lime or gypsum.\n\nMasons quarried, squared and set stone, cutting joints so weight passed cleanly into the wall. Tools changed slowly: bronze and iron chisels, wedges and levers did most of the work for ages. Their craft built houses, bridges, aqueducts and temples, and its proportions were often sacred knowledge passed between masters.",
       "name": "Mason",
       "icon": "profession_mason.png",
-      "description": "Dresses rough stone into ashlar blocks, tableware and mortar."
+      "description": "Dresses rough stone into ashlar blocks and stone tableware."
     },
     {
       "id": "smoker",

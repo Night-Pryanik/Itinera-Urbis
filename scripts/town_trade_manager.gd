@@ -974,7 +974,11 @@ func _sale_unit_price(key: String) -> int:
 # Whether the town wants the good at all: the purchase column is the buy pool, and a good
 # outside it is not a demand of the town. A group key is listed in the pool as the group.
 static func _town_buys(town: Dictionary, key: String) -> bool:
-    return town.get("buy_pool", []).has(key)
+    var buy: Array = town.get("buy_pool", [])
+    if buy.has(key):
+        return true
+    var base := str(GameData.parse_generated_id(key).get("base", ""))
+    return not base.is_empty() and buy.has(base)
 
 
 # The settlement of one delivery: the city pays, the town is paid, the units are

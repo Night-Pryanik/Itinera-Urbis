@@ -3382,8 +3382,8 @@ msgid "Builds sturdy wooden boats rigged with cloth sails and rope."
 msgstr "Строит прочные деревянные лодки с парусом и канатной оснасткой."
 
 msgctxt "buildings.description"
-msgid "Burns wood in a sealed kiln to produce charcoal."
-msgstr "Обжиг древесины в закрытой печи для получения древесного угля."
+msgid "Burns wood or bamboo in a sealed kiln to produce charcoal."
+msgstr "Обжиг древесины или бамбука в закрытой печи для получения угля."
 
 msgctxt "buildings.description"
 msgid "Butchers livestock for meat, hides and bones to feed the city's crafts."
@@ -3426,8 +3426,8 @@ msgid "Presses vegetable oil out of oil crops."
 msgstr "Отжим растительного масла из масличных культур."
 
 msgctxt "buildings.description"
-msgid "Produces lime from limestone and alum from alunite."
-msgstr "Производство извести из известняка и квасцов из алунита."
+msgid "Processes minerals into lime, gypsum plaster and alum, and prepares lime mortar and concrete in the kiln yard."
+msgstr "Перерабатывает минералы в известь, строительный гипс и квасцы, а также готовит известковый раствор и бетон на площадке при печи."
 
 msgctxt "buildings.description"
 msgid "Produces papyrus and other goods from papyrus stems."
@@ -3980,8 +3980,8 @@ msgid "Burns limestone into lime."
 msgstr "Обжигает известняк в известь"
 
 msgctxt "crafts.description"
-msgid "Burns wood into charcoal."
-msgstr "Обжигает древесину в древесный уголь."
+msgid "Burns wood or bamboo into charcoal."
+msgstr "Обжигает древесину или бамбук для получения угля."
 
 msgctxt "crafts.description"
 msgid "Casts molten iron into thick-walled cauldrons, kettles and skillets."
@@ -4244,8 +4244,8 @@ msgid "Makes wooden barrels."
 msgstr "Изготавливает деревянные бочки."
 
 msgctxt "crafts.description"
-msgid "Makes simple furniture from common timber."
-msgstr "Изготавливает простую мебель из обычной древесины."
+msgid "Makes simple furniture from common timber or bamboo."
+msgstr "Изготавливает простую мебель из обычной древесины или бамбука."
 
 msgctxt "crafts.description"
 msgid "Makes fine furniture from precious hardwoods."
@@ -4572,8 +4572,8 @@ msgid "Burns broadleaf hardwood timber, leaches the ash and calcines the lye int
 msgstr "Пережигает лиственную древесину на золу, выщелачивает её и прокаливает щёлок в поташ."
 
 msgctxt "crafts.description"
-msgid "Slakes lime with volcanic tuff or quartz sand into durable hydraulic mortar."
-msgstr "Смешивает гашёную известь с вулканическим туфом или кварцевым песком в прочный известковый раствор."
+msgid "Burns limestone with furnace fuel, slakes the resulting lime and mixes it with quartz sand into lime mortar in one production cycle."
+msgstr "За один производственный цикл обжигает известняк с печным топливом, гасит полученную известь и смешивает её с кварцевым песком в известковый раствор."
 
 msgctxt "crafts.description"
 msgid "Calcines gypsum or alabaster into fine setting plaster for moulds and stucco."
@@ -5848,8 +5848,8 @@ msgid "Jewelry"
 msgstr "Украшения"
 
 msgctxt "product_groups.name"
-msgid "Masonry Binders"
-msgstr "Связующие для кладки"
+msgid "Construction Mixes and Binders"
+msgstr "Строительные смеси и связующие"
 
 msgctxt "product_groups.name"
 msgid "Millstone Stones"
@@ -5916,10 +5916,6 @@ msgid "Wood for Barrels"
 msgstr "Древесина для бочек"
 
 msgctxt "product_groups.name"
-msgid "Wool"
-msgstr "Шерсть"
-
-msgctxt "product_groups.name"
 msgid "Writing Instruments"
 msgstr "Писчие инструменты"
 
@@ -5964,8 +5960,8 @@ msgid "A pseudo-profession that covers the whole population of the city, includi
 msgstr "Псевдо-профессия: охватывает всё население города, включая занятых жителей."
 
 msgctxt "professions.description"
-msgid "Burns wood into charcoal."
-msgstr "Обжигает древесину в древесный уголь."
+msgid "Burns wood or bamboo into charcoal."
+msgstr "Обжигает древесину или бамбук для получения угля."
 
 msgctxt "professions.description"
 msgid "Copies and studies texts in the library and scriptorium, adding to the city's science."
@@ -6140,8 +6136,8 @@ msgid "Dips and moulds tallow and beeswax into candles."
 msgstr "Макает и отливает свечи из животного жира и пчелиного воска."
 
 msgctxt "professions.description"
-msgid "Dresses rough stone into ashlar blocks, tableware and mortar."
-msgstr "Обтёсывает камень в строительные блоки и посуду и готовит раствор."
+msgid "Dresses rough stone into ashlar blocks and stone tableware."
+msgstr "Обрабатывает грубый камень, изготавливая тёсаные блоки и каменную посуду."
 
 msgctxt "professions.description"
 msgid "Cures and smokes fish over slow wood fires."
@@ -6364,10 +6360,6 @@ msgid "A thousand units of steel weapons of exceptional quality sold to the town
 msgstr "Тысяча единиц стального оружия исключительного качества, проданных городкам, — и оружие начинают спрашивать по имени города."
 
 msgctxt "resources.challenge.description"
-msgid "A thousand units of wool of exceptional quality sold to the towns — and the cloth begins to be asked by the name of the town."
-msgstr "Тысяча единиц шерсти исключительного качества, проданных городкам, — и ткань начинают спрашивать по имени города."
-
-msgctxt "resources.challenge.description"
 msgid "A thousand vessels of clay of exceptional quality sold to the towns — and they are known by the mark of the town."
 msgstr "Тысяча изделий из глины исключительного качества, проданных городкам, — и их узнают по клейму города."
 
@@ -6382,10 +6374,6 @@ msgstr "Клеймо на обожженной глине"
 msgctxt "resources.challenge.name"
 msgid "Gouda, Cheddar and Camembert"
 msgstr "Гауда, Чеддер и Камамбер"
-
-msgctxt "resources.challenge.name"
-msgid "Wool the Towns Ask for by Name"
-msgstr "Шерсть, которую спрашивают по имени"
 
 msgctxt "resources.name"
 msgid "<city_name>-steel Weapons"
@@ -6458,6 +6446,10 @@ msgstr "Мышьяковая руда"
 msgctxt "resources.name"
 msgid "Attar"
 msgstr "Аттар"
+
+msgctxt "resources.name"
+msgid "Bamboo"
+msgstr "Бамбук"
 
 msgctxt "resources.name"
 msgid "Banteng"
@@ -7772,10 +7764,6 @@ msgid "Wool Clothes"
 msgstr "Шерстяная одежда"
 
 msgctxt "resources.name"
-msgid "Wool of <city_name>"
-msgstr "Шерсть <city_name>"
-
-msgctxt "resources.name"
 msgid "Writing Set"
 msgstr "Письменный набор"
 
@@ -8134,10 +8122,6 @@ msgstr "Город живёт своим рынком. Горожане плат
 msgctxt "specializations.description"
 msgid "The city lives off the land. Every improvement on the map — a farm, a mine, a quarry, a woodcutter's camp — yields more."
 msgstr "Город живёт за счёт земли. Каждое улучшение на карте — ферма, шахта, карьер, хижина лесоруба — даёт больше."
-
-msgctxt "specializations.description"
-msgid "The fleeces of the city are asked for by name. Wool brings more, and the looms of the city work it faster."
-msgstr "Руно города спрашивают по имени. Шерсть приносит больше, а станки ткут её быстрее."
 
 msgctxt "specializations.description"
 msgid "The forges of the city have a name among the smiths. Blades bring more, and the forges of the city strike them faster."
@@ -9575,8 +9559,8 @@ msgid "Precision Instruments"
 msgstr "Точные инструменты"
 
 msgctxt "technologies.description"
-msgid "Reveals the mountain springs and allows you to build aqueducts: a channel of concrete brings fresh water from a spring to the city."
-msgstr "Выявляет горные источники и позволяет строить акведуки: канал из бетона приносит пресную воду от источника в город."
+msgid "Unlocks Roman concrete in the kiln yard. Reveals mountain springs and allows you to build aqueducts to bring fresh water to the city."
+msgstr "Открывает производство римского бетона на площадке при обжиговой печи. Выявляет горные источники и позволяет строить акведуки для подачи пресной воды в город."
 
 msgctxt "technologies.description"
 msgid "Unlocks precision instruments crafted from copper, bronze, brass, iron or steel in the forge and the jeweler's house."
@@ -9591,8 +9575,8 @@ msgid "Unlocks the water mill: the running water sets the millstones in motion."
 msgstr "Открывает водяную мельницу: течение воды приводит в движение мельничные жернова."
 
 msgctxt "technologies.flavor"
-msgid "Lime burned in a kiln, mixed with sand and stone, sets into a mass harder than the rock it came from. A channel lined with it keeps its slope and its walls for generations, so water can leave the mountain and reach a city that has no river of its own."
-msgstr "Известь, обожжённая в печи, смешанная с песком и камнем, схватывается в массу твёрже породы, из которой она вышла. Выложенный ею канал поколениями держит свой уклон и стенки, и вода может уйти из горы в город, у которого нет своей реки."
+msgid "Lime mixed with reactive volcanic ash or ground tuff forms a binder that can set in water. Stone aggregate turns it into a concrete mass for walls, vaults and waterworks. A watertight channel can carry mountain water to a city without a river of its own. The same idea arose independently elsewhere: Greek and Minoan builders worked volcanic ash and crushed pottery into their mortar, Maya masons burned limestone into a lime concrete for pyramids and roads, and Indus Valley and later Indian builders used ground brick, surkhi, as a pozzolan."
+msgstr "Известь в смеси с реакционноспособным вулканическим пеплом или измельчённым туфом образует связующее, способное твердеть в воде. Каменный заполнитель превращает его в бетонную массу для стен, сводов и водных сооружений. Водонепроницаемый канал может доставить горную воду в город, у которого нет своей реки. Та же идея возникала независимо и в других местах: греческие и минойские строители вводили в раствор вулканический пепел и толчёную керамику, майя обжигали известняк в известковый бетон для пирамид и дорог, а в долине Инда и позднее в Индии в качестве пуццолана использовали молотый кирпич — суркхи."
 
 msgctxt "technologies.flavor"
 msgid "Between the smith's hammer and the scholar's theorem lies a quiet threshold: the moment a hand learns to divide a circle evenly, balance a beam to a grain and file a pivot that does not wobble. Once geometry, gearing and clean metalwork met at one bench — in Han bronze calipers and armillary rings, in Hellenistic dioptras and geared spheres, in the assay balances of al-Khazini and the astrolabe-makers' workshops — any sound metal could be turned into an instrument that measured rather than guessed."
@@ -10577,8 +10561,8 @@ msgid "Silk comes from the cocoon of a moth, which must be reeled before the ins
 msgstr "Шёлк даёт кокон мотылька, который надо размотать, пока насекомое не прогрызло его. Шелководство началось в Восточной Азии и через торговлю пришло в другие края; выращивание червей и ткачество нити — разные ремесла. Дом превращает эту нить в ткань."
 
 msgctxt "buildings.flavor"
-msgid "Limestone heated in a kiln becomes quicklime, which goes into plaster, mortar and the preparation of other materials. The operation needs only fire and a stone that is easy to find. The kiln also yields alum from alunite, another example of a raw mineral becoming a workshop material."
-msgstr "Известняк, обожжённый в печи, превращается в негашёную известь, которая идёт в штукатурку, раствор и подготовку других материалов. Для операции нужны лишь огонь и легко доступный камень. Печь даёт также квасцы из алунита — ещё один пример того, как сырой минерал становится предметом ремесла."
+msgid "Limestone heated in a kiln becomes quicklime. In the surrounding yard, workers slake the lime and mix it with sand for mortar, or with reactive volcanic material and stone aggregate for concrete. Firing and mixing are separate operations within the same works. The kiln also processes gypsum and alunite into materials for other workshops."
+msgstr "Известняк при обжиге превращается в негашёную известь. На площадке при печи работники гасят её и смешивают с песком для раствора либо с реакционноспособным вулканическим материалом и каменным заполнителем для бетона. Обжиг и смешивание — разные операции одного производственного двора. Здесь же перерабатывают гипс и алунит в материалы для других мастерских."
 
 msgctxt "buildings.flavor"
 msgid "Papyrus is made by laying strips of the reed's stem in crossing layers and pressing them into a sheet. The craft is tied to a plant that grows in warm wetlands and gave writing a light, cheap surface. The workshop turns a water plant into the material of records."
@@ -10679,3 +10663,139 @@ msgstr "Парус — кусок ткани, раскроенный и укре
 msgctxt "buildings.flavor"
 msgid "A wooden boat needs a frame, planking and a way to seal the seams, all of which a yard can keep in repair. Boatbuilding traditions arose independently on rivers, lakes and coasts across the world. The yard builds the hull; the sailmaker and the ropemaker supply the rest."
 msgstr "Деревянному судну нужны каркас, обшивка и способ законопатить швы — всё это верфь может держать в порядке. Судостроение возникало независимо на реках, озёрах и побережьях по всему свету. Верфь строит корпус, а паруса и снасти поставляют другие мастерские."
+
+msgctxt "crafts.name"
+msgid "Pozzolanic Concrete"
+msgstr "Пуццолановый бетон"
+
+msgctxt "resources.name"
+msgid "Pozzolanic Concrete"
+msgstr "Пуццолановый бетон"
+
+msgctxt "crafts.description"
+msgid "Burns limestone with furnace fuel, slakes the resulting lime and mixes it with volcanic tuff and stone aggregate into pozzolanic concrete in one production cycle."
+msgstr "За один производственный цикл обжигает известняк с печным топливом, гасит полученную известь и смешивает её с вулканическим туфом и каменным заполнителем в пуццолановый бетон."
+
+msgctxt "resources.challenge.description"
+msgid ""
+"A thousand units of wool clothes of exceptional quality sold to the towns "
+"earn the city a name for its wool."
+msgstr ""
+"Тысяча единиц шерстяной одежды исключительного качества, проданных городкам,"
+" прославит шерсть города."
+
+
+msgctxt "resources.challenge.name"
+msgid "Wool Clothes the Towns Ask for by Name"
+msgstr "Шерстяная одежда, которую спрашивают по имени"
+
+
+msgctxt "resources.name"
+msgid "Wool \"<city_name>\""
+msgstr "Шерсть \"<city_name>\""
+
+
+msgctxt "specializations.description"
+msgid "The wool clothes of the city are asked for by name. All clothes bring more, and its workshops produce them faster."
+msgstr "Шерстяную одежду города спрашивают по имени. Вся одежда приносит больше, а мастерские производят её быстрее."
+
+
+msgctxt "resources.name"
+msgid "Pen Shell"
+msgstr "Пинна (виссонный моллюск)"
+
+
+msgctxt "resources.name"
+msgid "Sea Silk"
+msgstr "Морской шёлк"
+
+
+msgctxt "resources.name"
+msgid "Sea Silk Clothes"
+msgstr "Одежда из морского шёлка"
+
+
+msgctxt "crafts.name"
+msgid "Sea Silk Clothes"
+msgstr "Одежда из морского шёлка"
+
+
+msgctxt "crafts.description"
+msgid "Makes delicate garments from lustrous sea silk."
+msgstr "Изготавливает изящную одежду из блестящего морского шёлка."
+
+
+msgctxt "resources.challenge.name"
+msgid "Cloth Clothes the Towns Ask for by Name"
+msgstr "Тканевая одежда, которую спрашивают по имени"
+
+
+msgctxt "resources.challenge.description"
+msgid ""
+"A thousand units of cloth clothes of exceptional quality sold to the towns "
+"earn the city a name for its textiles."
+msgstr ""
+"Тысяча единиц тканевой одежды исключительного качества, проданных городкам, "
+"прославит ткани города."
+
+
+msgctxt "resources.name"
+msgid "Cloth \"<city_name>\""
+msgstr "Ткань \"<city_name>\""
+
+
+msgctxt "crafts.name"
+msgid "Byssus"
+msgstr "Виссон"
+
+
+msgctxt "crafts.description"
+msgid "Weaves the city's finest plant fibers into cloth known by its name."
+msgstr ""
+"Ткёт из лучших растительных волокон ткань, известную под именем города."
+
+
+
+msgctxt "specializations.name"
+msgid "Textiles"
+msgstr "Текстиль"
+
+
+msgctxt "specializations.full_name"
+msgid "Specialization of textiles"
+msgstr "Специализация текстиля"
+
+
+msgctxt "specializations.description"
+msgid "The cloth clothes of the city are asked for by name. All clothes bring more, and its workshops produce them faster."
+msgstr "Тканевую одежду города спрашивают по имени. Вся одежда приносит больше, а мастерские производят её быстрее."
+
+
+msgctxt "resources.name"
+msgid "Cloth Clothes \"<city_name>\""
+msgstr "Тканевая одежда \"<city_name>\""
+
+
+msgctxt "resources.name"
+msgid "Wool Clothes \"<city_name>\""
+msgstr "Шерстяная одежда \"<city_name>\""
+
+
+msgctxt "crafts.name"
+msgid "Branded Cloth Clothes"
+msgstr "Брендовая тканевая одежда"
+
+
+msgctxt "crafts.name"
+msgid "Branded Wool Clothes"
+msgstr "Брендовая шерстяная одежда"
+
+
+msgctxt "crafts.description"
+msgid "Makes branded clothes from the city's finest cloth."
+msgstr "Изготавливает брендовую одежду из лучшей ткани города."
+
+
+msgctxt "crafts.description"
+msgid "Makes branded clothes from the city's finest wool."
+msgstr "Изготавливает брендовую одежду из лучшей шерсти города."

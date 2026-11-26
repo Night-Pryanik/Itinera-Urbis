@@ -189,6 +189,22 @@
       "color": [ 255, 200, 150 ]
     },
     {
+      "id": "bamboo_grove", "price": 5,
+      "name": "Bamboo",
+      "type": "raw",
+      "category": "technical_plants",
+      "group": "technical_plants",
+      "subgroup": "technical_plants",
+      "allowed_terrain": [ "plain", "hill" ],
+      "allowed_cover": [ "none" ],
+      "allowed_climate_zones": [ "prairie", "savanna_wet", "tropical_wet" ],
+      "improved_by": "plantation",
+      "tech_required": "plantations",
+      "produces": { "bamboo": 10 },
+      "icon": "bamboo.png",
+      "color": [ 120, 180, 80 ]
+    },
+    {
       "id": "papyrus_field", "price": 5,
       "name": "Papyrus",
       "type": "raw",
