@@ -118,6 +118,9 @@ var save_load_window: CanvasLayer = null
 # mods). It is built once and kept — the choice of mods survives a "Back".
 var new_game_dialog: ConfirmationDialog = null
 var tab_container: TabContainer = null
+# The tabs keep their designed size; on a small canvas the scroll gives them room while
+# the OK and Cancel buttons stay at the bottom of the window.
+var content_scroll: ScrollContainer = null
 var city_name_edit: LineEdit = null
 # The world settings of a new game (the map size and the number of towns). They are read
 # once, when the game starts.
@@ -326,12 +329,11 @@ func _on_viewport_resized() -> void:
 # node reports, and the frame is what the player sees, so the margins are kept for the
 # decorated rect: a window sized by the bare rect alone would touch the screen edge.
 func _popup_new_game_dialog():
+    # The tabs keep the size they were laid out for, so their controls and fonts follow
+    # the chosen interface size. Only the scroll around them gives up room on a small
+    # canvas; the window itself keeps the global scale.
     tab_container.custom_minimum_size = Vector2(DIALOG_CONTENT_WIDTH, DIALOG_CONTENT_HEIGHT)
-    # The dialog owns its own canvas. Its content scale makes every control, including the
-    # OK and Cancel buttons, occupy less of the parent canvas while the controls keep the
-    # layout they were built for. Without this a large interface multiplier pushes the
-    # buttons past the bottom edge of a small screen, where they cannot be reached.
-    new_game_dialog.content_scale_factor = 1.0
+    content_scroll.custom_minimum_size = Vector2(DIALOG_CONTENT_WIDTH, DIALOG_CONTENT_HEIGHT)
     new_game_dialog.reset_size()
     new_game_dialog.popup_centered()
 
@@ -340,12 +342,14 @@ func _popup_new_game_dialog():
         return
     var frame := new_game_dialog.get_size_with_decorations() - new_game_dialog.size
     var room := Vector2(screen - Vector2i(DIALOG_EDGE_MARGIN * 2, DIALOG_EDGE_MARGIN * 2) - frame)
-    var fit := minf(float(room.x) / maxf(float(new_game_dialog.size.x), 1.0),
-            float(room.y) / maxf(float(new_game_dialog.size.y), 1.0))
-    if fit < 1.0:
-        new_game_dialog.content_scale_factor = clampf(fit, 0.1, 1.0)
-        new_game_dialog.reset_size()
-        new_game_dialog.popup_centered()
+    # The title bar, the panel and the buttons take their share before the tabs get the rest.
+    var chrome := Vector2(new_game_dialog.size) - Vector2(content_scroll.custom_minimum_size)
+    var available := room - chrome
+    content_scroll.custom_minimum_size = Vector2(
+            maxf(minf(float(DIALOG_CONTENT_WIDTH), available.x), 160.0),
+            maxf(minf(float(DIALOG_CONTENT_HEIGHT), available.y), 120.0))
+    new_game_dialog.reset_size()
+    new_game_dialog.popup_centered()
 
     var deco := new_game_dialog.get_size_with_decorations()
     var target := (screen - deco) / 2
@@ -361,12 +365,18 @@ func _build_new_game_dialog():
     dialog.ok_button_text = tr("Start")
     dialog.cancel_button_text = tr("Back")
 
-    # AcceptDialog stretches its single child to the content area, so the tabs own the
-    # whole window. The tab container paints no background of its own: the pages would
-    # otherwise sit on a darker plate than the buttons under them.
+    # AcceptDialog stretches its single child to the content area. The scroll is that
+    # child: it lets the tabs keep their designed size on a small canvas without pushing
+    # the buttons past the bottom edge. The tab container paints no background of its
+    # own: the pages would otherwise sit on a darker plate than the buttons under them.
+    content_scroll = ScrollContainer.new()
+    content_scroll.name = "ContentScroll"
+    content_scroll.follow_focus = true
+    dialog.add_child(content_scroll)
+
     tab_container = TabContainer.new()
     tab_container.add_theme_stylebox_override("panel", StyleBoxEmpty.new())
-    dialog.add_child(tab_container)
+    content_scroll.add_child(tab_container)
 
     tab_container.add_child(_page_margin(_build_city_tab()))
     tab_container.add_child(_page_margin(_build_world_tab()))

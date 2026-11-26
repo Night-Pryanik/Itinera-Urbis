@@ -2,8 +2,9 @@
 #   godot --headless --path . --script res://tests/test_new_game_dialog_fit.gd
 #
 # The interface multiplier zooms the canvas, so a window laid out for the full canvas can
-# end up below the screen with its OK and Cancel buttons out of reach. The window shrinks
-# itself to the visible canvas; the buttons must land inside it.
+# end up below the screen with its OK and Cancel buttons out of reach. The window gives up
+# room to a scroll instead of scaling its controls down: the fonts must still follow the
+# chosen size, while the buttons land inside the screen.
 extends SceneTree
 
 const WATCHDOG = preload("res://tests/watchdog.gd")
@@ -46,8 +47,17 @@ func _run() -> void:
         _finish(state)
         return
 
-    _check(dialog.content_scale_factor < 1.0,
-            "the window is scaled to fit the screen (got %f)" % dialog.content_scale_factor, state)
+    _check(is_equal_approx(float(dialog.content_scale_factor), 1.0),
+            "the window keeps the global interface scale", state)
+    _check(is_equal_approx(get_root().content_scale_factor,
+            UiScale.base_factor() * UiScale.MAXIMUM),
+            "the interface multiplier is still applied to the canvas", state)
+
+    _check(menu.tab_container.custom_minimum_size.x == float(menu.DIALOG_CONTENT_WIDTH),
+            "the tabs keep the size their controls were laid out for", state)
+    _check(menu.content_scroll.custom_minimum_size.x < float(menu.DIALOG_CONTENT_WIDTH)
+            and menu.content_scroll.custom_minimum_size.y < float(menu.DIALOG_CONTENT_HEIGHT),
+            "the content scrolls instead of shrinking the controls", state)
 
     var pos := Vector2(dialog.get_position_with_decorations())
     var size := Vector2(dialog.get_size_with_decorations())
@@ -55,11 +65,9 @@ func _run() -> void:
             and pos.x + size.x <= screen.x + 1.0 and pos.y + size.y <= screen.y + 1.0,
             "the window stays inside the screen (at %s, %s of %s)" % [str(pos), str(size), str(screen)], state)
 
-    var factor := float(dialog.content_scale_factor)
     for button in [dialog.get_ok_button(), dialog.get_cancel_button()]:
         var rect: Rect2 = button.get_global_rect()
-        var on_screen := Rect2(Vector2(dialog.position) + rect.position * factor,
-                rect.size * factor)
+        var on_screen := Rect2(Vector2(dialog.position) + rect.position, rect.size)
         _check(on_screen.position.x >= -1.0 and on_screen.position.y >= -1.0
                 and on_screen.end.x <= screen.x + 1.0 and on_screen.end.y <= screen.y + 1.0,
                 "the button is reachable on the screen (%s)" % str(on_screen), state)
