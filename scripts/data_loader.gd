@@ -834,6 +834,7 @@ func _record_removed_challenge_id(collection: String, id: String, entry: Diction
     var suffix := "_challenge"
     if script != null:
         suffix = str(script.get("CHALLENGE_ID_SUFFIX"))
+        # The literal fallback keeps the record even if the constant is renamed.
         if suffix == "":
             suffix = "_challenge"
     removed_challenge_ids["%s%s" % [id, suffix]] = true
