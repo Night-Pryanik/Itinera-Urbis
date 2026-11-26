@@ -430,6 +430,19 @@
       "description": "Distils grape wine into brandy."
     },
     {
+      // The prestige good of the brandy line (see the header comment of
+      // data/products/food.json). The distillery of the city must already know how to distil
+      // at all — the brand is a way of making it, not another building.
+      "id": "city_brandy",
+      "name": "City Brandy",
+      "produced_in": [ "distillery" ],
+      "resources": { "wine": 20 },
+      "result": { "city_brandy": 10 },
+      "time": 12.0,
+      "unlock_tech": "distillation",
+      "description": "Awards the wine of the city to the brandy the world asks for by the name of the city."
+    },
+    {
       // Split from the cider recipe so that blacklisting winemaking leaves cider
       // distillation intact.
       "id": "fruit_brandy",

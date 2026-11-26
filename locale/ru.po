@@ -3920,6 +3920,10 @@ msgid "Awards the milk of the city to the cheese the world asks for by the name 
 msgstr "Молоко города идёт в тот сыр, о котором спрашивают по имени города."
 
 msgctxt "crafts.description"
+msgid "Awards the wine of the city to the brandy the world asks for by the name of the city."
+msgstr "Вино города идёт в тот бренди, о котором спрашивают по имени города."
+
+msgctxt "crafts.description"
 msgid "Bakes coal without air into hard, clean-burning metallurgical coke."
 msgstr "Выжигает каменный уголь без доступа воздуха в твёрдый, чисто горящий металлургический кокс."
 
@@ -4810,6 +4814,10 @@ msgstr "Сидр"
 msgctxt "crafts.name"
 msgid "Cinnabar"
 msgstr "Киноварь"
+
+msgctxt "crafts.name"
+msgid "City Brandy"
+msgstr "Городской бренди"
 
 msgctxt "crafts.name"
 msgid "Clay Tablets"
@@ -6352,6 +6360,10 @@ msgid "Perfect"
 msgstr "Превосходное"
 
 msgctxt "resources.challenge.description"
+msgid "A thousand units of brandy of exceptional quality sold to the towns — and the strong spirits begin to be asked by the name of the town."
+msgstr "Тысяча единиц бренди исключительного качества, проданных городкам, — и крепкий алкоголь начинают спрашивать по имени города."
+
+msgctxt "resources.challenge.description"
 msgid "A thousand units of cheese of exceptional quality sold to the towns — and cheese begins to be asked by the name of the town."
 msgstr "Тысяча единиц сыра исключительного качества, проданных городкам, — и сыр начинают спрашивать по имени города."
 
@@ -6370,6 +6382,10 @@ msgstr "Клинок с именем города"
 msgctxt "resources.challenge.name"
 msgid "A Mark on Fired Clay"
 msgstr "Клеймо на обожженной глине"
+
+msgctxt "resources.challenge.name"
+msgid "Cognac, Tequila and Sherry"
+msgstr "Коньяк, Текила и Херес"
 
 msgctxt "resources.challenge.name"
 msgid "Gouda, Cheddar and Camembert"
@@ -7804,6 +7820,10 @@ msgid "Brandy"
 msgstr "Бренди"
 
 msgctxt "resources.name"
+msgid "Brandy of <city_name>"
+msgstr "Бренди «<city_name>»"
+
+msgctxt "resources.name"
 msgid "Fruit Brandy"
 msgstr "Фруктовый дистиллят"
 
@@ -8140,6 +8160,10 @@ msgid "The world knows the cellars of the city. Cheese brings more, and the dair
 msgstr "Подвалы города известны миру. Сыр приносит больше, а сыроварни наполняют его быстрее."
 
 msgctxt "specializations.description"
+msgid "The world knows the stills of the city. Strong spirits bring more, and the distilleries of the city fill them faster."
+msgstr "Дистилляторы города известны миру. Крепкий алкоголь приносит больше, а винокурен наполняют его быстрее."
+
+msgctxt "specializations.description"
 msgid "Workshops and mills of the city work faster. Every building that turns raw materials into goods produces more."
 msgstr "Мастерские и мельницы города работают быстрее. Каждое здание, превращающее сырьё в товары, производит больше."
 
@@ -8158,6 +8182,10 @@ msgstr "Специализация внешней торговли"
 msgctxt "specializations.full_name"
 msgid "Specialization of the domestic market"
 msgstr "Специализация внутреннего рынка"
+
+msgctxt "specializations.full_name"
+msgid "Specialization of strong spirits"
+msgstr "Специализация крепкого алкоголя"
 
 msgctxt "specializations.full_name"
 msgid "Specialization of weapons"
@@ -8202,6 +8230,10 @@ msgstr "Сырьевая"
 msgctxt "specializations.name"
 msgid "Science"
 msgstr "Научная"
+
+msgctxt "specializations.name"
+msgid "Strong Spirits"
+msgstr "Крепкий алкоголь"
 
 msgctxt "specializations.name"
 msgid "Weapons"
