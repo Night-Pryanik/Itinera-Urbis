@@ -418,6 +418,11 @@ func _fit_preview(scroll: ScrollContainer, padding: MarginContainer, column: Con
         pane_width: int) -> void:
     if scroll == null or padding == null or column == null:
         return
+    # ScrollContainer only stretches a child that asks to expand. Give the picture the
+    # whole height of the column, so the controls below it sit at the bottom.
+    padding.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+    padding.size_flags_vertical = Control.SIZE_EXPAND_FILL
+    column.size_flags_vertical = Control.SIZE_EXPAND_FILL
     padding.add_theme_constant_override("margin_left", SCROLL_GUTTER)
     padding.add_theme_constant_override("margin_right", SCROLL_GUTTER)
     padding.add_theme_constant_override("margin_bottom", SCROLL_GUTTER)

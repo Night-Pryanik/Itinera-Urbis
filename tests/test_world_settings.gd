@@ -123,6 +123,15 @@ func _run() -> void:
             "SettingsScroll", true, false) as ScrollContainer
     var picture_scroll := world_control.find_child(
             "PreviewScroll", true, false) as ScrollContainer
+    var picture: Control = menu.world_previews[1]
+    var bottom_label: Control = menu.find_child("PreviewDisclaimerLabel", true, false) as Control
+    check(picture.size.y > 260.0,
+            "the picture uses the free height of the column (got %d)" % int(picture.size.y), state)
+    var bottom_gap: float = menu.preview_padding.get_global_rect().end.y \
+            - bottom_label.get_global_rect().end.y
+    check(bottom_gap >= 0.0 and bottom_gap <= float(menu.SCROLL_GUTTER) + 2.0,
+            "the button and the disclaimer sit at the bottom of the column (gap %f)"
+                    % bottom_gap, state)
     check(picture_scroll != null and is_equal_approx(
             picture_scroll.custom_minimum_size.x,
             float(menu.PREVIEW_WIDTH) + float(menu.SCROLL_GUTTER) * 2.0),
