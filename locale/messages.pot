@@ -10245,6 +10245,10 @@ msgctxt "technologies.description"
 msgid "Allows you to upgrade scriptoriums into universities."
 msgstr ""
 
+msgctxt "technologies.description"
+msgid "Unlocks pozzolanic concrete in the kiln yard. Reveals mountain springs and allows you to build aqueducts to bring fresh water to the city."
+msgstr ""
+
 msgctxt "technologies.flavor"
 msgid "Banking-like practices took different forms across history. In the ancient Near East, Mesopotamian temples made interest-bearing loans from their treasuries; Greek trapezitai at money-changing tables handled exchange and credit, while Roman argentarii managed payments, credit and exchange. Indian inscriptions record interest-bearing endowments entrusted to śreṇi guilds. In Tang China, guifang offered safekeeping services and feiqian certificates facilitated transfers. These were not modern banks, but their distinct services helped people manage wealth and move value farther than coin alone."
 msgstr ""
@@ -10902,4 +10906,8 @@ msgstr ""
 
 msgctxt "crafts.description"
 msgid "Makes branded clothes from the city's finest wool."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Distils fermented sugar cane juice into rum."
 msgstr ""

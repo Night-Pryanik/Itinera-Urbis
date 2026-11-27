@@ -10568,6 +10568,10 @@ msgctxt "technologies.description"
 msgid "Allows you to upgrade scriptoriums into universities."
 msgstr "Даёт возможность улучшать скриптории в университеты."
 
+msgctxt "technologies.description"
+msgid "Unlocks pozzolanic concrete in the kiln yard. Reveals mountain springs and allows you to build aqueducts to bring fresh water to the city."
+msgstr "Открывает производство пуццоланового бетона на площадке при обжиговой печи. Выявляет горные источники и позволяет строить акведуки для подачи пресной воды в город."
+
 msgctxt "crafts.name"
 msgid "Tools of <city_name> Steel"
 msgstr "Инструменты из стали «<city_name>»"
@@ -11027,3 +11031,7 @@ msgstr "Изготавливает брендовую одежду из лучш
 msgctxt "crafts.description"
 msgid "Makes branded clothes from the city's finest wool."
 msgstr "Изготавливает брендовую одежду из лучшей шерсти города."
+
+msgctxt "crafts.description"
+msgid "Distils fermented sugar cane juice into rum."
+msgstr "Перегоняет сброженный сок сахарного тростника в ром."
