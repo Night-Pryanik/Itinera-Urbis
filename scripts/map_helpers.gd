@@ -146,16 +146,32 @@ static func get_sea_trade_flow_rate() -> float:
     var rate := float(GameData.game_balance.get("sea_trade_flow_rate", 60.0))
     return rate if rate > 0.0 else 60.0
 
+## Tech multiplier for the per-hex charge of the outpost fee: reads
+## data/modifiers.json, target = "outpost_fee_distance_cost" ("Bills of Exchange"
+## reduces it by 20%, -20 -> 0.8). The flat base of the fee is not discounted.
+static func get_outpost_fee_distance_tech_mult() -> float:
+    var mult := 1.0
+    for tm in GameData.modifiers.get("tech_modifiers", []):
+        var tech_id = tm.get("tech_id", "")
+        if tech_id == "" or not CityData.is_tech_unlocked(tech_id):
+            continue
+        for mod in tm.get("modifiers", []):
+            if mod.get("target", "") != "outpost_fee_distance_cost":
+                continue
+            var value = float(mod.get("value", 0))
+            mult *= 1.0 + value / 100.0
+    return mult
+
 ## The one-time fee in coins for building an outpost on the hex (row, col): a base
-## sum plus a per-hex distance charge. It is paid on top of the labour when the
-## construction starts (build_manager) and returned if the construction is
-## cancelled. The constants live in data/game_balance.json ("outpost_fee_base",
-## "outpost_fee_per_hex").
+## sum plus a per-hex distance charge reduced by the researched technologies. It
+## is paid on top of the labour when the construction starts (build_manager) and
+## returned if the construction is cancelled. The constants live in
+## data/game_balance.json ("outpost_fee_base", "outpost_fee_per_hex").
 static func get_outpost_fee(row: int, col: int, city_row: int, city_col: int) -> int:
     var base := int(GameData.game_balance.get("outpost_fee_base", 10))
     var per_hex := float(GameData.game_balance.get("outpost_fee_per_hex", 2.0))
     var distance := HexUtils.hex_distance(row, col, city_row, city_col)
-    return base + int(ceil(float(distance) * per_hex))
+    return base + int(ceil(float(distance) * per_hex * get_outpost_fee_distance_tech_mult()))
 
 ## Whether a built improvement works only while a road connects it to the city.
 ## Infrastructure improvements (no_worker) and the ones deliberately left without a

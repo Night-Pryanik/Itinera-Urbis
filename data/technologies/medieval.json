@@ -176,6 +176,16 @@
           "name": "Allows sea trade with coastal towns through harbors without a road"
         }
       ]
+    },
+    {
+      "id": "bills_of_exchange",
+      "name": "Bills of Exchange",
+      "era": "medieval",
+      "science_cost": 5.0,
+      "prerequisites": [ [ "banking", "emporia" ] ],
+      "icon": "bills_of_exchange.png",
+      "description": "Reduces the effect of distance from the city on the outpost fee by 20%.",
+      "flavor": "A bill let a merchant settle an account in a city he had never visited: the coin stayed at home and a scrap of paper crossed the road. Such letters of credit circulated in Song China and in the markets of the Islamic world long before European fairs entered them in their ledgers. An outpost beyond the Region was costly chiefly because it lay far away, and the distance could now be paid on paper instead of in coin."
     }
   ]
 }

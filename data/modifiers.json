@@ -175,6 +175,15 @@
         "modifiers": [ { "target": "external_market_trade_income", "type": "percent", "value": 10 } ]
       },
       {
+        // A bill settles an account at a distance, so the coin charge of an
+        // outpost grows more slowly the farther it lies from the city. The flat
+        // base fee stays in force: only the per-hex part is discounted.
+        "tech_id": "bills_of_exchange",
+        "icon": "coin_stack.png",
+        "name": "Reduces the effect of distance from the city on the outpost fee by 20%",
+        "modifiers": [ { "target": "outpost_fee_distance_cost", "type": "percent", "value": -20 } ]
+      },
+      {
         // The output of the scholars is not a good of the city: the ordinary
         // building_production_multiplier never reaches the science rate. The
         // astronomy bonus therefore has a target of its own, applied to the

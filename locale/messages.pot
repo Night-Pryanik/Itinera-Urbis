@@ -5772,6 +5772,10 @@ msgid "Reduces the effect of distance from the city on labor cost when building 
 msgstr ""
 
 msgctxt "modifiers.tech_modifiers.name"
+msgid "Reduces the effect of distance from the city on the outpost fee by 20%"
+msgstr ""
+
+msgctxt "modifiers.tech_modifiers.name"
 msgid "Woodcutter's camp: +10% production"
 msgstr ""
 
@@ -8492,6 +8496,10 @@ msgid "Allows you to extract various dyes from organic and inorganic materials."
 msgstr ""
 
 msgctxt "technologies.description"
+msgid "Reduces the effect of distance from the city on the outpost fee by 20%."
+msgstr ""
+
+msgctxt "technologies.description"
 msgid "Reduces the effect of distance from the city on the work cost of building improvements by 30%.\nUnlocks the Cart Road (road level 2): up to 30 units/sec per section instead of 10."
 msgstr ""
 
@@ -8597,6 +8605,10 @@ msgstr ""
 
 msgctxt "technologies.description"
 msgid "Unlocks gunpowder in the alchemist's house, boosting ore and stone extraction in mines and quarries, and nitrary saltpeter leached from lime and potash."
+msgstr ""
+
+msgctxt "technologies.flavor"
+msgid "A bill let a merchant settle an account in a city he had never visited: the coin stayed at home and a scrap of paper crossed the road. Such letters of credit circulated in Song China and in the markets of the Islamic world long before European fairs entered them in their ledgers. An outpost beyond the Region was costly chiefly because it lay far away, and the distance could now be paid on paper instead of in coin."
 msgstr ""
 
 msgctxt "technologies.flavor"
@@ -8921,6 +8933,10 @@ msgstr ""
 
 msgctxt "technologies.name"
 msgid "Beekeeping"
+msgstr ""
+
+msgctxt "technologies.name"
+msgid "Bills of Exchange"
 msgstr ""
 
 msgctxt "technologies.name"
