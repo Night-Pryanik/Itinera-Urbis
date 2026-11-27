@@ -855,7 +855,7 @@ func _show_building_details(bdata: Dictionary):
     # after the construction and is charged even when the building has no worker.
     var upkeep := GameData.get_building_maintenance_cost(str(bdata.get("id", "")))
     if upkeep > 0.0:
-        content.add_child(_make_bullet_row("•", tr("Maintenance: %g coins/sec") % upkeep))
+        content.add_child(_make_bullet_row("•", tr("Maintenance: %s coins/sec") % str(upkeep)))
         has_costs = true
 
     if bdata.has("additional_cost"):

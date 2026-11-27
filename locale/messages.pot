@@ -77,7 +77,7 @@ msgid "Maintenance"
 msgstr ""
 
 msgctxt ""
-msgid "Maintenance: %g coins/sec"
+msgid "Maintenance: %s coins/sec"
 msgstr ""
 
 msgctxt ""

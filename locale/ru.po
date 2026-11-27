@@ -75,8 +75,8 @@ msgid "Maintenance"
 msgstr "Содержание"
 
 msgctxt ""
-msgid "Maintenance: %g coins/sec"
-msgstr "Содержание: %g монет/сек"
+msgid "Maintenance: %s coins/sec"
+msgstr "Содержание: %s монет/сек"
 
 msgctxt ""
 msgid "Not enough coins for the upkeep (%d unpaid)! Grow the population or demolish a building/improvement."

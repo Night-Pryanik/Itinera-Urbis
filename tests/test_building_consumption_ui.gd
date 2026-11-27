@@ -304,6 +304,25 @@ func _test_details_tooltip(state: Dictionary, city_ui, building_id: String) -> v
             "the details tooltip has the bonus \"+%d%% to production\" (got: %s)"
                 % [int(round(bonus * 100.0)), str(tip_texts)], state)
 
+    # The upkeep row must carry the number from the data. A format specifier GDScript does not
+    # support (%g) is left unexpanded by the % operator on a runtime string, so the tooltip
+    # silently showed the specifier instead of the coins.
+    var upkeep_building = null
+    var upkeep_value := 0.0
+    for b in btab.buildings_data:
+        var cost: float = _gdata.get_building_maintenance_cost(str(b.get("id", "")))
+        if cost > 0.0:
+            upkeep_building = b
+            upkeep_value = cost
+            break
+    if upkeep_building != null:
+        btab._show_building_details(upkeep_building)
+        var upkeep_texts := _collect_texts(city_ui.ui_helpers.detail_tooltip_content)
+        check(_has_text(upkeep_texts, tr("Maintenance: %s coins/sec") % str(upkeep_value)),
+            "the upkeep row shows the amount of coins (got: %s)" % str(upkeep_texts), state)
+        check(not _has_text(upkeep_texts, "%g"),
+            "the upkeep row has no unexpanded format specifier (got: %s)" % str(upkeep_texts), state)
+
     # A building without a profession must have no such section.
     var bakery = null
     for b in btab.buildings_data:
