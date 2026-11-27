@@ -11,10 +11,9 @@
 #   2. The by-product: the tuff and the basalt quarries yield the pumice besides their stone.
 #   3. The gate: the pumice opens with the very technology that opens the quarry, so the
 #      by-product can never be locked while its source works.
-#   4. The consumption: the citizens write the stone off through the household group, the
-#      two stone trades have a norm of their own, and the stone is not declared twice.
-#   5. The recipes: the abrasive is an ingredient of the stone tableware and of the
-#      hard-stone jewelry.
+#   4. The consumption: the citizens use pumice as a household good, while the trades
+#      share a separate abrasive group.
+#   5. The recipes: stoneware, mirrors and jewelry do not require abrasives.
 extends SceneTree
 
 const WATCHDOG = preload("res://tests/watchdog.gd")
@@ -24,9 +23,11 @@ const QUARRY_TECH := "masonry"
 const DEPOSITS := ["tuff_deposit", "basalt_deposit"]
 const DEPOSIT_STONE := { "tuff_deposit": "tuff", "basalt_deposit": "basalt" }
 const HOUSEHOLD_GROUP := "consumer_goods"
-const STONE_TRADES := ["mason", "jeweler"]
+const TRADES := ["mason", "jeweler", "glassmaker"]
+const ABRASIVES := ["pumice", "quartz_sand", "ochre", "emery"]
 const ABRASIVE_RECIPES := [
     "stone_tableware",
+    "bronze_mirror",
     "lazurite_jewelry",
     "malachite_jewelry",
     "nephrite_jewelry",
@@ -37,7 +38,7 @@ var _failed := false
 
 func _initialize() -> void:
     WATCHDOG.arm(self)
-    _run()
+    call_deferred("_run")
 
 func _run() -> void:
     var gd = root.get_node("GameData")
@@ -48,7 +49,7 @@ func _run() -> void:
     _test_product(gd)
     _test_by_product(gd)
     _test_gate(gd, city)
-    _test_consumption(gd)
+    _test_consumption(gd, city)
     _test_recipes(city)
 
     if _failed:
@@ -110,7 +111,7 @@ func _test_gate(gd: Node, city: Node) -> void:
 # the whole shelf of the soap, the sponge and the friends, and the stone travels with it.
 # A row of its own would split the stone off that shelf — one more parallel need of the
 # same citizens instead of a good they pick up at the same counter.
-func _test_consumption(gd: Node) -> void:
+func _test_consumption(gd: Node, city: Node) -> void:
     var members: Array = gd.product_groups.get(HOUSEHOLD_GROUP, [])
     _check(members.has(PRODUCT), "the pumice rides in the household group")
 
@@ -127,32 +128,89 @@ func _test_consumption(gd: Node) -> void:
     _check(_find_rule(gd.get_profession_consumption("all"), PRODUCT).is_empty(),
         "the pumice has no norm of its own besides the group")
 
-    for profession_id in STONE_TRADES:
+    var group: Array = gd.product_groups.get("abrasives", [])
+    _check(group == ABRASIVES, "the abrasive group contains every interchangeable material")
+    var wm = load("res://scripts/worker_manager.gd").new()
+    root.add_child(wm)
+    for profession_id in TRADES:
         var rule: Dictionary = _find_rule(
-                gd.get_profession_consumption(profession_id), PRODUCT)
-        _check(not rule.is_empty(), "%s consumes the pumice" % profession_id)
-        _check(float(rule.get("production_bonus", 0.0)) > 0.0,
-            "%s gets a production bonus for the pumice" % profession_id)
-
-    # A profession with a rule of its own is listed as a buyer of the stone in the summary
-    # tooltips and is billed for it apart from the household shelf.
-    var consumers: Array = gd.get_resource_consumer_professions(PRODUCT)
-    for profession_id in STONE_TRADES:
-        _check(consumers.has(profession_id),
-            "%s is listed as a consumer of the pumice" % profession_id)
+                gd.get_profession_consumption(profession_id), "@abrasives")
+        _check(not rule.is_empty(), "%s consumes abrasives" % profession_id)
+        _check(bool(rule.get("is_group", false)), "%s consumes one group" % profession_id)
+        _check(int(rule.get("amount", 0)) == 10 and float(rule.get("interval", 0)) == 10.0,
+            "%s keeps the abrasive consumption rate" % profession_id)
+        _check(absf(float(rule.get("production_bonus", 0.0)) - 0.1) < 0.0001,
+            "%s gets the abrasive production bonus" % profession_id)
+        _check(_find_rule(gd.get_profession_consumption(profession_id), PRODUCT).is_empty(),
+            "%s has no separate pumice rule" % profession_id)
+        _check(gd.get_resource_consumer_professions("@abrasives").has(profession_id),
+            "%s is listed as an abrasive group consumer" % profession_id)
+        city.city_storage.clear()
+        city.city_quality_detail.clear()
+        _check(is_zero_approx(wm._entry_effective_bonus(rule)),
+            "%s gets no abrasive bonus without stock" % profession_id)
+        for abrasive in ABRASIVES:
+            var found_consumer := false
+            for consumer in gd.get_consumption_consumers(abrasive):
+                if str(consumer.get("profession_id", "")) == profession_id:
+                    found_consumer = true
+            _check(found_consumer, "%s is listed as a consumer of %s" % [profession_id, abrasive])
+            city.city_storage.clear()
+            city.city_quality_detail.clear()
+            city.add_to_storage(abrasive, 11, "common")
+            _check(absf(wm._entry_effective_bonus(rule) - 0.1) < 0.0001,
+                "%s gets the bonus from %s" % [profession_id, abrasive])
+            var timers := {}
+            wm._tick_profession_consumption(profession_id, "test", timers, 1.0)
+            _check(int(city.get_storage_amount(abrasive)) == 10,
+                "%s consumes %s" % [profession_id, abrasive])
+        city.city_storage.clear()
+        city.city_quality_detail.clear()
+        for abrasive in ABRASIVES:
+            city.add_to_storage(abrasive, 10, "common")
+        _check(absf(wm._aggregate_production_bonus([rule]) - 0.1) < 0.0001,
+            "%s does not stack bonuses within one abrasive group" % profession_id)
+    wm.queue_free()
 
 func _test_recipes(city: Node) -> void:
+    var base_inputs := {
+        "stone_tableware": {"alabaster": 20},
+        "bronze_mirror": {"bronze": 10},
+        "lazurite_jewelry": {"lazurite_ore": 10},
+        "malachite_jewelry": {"malachite_ore": 10},
+        "nephrite_jewelry": {"nephrite": 10},
+        "porphyry_jewelry": {"porphyry": 10},
+    }
     for recipe_id in ABRASIVE_RECIPES:
         var recipe: Dictionary = city.get_craft_by_id(recipe_id)
         _check(not recipe.is_empty(), "the recipe exists: " + recipe_id)
         if recipe.is_empty():
             continue
         var inputs: Dictionary = recipe.get("resources", {})
-        _check(float(inputs.get(PRODUCT, 0)) > 0.0,
-            "the recipe grinds with pumice: " + recipe_id)
+        _check(not inputs.has("@abrasives"), "the recipe needs no abrasive group: " + recipe_id)
+        for abrasive in ABRASIVES:
+            _check(not inputs.has(abrasive), "the recipe needs no %s: %s" % [abrasive, recipe_id])
         var outputs: Dictionary = recipe.get("result", {})
-        _check(not outputs.has(PRODUCT),
-            "the pumice is an ingredient, not a result: " + recipe_id)
+        _check(not outputs.has(PRODUCT), "the pumice is not a result: " + recipe_id)
+        city.city_storage.clear()
+        city.city_quality_detail.clear()
+        for pid in base_inputs[recipe_id]:
+            city.add_to_storage(pid, int(base_inputs[recipe_id][pid]), "common")
+        var container = load("res://scripts/craft_container.gd").new(recipe)
+        var result: Dictionary = container.tick(float(recipe.get("time", 1)), true, "best")
+        _check(bool(result.get("completed", false)), recipe_id + " works without abrasives")
+        var quantity := 0
+        for release in result.get("releases", []):
+            if str(release.get("pid", "")) == recipe_id:
+                quantity += int(release.get("amount", 0))
+        _check(quantity == int(outputs.get(recipe_id, 0)), recipe_id + " yields its full output")
+        for pid in base_inputs[recipe_id]:
+            _check(int(city.get_storage_amount(pid)) == 0, recipe_id + " consumes " + str(pid))
+        city.city_storage.clear()
+        city.city_quality_detail.clear()
+        container = load("res://scripts/craft_container.gd").new(recipe)
+        result = container.tick(float(recipe.get("time", 1)), true, "best")
+        _check(not bool(result.get("completed", false)), recipe_id + " still needs its raw material")
 
 func _find_rule(entries: Array, display_key: String) -> Dictionary:
     for entry in entries:

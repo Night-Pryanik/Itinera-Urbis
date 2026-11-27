@@ -7,7 +7,7 @@ const LADDER := [
     {
         "product": "bronze_mirror", "recipe": "bronze_mirror", "tech": "jewelry",
         "building": "jeweler_house", "price": 25,
-        "inputs": { "bronze": 10, "pumice": 10 },
+        "inputs": { "bronze": 10 },
     },
     {
         "product": "glass_mirror", "recipe": "glass_mirror", "tech": "mirror_making",

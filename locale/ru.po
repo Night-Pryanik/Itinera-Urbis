@@ -3991,8 +3991,8 @@ msgid "Burns wood or bamboo into charcoal."
 msgstr "Обжигает древесину или бамбук для получения угля."
 
 msgctxt "crafts.description"
-msgid "Casts a bronze disc and polishes its face with pumice into a reflecting surface."
-msgstr "Отливает бронзовый диск и полирует его поверхность пемзой до зеркального блеска."
+msgid "Casts a bronze disc and polishes its face into a reflecting surface."
+msgstr "Отливает бронзовый диск и полирует его поверхность до зеркального блеска."
 
 msgctxt "crafts.description"
 msgid "Casts molten iron into thick-walled cauldrons, kettles and skillets."
@@ -4019,8 +4019,8 @@ msgid "Cures, ages and cuts tobacco leaf."
 msgstr "Выделывает, вылёживает и нарезает табачный лист"
 
 msgctxt "crafts.description"
-msgid "Cuts stone into plates, bowls, and cups and grinds them smooth with pumice."
-msgstr "Вырезает из камня тарелки, миски и чашки и шлифует их пемзой."
+msgid "Cuts stone into plates, bowls, and cups and grinds them smooth."
+msgstr "Вырезает из камня тарелки, миски и чашки и шлифует их."
 
 msgctxt "crafts.description"
 msgid "Decarburizes cast iron on the finery hearth and hammers it into wrought iron."
@@ -5835,6 +5835,10 @@ msgid "Worst quality"
 msgstr "Худшее качество"
 
 msgctxt "product_groups.name"
+msgid "Abrasives"
+msgstr "Абразивы"
+
+msgctxt "product_groups.name"
 msgid "Additional Food"
 msgstr "Дополнительная еда"
 
@@ -6913,6 +6917,10 @@ msgstr "Эбеновое дерево"
 msgctxt "resources.name"
 msgid "Eggs"
 msgstr "Яйца"
+
+msgctxt "resources.name"
+msgid "Emery"
+msgstr "Наждак"
 
 msgctxt "resources.name"
 msgid "Feathers"

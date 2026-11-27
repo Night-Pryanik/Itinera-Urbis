@@ -67,12 +67,10 @@
       "description": "Makes jewelry out of steel."
     },
     {
-      // A hard stone takes an abrasive: the lapidary grinds the face of the gem with
-      // the pumice the volcanic quarry yields, and only then sets it in the metal.
       "id": "lazurite_jewelry",
       "name": "Lazurite Jewelry",
       "produced_in": [ "jeweler_house" ],
-      "resources": { "lazurite_ore": 10, "pumice": 5 },
+      "resources": { "lazurite_ore": 10 },
       "result": { "lazurite_jewelry": 10 },
       "time": 18,
       "unlock_tech": "jewelry",
@@ -82,7 +80,7 @@
       "id": "malachite_jewelry",
       "name": "Malachite Jewelry",
       "produced_in": [ "jeweler_house" ],
-      "resources": { "malachite_ore": 10, "pumice": 5 },
+      "resources": { "malachite_ore": 10 },
       "result": { "malachite_jewelry": 10 },
       "time": 18,
       "unlock_tech": "jewelry",
@@ -102,7 +100,7 @@
       "id": "nephrite_jewelry",
       "name": "Nephrite Jewelry",
       "produced_in": [ "jeweler_house" ],
-      "resources": { "nephrite": 10, "pumice": 5 },
+      "resources": { "nephrite": 10 },
       "result": { "nephrite_jewelry": 10 },
       "time": 18,
       "unlock_tech": "jewelry",
@@ -112,7 +110,7 @@
       "id": "porphyry_jewelry",
       "name": "Porphyry Jewelry",
       "produced_in": [ "jeweler_house" ],
-      "resources": { "porphyry": 10, "pumice": 5 },
+      "resources": { "porphyry": 10 },
       "result": { "porphyry_jewelry": 10 },
       "time": 18,
       "unlock_tech": "jewelry",

@@ -311,11 +311,11 @@
       "id": "bronze_mirror",
       "name": "Bronze Mirror",
       "produced_in": [ "jeweler_house" ],
-      "resources": { "bronze": 10, "pumice": 10 },
+      "resources": { "bronze": 10 },
       "result": { "bronze_mirror": 10 },
       "time": 12.0,
       "unlock_tech": "jewelry",
-      "description": "Casts a bronze disc and polishes its face with pumice into a reflecting surface."
+      "description": "Casts a bronze disc and polishes its face into a reflecting surface."
     },
     {
       // The mirror recipes melt their own glass from raw batch. Spending finished
@@ -358,8 +358,7 @@
       "produced_in": [ "glassmaker_house" ],
       "resources": [
         { "quartz_sand": 20 },
-        [ { "soda": 10 }, { "potash": 10 } ],
-        { "pumice": 10 }
+        [ { "soda": 10 }, { "potash": 10 } ]
       ],
       "result": { "magnifying_glass": 10 },
       "time": 12.0,
@@ -372,7 +371,7 @@
       "id": "spectacles",
       "name": "Spectacles",
       "produced_in": [ "glassmaker_house" ],
-      "resources": { "quartz_sand": 20, "potash": 10, "lead": 10, "pumice": 10 },
+      "resources": { "quartz_sand": 20, "potash": 10, "lead": 10 },
       "result": { "spectacles": 10 },
       "time": 16.0,
       "unlock_tech": "optics",
@@ -626,16 +625,14 @@
       "description": "Makes paper from various plant fibers."
     },
     {
-      // The ware is not only cut out: the hollow of a bowl and the face of a plate are
-      // ground smooth, and the pumice of the quarry is the abrasive that does it.
       "id": "stone_tableware",
       "name": "Stone Tableware",
       "produced_in": [ "mason_workshop" ],
-      "resources": { "@tableware_stones": 20, "pumice": 5 },
+      "resources": { "@tableware_stones": 20 },
       "result": { "stone_tableware": 10 },
       "time": 5.0,
       "unlock_tech": "masonry",
-      "description": "Cuts stone into plates, bowls, and cups and grinds them smooth with pumice."
+      "description": "Cuts stone into plates, bowls, and cups and grinds them smooth."
     },
     {
       "id": "ink_from_green_vitriol_galls",
