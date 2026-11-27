@@ -19,6 +19,10 @@ extends Control
 const UI_THEME = preload("res://scripts/ui_theme.gd")
 const SpecCards = preload("res://scripts/specialization_cards.gd")
 
+const PANEL_MIN_SIZE := Vector2(620, 520)
+const CANVAS_MARGIN := 12.0
+
+var center: CenterContainer = null
 var panel: Panel = null
 var title_label: Label = null
 var subtitle_label: Label = null
@@ -44,13 +48,13 @@ func _ready():
     dim.mouse_filter = Control.MOUSE_FILTER_STOP
     add_child(dim)
 
-    var center := CenterContainer.new()
+    center = CenterContainer.new()
     center.set_anchors_preset(Control.PRESET_FULL_RECT)
     center.mouse_filter = Control.MOUSE_FILTER_IGNORE
     add_child(center)
 
     panel = Panel.new()
-    panel.custom_minimum_size = Vector2(620, 520)
+    panel.custom_minimum_size = PANEL_MIN_SIZE
     center.add_child(panel)
 
     var vbox := VBoxContainer.new()
@@ -72,8 +76,7 @@ func _ready():
     subtitle_label.add_theme_color_override("font_color", UI_THEME.color("text_secondary"))
     vbox.add_child(subtitle_label)
 
-    # The plates scroll: the window must stay inside the screen whatever the number of the branches
-    # in the data.
+    # The plates scroll, so the height of the window does not depend on the number of branches.
     scroll = ScrollContainer.new()
     scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
     scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
@@ -142,6 +145,26 @@ func refresh() -> void:
 
 # --- The window ---
 
+# The plate is centred in the part of the canvas the control panel of the hex leaves free: the
+# player keeps looking at the map while deciding, and the panel must stay readable. The scrim
+# still covers the whole canvas. At a large interface size the canvas is smaller than the design
+# size of the plate, so the plate gives up size and the list of the branches scrolls.
+func _place_panel() -> void:
+    var viewport_size := get_viewport_rect().size
+    size = viewport_size
+    position = Vector2.ZERO
+
+    var usable_bottom := viewport_size.y
+    var control_panel := get_tree().root.find_child("ControlPanel", true, false) as Control
+    if control_panel != null and control_panel.is_visible_in_tree():
+        usable_bottom = clampf(control_panel.get_global_rect().position.y, 0.0, viewport_size.y)
+
+    center.offset_top = CANVAS_MARGIN
+    center.offset_bottom = usable_bottom - viewport_size.y - CANVAS_MARGIN
+    panel.custom_minimum_size = Vector2(
+            minf(PANEL_MIN_SIZE.x, maxf(viewport_size.x - CANVAS_MARGIN * 2.0, 1.0)),
+            minf(PANEL_MIN_SIZE.y, maxf(usable_bottom - CANVAS_MARGIN * 2.0, 1.0)))
+
 # Opens the window for the next unspent pick. Nothing happens when the city has nothing to spend:
 # the window is a consequence of the state, not a place to look the state up.
 func open() -> void:
@@ -150,8 +173,7 @@ func open() -> void:
     _selected_id = ""
     _hovered_id = ""
     _render()
-    size = get_viewport_rect().size
-    position = Vector2.ZERO
+    _place_panel()
     show()
     # The choice is a decision of the player and the world waits for it. The owner
     # recomputes the flag, so a menu or the active pause is not overridden here.

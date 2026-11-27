@@ -1112,6 +1112,14 @@ func _test_live(state: Dictionary) -> void:
     check(popup.visible, "the choice window must open on an unspent pick", state)
     check(paused, "the choice window must stop the simulation", state)
 
+    # The decision is made with the map in view: the plate must leave the control panel free.
+    var plate: Rect2 = (popup.panel as Control).get_global_rect()
+    var controls: Rect2 = (_main_map.get_node("ControlPanelLayer/ControlPanel") as Control).get_global_rect()
+    check(plate.end.y <= controls.position.y + 1.0,
+            "the choice window must not cover the control panel (%s vs %s)"
+                    % [str(plate), str(controls)], state)
+    check(plate.position.y >= -1.0, "the choice window must stay on the screen (%s)" % str(plate), state)
+
     # A postponed choice closes the window and keeps the pick.
     popup._on_postpone_pressed()
     await process_frame
