@@ -18,6 +18,10 @@ const LISTS_Z_INDEX := 900
 # screen (the ScrollContainer takes it from the content's row width).
 const POPUP_SCROLLBAR_WIDTH := 14.0
 
+# A consumption list longer than this gets a toggle in its header. Collapsed,
+# such a list shows no rows at all — only the header with the toggle.
+const CONSUMPTION_COLLAPSE_THRESHOLD := 3
+
 # The side of an icon in a recipe row. The recipe list and the button of the slot
 # share _make_craft_content(), so one constant sizes the icons in both.
 const RECIPE_ICON_SIZE := 32
@@ -30,6 +34,9 @@ var crafts_data: Array = []
 var ui_helpers: Node
 
 var panel: Panel
+var content_root: VBoxContainer
+var content_vbox: VBoxContainer
+var close_button: Button
 var title_label: Label
 var info_label: Label
 var slots_container: VBoxContainer
@@ -38,6 +45,10 @@ var slots_container: VBoxContainer
 # list of the slots, and is rebuilt in _refresh() (the container itself is
 # created once in _ready()).
 var consumption_box: VBoxContainer
+var _consumption_rows: VBoxContainer
+var _consumption_toggle: Button
+# The rebuilds of the section on city_updated must not discard the choice of the player.
+var _consumption_expanded := false
 
 var popups_list: Array = []
 var popup_map: Dictionary = {}
@@ -116,14 +127,33 @@ func _ready():
     panel.add_theme_stylebox_override("panel", UI_THEME.window_plate())
     center.add_child(panel)
 
+    var outer = VBoxContainer.new()
+    content_root = outer
+    outer.set_anchors_preset(Control.PRESET_FULL_RECT)
+    outer.offset_left = 20
+    outer.offset_top = 20
+    outer.offset_right = -20
+    outer.offset_bottom = -20
+    outer.add_theme_constant_override("separation", 10)
+    panel.add_child(outer)
+
+    # One scroll for the whole window: whatever the content — supplies, upgrade
+    # rows, many slots — the player can reach every part of it. The close button
+    # stays outside, so the window can always be dismissed.
+    var window_scroll = ScrollContainer.new()
+    window_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+    window_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+    window_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+    outer.add_child(window_scroll)
+
+    # The scroll takes its extent from the size of this box. Full-rect anchors
+    # would pin the box to the viewport and leave nothing to scroll.
     var vbox = VBoxContainer.new()
-    vbox.set_anchors_preset(Control.PRESET_FULL_RECT)
-    vbox.offset_left = 20
-    vbox.offset_top = 20
-    vbox.offset_right = -20
-    vbox.offset_bottom = -20
+    content_vbox = vbox
+    vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+    vbox.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
     vbox.add_theme_constant_override("separation", 10)
-    panel.add_child(vbox)
+    window_scroll.add_child(vbox)
 
     title_label = Label.new()
     title_label.add_theme_font_size_override("font_size", 20)
@@ -144,19 +174,15 @@ func _ready():
     slots_title.text = tr("Production slots:")
     vbox.add_child(slots_title)
 
-    var scroll = ScrollContainer.new()
-    scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
-    scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-    vbox.add_child(scroll)
-
     slots_container = VBoxContainer.new()
     slots_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-    scroll.add_child(slots_container)
+    vbox.add_child(slots_container)
 
     var close_btn = Button.new()
     close_btn.text = tr("Close")
     close_btn.pressed.connect(_on_close_pressed)
-    vbox.add_child(close_btn)
+    close_button = close_btn
+    outer.add_child(close_btn)
 
     # The tooltip of the "Upgrade" button: a panel with icons (the building, the
     # materials). mouse_filter IGNORE — the tooltip does not intercept the input;
@@ -215,6 +241,7 @@ func open(building_id_arg: String, data: Dictionary):
     # when the panel opens (otherwise it would return right away on "the state
     # has not changed").
     _last_panel_state = {}
+    _consumption_expanded = false
     _refresh()
     show()
 
@@ -504,6 +531,8 @@ func _refresh():
     if needed_width > panel.custom_minimum_size.x:
         panel.custom_minimum_size.x = needed_width
 
+    _fit_panel_height()
+
     # We bring the width of the popups in line with the width of the panel
     var popup_width = panel.custom_minimum_size.x - 70 - 40
     for popup in popups:
@@ -547,17 +576,31 @@ func _fill_consumption_section(tm, indices: Array) -> float:
     if rows.is_empty():
         return 0.0
 
+    var header_box := HBoxContainer.new()
+    header_box.add_theme_constant_override("separation", 8)
     var header = Label.new()
     header.text = tr("Consumes:")
     header.add_theme_font_size_override("font_size", 16)
     header.add_theme_color_override("font_color", UI_THEME.color("text_secondary"))
     header.mouse_filter = Control.MOUSE_FILTER_IGNORE
-    consumption_box.add_child(header)
+    header.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+    header_box.add_child(header)
+
+    _consumption_toggle = Button.new()
+    _consumption_toggle.flat = true
+    _consumption_toggle.custom_minimum_size = Vector2(24, 24)
+    _consumption_toggle.pressed.connect(_on_consumption_toggled)
+    header_box.add_child(_consumption_toggle)
+    consumption_box.add_child(header_box)
+
+    _consumption_rows = VBoxContainer.new()
+    _consumption_rows.add_theme_constant_override("separation", 4)
+    consumption_box.add_child(_consumption_rows)
 
     var all_resources := _get_all_resources()
     var font = get_theme_default_font()
     var font_size = get_theme_default_font_size()
-    var content_width := 0.0
+    var content_width := font.get_string_size(tr("Consumes:"), HORIZONTAL_ALIGNMENT_LEFT, -1, 16).x + 32.0
     for row in rows:
         var line = HBoxContainer.new()
         line.add_theme_constant_override("separation", 6)
@@ -581,7 +624,7 @@ func _fill_consumption_section(tm, indices: Array) -> float:
         rate_label.add_theme_color_override("font_color", UI_THEME.color("text_secondary"))
         rate_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
         line.add_child(rate_label)
-        consumption_box.add_child(line)
+        _consumption_rows.add_child(line)
         # The width of the row: the name of the resource + ": " + the tail of the
         # label, plus the indent, the marker, the icon (20 px) and the separators
         # of the HBox.
@@ -591,8 +634,40 @@ func _fill_consumption_section(tm, indices: Array) -> float:
                 HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x \
             +18.0 + 12.0 + 20.0 + 24.0
         content_width = maxf(content_width, row_width)
+    _apply_consumption_collapse()
     consumption_box.visible = true
     return content_width
+
+# Hides a long list of supplies behind the toggle in its header. The state
+# survives the periodic rebuilds of the section, so a click of the player is not
+# undone by the next simulation tick.
+func _apply_consumption_collapse() -> void:
+    if _consumption_toggle == null or _consumption_rows == null:
+        return
+    var collapsible := _consumption_rows.get_child_count() > CONSUMPTION_COLLAPSE_THRESHOLD
+    if not collapsible:
+        _consumption_expanded = false
+    _consumption_toggle.visible = collapsible
+    _consumption_toggle.text = "▾" if _consumption_expanded else "▸"
+    _consumption_toggle.tooltip_text = tr("Collapse panel") if _consumption_expanded else tr("Expand panel")
+    for child in _consumption_rows.get_children():
+        child.visible = _consumption_expanded
+    _fit_panel_height()
+
+func _on_consumption_toggled() -> void:
+    _consumption_expanded = not _consumption_expanded
+    _apply_consumption_collapse()
+
+# The window grows with its content up to the viewport. Called after a rebuild of
+# the supplies and after the player expands or collapses the list.
+func _fit_panel_height() -> void:
+    # The margins, the close button and the separation are outside the scroll, so
+    # they are added to the content when the target height is calculated.
+    var chrome := 40.0 + close_button.get_combined_minimum_size().y \
+        + float(content_root.get_theme_constant("separation"))
+    var needed_height := content_vbox.get_combined_minimum_size().y + chrome
+    var max_height := maxf(400.0, get_viewport_rect().size.y - 40.0)
+    panel.custom_minimum_size.y = maxf(400.0, minf(needed_height, max_height))
 
 # The number of the buildings of this type that really spend the supplies: there
 # is a citizen and at least one non-empty slot. When there are no such buildings,
@@ -618,6 +693,8 @@ func _clear_consumption_section():
     for child in consumption_box.get_children():
         consumption_box.remove_child(child)
         child.queue_free()
+    _consumption_rows = null
+    _consumption_toggle = null
     consumption_box.visible = false
 
 # The content of a list lives in a ScrollContainer: a long recipe list must not
