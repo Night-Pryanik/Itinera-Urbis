@@ -1,13 +1,30 @@
 // The articles of the "Game concepts" section of the encyclopedia, one file per language.
 // Like the city names, these are authored texts rather than translated strings: the loader takes
 // one whole file for the current language, with English as the fallback (data_loader.gd).
+// Physical line breaks inside a value are only source wrapping: the loader drops them together
+// with the indentation of the next line. Use \n for a real break and \n\n between blocks.
+// Leave a space before the wrap where two words must stay separated.
 {
   "game_concepts": [
     {
       "id": "production_mastery",
       "name": "Production mastery of goods",
       "icon": "production_bonus.png",
-      "description": "The city can increase the professional level of its workers in producing goods.\n\n• Production mastery is tracked separately for each good:\n• A thousand units of brandy do not earn a rank for rum. Every good has its own counter.\n• Only units released by recipes of city buildings are counted. Goods bought from towns and raw material gathered on the map are not.\n• The first rank comes at 1000 units of the good, the second at 3000 in total, that is 2000 more on top of the first thousand.\n• Each rank adds one quality level to all future output of that good in every city building.\n• The scale ends at level 4: a perfect good is not improved further. Mastery does not change the quality of the raw material or the goods already in storage.\n• A good made with an additional ingredient is counted to its base good; the dye or the spice gets no rank of its own.\n• The Effects tab shows one row per mastered good. A building name carries one star when the building makes any mastered good; the exact ranks are in the building tooltip. A new rank is reported as an important message and kept in the journal."
+      "description": "The city can increase the professional level of its workers in producing goods.\n\n
+        • Production mastery is tracked separately for each good:\n
+        • A thousand units of brandy do not earn a rank for rum. Every good has its own counter.\n
+        • Only units released by recipes of city buildings are counted. Goods bought from towns and raw 
+        material gathered on the map are not.\n
+        • The first rank comes at 1000 units of the good, the second at 3000 in total, that is 2000 
+        more on top of the first thousand.\n
+        • Each rank adds one quality level to all future output of that good in every city building.\n
+        • The scale ends at level 4: a perfect good is not improved further. Mastery does not change the 
+        quality of the raw material or the goods already in storage.\n
+        • A good made with an additional ingredient is counted to its base good; the dye or the spice 
+        gets no rank of its own.\n
+        • The Effects tab shows one row per mastered good. A building name carries one star when the 
+        building makes any mastered good; the exact ranks are in the building tooltip. A new rank is 
+        reported as an important message and kept in the journal."
     }
   ]
 }

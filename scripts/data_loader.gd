@@ -549,22 +549,24 @@ func _read_city_names(extra_names) -> Array:
 func _read_game_concepts() -> Array:
     var requested := TranslationServer.get_locale().to_lower().split("_")[0]
     for code in [requested, SOURCE_LOCALE]:
+        # The articles are wrapped freely in the source; real breaks are written as "\n".
         var data = _read_json_file(LOCALE_FOLDER.path_join(
-                "game_concepts_%s.json" % code))
+                "game_concepts_%s.json" % code), true)
         if data is Dictionary and data.get("game_concepts") is Array:
             return data["game_concepts"]
     return []
 
 # One data file outside the folder scan, in the same JSON-with-comments format.
 # null — the file is absent, which is a normal answer for a language with no pool.
-func _read_json_file(file_path: String):
+# soft_wrap is for authored prose: physical breaks inside strings are dropped there.
+func _read_json_file(file_path: String, soft_wrap := false):
     if not FileAccess.file_exists(file_path):
         return null
     var file = FileAccess.open(file_path, FileAccess.READ)
     if file == null:
         print("Error: failed to open the file ", file_path)
         return null
-    var data = JsonUtils.parse(file.get_as_text())
+    var data = JsonUtils.parse(file.get_as_text(), soft_wrap)
     if data == null:
         print("Error: failed to parse JSON from ", file_path)
     return data

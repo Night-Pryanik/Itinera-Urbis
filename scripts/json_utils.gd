@@ -6,16 +6,18 @@
 #
 # The cleaning keeps the line breaks of the original: a problem in the data is reported
 # by the line the author sees in the editor, and a stripped comment would shift it.
+# Authored prose files pass soft_wrap = true: there a physical break inside a string is
+# only a wrap in the source, and is removed together with the indentation that follows.
 #
 # The scan jumps from one token to the next instead of walking the text character by
 # character: the whole data set is cleaned on every load, and a per-character loop in
 # GDScript costs hundreds of milliseconds for a quarter of a megabyte.
 extends RefCounted
 
-static func parse(text: String):
-    return JSON.parse_string(strip_comments(text))
+static func parse(text: String, soft_wrap := false):
+    return JSON.parse_string(strip_comments(text, soft_wrap))
 
-static func strip_comments(json_string: String) -> String:
+static func strip_comments(json_string: String, soft_wrap := false) -> String:
     var parts := PackedStringArray()
     var length := json_string.length()
     var i := 0
@@ -50,9 +52,10 @@ static func strip_comments(json_string: String) -> String:
             break
 
         if kind == 1:
-            # A string literal is copied as it is: "//" inside it is not a comment.
+            # "//" inside a string is not a comment; soft wrapping joins its physical breaks.
             var after_string := _string_end(json_string, token)
-            parts.append(json_string.substr(token, after_string - token))
+            var literal := json_string.substr(token, after_string - token)
+            parts.append(_join_wrapped_string(literal) if soft_wrap else literal)
             i = after_string
         elif kind == 2:
             var line_end := json_string.find("\n", token)
@@ -70,6 +73,27 @@ static func strip_comments(json_string: String) -> String:
             parts.append("\n".repeat(skipped.count("\n")))
             i = block_end + 2
 
+    return "".join(parts)
+
+# Physical breaks in an authored string are source wrapping, not text: Godot's parser would
+# keep them (and the indentation) as real newlines. Real breaks are written as "\n" escapes
+# and survive untouched, so the player sees the same text however the line is wrapped.
+static func _join_wrapped_string(literal: String) -> String:
+    if not literal.contains("\n") and not literal.contains("\r"):
+        return literal
+    var parts := PackedStringArray()
+    var i := 0
+    while i < literal.length():
+        var c := literal[i]
+        if c == "\r" or c == "\n":
+            if c == "\r" and i + 1 < literal.length() and literal[i + 1] == "\n":
+                i += 1
+            i += 1
+            while i < literal.length() and (literal[i] == " " or literal[i] == "\t"):
+                i += 1
+            continue
+        parts.append(c)
+        i += 1
     return "".join(parts)
 
 # The index just past the closing quote of the literal that starts at `start`. A quote

@@ -14,6 +14,8 @@
 #   5. An unterminated block comment, and a comment at the very end of the file.
 #   6. Every file of res://data: the cleaned text has as many lines as the original,
 #      and it parses.
+#   7. Soft wrap of authored prose: physical breaks inside strings are only source
+#      wrapping, while "\n" escapes stay as real breaks.
 extends SceneTree
 
 # Hang watchdog: without it a break in the _run() coroutine looks like eternal
@@ -35,6 +37,7 @@ func _run() -> void:
     _test_escapes(state)
     _test_broken(state)
     _test_data_files(state)
+    _test_soft_wrap(state)
 
     if state["failed"]:
         print("JSON UTILS TEST FAILED")
@@ -125,6 +128,37 @@ func _test_data_files(state: Dictionary) -> void:
             broken.append(path)
     check(broken.is_empty(), "every data file parses (%s)" % str(broken), state)
     check(shifted.is_empty(), "no data file loses a line (%s)" % str(shifted), state)
+
+# --- 7. Soft wrap -------------------------------------------------------------------
+
+func _test_soft_wrap(state: Dictionary) -> void:
+    var nl := char(10)
+    var text := "{\"a\": \"one " + nl + "    two\"}"
+    var soft = JsonUtils.parse(text, true)
+    check(soft is Dictionary and str(soft["a"]) == "one two",
+            "a physical break and its indentation are dropped", state)
+
+    # Without the flag the same text is parsed as it stands.
+    var plain = JsonUtils.parse(text)
+    check(plain is Dictionary and str(plain["a"]) == "one " + nl + "    two",
+            "the default mode keeps the physical break", state)
+    check(JsonUtils.strip_comments(text).count("\n") == 1,
+            "the default mode keeps the line count", state)
+
+    var escaped := "{\"a\": \"one " + nl + "    two\\nthree\"}"
+    var with_escape = JsonUtils.parse(escaped, true)
+    check(with_escape is Dictionary and str(with_escape["a"]) == "one two\nthree",
+            "a real newline escape survives the soft wrap", state)
+
+    var comment := "{\"a\": \"one // two " + nl + "    three\"}"
+    var with_comment = JsonUtils.parse(comment, true)
+    check(with_comment is Dictionary and str(with_comment["a"]) == "one // two three",
+            "a comment marker inside a wrapped string is still text", state)
+
+    var crlf := "{\"a\": \"one \r\n    two\"}"
+    var with_crlf = JsonUtils.parse(crlf, true)
+    check(with_crlf is Dictionary and str(with_crlf["a"]) == "one two",
+            "a CRLF break is dropped as a whole", state)
 
 func _collect(path: String, out: Array) -> void:
     var dir := DirAccess.open(path)
