@@ -342,6 +342,20 @@ func _get_build_manager():
         _cached_build_manager = main_map_node.get_node("BuildManager") if main_map_node and main_map_node.has_node("BuildManager") else null
     return _cached_build_manager
 
+# A rank is earned in the simulation tick, while this window may be closed. The map calls this
+# after it creates the manager, so an open window redraws the effects and the names at once.
+func connect_mastery_manager(manager: Node) -> void:
+    if manager == null or not manager.has_signal("rank_gained"):
+        return
+    if not manager.rank_gained.is_connected(_on_mastery_rank_gained):
+        manager.rank_gained.connect(_on_mastery_rank_gained)
+
+func _on_mastery_rank_gained(_pid: String, _rank: int) -> void:
+    if not visible:
+        return
+    effects_tab.refresh()
+    buildings_tab.refresh_built()
+
 # The handler of the completion of the building construction: shows the message
 # "Construction of <building> complete" in the bottom panel of CityUI.
 func _on_building_build_completed(building_id: String, _build_key: String):

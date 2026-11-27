@@ -8,6 +8,7 @@
   // The object is grouped into blocks by the system that owns the constants:
   //   city       — the treasury of the player's city and its internal market;
   //   craft      — the price of a good with additional ingredients;
+  //   mastery    — the ranks of the mastery of a craft, measured in units made by the city;
   //   breeding   — the livestock: the seed herd of a new herd, the breeding cycle and the core the slaughterhouse keeps;
   //   expansion  — the costs of extending the city's territory on the map;
   //   towns      — the economy of the towns (their treasury, warehouse and trade).
@@ -78,6 +79,16 @@
       //                        base plus the addition, and the player has no reason to attach
       //                        anything but for the population's demand.
       "craft_extra_synergy": 0.15
+    },
+
+    // --- MASTERY: the professional rank of the city in the making of one good ---
+    "mastery": {
+      // mastery_thresholds — the cumulative units of ONE good the city's buildings must make to
+      //                      earn each rank. The second rank asks for the units ON TOP of the
+      //                      first (1000 + 2000 = 3000 in all). Every rank adds one quality
+      //                      level to that good in every building that makes it, up to the best
+      //                      level of the scale (craft_mastery_manager.gd).
+      "mastery_thresholds": [ 1000, 3000 ]
     },
 
     // --- BREEDING: the livestock, the seed herd for a breeding on an empty hex ---

@@ -116,6 +116,10 @@ const TOWN_TRADE_MANAGER_SCRIPT := preload("res://scripts/town_trade_manager.gd"
 # from the map it lives on.
 const CHALLENGE_MANAGER_SCRIPT := preload("res://scripts/challenge_manager.gd")
 
+# The mastery of the crafts of the city (see craft_mastery_manager.gd). Created in code for the
+# same reason as the fame: it is a counter of what the buildings make, with no visual part.
+const CRAFT_MASTERY_MANAGER_SCRIPT := preload("res://scripts/craft_mastery_manager.gd")
+
 # The active pause (see active_pause.gd): it draws the frame around the window and
 # holds the queue of the waiting actions, therefore it is created in code together
 # with its own layer.
@@ -359,6 +363,9 @@ var town_trade_manager: Node = null
 # The fame of a good and the challenges of the era: the counters of what the city gave away, the
 # tiers the city has been paid for, and the tasks of data/challenges.json (see challenge_manager.gd).
 var challenge_manager: Node = null
+
+# The mastery of the making of each good by the buildings of the city (see craft_mastery_manager.gd).
+var craft_mastery_manager: Node = null
 
 # The aqueduct network: the second layer of improvements over the hexes.
 var aqueduct_manager: Node = null

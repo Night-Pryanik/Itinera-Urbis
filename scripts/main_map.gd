@@ -88,6 +88,13 @@ func _ready():
     add_child(challenge_manager)
     challenge_manager.bind_map(self)
 
+    # The mastery of a craft is measured by the releases of the buildings, so the manager exists
+    # before the first simulation tick. The city window listens for a new rank to redraw its rows.
+    craft_mastery_manager = CRAFT_MASTERY_MANAGER_SCRIPT.new()
+    craft_mastery_manager.name = "CraftMasteryManager"
+    add_child(craft_mastery_manager)
+    city_ui.connect_mastery_manager(craft_mastery_manager)
+
     if SaveManager.is_loaded:
         # The loading screen the menu put on the root survives the scene change. The
         # restore runs in stages with a frame between them so the bar can advance;

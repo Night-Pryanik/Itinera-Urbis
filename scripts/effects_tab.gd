@@ -171,6 +171,8 @@ func _group_title(group: String) -> String:
             return tr("Technologies")
         "specializations":
             return tr("Specializations")
+        "mastery":
+            return tr("Production mastery")
     return group
 
 # A row: the icon and one flowing line — the effect and, right behind it in brackets, what the

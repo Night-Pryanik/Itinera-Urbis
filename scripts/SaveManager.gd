@@ -348,7 +348,11 @@ func _collect_data(main_map: Node) -> Dictionary:
         # paid for. A save written before the mechanic simply carries no counters, and the city has
         # earned nothing yet (there is no migration of an old save).
         "challenge_state": main_map.challenge_manager.serialize() \
-                if main_map.challenge_manager else {}
+                if main_map.challenge_manager else {},
+        # The mastery of the crafts: the units the buildings have made of each good and the ranks
+        # those units have paid for. A save written before the mechanic carries no block.
+        "mastery_state": main_map.craft_mastery_manager.serialize() \
+                if main_map.craft_mastery_manager else {}
     }
 
 func apply_loaded_data():
@@ -418,6 +422,10 @@ func apply_loaded_data():
     if map_for_challenges != null and map_for_challenges.challenge_manager != null:
         map_for_challenges.challenge_manager.deserialize(
                 saved_data.get("challenge_state", {}))
+    # The mastery of the crafts. A save without the block leaves every rank unearned.
+    if map_for_challenges != null and map_for_challenges.craft_mastery_manager != null:
+        map_for_challenges.craft_mastery_manager.deserialize(
+                saved_data.get("mastery_state", {}))
     # We restore the building constructions (their construction progress is stored in build_manager)
     CityData.building_construction = saved_data.get("building_construction", {})
     # tile_data will be restored separately

@@ -1450,6 +1450,66 @@ func _record_cycle_entry(cache: Dictionary, pid: String, source_id: String, amou
 func get_building_name(building_id: String) -> String:
     return GameData.get_building_display_name(building_id)
 
+# The goods a building can make, with the recipes of a good with an additional ingredient reduced
+# to the base good: the mastery of the city belongs to the good, not to the dye added to it.
+func get_building_mastery_products(building_id: String) -> Array:
+    var out: Array = []
+    for craft in GameData.crafts:
+        if not (craft is Dictionary):
+            continue
+        var produced_in = craft.get("produced_in", [])
+        if not (produced_in is Array):
+            continue
+        if not (building_id in produced_in or "*" in produced_in):
+            continue
+        var result = craft.get("result", {})
+        if not (result is Dictionary):
+            continue
+        for pid in result:
+            var base := str(GameData.parse_generated_id(str(pid)).get("base", ""))
+            var key := base if not base.is_empty() else str(pid)
+            if key != "" and not out.has(key):
+                out.append(key)
+    return out
+
+# The stars added to the name of a built building: the highest rank among the goods it makes.
+func get_building_mastery_stars(building_id: String) -> String:
+    var manager := _mastery_manager()
+    if manager == null:
+        return ""
+    var best := 0
+    for pid in get_building_mastery_products(building_id):
+        best = maxi(best, manager.rank_of(str(pid)))
+    return manager.rank_stars(best)
+
+# One row per mastered good a building makes, for the tooltip of the built buildings.
+func get_building_mastery_records(building_id: String) -> Array:
+    var manager := _mastery_manager()
+    if manager == null:
+        return []
+    var out: Array = []
+    var seen := {}
+    for pid in get_building_mastery_products(building_id):
+        var key := str(pid)
+        var rank: int = manager.rank_of(key)
+        if rank <= 0 or seen.has(key):
+            continue
+        seen[key] = true
+        out.append({
+            "product_id": key,
+            "product_name": GameData.get_product_name(key),
+            "stars": manager.rank_stars(rank),
+        })
+    return out
+
+# The quality a release of a recipe gets after the mastery of its good is folded in. The rank is
+# a property of the city, so every building that makes the good gets the same addition.
+func apply_mastery_to_quality(pid: String, quality: String) -> String:
+    var manager := _mastery_manager()
+    if manager == null:
+        return quality
+    return GameData.raise_quality_key(quality, manager.rank_of(pid))
+
 # --- THE HELPERS FOR WORKING WITH THE QUALITY OF THE RESOURCES ---
 # city_storage stores the total amount, city_quality_detail is the breakdown by quality.
 # All the operations of the addition/write-off must go through these helpers, so that
@@ -2030,10 +2090,11 @@ func do_tick():
                         bool(tick_res.get("completed", false)))
 
             # --- THE GRADUAL RELEASE OF THE RESULT (every tick) ---
-            # Each "portion" of the release has the quality, calculated by
-            # the accumulated consumed at the current moment (see CraftContainer._compute_quality_from_consumed).
-            # This agrees with the UI semantically: the label [≈] shows the planned
-            # per_sec, and the storage actually receives +N per tick (on average).
+            # The quality of a portion comes from the ingredients taken so far (see
+            # CraftContainer._compute_quality_from_consumed) and is raised by the rank the city has
+            # earned in making that good. This agrees with the UI semantically: the label [≈] shows
+            # the planned per_sec, and the storage actually receives +N per tick (on average).
+            var mastery := _mastery_manager()
             var releases: Array = tick_res.get("releases", [])
             for rel in releases:
                 var rel_pid: String = str(rel.get("pid", ""))
@@ -2041,8 +2102,13 @@ func do_tick():
                 var rel_quality: String = str(rel.get("quality", "common"))
                 if rel_amount <= 0 or rel_pid.is_empty():
                     continue
+                var mastery_pid: String = mastery.mastery_product_id(rel_pid) \
+                        if mastery != null else rel_pid
+                rel_quality = apply_mastery_to_quality(mastery_pid, rel_quality)
                 add_to_storage(rel_pid, rel_amount, rel_quality)
                 record_production_source(rel_pid, building_source, rel_amount)
+                if mastery != null:
+                    mastery.record_production(mastery_pid, rel_amount)
 
             if not bool(tick_res.get("completed", false)):
                 continue
@@ -2771,6 +2837,19 @@ func get_city_effects() -> Array:
                 "name": format_specialization_bonus_record(bonus),
                 "value": "",
                 "source": get_specialization_full_name(spec),
+            })
+
+    # The ranks earned in the making of a good. They belong to the good itself, and reach every
+    # building that makes it, so they are not mixed into the bonuses of a building or a branch.
+    var mastery := _mastery_manager()
+    if mastery != null:
+        for record in mastery.mastery_records():
+            effects.append({
+                "group": "mastery",
+                "icon": "production_bonus.png",
+                "name": tr("%s production mastery") % str(record.get("product_name", "")),
+                "value": "+%s" % str(record.get("stars", "")),
+                "source": tr("Rank %d") % int(record.get("rank", 0)),
             })
 
     return effects
@@ -3856,6 +3935,14 @@ func _challenge_manager() -> Node:
 func _challenge_record(challenge_id: String) -> Dictionary:
     var manager := _challenge_manager()
     return manager.fame_record_of(challenge_id) if manager != null else {}
+
+# The mastery of the crafts lives on the map, not in the city: it counts what the buildings of the
+# city have made, and a game without a map has no masteries.
+func _mastery_manager() -> Node:
+    var map = get_node_or_null("/root/MainMap")
+    if map == null:
+        return null
+    return map.get("craft_mastery_manager")
 
 func _specialization_unlock_met(spec: Dictionary) -> bool:
     var unlock = spec.get("unlock", [])

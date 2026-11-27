@@ -643,6 +643,9 @@ const GAME_BALANCE_BLOCKS := {
     "craft": {
         "craft_extra_synergy": LEAF,
     },
+    "mastery": {
+        "mastery_thresholds": {"array": LEAF},
+    },
     "breeding": {
         "livestock_breeding_cost": LEAF,
         "breeding_cycle_multiplier": LEAF,

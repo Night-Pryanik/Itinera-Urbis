@@ -23,6 +23,12 @@ msgctxt ""
 msgid "%s coins/sec"
 msgstr "%s монет/сек"
 
+msgid "%s production mastery"
+msgstr "Мастерство производства: %s"
+
+msgid "%s production: +%s"
+msgstr "Производство %s: +%s"
+
 msgctxt ""
 msgid "Additional cost:"
 msgstr "Дополнительная стоимость:"
@@ -70,6 +76,12 @@ msgctxt ""
 msgid "Not enough coins for the upkeep (%d unpaid)! Grow the population or demolish a building/improvement."
 msgstr "Не хватает монет на содержание (%d не оплачено)! Увеличьте население или снесите здание/улучшение."
 
+msgid "Production mastery"
+msgstr "Мастерство производства"
+
+msgid "Production mastery of %s: rank %d, +%s to quality"
+msgstr "Мастерство производства %s: ранг %d, +%s к качеству"
+
 msgctxt ""
 msgid "Products"
 msgstr "Товары"
@@ -77,6 +89,9 @@ msgstr "Товары"
 msgctxt ""
 msgid "Professions"
 msgstr "Профессии"
+
+msgid "Rank %d"
+msgstr "Ранг %d"
 
 msgctxt ""
 msgid "The chance that a main river reaching a lake or the sea splits into distributaries at its mouth."

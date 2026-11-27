@@ -184,7 +184,7 @@ func update_built_status():
                 break
         var base_name = bdata["name"] if bdata else group["id"]
 
-        var display_name = "%s x%d" % [base_name, group["total"]] if group["total"] > 1 else base_name
+        var display_name = _built_display_name(group, base_name)
         var status_info = _get_built_status_info(group["working"], group["idle"], group["total"])
 
         item_btn.text = display_name
@@ -223,7 +223,7 @@ func refresh_built():
                 bdata = b
                 break
         var base_name = bdata["name"] if bdata else g["id"]
-        var display_name = "%s x%d" % [base_name, g["total"]] if g["total"] > 1 else base_name
+        var display_name = _built_display_name(g, base_name)
         var status_info = _get_built_status_info(g["working"], g["idle"], g["total"])
 
         # A group of built buildings of the same type — a button-row in the style of the list
@@ -451,6 +451,16 @@ func _fill_built_tooltip(group: Dictionary):
     title.mouse_filter = Control.MOUSE_FILTER_IGNORE
     content.add_child(title)
 
+    # The craft mastery is a property of the city, not of this one building, but it is read here:
+    # the player looks at a distillery to learn what its brandy has gained from the masters.
+    for record in CityData.get_building_mastery_records(str(group.get("id", ""))):
+        var mastery_label = Label.new()
+        mastery_label.text = tr("%s production: +%s") % [
+                str(record.get("product_name", "")), str(record.get("stars", ""))]
+        mastery_label.add_theme_color_override("font_color", UI_THEME.color("info"))
+        mastery_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+        content.add_child(mastery_label)
+
     var states = _get_built_states(group)
     for state in states:
         var state_label: String = state[0]
@@ -481,6 +491,13 @@ func _fill_built_tooltip(group: Dictionary):
     footer.mouse_filter = Control.MOUSE_FILTER_IGNORE
     content.add_child(footer)
 
+# The name of a group of built buildings. The craft mastered by the city adds the stars of its rank
+# to the name of every building that makes the good: "Distillery x2 ★".
+func _built_display_name(group: Dictionary, base_name: String) -> String:
+    var stars := CityData.get_building_mastery_stars(str(group.get("id", "")))
+    return "%s x%d%s" % [base_name, int(group.get("total", 0)), stars] \
+            if int(group.get("total", 0)) > 1 else "%s%s" % [base_name, stars]
+
 # The heading of the group for the tooltip: "Hand mill x2" / "Hand mill".
 func _built_group_title(group: Dictionary) -> String:
     var bdata = null
@@ -489,7 +506,7 @@ func _built_group_title(group: Dictionary) -> String:
             bdata = b
             break
     var base_name = bdata.get("name", group["id"]) if bdata else group["id"]
-    return "%s x%d" % [base_name, group["total"]] if group["total"] > 1 else base_name
+    return _built_display_name(group, base_name)
 
 # Shows the tooltip of the built building under the list button (with a live
 # update of the content on every call, while the cursor is on the button).

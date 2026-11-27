@@ -25,6 +25,12 @@ msgctxt ""
 msgid "%s coins/sec"
 msgstr ""
 
+msgid "%s production mastery"
+msgstr ""
+
+msgid "%s production: +%s"
+msgstr ""
+
 msgctxt ""
 msgid "Additional cost:"
 msgstr ""
@@ -72,12 +78,21 @@ msgctxt ""
 msgid "Not enough coins for the upkeep (%d unpaid)! Grow the population or demolish a building/improvement."
 msgstr ""
 
+msgid "Production mastery"
+msgstr ""
+
+msgid "Production mastery of %s: rank %d, +%s to quality"
+msgstr ""
+
 msgctxt ""
 msgid "Products"
 msgstr ""
 
 msgctxt ""
 msgid "Professions"
+msgstr ""
+
+msgid "Rank %d"
 msgstr ""
 
 msgctxt ""

@@ -1166,6 +1166,20 @@ func quality_key_level(quality_key: String) -> String:
     var extra_index := _level_index(extra_qid, levels)
     return str(levels[maxi(base_index, mini(extra_index, base_index + 1))])
 
+# The quality key of a good made by masters of a rank. The base level rises by one per rank; the
+# level of an additional ingredient stays its own, because the masters learned the good and not
+# the dye. The scale is finite: a good already of the best level cannot be improved further.
+func raise_quality_key(quality_key: String, levels: int) -> String:
+    if levels <= 0:
+        return quality_key
+    var parts := split_quality_key(quality_key)
+    var extra_qid := str(parts[1])
+    var levels_list := get_quality_levels()
+    if levels_list.is_empty():
+        return quality_key
+    var index := mini(_level_index(str(parts[0]), levels_list) + levels, levels_list.size() - 1)
+    return make_quality_key(str(levels_list[index]), extra_qid)
+
 # The index of a level in the ordered list (worst first). An unknown id falls back to the worst.
 func _level_index(quality_id: String, levels: Array) -> int:
     return maxi(0, levels.find(quality_id))
