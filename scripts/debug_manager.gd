@@ -65,7 +65,14 @@ var _status_label: Label
 var _dragging: bool = false
 var _drag_offset: Vector2 = Vector2.ZERO
 
-const WINDOW_SIZE := Vector2(350, 500)
+const WINDOW_WIDTH := 350.0
+# The debug window reaches the control panel at the bottom of the screen, minus a small gap. Its
+# height is not fixed: the list of items grows, and a short window would hide the new ones.
+const WINDOW_BOTTOM_GAP := 4.0
+const MIN_WINDOW_HEIGHT := 240.0
+# The control panel starts at this share of the canvas; used when the panel is not on the map
+# (a test drives the menu on a bare scene).
+const CONTROL_PANEL_TOP_RATIO := 0.77
 const TITLE_HEIGHT := 32
 const LIST_ICON_SIZE := 24
 
@@ -111,14 +118,16 @@ func _build_ui():
     # The window panel
     _panel = Panel.new()
     _panel.position = Vector2(180, 0)
-    _panel.size = WINDOW_SIZE
+    _fit_panel()
     _panel.mouse_filter = Control.MOUSE_FILTER_STOP
     add_child(_panel)
+    # A change of the window size moves the control panel with it, so the debug window follows.
+    resized.connect(_fit_panel)
 
     # The title (dragging)
     _title_bar = Panel.new()
     _title_bar.position = Vector2(0, 0)
-    _title_bar.size = Vector2(WINDOW_SIZE.x, TITLE_HEIGHT)
+    _title_bar.size = Vector2(WINDOW_WIDTH, TITLE_HEIGHT)
     _title_bar.mouse_filter = Control.MOUSE_FILTER_STOP
     _panel.add_child(_title_bar)
 
@@ -171,6 +180,20 @@ func _build_ui():
     ThemeManager.theme_applied.connect(_apply_theme_colors)
 
     _show_main_menu()
+
+# The height of the window is the distance to the control panel at the bottom of the canvas. The
+# real rect of the panel is the source of truth; the share of the canvas is a fallback for a scene
+# that has no control panel (the headless tests of the menu).
+func _fit_panel() -> void:
+    if _panel == null:
+        return
+    var bottom := get_viewport_rect().size.y * CONTROL_PANEL_TOP_RATIO
+    if main_map != null:
+        var control_panel = main_map.get("control_panel")
+        if control_panel is Control and control_panel.get_global_rect().size.y > 0.0:
+            bottom = control_panel.get_global_rect().position.y
+    _panel.size = Vector2(WINDOW_WIDTH,
+            maxf(MIN_WINDOW_HEIGHT, bottom - _panel.position.y - WINDOW_BOTTOM_GAP))
 
 # The surfaces and the text colour of the window, one place for the build and for every
 # later palette. An open menu also rebuilds its list, so the buttons of the current view

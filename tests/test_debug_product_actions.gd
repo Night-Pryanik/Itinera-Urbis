@@ -8,6 +8,8 @@
 #      mastery of the good, exactly as a release of a building does.
 #   3. A debug sale only simulates the "sell" trigger: it records the chosen amount and quality of
 #      the good with the fame manager, without touching the shelves, the treasury or a town.
+#   4. The window is stretched to the control panel at the bottom of the canvas, so all the items
+#      of the menu fit on one screen.
 extends SceneTree
 
 const WATCHDOG = preload("res://tests/watchdog.gd")
@@ -35,6 +37,7 @@ class MapStub extends Node:
     var hud: Node = null
     var city_ui: Node = null
     var map_renderer: Node = null
+    var control_panel: Node = null
     var challenge_manager: Node = null
     var craft_mastery_manager: Node = null
 
@@ -85,6 +88,8 @@ func _run() -> void:
         _test_craft(state)
     if WATCHDOG.wants_case("sell"):
         _test_sell(state)
+    if WATCHDOG.wants_case("height"):
+        _test_height(state, map)
 
     WATCHDOG.report_skipped()
     if state["failed"]:
@@ -218,3 +223,25 @@ func _test_sell(state: Dictionary) -> void:
         var entry: Array = _fame.sales[1]
         check((entry[1] as Dictionary).get("perfect", 0) == 1000,
                 "the second sale keeps its own quality", state)
+
+
+func _test_height(state: Dictionary, map) -> void:
+    map.control_panel = null
+    _debug._fit_panel()
+    check(_debug._panel.size.y > _debug.MIN_WINDOW_HEIGHT,
+            "without a control panel the window still has a usable height", state)
+
+    var panel := Control.new()
+    panel.position = Vector2(0, 600)
+    panel.size = Vector2(1000, 150)
+    get_root().add_child(panel)
+    map.control_panel = panel
+    _debug._fit_panel()
+    check(is_equal_approx(_debug._panel.size.y, 600.0 - _debug.WINDOW_BOTTOM_GAP),
+            "the window ends just above the control panel", state)
+    check(is_equal_approx(_debug._panel.size.x, _debug.WINDOW_WIDTH),
+            "the width of the window is unchanged", state)
+    check(_debug._panel.position.y + _debug._panel.size.y <= panel.get_global_rect().position.y,
+            "the window does not overlap the control panel", state)
+    panel.free()
+    map.control_panel = null
