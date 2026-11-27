@@ -145,7 +145,7 @@ func _build_ui():
     var body := VBoxContainer.new()
     body.set_anchors_preset(Control.PRESET_FULL_RECT)
     body.offset_left = 10
-    body.offset_top = TITLE_HEIGHT + 10
+    body.offset_top = TITLE_HEIGHT + 6
     body.offset_right = -10
     body.offset_bottom = -10
     body.add_theme_constant_override("separation", 6)
@@ -154,7 +154,7 @@ func _build_ui():
 
     # The status row (hints)
     _status_label = Label.new()
-    _status_label.text = ""
+    _set_status("")
     _status_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
     body.add_child(_status_label)
 
@@ -180,6 +180,14 @@ func _build_ui():
     ThemeManager.theme_applied.connect(_apply_theme_colors)
 
     _show_main_menu()
+
+# An empty hint is hidden instead of taking a whole row over the list: the main screen has no
+# status to show, and its items start right under the title. The sub-screens put the hint back.
+func _set_status(text: String) -> void:
+    if _status_label == null:
+        return
+    _status_label.text = text
+    _status_label.visible = not text.is_empty()
 
 # The height of the window is the distance to the control panel at the bottom of the canvas. The
 # real rect of the panel is the source of truth; the share of the canvas is a fallback for a scene
@@ -223,7 +231,7 @@ func _redraw_current_view() -> void:
 
 func _show_main_menu():
     _clear_content()
-    _status_label.text = ""
+    _set_status("")
     _view = VIEW_MAIN
 
     var add_resource_btn = _make_button(tr("[1] Add a resource to the map"))
@@ -286,7 +294,7 @@ func _show_main_menu():
 
 func _show_resource_list():
     _clear_content()
-    _status_label.text = tr("Select a resource:")
+    _set_status(tr("Select a resource:"))
     _view = VIEW_RAW_LIST
 
     _add_back_button(_show_main_menu)
@@ -313,7 +321,7 @@ func _show_product_list(action: String = ""):
     if action != "":
         _pending_action = action
     _clear_content()
-    _status_label.text = tr("Select a product:")
+    _set_status(tr("Select a product:"))
     _view = VIEW_PRODUCT_LIST
 
     _add_back_button(_show_main_menu)
@@ -381,7 +389,7 @@ func _show_product_form(product_id: String = ""):
         _pending_product_id = product_id
     _clear_content()
     _view = VIEW_PRODUCT_FORM
-    _status_label.text = tr("Product: %s") % GameData.get_product_name(_pending_product_id)
+    _set_status(tr("Product: %s") % GameData.get_product_name(_pending_product_id))
 
     _add_back_button(_show_product_list)
 
@@ -673,7 +681,7 @@ func _on_resource_selected(res_id: String):
     waiting_for_hex = true
     _clear_content()
     var res_name = GameData.get_product_name(res_id)
-    _status_label.text = tr("Left-click on a hex to place: %s") % res_name
+    _set_status(tr("Left-click on a hex to place: %s") % res_name)
 
     var cancel_btn = _make_button(tr("Cancel"))
     cancel_btn.pressed.connect(_cancel_waiting)

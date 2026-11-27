@@ -126,6 +126,8 @@ func _button_with(button_text: String) -> Button:
 
 func _test_form(state: Dictionary) -> void:
     _debug._show_main_menu()
+    check(not _debug._status_label.visible,
+            "the empty hint of the main screen does not take a row above the items", state)
     check(_button_with(tr("[9] Sell a product to towns")) != null,
             "the main menu has the sale item", state)
     check(_button_with(tr("Craft a product")) != null,
@@ -150,6 +152,9 @@ func _test_form(state: Dictionary) -> void:
     }
     for action in expected:
         _debug._show_product_list(action)
+        check(_debug._status_label.visible
+                and str(_debug._status_label.text) == tr("Select a product:"),
+                "a sub-screen shows its hint", state)
         _debug._show_product_form("brandy")
         var rows: Array = _debug._content_vbox.get_children()
         var last = rows[rows.size() - 1] if not rows.is_empty() else null
