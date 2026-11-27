@@ -1446,6 +1446,9 @@ msgstr ""
 msgid "Game code"
 msgstr ""
 
+msgid "Game concepts"
+msgstr ""
+
 msgid "Game saved."
 msgstr ""
 

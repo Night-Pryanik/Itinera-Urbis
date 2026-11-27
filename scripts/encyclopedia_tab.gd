@@ -4,7 +4,7 @@
 # entity, the middle one lists the entities of that kind, and the right one shows the
 # icon, the name and the description of the entity the player picked. A query in the
 # field searches every kind at once, so the middle column then holds the matches from
-# all six sections.
+# all seven sections, game concepts included.
 #
 # The description of an entity is a set of blocks divided by hairlines. Some blocks hold
 # links to other entities: a click on one opens that entity in its own section instead
@@ -92,6 +92,7 @@ func _section_definitions() -> Array:
         {"id": "buildings", "title": tr("Buildings")},
         {"id": "improvements", "title": tr("Improvements")},
         {"id": "professions", "title": tr("Professions")},
+        {"id": "concepts", "title": tr("Game concepts")},
     ]
 
 func refresh() -> void:
@@ -236,6 +237,10 @@ func _entries_of(section_ids: Array) -> Array:
             "professions":
                 for prof_id in GameData.professions.keys():
                     entries.append(_entry(id, str(prof_id), GameData.professions[prof_id], false))
+            "concepts":
+                for record in GameData.game_concepts:
+                    if record is Dictionary:
+                        entries.append(_entry(id, str(record.get("id", "")), record, false))
     return entries
 
 func _entry(section: String, id: String, record: Dictionary, goods: bool) -> Dictionary:
@@ -411,6 +416,25 @@ func _build_description(entry: Dictionary) -> void:
         if section == "professions":
             _build_profession_description(id)
             return
+        if section == "concepts":
+            _build_concept_description(id)
+            return
+
+# A concept takes its text from a locale/game_concepts_<code>.json file. Blank lines divide the
+# text into blocks; the article itself decides what goes into them (a list, a paragraph, headings).
+func _build_concept_description(concept_id: String) -> void:
+    var record: Dictionary = {}
+    for candidate in GameData.game_concepts:
+        if candidate is Dictionary and str(candidate.get("id", "")) == concept_id:
+            record = candidate
+            break
+    if record.is_empty():
+        return
+    var paragraphs := str(record.get("description", "")).split("\n\n")
+    for i in paragraphs.size():
+        if i > 0:
+            _add_separator()
+        _add_rich_block(_bbcode_escape(str(paragraphs[i])))
 
 # A building page reads its numbers from the record; only the historical note is authored
 # text. The additional cost is skipped when the building needs no materials, and the upgrade

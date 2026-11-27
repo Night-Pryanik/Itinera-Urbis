@@ -29,6 +29,7 @@ var map_config: Dictionary = {} # the world map configuration (data/map_config.j
 var professions: Dictionary = {} # id -> profession data (data/professions.json)
 var consumption_rules: Array = [] # consumption entries from data/consumption.json
 var city_names: Array = [] # city name variants (locale/city_names_<code>.json)
+var game_concepts: Array = [] # encyclopedia articles (locale/game_concepts_<code>.json)
 var game_balance: Dictionary = {} # the game balance (data/game_balance.json)
 # The road levels (data/roads.json). roads_by_level — level -> level data:
 # a road network segment stores a level number, so exactly such an index is needed.
@@ -91,13 +92,14 @@ const DISPLAY_FIELDS := ["name", "description", "flavor", "effects", "full_name"
 # identifier (see _localize_display_fields).
 const VALUE_MAP_FIELDS := ["priority_names"]
 
-# The pool of generated city names lives by the language, not by the translation: every
-# language has its own list of invented names, and a name is never a translated string
-# (see locale/GLOSSARY.md). The files sit outside data/ so that the folder scan does not
-# merge them into one doubled list — see _read_city_names.
-const CITY_NAMES_FOLDER := "res://locale"
-# The language of a file the project has no pool for: English is the source language.
-const CITY_NAMES_SOURCE_LOCALE := "en"
+# City names and the authored articles of the encyclopedia live by the language, not by the
+# translation: each is a file of its own, read whole for the current locale (see
+# _read_city_names and _read_game_concepts). The files sit outside data/ so that the folder scan
+# does not merge them into one doubled collection.
+const LOCALE_FOLDER := "res://locale"
+# The language of a file the project does not have for the requested locale: English is the
+# source language, and its file is the fallback for every other one.
+const SOURCE_LOCALE := "en"
 
 # The collections whose records are addressed by a field other than "id" — the same
 # addressing the validator uses (data_validator.ENTITY_ID_FIELDS). A mod overrides such a
@@ -284,6 +286,8 @@ func load_all_data(mod_dirs: Array = []):
 
     # City names: the pool of the current language, plus whatever the mods add to it.
     city_names = _read_city_names(merged_data.get("city_names", []))
+    # The encyclopedia articles about the rules of the game, one file per language.
+    game_concepts = _read_game_concepts()
 
     # NEW: we load the road levels (data/roads.json). roads_by_level is needed
     # by a road network segment: it stores a level number, and not an id.
@@ -521,7 +525,7 @@ func _load_all_json_files(folder_path: String) -> Dictionary:
     return result
 
 # The name pool of the language the game runs in: locale/city_names_<code>.json, one
-# file per language (see CITY_NAMES_FOLDER). A language without its own file falls back
+# file per language (see LOCALE_FOLDER). A language without its own file falls back
 # to the source one, so the pool is never empty because of a missing translation.
 #
 # The language is read from TranslationServer and not from the LocalizationManager
@@ -530,14 +534,26 @@ func _load_all_json_files(folder_path: String) -> Dictionary:
 func _read_city_names(extra_names) -> Array:
     var requested := TranslationServer.get_locale().to_lower().split("_")[0]
     var names: Array = []
-    for code in [requested, CITY_NAMES_SOURCE_LOCALE]:
-        var data = _read_json_file(CITY_NAMES_FOLDER.path_join("city_names_%s.json" % code))
+    for code in [requested, SOURCE_LOCALE]:
+        var data = _read_json_file(LOCALE_FOLDER.path_join("city_names_%s.json" % code))
         if data is Dictionary and data.get("city_names") is Array:
             names = data["city_names"]
             break
     if extra_names is Array:
         names.append_array(extra_names)
     return names
+
+# The articles of the section "Game concepts" (locale/game_concepts_<code>.json). They are
+# authored prose, not translatable strings: a whole file is taken by the language, with the
+# source one as a fallback, so a language missing its file still has the book complete.
+func _read_game_concepts() -> Array:
+    var requested := TranslationServer.get_locale().to_lower().split("_")[0]
+    for code in [requested, SOURCE_LOCALE]:
+        var data = _read_json_file(LOCALE_FOLDER.path_join(
+                "game_concepts_%s.json" % code))
+        if data is Dictionary and data.get("game_concepts") is Array:
+            return data["game_concepts"]
+    return []
 
 # One data file outside the folder scan, in the same JSON-with-comments format.
 # null — the file is absent, which is a normal answer for a language with no pool.

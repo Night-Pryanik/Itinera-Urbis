@@ -1494,6 +1494,9 @@ msgstr "Игра"
 msgid "Game code"
 msgstr "Код игры"
 
+msgid "Game concepts"
+msgstr "Игровые концепции"
+
 msgid "Game saved."
 msgstr "Игра сохранена."
 

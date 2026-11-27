@@ -103,9 +103,9 @@ func _run() -> void:
             "the picture of the entity has room for 256 by 256", state)
 
     var expected := [tr("Resources"), tr("Products"), tr("Technologies"),
-            tr("Buildings"), tr("Improvements"), tr("Professions")]
+            tr("Buildings"), tr("Improvements"), tr("Professions"), tr("Game concepts")]
     check(column.get_child_count() == expected.size(),
-            "the left column holds six sections (got %d)" % column.get_child_count(), state)
+            "the left column holds seven sections (got %d)" % column.get_child_count(), state)
     for i in mini(column.get_child_count(), expected.size()):
         check(str(column.get_child(i).text) == expected[i],
                 "section %d is named \"%s\" (got \"%s\")"
@@ -179,6 +179,33 @@ func _run() -> void:
                 "an entity without an icon still shows the fallback picture", state)
         _check_miller_description(state, panel, gdata)
 
+    column.get_child(6).pressed.emit()
+    check(str(title.text) == tr("Game concepts"),
+            "the concepts section has its own caption (got \"%s\")" % str(title.text), state)
+    check(gdata.game_concepts.size() >= 1, "the encyclopedia has at least one concept", state)
+    if not gdata.game_concepts.is_empty():
+        check(list.get_child_count() == gdata.game_concepts.size(),
+                "one row per game concept (got %d of %d)"
+                        % [list.get_child_count(), gdata.game_concepts.size()], state)
+        var concept: Dictionary = gdata.game_concepts[0]
+        var concept_name := str(concept.get("name", ""))
+        var concept_row := _row_with_text(list, concept_name)
+        check(concept_row != null, "the concept \"%s\" has a row" % concept_name, state)
+        if concept_row != null:
+            concept_row.pressed.emit()
+            check(str(detail_name.text) == concept_name,
+                    "the article opens under its name", state)
+            var text := str(concept.get("description", ""))
+            check(text.contains("•"), "the article uses a bulleted list", state)
+            var blocks := text.split("\n\n")
+            check(blocks.size() >= 2, "the text is divided into blocks by blank lines", state)
+            var description_box = panel.get_node_or_null(
+                    "Body/DetailColumn/DescriptionScroll/Description")
+            check(_rich_labels(description_box).size() == blocks.size(),
+                    "one description block per paragraph", state)
+            check(_find_rich(description_box, blocks[1]) != null,
+                    "the article shows the list from its locale file", state)
+
     column.get_child(0).pressed.emit()
     check(detail_name.text == "", "changing the section clears the description", state)
 
@@ -224,6 +251,9 @@ func _run() -> void:
     check(str(gdata.get_building_data("hand_mill").get("flavor", ""))
             .begins_with("Grinding grain between stones"),
             "the historical note of the hand mill is translated", state)
+    check(not gdata.game_concepts.is_empty()
+            and str(gdata.game_concepts[0].get("name", "")) == "Production mastery of goods",
+            "the game concepts come from the file of the current language", state)
     TranslationServer.set_locale(original_locale)
     city_ui.refresh()
 

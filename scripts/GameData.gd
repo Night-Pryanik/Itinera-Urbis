@@ -54,6 +54,7 @@ var map_config: Dictionary = {} # the world map configuration (data/map_config.j
 var professions: Dictionary = {} # id -> profession data (data/professions.json)
 var consumption_rules: Array = [] # consumption entries (data/consumption.json)
 var city_names: Array = [] # city name variants (locale/city_names_<code>.json)
+var game_concepts: Array = [] # encyclopedia articles (locale/game_concepts_<code>.json)
 var game_balance: Dictionary = {} # the game balance (data/game_balance.json)
 # The specializations of the city (data/specializations.json): the branches in the order of the
 # file and the config block with the thresholds of the population (see CityData, "THE
@@ -174,6 +175,7 @@ func _assign_from(loader) -> void:
     professions = loader.professions
     consumption_rules = loader.consumption_rules
     city_names = loader.city_names
+    game_concepts = loader.game_concepts
     game_balance = loader.game_balance
     specializations = loader.specializations
     specialization_config = loader.specialization_config
