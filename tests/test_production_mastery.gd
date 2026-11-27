@@ -229,13 +229,19 @@ func _test_effects_and_buildings(state: Dictionary) -> void:
     var products: Array = _city.get_building_mastery_products("distillery")
     check(products.has("brandy") and products.has("rum"),
             "the distillery makes brandy and rum", state)
-    check(_city.get_building_mastery_stars("distillery") == "★★",
-            "the name of the distillery carries the stars of its mastered good", state)
+    check(_city.get_building_mastery_stars("distillery") == "★",
+            "the name of a building carries one star, not the rank of its good", state)
     check(_city.get_building_mastery_stars("bakery") == "",
-            "a building of another craft carries no stars", state)
+            "a building of another craft carries no star", state)
     var records: Array = _city.get_building_mastery_records("distillery")
     check(records.size() == 1 and str(records[0].get("product_id", "")) == "brandy",
             "the tooltip of the distillery lists its mastered good alone", state)
+
+    _mgr.record_production("rum", int(thresholds[0]))
+    check(_city.get_building_mastery_stars("distillery") == "★",
+            "two mastered goods still give one star in the name", state)
+    check(_city.get_building_mastery_records("distillery").size() == 2,
+            "the tooltip lists the rank of every mastered good", state)
 
 
 func _test_message(state: Dictionary) -> void:

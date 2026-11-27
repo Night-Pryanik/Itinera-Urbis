@@ -32,9 +32,17 @@ var _ignore_build_btn: Button
 var waiting_for_hex: bool = false
 var pending_resource_id: String = ""
 
-# The state of the "add a product to storage" screen. It lives in the manager and not
-# in the widgets, so a rebuild of the menu keeps what the player has already chosen,
-# and the next product starts with the amount and the quality of the previous one.
+# The action the shared product form commits. The three items — add to storage, sell to the towns
+# and craft — use the same list, the same amount field and the same quality radios; only the last
+# button and the effect of the click differ.
+const ACTION_ADD := "add"
+const ACTION_SELL := "sell"
+const ACTION_CRAFT := "craft"
+var _pending_action: String = ACTION_ADD
+
+# The state of the product form. It lives in the manager and not in the widgets, so a rebuild of
+# the menu keeps what the player has already chosen, and the next product starts with the amount
+# and the quality of the previous one.
 const DEFAULT_AMOUNT_TEXT := "100"
 const DEFAULT_QUALITY := "common"
 const MAX_AMOUNT_LENGTH := 9
@@ -202,7 +210,7 @@ func _show_main_menu():
     # The two ways of adding stand together: one puts a resource on a hex, the other
     # sends a good to the storage.
     var add_product_btn = _make_button(tr("[2] Add a resource to storage"))
-    add_product_btn.pressed.connect(_show_product_list)
+    add_product_btn.pressed.connect(_show_product_list.bind(ACTION_ADD))
     _content_vbox.add_child(add_product_btn)
 
     var next_era_btn = _make_button(tr("[3] Go to the next era"))
@@ -238,6 +246,16 @@ func _show_main_menu():
     add_coins_btn.pressed.connect(_on_add_coins_pressed)
     _content_vbox.add_child(add_coins_btn)
 
+    # The two ways of driving the counters of a good: a sale feeds the fame of the towns, a craft
+    # feeds the mastery of the city. Both open the same product form as the storage fill.
+    var sell_btn = _make_button(tr("[9] Sell a product to towns"))
+    sell_btn.pressed.connect(_on_sell_product_pressed)
+    _content_vbox.add_child(sell_btn)
+
+    var craft_btn = _make_button(tr("Craft a product"))
+    craft_btn.pressed.connect(_on_craft_product_pressed)
+    _content_vbox.add_child(craft_btn)
+
     # A stub for future actions (can be extended)
     var close_btn = _make_button(tr("[0] Close (F9)"))
     close_btn.pressed.connect(toggle)
@@ -266,7 +284,11 @@ func _fill_resource_rows() -> void:
 # listed, a raw resource is what a hex of the map carries, not what the town owns.
 # The goods of an additional ingredient are not here — they arrive through the recipe
 # that makes them, and an id with the separator is not a thing the player picks.
-func _show_product_list():
+# One list for all three product actions. An empty action keeps the current one, which is what a
+# redraw after a theme or a language change needs.
+func _show_product_list(action: String = ""):
+    if action != "":
+        _pending_action = action
     _clear_content()
     _status_label.text = tr("Select a product:")
     _view = VIEW_PRODUCT_LIST
@@ -381,9 +403,9 @@ func _show_product_form(product_id: String = ""):
         radio.toggled.connect(_on_quality_toggled.bind(str(qid)))
         _content_vbox.add_child(radio)
 
-    var add_btn = _make_button(tr("Add to storage"))
-    add_btn.pressed.connect(_on_add_to_storage_pressed)
-    _content_vbox.add_child(add_btn)
+    var action_btn = _make_button(_action_button_label())
+    action_btn.pressed.connect(_on_product_action_pressed)
+    _content_vbox.add_child(action_btn)
 
     _amount_edit.grab_focus()
 
@@ -405,30 +427,44 @@ func _sanitize_amount(text: String) -> String:
             digits += ch
     return digits.lstrip("0")
 
-# Enter in the amount field is the click on "Add to storage": the player types the
+# Enter in the amount field is the click on the action button: the player types the
 # number and confirms it without looking for the button.
 func _on_amount_submitted(_text: String) -> void:
-    _on_add_to_storage_pressed()
+    _on_product_action_pressed()
 
 func _on_quality_toggled(pressed: bool, quality_id: String) -> void:
     if pressed:
         _pending_quality = quality_id
 
-func _on_add_to_storage_pressed():
+func _action_button_label() -> String:
+    match _pending_action:
+        ACTION_SELL:
+            return tr("Sell to towns")
+        ACTION_CRAFT:
+            return tr("Craft a product")
+    return tr("Add to storage")
+
+# The shared form commits one of three actions. Each returns the line the HUD reports; an empty
+# line means the action has already said why it could not be done.
+func _on_product_action_pressed() -> void:
     if _pending_product_id == "":
         return
     # An empty field is not "nothing": the smallest delivery is one unit, so the debug
-    # fill never silently does nothing. The public helper keeps the breakdown by quality
-    # consistent with the total of the storage.
+    # action never silently does nothing.
     var amount := maxi(_amount_value(), 1)
-    CityData.add_to_storage(_pending_product_id, amount, _pending_quality)
+    var message := ""
+    match _pending_action:
+        ACTION_SELL:
+            message = _sell_to_towns(_pending_product_id, amount, _pending_quality)
+        ACTION_CRAFT:
+            message = _craft_product(_pending_product_id, amount, _pending_quality)
+        _:
+            message = _add_to_storage(_pending_product_id, amount, _pending_quality)
+    if message == "":
+        return
 
     if main_map.hud and main_map.hud.has_method("show_message"):
-        main_map.hud.show_message(tr("Added %d %s (%s)") % [
-                amount,
-                GameData.get_product_name(_pending_product_id),
-                GameData.get_quality_name(_pending_quality)],
-                GameData.HUD_MESSAGE_NORMAL)
+        main_map.hud.show_message(message, GameData.HUD_MESSAGE_NORMAL)
     if main_map.city_ui and main_map.city_ui.visible:
         main_map.city_ui.refresh()
     if main_map.map_renderer:
@@ -437,6 +473,30 @@ func _on_add_to_storage_pressed():
     # deliveries, so the next number goes where the player is already looking.
     if is_instance_valid(_amount_edit):
         _amount_edit.grab_focus()
+
+func _add_to_storage(pid: String, amount: int, quality: String) -> String:
+    CityData.add_to_storage(pid, amount, quality)
+    return tr("Added %d %s (%s)") % [amount, GameData.get_product_name(pid),
+            GameData.get_quality_name(quality)]
+
+# A manual craft is a release of a building as far as the mastery is concerned: the goods arrive
+# through the same storage entry and the same public helper books the units to the craft.
+func _craft_product(pid: String, amount: int, quality: String) -> String:
+    CityData.add_to_storage(pid, amount, quality)
+    CityData.record_mastery_production(pid, amount)
+    return tr("Crafted %d %s (%s)") % [amount, GameData.get_product_name(pid),
+            GameData.get_quality_name(quality)]
+
+# A debug sale is a simulation of the "sell" trigger of the fame (challenge_manager.gd): it books
+# the chosen units as if a town had taken them off the shelves. Nothing is written off, paid or
+# checked against the warehouse — the player can drive a ladder of any good straight to its next
+# rung, at any quality, without first filling the storage by hand.
+func _sell_to_towns(pid: String, amount: int, quality: String) -> String:
+    var manager = main_map.get("challenge_manager") if main_map != null else null
+    if manager != null:
+        manager.record_sale(pid, {quality: amount})
+    return tr("Sold %d %s (%s) to the towns") % [amount, GameData.get_product_name(pid),
+            GameData.get_quality_name(quality)]
 
 func _amount_value() -> int:
     return int(_pending_amount) if _pending_amount.is_valid_int() else 0
@@ -450,6 +510,12 @@ func _on_next_era_pressed():
 
 func _on_add_resource_pressed():
     _show_resource_list()
+
+func _on_sell_product_pressed():
+    _show_product_list(ACTION_SELL)
+
+func _on_craft_product_pressed():
+    _show_product_list(ACTION_CRAFT)
 
 func _on_open_whole_map_pressed():
     if main_map and main_map.has_method("debug_open_whole_map"):
@@ -470,10 +536,10 @@ func _hotkey_number(keycode: Key) -> int:
         KEY_0: return 0
     return -1
 
-# Runs the main-menu item with the given number and reports whether the key belongs
-# to the menu. A sub-screen, the wait for a click on a hex and an unknown digit all
-# answer false, so the keystroke goes on to the widget under it — the amount field
-# of the storage form is typed with exactly these digits.
+# Runs the main-menu item with the given number and reports whether the key belongs to the menu.
+# The sale is item 9; the craft has no digit and is reached by its button. A sub-screen, the wait
+# for a click on a hex and an unknown digit answer false, so the keystroke goes on to the widget
+# under it — the amount field of the product form is typed with exactly these digits.
 func _trigger_hotkey(num: int) -> bool:
     if num < 0 or not is_open or waiting_for_hex or _view != VIEW_MAIN:
         return false
@@ -481,7 +547,7 @@ func _trigger_hotkey(num: int) -> bool:
         1:
             _on_add_resource_pressed()
         2:
-            _show_product_list()
+            _show_product_list(ACTION_ADD)
         3:
             _on_next_era_pressed()
         4:
@@ -494,6 +560,8 @@ func _trigger_hotkey(num: int) -> bool:
             _on_toggle_ignore_build_requirements_pressed()
         8:
             _on_add_coins_pressed()
+        9:
+            _on_sell_product_pressed()
         0:
             close()
         _:

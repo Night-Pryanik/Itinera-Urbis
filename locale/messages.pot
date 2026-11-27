@@ -47,6 +47,12 @@ msgctxt ""
 msgid "Can be upgraded into:"
 msgstr ""
 
+msgid "Craft a product"
+msgstr ""
+
+msgid "Crafted %d %s (%s)"
+msgstr ""
+
 msgctxt ""
 msgid "Description:"
 msgstr ""
@@ -95,6 +101,12 @@ msgstr ""
 msgid "Rank %d"
 msgstr ""
 
+msgid "Sell to towns"
+msgstr ""
+
+msgid "Sold %d %s (%s) to the towns"
+msgstr ""
+
 msgctxt ""
 msgid "The chance that a main river reaching a lake or the sea splits into distributaries at its mouth."
 msgstr ""
@@ -109,6 +121,9 @@ msgstr ""
 
 msgctxt ""
 msgid "Works at:"
+msgstr ""
+
+msgid "[9] Sell a product to towns"
 msgstr ""
 
 msgid "\n\nFound here: %s"

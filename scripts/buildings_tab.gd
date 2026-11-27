@@ -491,12 +491,15 @@ func _fill_built_tooltip(group: Dictionary):
     footer.mouse_filter = Control.MOUSE_FILTER_IGNORE
     content.add_child(footer)
 
-# The name of a group of built buildings. The craft mastered by the city adds the stars of its rank
-# to the name of every building that makes the good: "Distillery x2 ★".
+# The name of a group of built buildings. A building that makes a mastered good carries one star
+# after its name: "Distillery x2 ★". The ranks of the individual goods are in the tooltip.
 func _built_display_name(group: Dictionary, base_name: String) -> String:
+    var count := " x%d" % int(group.get("total", 0)) \
+            if int(group.get("total", 0)) > 1 else ""
     var stars := CityData.get_building_mastery_stars(str(group.get("id", "")))
-    return "%s x%d%s" % [base_name, int(group.get("total", 0)), stars] \
-            if int(group.get("total", 0)) > 1 else "%s%s" % [base_name, stars]
+    if stars != "":
+        stars = " " + stars
+    return "%s%s%s" % [base_name, count, stars]
 
 # The heading of the group for the tooltip: "Hand mill x2" / "Hand mill".
 func _built_group_title(group: Dictionary) -> String:

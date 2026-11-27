@@ -45,6 +45,12 @@ msgctxt ""
 msgid "Can be upgraded into:"
 msgstr "Можно улучшить в:"
 
+msgid "Craft a product"
+msgstr "Изготовить товар"
+
+msgid "Crafted %d %s (%s)"
+msgstr "Изготовлено %d %s (%s)"
+
 msgctxt ""
 msgid "Description:"
 msgstr "Описание:"
@@ -93,6 +99,12 @@ msgstr "Профессии"
 msgid "Rank %d"
 msgstr "Ранг %d"
 
+msgid "Sell to towns"
+msgstr "Продать городкам"
+
+msgid "Sold %d %s (%s) to the towns"
+msgstr "Продано %d %s (%s) городкам"
+
 msgctxt ""
 msgid "The chance that a main river reaching a lake or the sea splits into distributaries at its mouth."
 msgstr "Шанс того, что главная река, впадающая в озеро или море, разделится на рукава у устья."
@@ -108,6 +120,9 @@ msgstr "Кто работает:"
 msgctxt ""
 msgid "Works at:"
 msgstr "Работает:"
+
+msgid "[9] Sell a product to towns"
+msgstr "[9] Продать городкам товар"
 
 msgid "\n\nFound here: %s"
 msgstr "\n\nЗдесь обнаружено: %s"

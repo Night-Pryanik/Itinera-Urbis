@@ -1472,15 +1472,18 @@ func get_building_mastery_products(building_id: String) -> Array:
                 out.append(key)
     return out
 
-# The stars added to the name of a built building: the highest rank among the goods it makes.
+# The mark added to the name of a built building: one star when the building makes at least one
+# good the city has mastered. A building may make several goods with different ranks (a dairy
+# makes both cheese and tofu), so the rank belongs in the tooltip next to the good it belongs to;
+# a row of stars after the name would read as the rank of every good of the building.
 func get_building_mastery_stars(building_id: String) -> String:
     var manager := _mastery_manager()
     if manager == null:
         return ""
-    var best := 0
     for pid in get_building_mastery_products(building_id):
-        best = maxi(best, manager.rank_of(str(pid)))
-    return manager.rank_stars(best)
+        if manager.rank_of(str(pid)) > 0:
+            return manager.rank_stars(1)
+    return ""
 
 # One row per mastered good a building makes, for the tooltip of the built buildings.
 func get_building_mastery_records(building_id: String) -> Array:
@@ -1509,6 +1512,15 @@ func apply_mastery_to_quality(pid: String, quality: String) -> String:
     if manager == null:
         return quality
     return GameData.raise_quality_key(quality, manager.rank_of(pid))
+
+# Books the units of a made good to the mastery of its base good. The production tick and the debug
+# item "Craft a product" go through the same entry point, so a manual craft teaches the city in
+# exactly the same way as a working building.
+func record_mastery_production(pid: String, amount: int) -> void:
+    var manager := _mastery_manager()
+    if manager == null or amount <= 0:
+        return
+    manager.record_production(manager.mastery_product_id(pid), amount)
 
 # --- THE HELPERS FOR WORKING WITH THE QUALITY OF THE RESOURCES ---
 # city_storage stores the total amount, city_quality_detail is the breakdown by quality.
@@ -2107,8 +2119,7 @@ func do_tick():
                 rel_quality = apply_mastery_to_quality(mastery_pid, rel_quality)
                 add_to_storage(rel_pid, rel_amount, rel_quality)
                 record_production_source(rel_pid, building_source, rel_amount)
-                if mastery != null:
-                    mastery.record_production(mastery_pid, rel_amount)
+                record_mastery_production(mastery_pid, rel_amount)
 
             if not bool(tick_res.get("completed", false)):
                 continue
