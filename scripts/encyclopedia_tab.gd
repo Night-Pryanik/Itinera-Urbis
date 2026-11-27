@@ -672,15 +672,18 @@ func _add_text_block(text: String, color_token: String) -> void:
 func _add_consumption_block(goods: Array) -> void:
     _add_goods_block(tr("Consumes:"), goods, "ConsumesRow", false)
 
-# The goods stand in one row. A single good is a link to its page; a group is the same
-# dashed-underlined label the recipes and the costs use — it leads nowhere, but its hover
-# unfolds the composition in the standard panel. The cost of a building also carries the
-# required amount next to the name.
+# The goods flow into as many rows as the column needs. A single-line row would impose the
+# width of the whole list on the column and push the description off the screen; the flow
+# container keeps the minimum width to one item, so every block wraps inside the column.
+# A single good is a link to its page; a group is the same dashed-underlined label the
+# recipes and the costs use — it leads nowhere, but its hover unfolds the composition in
+# the standard panel. The cost of a building also carries the required amount next to its name.
 func _add_goods_block(title: String, goods: Array, row_name: String, with_amount: bool) -> void:
-    var row := HBoxContainer.new()
+    var row := HFlowContainer.new()
     row.name = row_name
     # The comma carries the space after it; the container must not add one before it.
-    row.add_theme_constant_override("separation", 0)
+    row.add_theme_constant_override("h_separation", 0)
+    row.add_theme_constant_override("v_separation", 2)
     var title_label := Label.new()
     title_label.text = title + (" " if not goods.is_empty() else " —")
     title_label.add_theme_color_override("font_color", UI_THEME.color("text_secondary"))

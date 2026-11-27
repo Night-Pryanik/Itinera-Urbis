@@ -315,12 +315,17 @@ func _check_hand_mill_description(state: Dictionary, panel: Control, list: VBoxC
     check(str(labels[1].text).contains(tr("Base cost:"))
             and str(labels[1].text).contains("%d" % int(data.get("work_cost", 0))),
             "the base cost comes from the building data", state)
-    var cost_row := box.get_node_or_null("AdditionalCostRow") as HBoxContainer
-    check(cost_row != null, "the additional cost stands in its own row", state)
+    var cost_row := box.get_node_or_null("AdditionalCostRow") as HFlowContainer
+    check(cost_row != null, "the additional cost stands in a wrapping row", state)
     if cost_row == null:
         return
     check(str(cost_row.get_child(0).text).begins_with(tr("Additional cost:")),
             "the additional cost is titled", state)
+    var children_width := 0.0
+    for child in cost_row.get_children():
+        children_width += (child as Control).get_combined_minimum_size().x
+    check(cost_row.get_combined_minimum_size().x < children_width,
+            "the materials flow into rows instead of forcing one overwide line", state)
     var plank_link := _find_rich(cost_row, "[url=products:planks]") as RichTextLabel
     check(plank_link != null, "a required material is a link to its page", state)
     if plank_link != null:
@@ -565,10 +570,10 @@ func _check_miller_description(state: Dictionary, panel: Control, gdata) -> void
     if product_link != null:
         check(product_link.size_flags_horizontal == 0,
                 "a consumed good keeps the width of its text", state)
-    var consumes_row := box.get_node_or_null("ConsumesRow") as HBoxContainer
-    check(consumes_row != null, "the consumed goods stand in one row", state)
+    var consumes_row := box.get_node_or_null("ConsumesRow") as HFlowContainer
+    check(consumes_row != null, "the consumed goods stand in a wrapping row", state)
     if consumes_row != null:
-        check(consumes_row.get_theme_constant("separation") == 0,
+        check(consumes_row.get_theme_constant("h_separation") == 0,
                 "the comma is not pushed away from the preceding good", state)
         var commas := 0
         for child in consumes_row.get_children():
