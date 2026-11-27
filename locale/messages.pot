@@ -10094,6 +10094,10 @@ msgctxt "buildings.name"
 msgid "Oil Mill"
 msgstr ""
 
+msgctxt "buildings.name"
+msgid "University"
+msgstr ""
+
 msgctxt "buildings.description"
 msgid "The yard where the dues of the citizens are tallied, weighed and carried into the treasury."
 msgstr ""
@@ -10198,6 +10202,10 @@ msgctxt "buildings.description"
 msgid "Wedge presses squeeze oil from batches of oil crops."
 msgstr ""
 
+msgctxt "buildings.description"
+msgid "A place where scholars teach and study, turning written knowledge into science."
+msgstr ""
+
 msgid " + %s%% from the Tax Yard"
 msgstr ""
 
@@ -10217,6 +10225,10 @@ msgctxt "technologies.name"
 msgid "Wedge Oil Press"
 msgstr ""
 
+msgctxt "technologies.name"
+msgid "Education"
+msgstr ""
+
 msgctxt "technologies.description"
 msgid "Tax income: +10%.\nInternal-market trade income: +10%.\nExternal-market trade income: +10%."
 msgstr ""
@@ -10229,8 +10241,16 @@ msgctxt "technologies.description"
 msgid "Unlocks the oil mill."
 msgstr ""
 
+msgctxt "technologies.description"
+msgid "Allows you to upgrade scriptoriums into universities."
+msgstr ""
+
 msgctxt "technologies.flavor"
 msgid "Banking-like practices took different forms across history. In the ancient Near East, Mesopotamian temples made interest-bearing loans from their treasuries; Greek trapezitai at money-changing tables handled exchange and credit, while Roman argentarii managed payments, credit and exchange. Indian inscriptions record interest-bearing endowments entrusted to śreṇi guilds. In Tang China, guifang offered safekeeping services and feiqian certificates facilitated transfers. These were not modern banks, but their distinct services helped people manage wealth and move value farther than coin alone."
+msgstr ""
+
+msgctxt "technologies.flavor"
+msgid "Knowledge kept on one shelf dies with the man who read it. Teaching makes it survive: a master reads aloud, pupils copy, question and correct, and the next generation begins where the last one stopped. Academies in China, madrasas, monastery schools and houses of learning in Africa and India kept that same cycle in their own way. A university is what a scriptorium becomes when copying gives way to teaching."
 msgstr ""
 
 msgctxt "modifiers.tech_modifiers.name"
@@ -10747,6 +10767,10 @@ msgstr ""
 
 msgctxt "buildings.flavor"
 msgid "A wooden boat needs a frame, planking and a way to seal the seams, all of which a yard can keep in repair. Boatbuilding traditions arose independently on rivers, lakes and coasts across the world. The yard builds the hull; the sailmaker and the ropemaker supply the rest."
+msgstr ""
+
+msgctxt "buildings.flavor"
+msgid "A university is not a larger scriptorium: the work changes from copying what was written to teaching it and asking what else might be true. Houses of higher learning took different names in different regions — academies, madrasas, monastery schools, guilds of masters — but each kept texts, teachers and pupils together in one place."
 msgstr ""
 
 msgctxt "crafts.name"

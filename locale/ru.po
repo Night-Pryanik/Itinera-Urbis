@@ -10301,6 +10301,10 @@ msgctxt "technologies.flavor"
 msgid "Banking-like practices took different forms across history. In the ancient Near East, Mesopotamian temples made interest-bearing loans from their treasuries; Greek trapezitai at money-changing tables handled exchange and credit, while Roman argentarii managed payments, credit and exchange. Indian inscriptions record interest-bearing endowments entrusted to śreṇi guilds. In Tang China, guifang offered safekeeping services and feiqian certificates facilitated transfers. These were not modern banks, but their distinct services helped people manage wealth and move value farther than coin alone."
 msgstr "Практики, напоминавшие банковское дело, принимали разные формы. На древнем Ближнем Востоке месопотамские храмы выдавали процентные ссуды из своих сокровищниц; греческие трапезиты за меняльными столами занимались обменом и кредитом, а римские аргентарии — платежами, кредитом и обменом. Индийские надписи свидетельствуют о том, что гильдиям шрени доверяли вклады, приносившие проценты. В Китае эпохи Тан гуифаны предоставляли услуги по хранению денег, а сертификаты «фэйцянь» облегчали переводы. Это не были банки в современном смысле, но их различные услуги помогали управлять богатством и перемещать ценности дальше, чем позволяла одна лишь монета."
 
+msgctxt "technologies.flavor"
+msgid "Knowledge kept on one shelf dies with the man who read it. Teaching makes it survive: a master reads aloud, pupils copy, question and correct, and the next generation begins where the last one stopped. Academies in China, madrasas, monastery schools and houses of learning in Africa and India kept that same cycle in their own way. A university is what a scriptorium becomes when copying gives way to teaching."
+msgstr "Знание, что хранится на одной полке, умирает вместе с тем, кто его читал. Обучение сохраняет его: наставник читает вслух, ученики списывают, спорят и исправляют, а следующее поколение начинает там, где остановилось прежнее. Академии в Китае, медресе, монастырские школы и дома обучения в Африке и Индии вели этот же круг по-своему. Университет — то, чем становится скрипторий, когда переписывание уступает место обучению."
+
 msgctxt "modifiers.tech_modifiers.name"
 msgid "Tax income: +10%"
 msgstr "Налоговый доход: +10%"
@@ -10528,9 +10532,17 @@ msgctxt "buildings.name"
 msgid "Fermentation Workshop"
 msgstr "Бродильный цех"
 
+msgctxt "buildings.name"
+msgid "University"
+msgstr "Университет"
+
 msgctxt "buildings.description"
 msgid "Large wooden vats hold separate batches of fermenting drink or vinegar."
 msgstr "В больших деревянных чанах готовят отдельные партии напитков или уксуса."
+
+msgctxt "buildings.description"
+msgid "A place where scholars teach and study, turning written knowledge into science."
+msgstr "Место, где учёные обучают и учатся, превращая письменное знание в науку."
 
 msgctxt "technologies.name"
 msgid "Wedge Oil Press"
@@ -10544,9 +10556,17 @@ msgctxt "technologies.name"
 msgid "Vat Fermentation"
 msgstr "Чановое брожение"
 
+msgctxt "technologies.name"
+msgid "Education"
+msgstr "Образование"
+
 msgctxt "technologies.description"
 msgid "Unlocks the fermentation workshop."
 msgstr "Открывает бродильный цех."
+
+msgctxt "technologies.description"
+msgid "Allows you to upgrade scriptoriums into universities."
+msgstr "Даёт возможность улучшать скриптории в университеты."
 
 msgctxt "crafts.name"
 msgid "Tools of <city_name> Steel"
@@ -10867,6 +10887,10 @@ msgstr "Парус — кусок ткани, раскроенный и укре
 msgctxt "buildings.flavor"
 msgid "A wooden boat needs a frame, planking and a way to seal the seams, all of which a yard can keep in repair. Boatbuilding traditions arose independently on rivers, lakes and coasts across the world. The yard builds the hull; the sailmaker and the ropemaker supply the rest."
 msgstr "Деревянному судну нужны каркас, обшивка и способ законопатить швы — всё это верфь может держать в порядке. Судостроение возникало независимо на реках, озёрах и побережьях по всему свету. Верфь строит корпус, а паруса и снасти поставляют другие мастерские."
+
+msgctxt "buildings.flavor"
+msgid "A university is not a larger scriptorium: the work changes from copying what was written to teaching it and asking what else might be true. Houses of higher learning took different names in different regions — academies, madrasas, monastery schools, guilds of masters — but each kept texts, teachers and pupils together in one place."
+msgstr "Университет — не просто большой скрипторий: работа меняется от переписывания написанного к обучению и вопросу, что ещё может быть правдой. Дома высшего знания назывались по-разному в разных краях — академии, медресе, монастырские школы, братства мастеров, — но каждый держал тексты, учителей и учеников в одном месте."
 
 msgctxt "crafts.name"
 msgid "Pozzolanic Concrete"

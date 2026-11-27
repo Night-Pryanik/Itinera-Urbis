@@ -51,7 +51,13 @@
       "flavor": "Where water is scarce but wind is steady, sails can drive the same millstones. The cloth sail is light, cheap to replace and quick to mend, so a windmill can stand where a water wheel cannot. Its two sets of stones let one building serve more than one batch of grain.",
       "work_cost": 35,
       "maintenance_cost": 18.0,
-      "additional_cost": [ { "planks": 140 }, { "@processed_construction_materials": 100 }, { "@building_stone": 10 }, { "canvas": 40 }, { "ropes": 20 } ],
+      "additional_cost": [
+        { "planks": 140 },
+        { "@processed_construction_materials": 100 },
+        { "@building_stone": 10 },
+        { "canvas": 40 },
+        { "ropes": 20 }
+      ],
       "icon": "windmill.png",
       "profession": "miller",
       "production_slots": 2.0,
@@ -641,10 +647,26 @@
       "additional_cost": [ { "planks": 120 }, { "@processed_construction_materials": 60 } ],
       "icon": "scriptorium.png",
       "profession": "scientist",
-      "production_slots": 1.0,
+      "production_slots": 2.0,
       "unlock_tech": "scriptoriums",
       "default_recipes": [ "science" ],
-      "additional_yield": { "science": 3 }
+      "additional_yield": { "science": 3 },
+      "upgrades_into": "university"
+    },
+    {
+      "id": "university",
+      "name": "University",
+      "description": "A place where scholars teach and study, turning written knowledge into science.",
+      "flavor": "A university is not a larger scriptorium: the work changes from copying what was written to teaching it and asking what else might be true. Houses of higher learning took different names in different regions — academies, madrasas, monastery schools, guilds of masters — but each kept texts, teachers and pupils together in one place.",
+      "work_cost": 80,
+      "maintenance_cost": 1.0,
+      "additional_cost": [ { "planks": 200 }, { "@processed_construction_materials": 150 } ],
+      "icon": "university.png",
+      "profession": "scientist",
+      "production_slots": 3.0,
+      "unlock_tech": "education",
+      "default_recipes": [ "science" ],
+      "additional_yield": { "science": 5 }
     },
     {
       "id": "dyer_house",
