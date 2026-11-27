@@ -2,6 +2,7 @@
 extends Node
 
 const UI_THEME = preload("res://scripts/ui_theme.gd")
+const UiHelpers = preload("res://scripts/ui_helpers.gd")
 
 var ui_helpers: Node
 var products: Dictionary = {}
@@ -855,7 +856,18 @@ func _show_building_details(bdata: Dictionary):
     # after the construction and is charged even when the building has no worker.
     var upkeep := GameData.get_building_maintenance_cost(str(bdata.get("id", "")))
     if upkeep > 0.0:
-        content.add_child(_make_bullet_row("•", tr("Maintenance: %s coins/sec") % str(upkeep)))
+        # A RichTextLabel is needed for the coin icon of the rate: the same helper the treasury and
+        # the town window use for their sums of coins (ui_helpers.money_rate).
+        var row := HBoxContainer.new()
+        row.add_theme_constant_override("separation", 6)
+        row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+        row.add_child(_make_bullet("•"))
+        var upkeep_label := UiHelpers.make_money_label()
+        upkeep_label.text = "%s %s" % [tr("Maintenance:"), UiHelpers.money_rate(str(upkeep))]
+        upkeep_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+        upkeep_label.add_theme_color_override("font_color", UI_THEME.color("text_secondary"))
+        row.add_child(upkeep_label)
+        content.add_child(row)
         has_costs = true
 
     if bdata.has("additional_cost"):

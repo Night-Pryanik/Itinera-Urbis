@@ -433,8 +433,8 @@ func _build_building_description(building_id: String) -> void:
         _add_goods_block(tr("Additional cost:"), materials, "AdditionalCostRow", true)
 
     _add_separator()
-    _add_labeled_block(tr("Maintenance cost:"), _bbcode_escape(tr("%s coins/sec")
-            % str(maxf(0.0, float(record.get("maintenance_cost", 0.0))))))
+    _add_labeled_block(tr("Maintenance cost:"), UiHelpers.money_rate(
+            str(maxf(0.0, float(record.get("maintenance_cost", 0.0))))))
 
     _add_separator()
     var tech_id := str(record.get("unlock_tech", ""))
@@ -486,8 +486,8 @@ func _build_improvement_description(imp_id: String) -> void:
             _bbcode_escape(tr("%d work") % int(record.get("work_cost", 0))))
 
     _add_separator()
-    _add_labeled_block(tr("Maintenance cost:"), _bbcode_escape(tr("%s coins/sec")
-            % str(maxf(0.0, float(record.get("maintenance_cost", 0.0))))))
+    _add_labeled_block(tr("Maintenance cost:"), UiHelpers.money_rate(
+            str(maxf(0.0, float(record.get("maintenance_cost", 0.0))))))
 
     _add_separator()
     var tech_id := str(record.get("unlock_tech", ""))

@@ -318,8 +318,10 @@ func _test_details_tooltip(state: Dictionary, city_ui, building_id: String) -> v
     if upkeep_building != null:
         btab._show_building_details(upkeep_building)
         var upkeep_texts := _collect_texts(city_ui.ui_helpers.detail_tooltip_content)
-        check(_has_text(upkeep_texts, tr("Maintenance: %s coins/sec") % str(upkeep_value)),
-            "the upkeep row shows the amount of coins (got: %s)" % str(upkeep_texts), state)
+        check(_has_text(upkeep_texts, tr("Maintenance:"))
+                and _has_text(upkeep_texts, str(upkeep_value))
+                and _has_text(upkeep_texts, "coin_stack.png"),
+            "the upkeep row shows the amount with the coin icon (got: %s)" % str(upkeep_texts), state)
         check(not _has_text(upkeep_texts, "%g"),
             "the upkeep row has no unexpanded format specifier (got: %s)" % str(upkeep_texts), state)
 
