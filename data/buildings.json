@@ -205,10 +205,10 @@
       "default_recipes": [ "cast_iron" ]
     },
     {
-      "id": "pottery_workshop",
-      "name": "Pottery Workshop",
+      "id": "potter_house",
+      "name": "Potter's House",
       "description": "Makes clay pots, bricks and tablets on the potter's wheel.",
-      "flavor": "The potter's wheel shapes clay faster and more evenly than hands alone. Wheels were used in many ancient centres of pottery, from the Yangtze valley to the Near East, and the workshop spreads that skill to every vessel the town needs. Fired clay also gives the builder brick and tile.",
+      "flavor": "The potter's wheel shapes clay faster and more evenly than hands alone. Wheels were used in many ancient centres of pottery, from the Yangtze valley to the Near East, and the potter's house turns that skill into the vessels the town needs. Fired clay also gives the builder brick and tile.",
       "work_cost": 35,
       "maintenance_cost": 10.8,
       "additional_cost": [ { "planks": 120 }, { "@processed_construction_materials": 80 } ],
@@ -216,6 +216,21 @@
       "profession": "potter",
       "production_slots": 1.0,
       "unlock_tech": "pottery",
+      "upgrades_into": "pottery_workshop",
+      "default_recipes": [  ]
+    },
+    {
+      "id": "pottery_workshop",
+      "name": "Pottery Workshop",
+      "description": "Fires clay vessels, bricks and tablets in a high-temperature kiln.",
+      "flavor": "A kiln that holds a steady, fierce fire turns a household craft into a workshop trade. Such kilns were built in East Asia and West Asia, where potters learned to read the flame and mix mineral glazes; better draught and a charge that does not spoil let one potter fire far more ware in a day.",
+      "work_cost": 50,
+      "maintenance_cost": 16.2,
+      "additional_cost": [ { "planks": 150 }, { "@processed_construction_materials": 120 }, { "@building_stone": 20 } ],
+      "icon": "pottery_workshop.png",
+      "profession": "potter",
+      "production_slots": 2.0,
+      "unlock_tech": "high_temperature_firing",
       "default_recipes": [  ]
     },
     {

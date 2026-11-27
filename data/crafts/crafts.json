@@ -35,7 +35,7 @@
     {
       "id": "pottery",
       "name": "Pottery",
-      "produced_in": [ "pottery_workshop" ],
+      "produced_in": [ "potter_house", "pottery_workshop" ],
       "resources": { "clay": 20 },
       "result": { "pottery": 10 },
       "time": 4.0,
@@ -48,7 +48,7 @@
       // clay keeping the prestige recipe open to any city that earns the brand.
       "id": "porcelain",
       "name": "Porcelain",
-      "produced_in": [ "pottery_workshop" ],
+      "produced_in": [ "potter_house", "pottery_workshop" ],
       "resources": [ [ { "kaolin": 20 }, { "clay": 20 } ] ],
       "result": { "porcelain": 10 },
       "time": 12,
@@ -58,7 +58,7 @@
     {
       "id": "fine_ceramics",
       "name": "Fine Ceramics",
-      "produced_in": [ "pottery_workshop" ],
+      "produced_in": [ "potter_house", "pottery_workshop" ],
       "resources": { "kaolin": 20 },
       "result": { "fine_ceramics": 10 },
       "extra_kinds": ["dye"],
@@ -69,7 +69,7 @@
     {
       "id": "amphora",
       "name": "Amphora",
-      "produced_in": [ "pottery_workshop" ],
+      "produced_in": [ "potter_house", "pottery_workshop" ],
       "resources": { "clay": 30 },
       "result": { "amphora": 10 },
       "time": 5.0,
@@ -79,7 +79,7 @@
     {
       "id": "bricks",
       "name": "Bricks",
-      "produced_in": [ "pottery_workshop" ],
+      "produced_in": [ "potter_house", "pottery_workshop" ],
       "resources": { "clay": 30 },
       "result": { "bricks": 10 },
       "time": 5.0,
@@ -89,7 +89,7 @@
     {
       "id": "clay_tablets",
       "name": "Clay Tablets",
-      "produced_in": [ "pottery_workshop" ],
+      "produced_in": [ "potter_house", "pottery_workshop" ],
       "resources": { "clay": 20 },
       "result": { "clay_tablets": 10 },
       "time": 5.0,

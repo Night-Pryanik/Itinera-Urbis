@@ -3358,6 +3358,10 @@ msgid "Dries and cures various goods."
 msgstr ""
 
 msgctxt "buildings.description"
+msgid "Fires clay vessels, bricks and tablets in a high-temperature kiln."
+msgstr ""
+
+msgctxt "buildings.description"
 msgid "Fuses glass and blows glassware."
 msgstr ""
 
@@ -3575,6 +3579,10 @@ msgstr ""
 
 msgctxt "buildings.name"
 msgid "Perfumer's House"
+msgstr ""
+
+msgctxt "buildings.name"
+msgid "Potter's House"
 msgstr ""
 
 msgctxt "buildings.name"
@@ -8304,6 +8312,10 @@ msgid "+25% to resource production on farms and plantations."
 msgstr ""
 
 msgctxt "technologies.description"
+msgid "Allows you to build the pottery workshop (2 production slots) and upgrade potter's houses into it."
+msgstr ""
+
+msgctxt "technologies.description"
 msgid "Allows you to build the quarry, the mason's workshop and the builder's yard."
 msgstr ""
 
@@ -8404,7 +8416,7 @@ msgid "Allows you to build the brewer's house. Unlocks recipes for brewing beer,
 msgstr ""
 
 msgctxt "technologies.description"
-msgid "Allows you to build the clay pit and the pottery workshop."
+msgid "Allows you to build the clay pit and the potter's house."
 msgstr ""
 
 msgctxt "technologies.description"
@@ -8629,6 +8641,10 @@ msgstr ""
 
 msgctxt "technologies.flavor"
 msgid "A firm bed of rubble carries the weight; fitted stones hold the surface together. When the rains come, loaded carts can still reach the city."
+msgstr ""
+
+msgctxt "technologies.flavor"
+msgid "A hotter fire changes the clay itself: the body vitrifies and mineral glazes melt into a skin that holds water. Potters reached such heat in East Asia and in the workshops of the Islamic world long before it became common elsewhere, reading the flame and mixing fluxes from ash and metal oxides. With a kiln that holds the heat through a whole firing, a workshop turns a household craft into a daily trade."
 msgstr ""
 
 msgctxt "technologies.flavor"
@@ -9021,6 +9037,10 @@ msgstr ""
 
 msgctxt "technologies.name"
 msgid "Glassmaking"
+msgstr ""
+
+msgctxt "technologies.name"
+msgid "High-Temperature Firing"
 msgstr ""
 
 msgctxt "technologies.name"
@@ -10526,7 +10546,7 @@ msgid "Pigs were domesticated independently in several regions and are kept clos
 msgstr ""
 
 msgctxt "improvements.flavor"
-msgid "Pottery appears wherever clay, water and fire meet, and it begins without a stone kiln. The pit supplies the earth; the potter decides what it becomes. Because clay is heavy and fragile in transit, the workshop is almost always built beside the pit."
+msgid "Pottery appears wherever clay, water and fire meet, and it begins without a stone kiln. The pit supplies the earth; the potter decides what it becomes. Because clay is heavy and fragile in transit, the potter's house is almost always built beside the pit."
 msgstr ""
 
 msgctxt "improvements.flavor"
@@ -10547,6 +10567,10 @@ msgstr ""
 
 msgctxt "improvements.flavor"
 msgid "Wherever grains were first domesticated — in the river valleys of South Asia, in the Americas, in the Near East — the same operation appeared: break the soil and return seed to it. A farm does not change the land; it gives a settled community a dependable way to work the food plants already growing there."
+msgstr ""
+
+msgctxt "buildings.flavor"
+msgid "A kiln that holds a steady, fierce fire turns a household craft into a workshop trade. Such kilns were built in East Asia and West Asia, where potters learned to read the flame and mix mineral glazes; better draught and a charge that does not spoil let one potter fire far more ware in a day."
 msgstr ""
 
 msgctxt "buildings.flavor"
@@ -10606,7 +10630,7 @@ msgid "A tall shaft furnace reaches the temperature at which iron melts, so the 
 msgstr ""
 
 msgctxt "buildings.flavor"
-msgid "The potter's wheel shapes clay faster and more evenly than hands alone. Wheels were used in many ancient centres of pottery, from the Yangtze valley to the Near East, and the workshop spreads that skill to every vessel the town needs. Fired clay also gives the builder brick and tile."
+msgid "The potter's wheel shapes clay faster and more evenly than hands alone. Wheels were used in many ancient centres of pottery, from the Yangtze valley to the Near East, and the potter's house turns that skill into the vessels the town needs. Fired clay also gives the builder brick and tile."
 msgstr ""
 
 msgctxt "buildings.flavor"

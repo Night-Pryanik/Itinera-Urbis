@@ -188,7 +188,7 @@
       // Consolidates lead, tin and zinc ceramic glazes with soda, borax or potash flux.
       "id": "ceramic_glaze",
       "name": "Ceramic Glaze",
-      "produced_in": [ "lime_kilns", "pottery_workshop" ],
+      "produced_in": [ "lime_kilns", "potter_house", "pottery_workshop" ],
       "resources": [
         { "quartz_sand": 10 },
         [ { "lead": 10 }, { "tin": 10 }, { "zinc": 10 } ],

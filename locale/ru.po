@@ -3434,6 +3434,10 @@ msgid "Dries and cures various goods."
 msgstr "Сушка и завяливание различных продуктов."
 
 msgctxt "buildings.description"
+msgid "Fires clay vessels, bricks and tablets in a high-temperature kiln."
+msgstr "Обжигает глиняную посуду, кирпич и таблички в высокотемпературной печи."
+
+msgctxt "buildings.description"
 msgid "Fuses glass and blows glassware."
 msgstr "Варка стекла и выдувание стеклянных изделий."
 
@@ -3652,6 +3656,10 @@ msgstr "Пергаментная мастерская"
 msgctxt "buildings.name"
 msgid "Perfumer's House"
 msgstr "Дом парфюмера"
+
+msgctxt "buildings.name"
+msgid "Potter's House"
+msgstr "Дом гончара"
 
 msgctxt "buildings.name"
 msgid "Pottery Workshop"
@@ -8384,6 +8392,10 @@ msgid "+25% to resource production on farms and plantations."
 msgstr "+25% к производству на фермах и плантациях."
 
 msgctxt "technologies.description"
+msgid "Allows you to build the pottery workshop (2 production slots) and upgrade potter's houses into it."
+msgstr "Даёт возможность строить гончарную мастерскую (2 слота производства) и улучшать дома гончара в неё."
+
+msgctxt "technologies.description"
 msgid "Allows you to build the quarry, the mason's workshop and the builder's yard."
 msgstr "Даёт возможность строить каменоломню, каменотёсную мастерскую и строительный двор."
 
@@ -8484,8 +8496,8 @@ msgid "Allows you to build the brewer's house. Unlocks recipes for brewing beer,
 msgstr "Даёт возможность строить дом варщика. Открывает рецепты варки пива, пульке, саке и тодди."
 
 msgctxt "technologies.description"
-msgid "Allows you to build the clay pit and the pottery workshop."
-msgstr "Даёт возможность строить глиняную яму и гончарную мастерскую."
+msgid "Allows you to build the clay pit and the potter's house."
+msgstr "Даёт возможность строить глиняную яму и дом гончара."
 
 msgctxt "technologies.description"
 msgid "Allows you to build the coke oven to bake coal into metallurgical coke, substituting for charcoal across smelters, forges and glassworks and unlocking heavier coke smelting in the blast furnace."
@@ -8710,6 +8722,10 @@ msgstr "Поле, засеваемое одним и тем же зерном и
 msgctxt "technologies.flavor"
 msgid "A firm bed of rubble carries the weight; fitted stones hold the surface together. When the rains come, loaded carts can still reach the city."
 msgstr "Прочное основание из щебня выдерживает тяжесть возов, а плотно подогнанные камни держат покрытие. Даже в дождь гружёные телеги добираются до города."
+
+msgctxt "technologies.flavor"
+msgid "A hotter fire changes the clay itself: the body vitrifies and mineral glazes melt into a skin that holds water. Potters reached such heat in East Asia and in the workshops of the Islamic world long before it became common elsewhere, reading the flame and mixing fluxes from ash and metal oxides. With a kiln that holds the heat through a whole firing, a workshop turns a household craft into a daily trade."
+msgstr "Более жаркий огонь меняет саму глину: черепок спекается, а минеральные глазури плавятся в гладкую плёнку, не пропускающую воду. Гончары достигали такого жара в Восточной Азии и в мастерских исламского мира задолго до того, как он стал обычным в других краях, — они читали пламя и смешивали флюсы из золы и оксидов металлов. Печь, выдерживающая жар весь обжиг, превращает домашнее ремесло в повседневный промысел."
 
 msgctxt "technologies.flavor"
 msgid "A map shows where one road meets the next. Surveyors set the width, crews clear the ditches, and each stretch has someone responsible for its upkeep."
@@ -9102,6 +9118,10 @@ msgstr "Выдувание стекла"
 msgctxt "technologies.name"
 msgid "Glassmaking"
 msgstr "Стеклоделие"
+
+msgctxt "technologies.name"
+msgid "High-Temperature Firing"
+msgstr "Высокотемпературный обжиг"
 
 msgctxt "technologies.name"
 msgid "Hoisting Mechanisms"
@@ -10645,8 +10665,8 @@ msgid "Pigs were domesticated independently in several regions and are kept clos
 msgstr "Свиней одомашнили независимо в нескольких регионах, и держат их у жилища, а не гоняют на пастбище. Свинарник не даёт им портить посевы и превращает кухонные отходы в мясо и удобрение. Небольшая постройка даёт большую отдачу."
 
 msgctxt "improvements.flavor"
-msgid "Pottery appears wherever clay, water and fire meet, and it begins without a stone kiln. The pit supplies the earth; the potter decides what it becomes. Because clay is heavy and fragile in transit, the workshop is almost always built beside the pit."
-msgstr "Гончарство возникает там, где встречаются глина, вода и огонь, и начинается без каменной печи. Яма даёт землю, а гончар решает, чем она станет. Глину тяжело и хрупко возить, поэтому мастерская почти всегда стоит рядом с ямой."
+msgid "Pottery appears wherever clay, water and fire meet, and it begins without a stone kiln. The pit supplies the earth; the potter decides what it becomes. Because clay is heavy and fragile in transit, the potter's house is almost always built beside the pit."
+msgstr "Гончарство возникает там, где встречаются глина, вода и огонь, и начинается без каменной печи. Яма даёт землю, а гончар решает, чем она станет. Глину тяжело и хрупко возить, поэтому дом гончара почти всегда стоит рядом с ямой."
 
 msgctxt "improvements.flavor"
 msgid "Stone is the oldest building material that does not rot. A quarry supplies the blocks for walls, roads and foundations, and its workers learn to read the grain of the rock before they cut it. Unlike a mine, it works at the surface and needs no shafts."
@@ -10667,6 +10687,10 @@ msgstr "Там, где сильно солнце и рядом море или �
 msgctxt "improvements.flavor"
 msgid "Wherever grains were first domesticated — in the river valleys of South Asia, in the Americas, in the Near East — the same operation appeared: break the soil and return seed to it. A farm does not change the land; it gives a settled community a dependable way to work the food plants already growing there."
 msgstr "Там, где зерновые были одомашнены впервые — в долинах Южной Азии, в Америке, на Ближнем Востоке — появлялась одна и та же операция: рыхлить землю и возвращать ей семена. Ферма не меняет ландшафт; она даёт оседлому сообществу надёжный способ возделывать пищевые растения, которые уже растут вокруг."
+
+msgctxt "buildings.flavor"
+msgid "A kiln that holds a steady, fierce fire turns a household craft into a workshop trade. Such kilns were built in East Asia and West Asia, where potters learned to read the flame and mix mineral glazes; better draught and a charge that does not spoil let one potter fire far more ware in a day."
+msgstr "Печь, которая держит ровный и сильный жар, превращает домашнее ремесло в промысел мастерской. Такие печи строили в Восточной и Западной Азии, где гончары научились читать пламя и смешивать минеральные глазури; улучшенная тяга и надёжный обжиг позволяют одному гончару за день выпускать гораздо больше посуды."
 
 msgctxt "buildings.flavor"
 msgid "Grinding grain between stones needs no engine, only a heavy upper stone and a hand to turn it. Hand mills appear wherever people cultivate grain, from the river valleys of South Asia to the highlands of the Americas, and remained in use long after larger mills existed. The small mill lets a household do without the workshop down the road."
@@ -10725,8 +10749,8 @@ msgid "A tall shaft furnace reaches the temperature at which iron melts, so the 
 msgstr "Высокая шахтная печь достигает температуры, при которой железо плавится, поэтому металл выпускают жидким и разливают по формам. Ей нужны постоянное дутьё, шихта из руды и флюса и печь, выдерживающая повторяющийся жар. Доменное производство превращает железо из ремесленного материала в массовый."
 
 msgctxt "buildings.flavor"
-msgid "The potter's wheel shapes clay faster and more evenly than hands alone. Wheels were used in many ancient centres of pottery, from the Yangtze valley to the Near East, and the workshop spreads that skill to every vessel the town needs. Fired clay also gives the builder brick and tile."
-msgstr "Гончарный круг позволяет придавать глине форму быстрее и ровнее, чем одними руками. Круги применяли во многих древних центрах гончарства — от долины Янцзы до Ближнего Востока — и мастерская распространяет это умение на все сосуды города. Обожжённая глина даёт строителю также кирпич и черепицу."
+msgid "The potter's wheel shapes clay faster and more evenly than hands alone. Wheels were used in many ancient centres of pottery, from the Yangtze valley to the Near East, and the potter's house turns that skill into the vessels the town needs. Fired clay also gives the builder brick and tile."
+msgstr "Гончарный круг позволяет придавать глине форму быстрее и ровнее, чем одними руками. Круги применяли во многих древних центрах гончарства — от долины Янцзы до Ближнего Востока — и дом гончара превращает это умение в сосуды, нужные городу. Обожжённая глина даёт строителю также кирпич и черепицу."
 
 msgctxt "buildings.flavor"
 msgid "Stone must be cut to size before it can be built into a wall. A workshop with chisels and a yard for blocks lets one mason prepare stone for many building sites. Since stone is heavy, the work is done as near the quarry and the town as possible."
