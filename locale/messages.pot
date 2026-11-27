@@ -3911,7 +3911,7 @@ msgid "Burns wood or bamboo into charcoal."
 msgstr ""
 
 msgctxt "crafts.description"
-msgid "Casts a bronze disc and polishes its face with pumice into a reflecting surface."
+msgid "Casts a bronze disc and polishes its face into a reflecting surface."
 msgstr ""
 
 msgctxt "crafts.description"
@@ -3939,7 +3939,7 @@ msgid "Cures, ages and cuts tobacco leaf."
 msgstr ""
 
 msgctxt "crafts.description"
-msgid "Cuts stone into plates, bowls, and cups and grinds them smooth with pumice."
+msgid "Cuts stone into plates, bowls, and cups and grinds them smooth."
 msgstr ""
 
 msgctxt "crafts.description"
@@ -5755,6 +5755,10 @@ msgid "Worst quality"
 msgstr ""
 
 msgctxt "product_groups.name"
+msgid "Abrasives"
+msgstr ""
+
+msgctxt "product_groups.name"
 msgid "Additional Food"
 msgstr ""
 
@@ -6832,6 +6836,10 @@ msgstr ""
 
 msgctxt "resources.name"
 msgid "Eggs"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Emery"
 msgstr ""
 
 msgctxt "resources.name"

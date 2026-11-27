@@ -5,10 +5,10 @@ const WATCHDOG = preload("res://tests/watchdog.gd")
 
 const OPTICAL := [
     { "product": "magnifying_glass", "price": 40, "time": 12.0,
-      "inputs": { "quartz_sand": 20, "soda": 10, "pumice": 10 },
-      "alt_inputs": { "quartz_sand": 20, "potash": 10, "pumice": 10 } },
+      "inputs": { "quartz_sand": 20, "soda": 10 },
+      "alt_inputs": { "quartz_sand": 20, "potash": 10 } },
     { "product": "spectacles", "price": 70, "time": 16.0,
-      "inputs": { "quartz_sand": 20, "potash": 10, "lead": 10, "pumice": 10 } },
+      "inputs": { "quartz_sand": 20, "potash": 10, "lead": 10 } },
 ]
 
 var _failed := false
@@ -28,6 +28,7 @@ func _run() -> void:
         _test_product(gd, item)
         _test_recipe(gd, city, item)
     _test_group(gd)
+    _test_emery(gd, city)
     _test_consumption(gd)
 
     var wm = load("res://scripts/worker_manager.gd").new()
@@ -76,18 +77,60 @@ func _test_recipe(gd: Node, city: Node, item: Dictionary) -> void:
     _check(str(recipe.get("unlock_tech", "")) == "optics", "the lens recipe keeps its gate: " + pid)
     _check(float(recipe.get("time", 0)) == float(item["time"]), "the lens keeps its time: " + pid)
     _check(int(recipe.get("result", {}).get(pid, 0)) == 10, "the recipe yields ten lenses: " + pid)
-    _check(not _ingredient_ids(recipe.get("resources", {})).has("glassware"),
+    var ingredient_ids := _ingredient_ids(recipe.get("resources", {}))
+    _check(not ingredient_ids.has("glassware"),
         "lenses are ground from batch, not from finished vessels: " + pid)
+    for abrasive in ["@abrasives", "pumice", "ochre", "emery"]:
+        _check(not ingredient_ids.has(abrasive), pid + " needs no additional abrasive ingredient")
 
     if item.has("alt_inputs"):
         _check(_has_alkali_alternative(gd, recipe), "soda and potash are alternatives: " + pid)
     for input_set in [item["inputs"], item.get("alt_inputs", item["inputs"])]:
         _test_cycle(city, recipe, input_set, pid)
+        for missing in input_set:
+            var partial: Dictionary = input_set.duplicate()
+            partial.erase(missing)
+            city.city_storage.clear()
+            city.city_quality_detail.clear()
+            for ingredient in partial:
+                city.add_to_storage(ingredient, partial[ingredient], "common")
+            var container = load("res://scripts/craft_container.gd").new(recipe)
+            var result: Dictionary = container.tick(float(recipe.get("time", 1)), true, "best")
+            _check(not bool(result.get("completed", false)), pid + " needs " + str(missing))
 
 func _test_group(gd: Node) -> void:
     var group: Array = gd.product_groups.get("optical_instruments", [])
     _check(group == ["magnifying_glass", "spectacles"],
         "the plainer lens comes first and the finer one last")
+
+func _test_emery(gd: Node, city: Node) -> void:
+    var product: Dictionary = gd.products.get("emery", {})
+    var deposit: Dictionary = gd.raw_resources.get("emery_deposit", {})
+    var quarry: Dictionary = gd.improvements.get("quarry", {})
+    _check(str(product.get("type", "")) == "product", "emery is a product")
+    _check(str(product.get("category", "")) == "minerals", "emery is a mineral")
+    _check(int(product.get("price", 0)) > 0, "emery has a price")
+    _check(str(deposit.get("type", "")) == "raw", "emery has a deposit")
+    _check(str(deposit.get("improved_by", "")) == "quarry", "a quarry extracts emery")
+    _check(int(deposit.get("produces", {}).get("emery", 0)) > 0, "the deposit yields emery")
+    _check(not (deposit.get("allowed_terrain", []) as Array).is_empty(), "emery has suitable terrain")
+    var gate := str(quarry.get("unlock_tech", ""))
+    _check(gate == "masonry" and str(deposit.get("tech_required", "")) == gate,
+        "the deposit opens with the quarry")
+    _check(str(product.get("unlock_tech", "")) == gate, "emery opens with its quarry")
+    _check(str(deposit.get("icon", "")) == str(product.get("icon", "")),
+        "the deposit and product share an icon")
+    _check(root.get_node("IconRegistry").get_texture(str(product.get("icon", ""))) != null,
+        "the emery icon loads")
+    var saved_techs: Array = city.unlocked_technologies.duplicate()
+    var saved_ignore: bool = city.ignore_tech_requirements
+    city.ignore_tech_requirements = false
+    city.unlocked_technologies = []
+    _check(not city.is_product_available("emery"), "emery is locked before masonry")
+    city.unlocked_technologies.append(gate)
+    _check(city.is_product_available("emery"), "masonry unlocks emery")
+    city.unlocked_technologies = saved_techs
+    city.ignore_tech_requirements = saved_ignore
 
 func _test_consumption(gd: Node) -> void:
     var rule := _find_rule(gd.get_profession_consumption("scientist"), "@optical_instruments")
@@ -118,20 +161,21 @@ func _test_stacking(gd: Node, city: Node, wm: Node) -> void:
     _check(absf(stacked - 0.45) < 0.0001,
         "metal and optical instruments stack (+0.10 + +0.35), got +%f" % stacked)
 
-func _test_cycle(city: Node, recipe: Dictionary, inputs: Dictionary, output: String) -> void:
+func _test_cycle(city: Node, recipe: Dictionary, inputs: Dictionary, label: String) -> void:
+    var output := label
     city.city_storage.clear()
     for pid in inputs:
         city.add_to_storage(pid, inputs[pid], "common")
     var container = load("res://scripts/craft_container.gd").new(recipe)
     var result: Dictionary = container.tick(float(recipe.get("time", 1)), true, "best")
-    _check(bool(result.get("completed", false)), output + " cycle completes")
+    _check(bool(result.get("completed", false)), label + " cycle completes")
     var quantity := 0
     for release in result.get("releases", []):
         if str(release.get("pid", "")) == output:
             quantity += int(release.get("amount", 0))
-    _check(quantity == int(recipe.get("result", {}).get(output, 0)), output + " output")
+    _check(quantity == int(recipe.get("result", {}).get(output, 0)), label + " output")
     for pid in inputs:
-        _check(int(city.get_storage_amount(pid)) == 0, output + " consumes " + str(pid))
+        _check(int(city.get_storage_amount(pid)) == 0, label + " consumes " + str(pid))
 
 func _ingredient_ids(raw) -> Array:
     var ids: Array = []

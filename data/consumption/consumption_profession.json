@@ -440,10 +440,8 @@
       "production_bonus": 0.1
     },
     {
-      // Rough pumice grinds the stone smooth before the final polish: the stonecutter
-      // rubs it over the dressed block, the jeweler over the face of the gem.
-      "resource": "pumice",
-      "profession": [ "mason", "jeweler" ],
+      "resource": "@abrasives",
+      "profession": [ "mason", "jeweler", "glassmaker" ],
       "amount": 10,
       "interval": 10,
       "production_bonus": 0.1

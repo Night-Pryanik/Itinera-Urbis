@@ -8,6 +8,15 @@
       "category": "minerals",
       "icon": "quartz_sand.png"
     },
+    {
+      "id": "emery",
+      "price": 8,
+      "name": "Emery",
+      "type": "product",
+      "category": "minerals",
+      "unlock_tech": "masonry",
+      "icon": "emery.png"
+    },
     { "id": "soda", "price": 8, "name": "Soda", "type": "product", "category": "minerals", "icon": "soda.png" },
     {
       "id": "bitumen",

@@ -17,6 +17,12 @@
   // with that group's members. A group must not nest in itself, directly or through other groups.
   "product_groups": [
     {
+      // Quartz sand supplies both glass batches and professional abrasive consumption.
+      "id": "abrasives",
+      "name": "Abrasives",
+      "products": [ "pumice", "quartz_sand", "ochre", "emery" ]
+    },
+    {
       "id": "boats",
       "name": "Boats",
       "products": [ "reed_boat", "wooden_boat" ]
