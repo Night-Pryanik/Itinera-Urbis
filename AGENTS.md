@@ -4,6 +4,10 @@
 
 The game does not maintain backward compatibility with old save files. When adding new mechanics or modifying existing ones, **do not write save migration code**. When a saved data format changes, old saves are simply considered invalid.
 
+## Testing When Godot Is Unavailable
+
+If Godot is unavailable and the tests cannot be run locally, check the GitHub Actions test results after opening a pull request. Wait for the checks to complete, for example with `gh pr checks <number> --watch`, and report the result to the user. If a check fails, inspect the failed run's logs or annotations, address failures caused by the changes, and check the new run after pushing fixes. If the results cannot be retrieved, report that limitation rather than claiming the tests passed.
+
 ## Purpose
 
 Comments in this project should explain the **current state of the project**, not its development history.
