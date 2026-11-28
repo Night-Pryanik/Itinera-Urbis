@@ -92,6 +92,16 @@
       "flavor": "Raw coal ruins hot iron with sulfur and chokes a furnace with thick tarry smoke, yet the remedy lay in the charcoal burner's own craft. Baked slowly with little air until its volatile fumes burned off, stone coal turned into hard, porous grey coke — first charged into the iron furnaces of Song China when the surrounding hills ran short of timber, bearing heavier ore burdens than fragile wood charcoal ever could."
     },
     {
+      "id": "wire_drawing",
+      "name": "Wire Drawing",
+      "era": "medieval",
+      "science_cost": 4.0,
+      "prerequisites": [ [ "metallurgy" ] ],
+      "icon": "wire_drawing.png",
+      "description": "+10% production to the blacksmith and the jeweler.",
+      "flavor": "A hardened plate with a tapered hole turns a thick metal bar into a thin, even wire: pull the bar through and the wire issues from the far side, smooth and uniform in one length. The draw plate spread through the Middle Ages and gave both the smith and the jeweler a new material — wire for rigging and chains, for the delicate frames and settings of ornaments, and for instruments whose parts could now be cut to a hair's breadth. The steady pull through the plate did what hammering alone never could."
+    },
+    {
       "id": "distillation",
       "name": "Distillation",
       "era": "medieval",

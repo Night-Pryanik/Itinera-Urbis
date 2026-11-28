@@ -223,6 +223,20 @@
         "icon": "production_bonus.png",
         "name": "Optical workshop: +10% production",
         "building_production_multiplier": { "optical_workshop": 1.1 }
+      },
+      {
+        // Drawing metal through a draw plate gives the smith and the jeweler a thin,
+        // even wire — a material both trades work into their goods. The bonus is applied
+        // to every building these professions work in: the forge and its upgrade for the
+        // blacksmith, and the jeweler's house for the jeweler.
+        "tech_id": "wire_drawing",
+        "icon": "production_bonus.png",
+        "name": "Blacksmith and jeweler: +10% production",
+        "building_production_multiplier": {
+          "forge": 1.1,
+          "smithing_workshop": 1.1,
+          "jeweler_house": 1.1
+        }
       }
     ],
     "terrain_modifiers": [
