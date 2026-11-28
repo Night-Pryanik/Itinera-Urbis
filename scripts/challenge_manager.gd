@@ -66,6 +66,7 @@ const CHALLENGE_ID_SUFFIX := "_challenge"
 # The reward of a reputation tier is a share on the price a town pays. It is held here rather than
 # in the bonuses of a specialization because the two are read by the same code.
 var _fame_price_share := {}
+var _fame_group_owners := {}
 
 # A tier has just been paid for: the city window redraws the tab, the HUD shows the news.
 signal fame_tier_completed(tier_id: String, tier: String, reward: Dictionary)
@@ -84,6 +85,8 @@ func _ready() -> void:
     fame_tier_completed.connect(_on_fame_tier_completed)
     challenge_completed.connect(_on_challenge_completed)
     challenge_failed.connect(_on_challenge_failed)
+    GameData.data_reloaded.connect(_rebuild_fame_groups)
+    _rebuild_fame_groups()
 
 
 # The reward of a tier or of a task is a surprise the player did not have to look for, so it is said
@@ -195,23 +198,38 @@ func _on_territory_expanded(_row: int, _col: int, _cost) -> void:
 # The units of a good a town has taken from the city. `breakdown` is what the storage gave up, by
 # quality (CityData.remove_from_storage returns it).
 func record_sale(pid: String, breakdown: Dictionary) -> void:
-    _accumulate(sold_by_quality, pid, breakdown)
-    _check_product_tiers(pid)
-    # A dyed variant is a sale of the underlying good as well as its own record.
-    var base := str(GameData.parse_generated_id(pid).get("base", ""))
-    if not base.is_empty() and GameData.products.has(base):
-        var product: Dictionary = GameData.products[base]
-        if product.has("reputation") or product.has("brand") or product.has("challenge"):
-            _accumulate(sold_by_quality, base, breakdown)
-            _check_product_tiers(base)
+    _record_fame(sold_by_quality, pid, breakdown)
 
 
-# The units of a good the city has made.
 func record_production(pid: String, amount: int, quality: String) -> void:
     if amount <= 0:
         return
-    _accumulate(produced_by_quality, pid, {quality: amount})
-    _check_product_tiers(pid)
+    _record_fame(produced_by_quality, pid, {quality: amount})
+
+
+func _record_fame(into: Dictionary, pid: String, breakdown: Dictionary) -> void:
+    _accumulate(into, pid, breakdown)
+    var base := str(GameData.parse_generated_id(pid).get("base", ""))
+    var actual := base if not base.is_empty() and GameData.products.has(base) else pid
+    if actual != pid:
+        _accumulate(into, actual, breakdown)
+    _check_product_tiers(actual)
+    for owner_id in _fame_group_owners.get(actual, []):
+        if str(owner_id) != actual:
+            _check_product_tiers(str(owner_id))
+
+
+func _rebuild_fame_groups() -> void:
+    _fame_group_owners.clear()
+    for owner_id in GameData.products:
+        var owner: Dictionary = GameData.products[owner_id]
+        var group := str(owner.get("fame_group", ""))
+        if group.is_empty():
+            continue
+        for member in GameData.product_groups.get(group, []):
+            if not _fame_group_owners.has(member):
+                _fame_group_owners[member] = []
+            _fame_group_owners[member].append(str(owner_id))
 
 
 func _accumulate(into: Dictionary, pid: String, breakdown: Dictionary) -> void:
@@ -231,25 +249,37 @@ func _accumulate(into: Dictionary, pid: String, breakdown: Dictionary) -> void:
 # The counter a tier is measured against: the units of the good counted by the trigger of the tier,
 # and only those of the quality the tier waits for.
 func tier_counter(product: Dictionary, block: Dictionary) -> int:
-    var pid := str(product.get("id", ""))
     var trigger := str(block.get("trigger", TRIGGER_SELL))
-    var by_quality: Dictionary
+    var counters: Dictionary
     match trigger:
         TRIGGER_SELL:
-            by_quality = sold_by_quality.get(pid, {})
+            counters = sold_by_quality
         TRIGGER_PRODUCE:
-            by_quality = produced_by_quality.get(pid, {})
+            counters = produced_by_quality
         _:
-            # An unknown trigger counts nothing (data_validator reports it): guessing "sell" would
-            # make a typo of the author pay the player for a task he never did.
             return 0
     var minimum := str(block.get("min_quality", ""))
-    if minimum.is_empty():
-        var plain := 0
-        for quality in by_quality:
-            plain += int(by_quality[quality])
-        return plain
-    return _units_at_or_above(GameData.quality_level_totals(by_quality), minimum)
+    var total := 0
+    for pid in _fame_products(product):
+        var by_quality: Dictionary = counters.get(pid, {})
+        if minimum.is_empty():
+            for quality in by_quality:
+                total += int(by_quality[quality])
+        else:
+            total += _units_at_or_above(GameData.quality_level_totals(by_quality), minimum)
+    return total
+
+
+func _fame_products(product: Dictionary) -> Array:
+    var group := str(product.get("fame_group", ""))
+    if not group.is_empty():
+        var members: Array = []
+        for member in GameData.product_groups.get(group, []):
+            # Generated variants are already accumulated under their base product.
+            if GameData.parse_generated_id(str(member)).is_empty():
+                members.append(member)
+        return members
+    return [str(product.get("id", ""))]
 
 
 # The units of the levels at `quality` and better. The order of the levels is the order of the data
@@ -368,11 +398,11 @@ func rewards_of(block) -> Array:
 func apply_reward(product, reward: Dictionary) -> void:
     match str(reward.get("type", "")):
         REWARD_TRADE_PRICE:
-            var pid := str(product.get("id", "")) if product is Dictionary else ""
-            if pid.is_empty():
+            if not (product is Dictionary):
                 return
             var share := float(reward.get("value", 0.0))
-            _fame_price_share[pid] = float(_fame_price_share.get(pid, 0.0)) + share
+            for pid in _fame_products(product):
+                _fame_price_share[pid] = float(_fame_price_share.get(pid, 0.0)) + share
         REWARD_BRAND_PRODUCT:
             # The recipe of the prestige good is opened by the tier itself (its "unlock_challenge"
             # names the tier), so nothing is granted here: the point is that the tier is done.
@@ -386,10 +416,10 @@ func apply_reward(product, reward: Dictionary) -> void:
             pass
 
 
-# The share the fame of a good adds to the price a town pays for it. A tier of another good never
-# raises this one: the share is scoped to the product that earned it.
+# A shared ladder pays all its members; a generated variant inherits its base's share.
 func get_fame_trade_price_share(pid: String) -> float:
-    return float(_fame_price_share.get(pid, 0.0))
+    var base := str(GameData.parse_generated_id(pid).get("base", ""))
+    return float(_fame_price_share.get(base if not base.is_empty() else pid, 0.0))
 
 
 # The reward of a tier or of a challenge in the words of the view that lists them. The manager owns
@@ -713,6 +743,7 @@ func _restore_fame_prices() -> void:
         for reward in rewards_of(block):
             if str(reward.get("type", "")) != REWARD_TRADE_PRICE:
                 continue
-            var key := str(pid)
-            _fame_price_share[key] = float(_fame_price_share.get(key, 0.0)) \
-                    + float(reward.get("value", 0.0))
+            for member in _fame_products(product):
+                var key := str(member)
+                _fame_price_share[key] = float(_fame_price_share.get(key, 0.0)) \
+                        + float(reward.get("value", 0.0))

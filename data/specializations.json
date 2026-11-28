@@ -171,6 +171,18 @@
       ]
     },
     {
+      "id": "leather_specialization",
+      "name": "Leather",
+      "full_name": "Specialization of leather",
+      "description": "The leather and morocco leather clothes of the city are known by name. They bring more in trade and its workshops produce them faster.",
+      "icon": "leather.png",
+      "unlock": { "type": "challenge", "id": "leather_challenge" },
+      "bonuses": [
+        { "type": "trade_sell_price", "value": 0.15, "products": ["@leather_clothing_goods"] },
+        { "type": "building_production", "value": 0.20, "products": ["@leather_clothing_goods"] }
+      ]
+    },
+    {
       "id": "wool_specialization",
       "name": "Wool",
       "full_name": "Specialization of wool",

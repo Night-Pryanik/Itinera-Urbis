@@ -29,6 +29,22 @@
       "icon": "leather.png"
     },
     {
+      "id": "morocco_leather", "price": 28,
+      "name": "Morocco Leather",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "morocco_leather",
+      "icon": "leather.png"
+    },
+    {
+      "id": "branded_leather", "price": 42,
+      "name": "Leather \"<city_name>\"",
+      "type": "product",
+      "category": "material",
+      "brand_of": "leather_clothes",
+      "icon": "leather.png"
+    },
+    {
       "id": "flax", "price": 4,
       "name": "Flax",
       "type": "product",

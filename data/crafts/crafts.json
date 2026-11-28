@@ -99,12 +99,43 @@
     {
       "id": "leather",
       "name": "Leather",
-      "produced_in": [ "leatherworker_house" ],
+      "produced_in": [ "leatherworker_house", "leatherworker_workshop" ],
       "resources": { "hide": 10, "@tannins": 10 },
       "result": { "leather": 10 },
       "time": 4.0,
       "unlock_tech": "leatherworking",
       "description": "Turns hides into tough leather."
+    },
+    {
+      "id": "morocco_leather",
+      "name": "Morocco Leather",
+      "produced_in": [ "leatherworker_workshop" ],
+      "resources": { "hide": 10, "@tannins": 10 },
+      "result": { "morocco_leather": 10 },
+      "time": 8.0,
+      "unlock_tech": "morocco_leather",
+      "description": "Tans and finishes hides into supple, fine-grained leather."
+    },
+    {
+      "id": "branded_leather",
+      "name": "Branded Leather",
+      "produced_in": [ "leatherworker_house", "leatherworker_workshop" ],
+      "resources": { "hide": 10, "@tannins": 10 },
+      "result": { "branded_leather": 10 },
+      "time": 12.0,
+      "unlock_tech": "leatherworking",
+      "description": "Finishes hides into the city's renowned leather."
+    },
+    {
+      "id": "morocco_leather_clothes",
+      "name": "Morocco Leather Clothes",
+      "produced_in": [ "leatherworker_workshop" ],
+      "resources": { "morocco_leather": 20 },
+      "result": { "morocco_leather_clothes": 10 },
+      "extra_kinds": [ "dye" ],
+      "time": 4.0,
+      "unlock_tech": "morocco_leather",
+      "description": "Sews clothes from supple morocco leather."
     },
     {
       "id": "fabric_clothes",
@@ -226,7 +257,7 @@
     {
       "id": "leather_clothes",
       "name": "Leather Clothes",
-      "produced_in": [ "leatherworker_house" ],
+      "produced_in": [ "leatherworker_house", "leatherworker_workshop" ],
       "resources": { "leather": 20 },
       "result": { "leather_clothes": 10 },
       "time": 4.0,

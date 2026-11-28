@@ -46,6 +46,7 @@
 #   consumption_member  — a consumption rule's members map names a product outside its @-group
 #   prerequisite       — a technology requires a non-existent technology
 #   specialization_*   — a branch names a non-existent predecessor, improvement, good or challenge
+#   fame_group         — a fame ladder names a nonexistent goods group
 #   fame_trigger       — a tier of the fame of a good counts an unknown way
 #   fame_quality       — a tier of the fame waits for a non-existent quality level
 #   fame_reward        — a tier of the fame rewards a non-existent good or branch
@@ -321,6 +322,7 @@ const RESOURCE_FIELDS := {
     "brand": PRODUCT_FAME_TIER_FIELDS,
     "challenge": PRODUCT_FAME_TIER_FIELDS,
     "brand_of": LEAF,
+    "fame_group": LEAF,
     "tech_required": LEAF,
     "tech_reveal": LEAF,
     "allowed_terrain": LEAF,
@@ -1105,6 +1107,8 @@ static func check_title(kind: String) -> String:
             return TranslationServer.translate("Specialization requires a nonexistent specialization")
         "specialization_improvement":
             return TranslationServer.translate("Specialization bonus names a nonexistent improvement")
+        "fame_group":
+            return TranslationServer.translate("The fame of a good names a nonexistent goods group")
         "fame_trigger":
             return TranslationServer.translate("The fame of a good counts an unknown trigger")
         "fame_quality":
@@ -1221,6 +1225,7 @@ const CHECK_ORDER := [
     "prerequisite",
     "specialization_prerequisite",
     "specialization_improvement",
+    "fame_group",
     "fame_trigger",
     "fame_quality",
     "fame_reward",
@@ -1307,7 +1312,7 @@ func validate(gd: Object) -> Array:
     _validate_specializations(gd.specializations, improvements, all_resources, product_groups,
             challenge_ids, removed_challenge_ids, problems)
     _validate_fame(all_resources, _quality_levels(gd), _index_by_id(gd.specializations),
-            challenges, _known_challenge_conditions(), problems)
+            challenges, _known_challenge_conditions(), product_groups, problems)
     _validate_roads(gd.roads, technologies, problems)
     _validate_climate_zones(gd.climate_zones, terrains, _climate_families(terrains, gd.map_config), problems)
     _validate_cover_belts(gd.covers, problems)
@@ -2484,7 +2489,7 @@ func _unlock_conditions(spec: Dictionary) -> Array:
 # names a check that lives in the code rather than in the data. A wrong identifier is silent in all
 # of these cases — the reward never comes, the task never completes — so it is reported here.
 func _validate_fame(products: Dictionary, qualities: Array, specializations: Dictionary,
-        challenges: Dictionary, conditions: Array, problems: Array) -> void:
+        challenges: Dictionary, conditions: Array, product_groups: Dictionary, problems: Array) -> void:
     # The prestige goods some rung of the fame grants. The game works out from these which recipes
     # are the work of a brand — see the header comment of data/products/food.json — so a good that
     # calls itself a brand yet is granted by nobody is a hole in the data, not a debt of the city.
@@ -2492,6 +2497,9 @@ func _validate_fame(products: Dictionary, qualities: Array, specializations: Dic
     for pid in products:
         var product: Dictionary = products[pid]
         var name := _entity_name(product, str(pid))
+        var fame_group := str(product.get("fame_group", ""))
+        if not fame_group.is_empty() and not product_groups.has(fame_group):
+            _add(problems, "fame_group", "group", fame_group, "product", name, str(pid), "fame_group")
         for tier in ["reputation", "brand", "challenge"]:
             var block = product.get(tier, null)
             if not (block is Dictionary):

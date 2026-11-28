@@ -11059,3 +11059,90 @@ msgstr "Изготавливает брендовую одежду из лучш
 msgctxt "crafts.description"
 msgid "Distils fermented sugar cane juice into rum."
 msgstr "Перегоняет сброженный сок сахарного тростника в ром."
+
+msgctxt "technologies.name"
+msgid "Morocco Leather"
+msgstr "Сафьян"
+
+msgctxt "technologies.description"
+msgid "Unlocks the tanner's workshop, morocco leather and morocco leather clothes."
+msgstr "Открывает кожевенную мастерскую, сафьян и одежду из сафьяна."
+
+msgctxt "technologies.flavor"
+msgid "Careful tanning, softening and finishing turn hides into supple, fine-grained leather. Dyed in rich colors, it serves garments, bindings and other prized goods."
+msgstr "Тщательное дубление, размягчение и отделка превращают шкуры в мягкую мелкозернистую кожу. Окрашенная в насыщенные цвета, она идёт на одежду, переплёты и другие ценные изделия."
+
+msgctxt "buildings.name"
+msgid "Tanner's Workshop"
+msgstr "Кожевенная мастерская"
+
+msgctxt "buildings.description"
+msgid "Tans and finishes leather and sews leather goods."
+msgstr "Дубит и отделывает кожу, шьёт кожаные изделия."
+
+msgctxt "buildings.flavor"
+msgid "Separate vats and workbenches let tanners prepare hides and finish fine leather alongside their other work."
+msgstr "Отдельные чаны и верстаки позволяют кожевникам выделывать шкуры и отделывать тонкую кожу одновременно с другой работой."
+
+msgctxt "resources.name"
+msgid "Morocco Leather"
+msgstr "Сафьян"
+
+msgctxt "resources.name"
+msgid "Morocco Leather Clothes"
+msgstr "Одежда из сафьяна"
+
+msgctxt "resources.name"
+msgid "Leather \"<city_name>\""
+msgstr "Кожа «<city_name>»"
+
+msgctxt "crafts.name"
+msgid "Morocco Leather"
+msgstr "Сафьян"
+
+msgctxt "crafts.name"
+msgid "Morocco Leather Clothes"
+msgstr "Одежда из сафьяна"
+
+msgctxt "crafts.name"
+msgid "Branded Leather"
+msgstr "Именная кожа"
+
+msgctxt "crafts.description"
+msgid "Tans and finishes hides into supple, fine-grained leather."
+msgstr "Дубит и отделывает шкуры, получая мягкую мелкозернистую кожу."
+
+msgctxt "crafts.description"
+msgid "Finishes hides into the city's renowned leather."
+msgstr "Выделывает шкуры, получая прославленную кожу города."
+
+msgctxt "crafts.description"
+msgid "Sews clothes from supple morocco leather."
+msgstr "Шьёт одежду из мягкого сафьяна."
+
+msgctxt "resources.challenge.name"
+msgid "Leather Clothes the Towns Ask for by Name"
+msgstr "Кожаная одежда, которую спрашивают по имени"
+
+msgctxt "resources.challenge.description"
+msgid "A thousand units of exceptional leather or morocco leather clothes sold to the towns earn the city a name for its leatherwork."
+msgstr "Тысяча единиц кожаной одежды или одежды из сафьяна исключительного качества, проданных городкам, прославит кожевенное дело города."
+
+msgctxt "specializations.name"
+msgid "Leather"
+msgstr "Кожа"
+
+msgctxt "specializations.full_name"
+msgid "Specialization of leather"
+msgstr "Специализация кожи"
+
+msgctxt "specializations.description"
+msgid "The leather and morocco leather clothes of the city are known by name. They bring more in trade and its workshops produce them faster."
+msgstr "Кожаную одежду и одежду из сафьяна города знают по имени. Они приносят больше в торговле, а мастерские производят их быстрее."
+
+msgctxt "product_groups.name"
+msgid "Leather Clothes"
+msgstr "Кожаная одежда"
+
+msgid "The fame of a good names a nonexistent goods group"
+msgstr "Известность товара ссылается на несуществующую группу товаров"
