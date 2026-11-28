@@ -181,8 +181,9 @@ func _recipe_tip(tree, tech_id: String) -> String:
 
 # The first ladder whose rung of the brand rewards a recipe the data attributes to a technology.
 func _brand_ladder() -> Dictionary:
-    for pid in _gdata.products:
-        var product: Dictionary = _gdata.products[pid]
+    var owners: Array = _gdata.products.values()
+    owners.append_array(_gdata.fame_groups)
+    for product in owners:
         var block = product.get("brand", null)
         if not (block is Dictionary):
             continue

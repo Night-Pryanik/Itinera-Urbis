@@ -61,7 +61,7 @@ func _run() -> void:
     main_map.town_manager.towns.append({"id": "leather_test", "name": "Testville",
         "treasury": 1000000, "buy_pool": pools.get("buy_pool", [])})
     var trade = main_map.town_trade_manager
-    var product: Dictionary = gd.products["leather_clothes"]
+    var product: Dictionary = _fame_group(gd, "leather_clothing")
     var brand: Dictionary = gd.find_craft("branded_leather")
     _check(not city.is_craft_available(brand), "brand starts locked")
     _check(not city.is_craft_available(branded_clothes), "branded clothing starts locked")
@@ -122,6 +122,13 @@ func _run() -> void:
     WATCHDOG.report_skipped()
     print("MOROCCO LEATHER TEST FAILED" if _failed else "MOROCCO LEATHER TEST OK")
     quit(1 if _failed else 0)
+
+func _fame_group(gd: Node, id: String) -> Dictionary:
+    for group in gd.fame_groups:
+        if str(group.get("id", "")) == id:
+            return group
+    _check(false, "missing fame group: " + id)
+    return {}
 
 func _sell(city: Node, trade: Node, pid: String, amount: int, quality: String) -> void:
     city.add_to_storage(pid, amount, quality)

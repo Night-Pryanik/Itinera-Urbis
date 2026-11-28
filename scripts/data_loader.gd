@@ -42,6 +42,7 @@ var specialization_config: Dictionary = {}
 # The challenges of the era (data/challenges.json): the one-off tasks whose condition is checked in
 # the code, in the order of the file.
 var challenges: Array = []
+var fame_groups: Array = []
 # The diversity bonuses (data/bonuses.json): product group id -> tiers of varieties.
 var diversity_bonuses: Array = []
 
@@ -132,6 +133,7 @@ const BLACKLIST_COLLECTIONS := [
     "climate_zones",
     "special_actions",
     "challenges",
+    "fame_groups",
     "consumption",
 ]
 
@@ -147,6 +149,7 @@ const SOURCE_COLLECTIONS := [
     "technologies",
     "categories",
     "challenges",
+    "fame_groups",
     "professions",
     "product_groups",
     "roads",
@@ -362,6 +365,11 @@ func load_all_data(mod_dirs: Array = []):
             specializations.append(spec)
     var spec_config = merged_data.get("specialization_config", {})
     specialization_config = spec_config if spec_config is Dictionary else {}
+
+    fame_groups = []
+    for fame_group in merged_data.get("fame_groups", []):
+        if fame_group is Dictionary and not str(fame_group.get("id", "")).is_empty():
+            fame_groups.append(fame_group)
 
     # The challenges of the era (data/challenges.json). The records keep their condition id as it
     # is written: ChallengeManager looks the check up by it, and a check the game does not know is
@@ -840,7 +848,7 @@ func _record_removed_challenge_id(collection: String, id: String, entry: Diction
     if collection == "challenges":
         removed_challenge_ids[id] = true
         return
-    if collection != "resources":
+    if collection != "resources" and collection != "fame_groups":
         return
     var block = entry.get("challenge", null)
     if not (block is Dictionary):

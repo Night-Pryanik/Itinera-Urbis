@@ -6471,19 +6471,19 @@ msgctxt "resources.challenge.description"
 msgid "A thousand units of cheese of exceptional quality sold to the towns — and cheese begins to be asked by the name of the town."
 msgstr "Тысяча единиц сыра исключительного качества, проданных городкам, — и сыр начинают спрашивать по имени города."
 
-msgctxt "resources.challenge.description"
+msgctxt "fame_groups.challenge.description"
 msgid "A thousand units of weapons of exceptional quality sold to the towns — and weapons begin to be asked by the name of the town."
 msgstr "Тысяча единиц оружия исключительного качества, проданных городкам, — и оружие начинают спрашивать по имени города."
 
-msgctxt "resources.challenge.description"
+msgctxt "fame_groups.challenge.description"
 msgid "A thousand ceramic goods of exceptional quality sold to the towns — pottery, bricks, amphorae, porcelain, fine ceramics or clay tablets — earn the city a name for its kilns."
 msgstr "Тысяча керамических товаров исключительного качества, проданных городкам, — посуды, кирпичей, амфор, фарфора, тонкой керамики или глиняных табличек — прославит печи города."
 
-msgctxt "resources.challenge.name"
+msgctxt "fame_groups.challenge.name"
 msgid "A Blade with the Name of the Town"
 msgstr "Клинок с именем города"
 
-msgctxt "resources.challenge.name"
+msgctxt "fame_groups.challenge.name"
 msgid "A Mark on Fired Clay"
 msgstr "Клеймо на обожженной глине"
 
@@ -11120,11 +11120,11 @@ msgctxt "crafts.description"
 msgid "Sews clothes from supple morocco leather."
 msgstr "Шьёт одежду из мягкого сафьяна."
 
-msgctxt "resources.challenge.name"
+msgctxt "fame_groups.challenge.name"
 msgid "Leather Clothes the Towns Ask for by Name"
 msgstr "Кожаная одежда, которую спрашивают по имени"
 
-msgctxt "resources.challenge.description"
+msgctxt "fame_groups.challenge.description"
 msgid "A thousand units of exceptional leather, morocco leather or branded leather clothes sold to the towns earn the city a name for its leatherwork."
 msgstr "Тысяча единиц кожаной одежды, одежды из сафьяна или именной кожаной одежды исключительного качества, проданных городкам, прославит кожевенное дело города."
 
@@ -11144,8 +11144,8 @@ msgctxt "product_groups.name"
 msgid "Leather Clothes"
 msgstr "Кожаная одежда"
 
-msgid "The fame of a good names a nonexistent goods group"
-msgstr "Известность товара ссылается на несуществующую группу товаров"
+msgid "Fame group references a nonexistent goods group"
+msgstr "Группа известности ссылается на несуществующую группу товаров"
 
 msgctxt "resources.name"
 msgid "Leather Clothes \"<city_name>\""
@@ -11158,3 +11158,15 @@ msgstr "Именная кожаная одежда"
 msgctxt "crafts.description"
 msgid "Sews branded clothes from the city's renowned leather."
 msgstr "Шьёт именную одежду из прославленной кожи города."
+
+msgctxt "validator_entity_title_fame_group"
+msgid "Fame group"
+msgstr "группы известности"
+
+msgctxt "validator_entity_ref_fame_group"
+msgid "this fame group"
+msgstr "эту группу известности"
+
+msgctxt "validator_entity_source_fame_group"
+msgid "fame group"
+msgstr "группе известности"

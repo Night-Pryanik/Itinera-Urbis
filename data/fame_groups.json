@@ -1,0 +1,94 @@
+{
+  // Each record owns the fame tiers for all members of an existing product group.
+  // product_group names the existing group without "@". Each optional reputation, brand or
+  // challenge block uses the same threshold, trigger, min_quality and reward as a product tier.
+  // An unwritten tier id defaults to <fame group id>_challenge; an explicit id can be referenced
+  // by specializations and recipes. Mods can add, override or blacklist fame_groups by id.
+  // Explicit reputation and brand ids below retain their original serialized identities.
+  "fame_groups": [
+    {
+      "id": "ceramics",
+      "product_group": "ceramics_goods",
+      "icon": "pottery.png",
+      "reputation": {
+        "id": "pottery_challenge",
+        "threshold": 200,
+        "trigger": "sell",
+        "reward": { "type": "trade_price", "value": 0.10 }
+      },
+      "brand": {
+        "id": "pottery_challenge",
+        "threshold": 500,
+        "trigger": "sell",
+        "min_quality": "fine",
+        "reward": { "type": "brand_product", "product": "porcelain" }
+      },
+      "challenge": {
+        "id": "ceramics_challenge",
+        "threshold": 1000,
+        "trigger": "sell",
+        "min_quality": "exceptional",
+        "name": "A Mark on Fired Clay",
+        "description": "A thousand ceramic goods of exceptional quality sold to the towns — pottery, bricks, amphorae, porcelain, fine ceramics or clay tablets — earn the city a name for its kilns.",
+        "reward": { "type": "specialization", "id": "ceramics_specialization" }
+      }
+    },
+    {
+      "id": "leather_clothing",
+      "product_group": "leather_clothing_goods",
+      "icon": "leather_clothes.png",
+      "reputation": {
+        "id": "leather_clothes_challenge",
+        "threshold": 200,
+        "trigger": "sell",
+        "reward": { "type": "trade_price", "value": 0.10 }
+      },
+      "brand": {
+        "id": "leather_clothes_challenge",
+        "threshold": 500,
+        "trigger": "sell",
+        "min_quality": "fine",
+        "reward": [
+          { "type": "brand_product", "product": "branded_leather" },
+          { "type": "brand_product", "product": "branded_leather_clothes" }
+        ]
+      },
+      "challenge": {
+        "id": "leather_challenge",
+        "threshold": 1000,
+        "trigger": "sell",
+        "min_quality": "exceptional",
+        "name": "Leather Clothes the Towns Ask for by Name",
+        "description": "A thousand units of exceptional leather, morocco leather or branded leather clothes sold to the towns earn the city a name for its leatherwork.",
+        "reward": { "type": "specialization", "id": "leather_specialization" }
+      }
+    },
+    {
+      "id": "weapons",
+      "product_group": "weapons_goods",
+      "icon": "steel_weapons.png",
+      "reputation": {
+        "id": "steel_weapons_challenge",
+        "threshold": 200,
+        "trigger": "sell",
+        "reward": { "type": "trade_price", "value": 0.10 }
+      },
+      "brand": {
+        "id": "steel_weapons_challenge",
+        "threshold": 500,
+        "trigger": "sell",
+        "min_quality": "fine",
+        "reward": { "type": "brand_product", "product": "damascus_steel" }
+      },
+      "challenge": {
+        "id": "steel_challenge",
+        "threshold": 1000,
+        "trigger": "sell",
+        "min_quality": "exceptional",
+        "name": "A Blade with the Name of the Town",
+        "description": "A thousand units of weapons of exceptional quality sold to the towns — and weapons begin to be asked by the name of the town.",
+        "reward": { "type": "specialization", "id": "weaponsmith_specialization" }
+      }
+    }
+  ]
+}

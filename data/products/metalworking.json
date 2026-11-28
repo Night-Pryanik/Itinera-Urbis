@@ -76,33 +76,11 @@
       "icon": "iron_weapons.png"
     },
     {
-      // The weapons of every metal earn the fame that opens the city's branded steel.
       "id": "steel_weapons", "price": 165,
       "name": "Steel Weapons",
       "type": "product",
       "category": "weapons",
-      "icon": "steel_weapons.png",
-      "fame_group": "weapons_goods",
-      "reputation": {
-        "threshold": 200,
-        "trigger": "sell",
-        "reward": { "type": "trade_price", "value": 0.10 }
-      },
-      "brand": {
-        "threshold": 500,
-        "trigger": "sell",
-        "min_quality": "fine",
-        "reward": { "type": "brand_product", "product": "damascus_steel" }
-      },
-      "challenge": {
-        "id": "steel_challenge",
-        "threshold": 1000,
-        "trigger": "sell",
-        "min_quality": "exceptional",
-        "name": "A Blade with the Name of the Town",
-        "description": "A thousand units of weapons of exceptional quality sold to the towns — and weapons begin to be asked by the name of the town.",
-        "reward": { "type": "specialization", "id": "weaponsmith_specialization" }
-      }
+      "icon": "steel_weapons.png"
     },
     {
       // The weapon of the brand bar: it is made of the good that carries the name of the city, so it

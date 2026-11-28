@@ -170,6 +170,7 @@ const IDENT_COLLECTIONS := [
     {"field": "improvements", "kind": "improvement"},
     {"field": "professions", "kind": "profession"},
     {"field": "product_groups", "kind": "group"},
+    {"field": "fame_groups", "kind": "fame_group"},
     {"field": "qualities", "kind": "quality_level"},
     {"field": "special_actions", "kind": "special_action"},
     {"field": "terrains", "kind": "terrain"},
@@ -322,7 +323,6 @@ const RESOURCE_FIELDS := {
     "brand": PRODUCT_FAME_TIER_FIELDS,
     "challenge": PRODUCT_FAME_TIER_FIELDS,
     "brand_of": LEAF,
-    "fame_group": LEAF,
     "tech_required": LEAF,
     "tech_reveal": LEAF,
     "allowed_terrain": LEAF,
@@ -734,6 +734,7 @@ const BLACKLIST_COLLECTIONS := [
     "climate_zones",
     "special_actions",
     "challenges",
+    "fame_groups",
     "consumption",
 ]
 const BLACKLIST_FIELDS := {
@@ -754,6 +755,7 @@ const BLACKLIST_FIELDS := {
     "climate_zones": BLACKLIST_ENTRY,
     "special_actions": BLACKLIST_ENTRY,
     "challenges": BLACKLIST_ENTRY,
+    "fame_groups": BLACKLIST_ENTRY,
     "consumption": BLACKLIST_ENTRY,
 }
 
@@ -798,6 +800,15 @@ const PRODUCT_FAME_TIER_FIELDS := {
     "description": LEAF,
     "icon": LEAF,
     "reward": {"any": [CHALLENGE_REWARD_FIELDS, {"array": CHALLENGE_REWARD_FIELDS}]},
+}
+
+const FAME_GROUP_FIELDS := {
+    "id": LEAF,
+    "product_group": LEAF,
+    "icon": LEAF,
+    "reputation": PRODUCT_FAME_TIER_FIELDS,
+    "brand": PRODUCT_FAME_TIER_FIELDS,
+    "challenge": PRODUCT_FAME_TIER_FIELDS,
 }
 
 # The ways a tier of the fame counts its units (data/products/*.json, the "trigger" field). A value
@@ -863,6 +874,7 @@ const BLACKLIST_KINDS := {
     "climate_zones": "climate_zone",
     "special_actions": "special_action",
     "challenges": "challenge",
+    "fame_groups": "fame_group",
     "consumption": "consumption_rule",
 }
 
@@ -894,6 +906,7 @@ const SCHEMA := {
     "game_balance": {"blocks": GAME_BALANCE_BLOCKS},
     "specializations": {"array": SPECIALIZATION_FIELDS},
     "challenges": {"array": CHALLENGE_FIELDS},
+    "fame_groups": {"array": FAME_GROUP_FIELDS},
     "specialization_config": SPECIALIZATION_CONFIG_FIELDS,
     "city_names": {"array": LEAF},
     "priority_default": LEAF,
@@ -914,7 +927,7 @@ const ENTITIES := [
     "category", "group", "recipe", "road", "terrain", "terrain_family", "cover", "climate_zone", "era",
     "quality_level", "priority_option", "special_action", "consumption_rule",
     "craft_extra", "craft_extra_kind", "specialization",
-    "challenge", "trigger", "condition", "modifier_block",
+    "challenge", "fame_group", "trigger", "condition", "modifier_block",
 ]
 
 
@@ -966,6 +979,10 @@ static func entity_forms(kind: String, fallback: String = "product") -> Dictiona
             return {"title": TranslationServer.translate("Category", "validator_entity_title_category"),
                 "ref": TranslationServer.translate("this category", "validator_entity_ref_category"),
                 "source": TranslationServer.translate("category", "validator_entity_source_category")}
+        "fame_group":
+            return {"title": TranslationServer.translate("Fame group", "validator_entity_title_fame_group"),
+                "ref": TranslationServer.translate("this fame group", "validator_entity_ref_fame_group"),
+                "source": TranslationServer.translate("fame group", "validator_entity_source_fame_group")}
         "group":
             return {"title": TranslationServer.translate("Goods group", "validator_entity_title_group"),
                 "ref": TranslationServer.translate("this goods group", "validator_entity_ref_group"),
@@ -1108,7 +1125,7 @@ static func check_title(kind: String) -> String:
         "specialization_improvement":
             return TranslationServer.translate("Specialization bonus names a nonexistent improvement")
         "fame_group":
-            return TranslationServer.translate("The fame of a good names a nonexistent goods group")
+            return TranslationServer.translate("Fame group references a nonexistent goods group")
         "fame_trigger":
             return TranslationServer.translate("The fame of a good counts an unknown trigger")
         "fame_quality":
@@ -1175,6 +1192,7 @@ const SOURCE_COLLECTIONS := {
     "technology": "technologies",
     "product": "resources",
     "group": "product_groups",
+    "fame_group": "fame_groups",
     "road": "roads",
     # The consumption rule does not declare itself by the field "id" (see data_loader
     # _remember_consumption_sources), therefore its "resource" serves as the identifier of the record in the index
@@ -1290,9 +1308,14 @@ func validate(gd: Object) -> Array:
     if not (removed_challenge_ids is Dictionary):
         removed_challenge_ids = {}
     var challenges := _index_by_id(gd.get("challenges"))
+    var fame_groups := _index_by_id(gd.get("fame_groups"))
     # The task identifiers the gates of the data may name: the challenges of the era and the tiers of
     # the fame of a good. Built before the recipes, which are checked against them.
-    var challenge_ids := _challenge_ids(challenges, all_resources)
+    var challenge_owners := all_resources.duplicate()
+    # The group identifiers live in their own namespace; do not overwrite a product with the same id.
+    for gid in fame_groups:
+        challenge_owners["fame_group:" + str(gid)] = fame_groups[gid]
+    var challenge_ids := _challenge_ids(challenges, challenge_owners)
 
     _validate_schema(gd, problems)
     _validate_identifiers(gd, problems)
@@ -1312,7 +1335,7 @@ func validate(gd: Object) -> Array:
     _validate_specializations(gd.specializations, improvements, all_resources, product_groups,
             challenge_ids, removed_challenge_ids, problems)
     _validate_fame(all_resources, _quality_levels(gd), _index_by_id(gd.specializations),
-            challenges, _known_challenge_conditions(), product_groups, problems)
+            challenges, _known_challenge_conditions(), product_groups, fame_groups, problems)
     _validate_roads(gd.roads, technologies, problems)
     _validate_climate_zones(gd.climate_zones, terrains, _climate_families(terrains, gd.map_config), problems)
     _validate_cover_belts(gd.covers, problems)
@@ -2483,35 +2506,44 @@ func _unlock_conditions(spec: Dictionary) -> Array:
     return unlock if unlock is Array else []
 
 
-# The fame of a good (data/products/*.json) and the challenges of the era (data/challenges.json).
+# The fame of products and fame groups, and the challenges of the era.
 #
 # A tier names the good it rewards, the quality it waits for and the way it counts, and a challenge
 # names a check that lives in the code rather than in the data. A wrong identifier is silent in all
 # of these cases — the reward never comes, the task never completes — so it is reported here.
 func _validate_fame(products: Dictionary, qualities: Array, specializations: Dictionary,
-        challenges: Dictionary, conditions: Array, product_groups: Dictionary, problems: Array) -> void:
+        challenges: Dictionary, conditions: Array, product_groups: Dictionary,
+        fame_groups: Dictionary, problems: Array) -> void:
     # The prestige goods some rung of the fame grants. The game works out from these which recipes
     # are the work of a brand — see the header comment of data/products/food.json — so a good that
     # calls itself a brand yet is granted by nobody is a hole in the data, not a debt of the city.
     var granted := {}
+    var owners: Array = []
     for pid in products:
-        var product: Dictionary = products[pid]
-        var name := _entity_name(product, str(pid))
-        var fame_group := str(product.get("fame_group", ""))
-        if not fame_group.is_empty() and not product_groups.has(fame_group):
-            _add(problems, "fame_group", "group", fame_group, "product", name, str(pid), "fame_group")
+        owners.append({"kind": "product", "id": str(pid), "record": products[pid]})
+    for gid in fame_groups:
+        var group: Dictionary = fame_groups[gid]
+        var group_id := str(group.get("product_group", ""))
+        if group_id.is_empty() or not product_groups.has(group_id):
+            _add(problems, "fame_group", "group", group_id, "fame_group",
+                    _entity_name(group, str(gid)), str(gid), "product_group")
+        owners.append({"kind": "fame_group", "id": str(gid), "record": group})
+    for owner in owners:
+        var product: Dictionary = owner["record"]
+        var id := str(owner["id"])
+        var kind := str(owner["kind"])
+        var name := _entity_name(product, id)
         for tier in ["reputation", "brand", "challenge"]:
             var block = product.get(tier, null)
             if not (block is Dictionary):
                 continue
             var trigger := str(block.get("trigger", "sell"))
             if not FAME_TRIGGERS.has(trigger):
-                _add(problems, "fame_trigger", "trigger", trigger, "product", name,
-                        str(pid), tier)
-            _add_quality_check(block, qualities, name, str(pid), tier, problems)
+                _add(problems, "fame_trigger", "trigger", trigger, kind, name, id, tier)
+            _add_quality_check(block, qualities, name, id, tier, problems, kind)
             for reward in _reward_records(block):
-                _check_reward_reference(reward, products, specializations, name, str(pid),
-                        tier, problems, granted)
+                _check_reward_reference(reward, products, specializations, name, id,
+                        tier, problems, granted, kind)
     for challenge_id in challenges:
         var challenge: Dictionary = challenges[challenge_id]
         var name := _entity_name(challenge, str(challenge_id))
@@ -2537,11 +2569,11 @@ func _validate_fame(products: Dictionary, qualities: Array, specializations: Dic
 # of the counter are keyed by the declared levels, so an unknown name matches no key and the
 # threshold can never be reached. `levels` is the list of the declared identifiers.
 func _add_quality_check(block: Dictionary, levels: Array, name: String, entity_id: String,
-        field: String, problems: Array) -> void:
+        field: String, problems: Array, source_kind: String = "product") -> void:
     var quality := str(block.get("min_quality", ""))
     if quality.is_empty() or levels.has(quality):
         return
-    _add(problems, "fame_quality", "quality_level", quality, "product", name, entity_id, field)
+    _add(problems, "fame_quality", "quality_level", quality, source_kind, name, entity_id, field)
 
 
 # One reward or a list of them, in the shape the data writes them.
@@ -2558,7 +2590,7 @@ func _reward_records(block) -> Array:
 # "trade_price" name no record of the data, so nothing is checked for them here.
 func _check_reward_reference(reward, products: Dictionary, specializations: Dictionary,
         name: String, entity_id: String, field: String, problems: Array,
-        granted: Dictionary = {}) -> void:
+        granted: Dictionary = {}, source_kind: String = "product") -> void:
     if not (reward is Dictionary):
         return
     var type := str(reward.get("type", ""))
@@ -2567,13 +2599,13 @@ func _check_reward_reference(reward, products: Dictionary, specializations: Dict
         if good.is_empty():
             return
         if not products.has(good):
-            _add(problems, "fame_reward", "product", good, "product", name, entity_id, field)
+            _add(problems, "fame_reward", "product", good, source_kind, name, entity_id, field)
         else:
             granted[good] = entity_id
     elif type == "specialization":
         var branch := str(reward.get("id", ""))
         if not branch.is_empty() and not specializations.has(branch):
-            _add(problems, "fame_reward", "specialization", branch, "product", name, entity_id, field)
+            _add(problems, "fame_reward", "specialization", branch, source_kind, name, entity_id, field)
 
 
 # The quality levels as they are declared (data/qualities.json) — the list, not the index: a

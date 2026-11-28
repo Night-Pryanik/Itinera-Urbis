@@ -3,12 +3,11 @@
 #
 # The manager owns what the data cannot say by itself: the counters the tiers are measured against,
 # the order in which a threshold is judged, and what a reward does. The records stay in the data —
-# the tiers in the product itself (data/products/*.json) and the one-off tasks in
-# data/challenges.json — so a mod adds a challenge by writing a record, not by writing a rule.
+# the tiers in products or fame groups (data/products/*.json and data/fame_groups.json) and the
+# one-off tasks in data/challenges.json — so a mod adds a challenge by writing a record.
 #
-# A tier counts ONE counter per good, split by the quality of the units. The counter is cumulative
-# and is never spent, so a save made before a tier existed simply carries no counter, and a threshold
-# passed long ago still counts the units given away over the whole game.
+# Counters are kept per good and quality; a group tier sums the counters of its members. Counters
+# are cumulative and never spent, so a threshold counts units given away over the whole game.
 #
 # The two triggers are the two ways a good leaves the city that the world can see:
 #   "sell" — a town takes the units from the storage of the city (the default, and the honest one:
@@ -214,22 +213,21 @@ func _record_fame(into: Dictionary, pid: String, breakdown: Dictionary) -> void:
     if actual != pid:
         _accumulate(into, actual, breakdown)
     _check_product_tiers(actual)
-    for owner_id in _fame_group_owners.get(actual, []):
-        if str(owner_id) != actual:
-            _check_product_tiers(str(owner_id))
+    for group in _fame_group_owners.get(actual, []):
+        _check_fame_tiers(group)
 
 
 func _rebuild_fame_groups() -> void:
     _fame_group_owners.clear()
-    for owner_id in GameData.products:
-        var owner: Dictionary = GameData.products[owner_id]
-        var group := str(owner.get("fame_group", ""))
-        if group.is_empty():
+    _brand_granters.clear()
+    for group in GameData.fame_groups:
+        if not (group is Dictionary):
             continue
-        for member in GameData.product_groups.get(group, []):
+        var product_group := str(group.get("product_group", ""))
+        for member in GameData.product_groups.get(product_group, []):
             if not _fame_group_owners.has(member):
                 _fame_group_owners[member] = []
-            _fame_group_owners[member].append(str(owner_id))
+            _fame_group_owners[member].append(group)
 
 
 func _accumulate(into: Dictionary, pid: String, breakdown: Dictionary) -> void:
@@ -271,7 +269,7 @@ func tier_counter(product: Dictionary, block: Dictionary) -> int:
 
 
 func _fame_products(product: Dictionary) -> Array:
-    var group := str(product.get("fame_group", ""))
+    var group := str(product.get("product_group", ""))
     if not group.is_empty():
         var members: Array = []
         for member in GameData.product_groups.get(group, []):
@@ -301,24 +299,35 @@ func _units_at_or_above(by_quality: Dictionary, quality: String) -> int:
 # tiers, each with the progress of the city against its threshold.
 func fame_records() -> Array:
     var out: Array = []
-    for pid in GameData.products:
-        var product: Dictionary = GameData.products[pid]
+    var owners: Array = GameData.products.values()
+    owners.append_array(GameData.fame_groups)
+    for product in owners:
+        if not (product is Dictionary):
+            continue
         for tier in TIERS:
             var block = product.get(tier, null)
-            if not (block is Dictionary):
-                continue
-            out.append(_fame_record(product, tier, block))
+            if block is Dictionary:
+                out.append(_fame_record(product, tier, block))
     out.sort_custom(func(a, b):
         return str(a.get("id", "")) < str(b.get("id", "")))
     return out
 
 
 func _fame_record(product: Dictionary, tier: String, block: Dictionary) -> Dictionary:
+    var group := str(product.get("product_group", ""))
+    var product_key := str(product.get("id", ""))
+    var reward_product := product_key
+    var display_name := GameData.get_product_name(product_key)
+    if not group.is_empty():
+        product_key = "fame_group:" + product_key
+        reward_product = "@" + group
+        display_name = GameData.get_product_group_name(group)
     return {
         "id": challenge_id(product, block),
         "tier": tier,
-        "product": str(product.get("id", "")),
-        "product_name": _fame_product_name(str(product.get("id", ""))),
+        "product": product_key,
+        "reward_product": reward_product,
+        "product_name": display_name,
         "icon": str(block.get("icon", product.get("icon", ""))),
         "name": str(block.get("name", "")),
         "description": str(block.get("description", "")),
@@ -354,8 +363,11 @@ func is_challenge_completed(id: String) -> bool:
 
 func _check_product_tiers(pid: String) -> void:
     var product = GameData.products.get(pid, null)
-    if not (product is Dictionary):
-        return
+    if product is Dictionary:
+        _check_fame_tiers(product)
+
+
+func _check_fame_tiers(product: Dictionary) -> void:
     # The soft reputation first, the brand after it, the challenge last: the tiers share one counter,
     # and a city that crossed 1000 units crossed 200 as well. Judging them in the order of the ladder
     # pays all of them at once rather than leaving the player with a task he has already done.
@@ -423,11 +435,8 @@ func get_fame_trade_price_share(pid: String) -> float:
 
 
 func _fame_product_name(pid: String) -> String:
-    var group := str(GameData.products.get(pid, {}).get("fame_group", ""))
-    if not group.is_empty():
-        var name := GameData.get_product_group_name(group)
-        if not name.is_empty():
-            return name
+    if GameData.is_group_key(pid):
+        return GameData.get_product_group_name(pid)
     return GameData.get_product_name(pid)
 
 
@@ -498,8 +507,11 @@ var _brand_granters := {}
 
 func _index_brand_granters() -> void:
     _brand_granters = {}
-    for pid in GameData.products:
-        var product: Dictionary = GameData.products[pid]
+    var owners: Array = GameData.products.values()
+    owners.append_array(GameData.fame_groups)
+    for product in owners:
+        if not (product is Dictionary):
+            continue
         var block = product.get(TIER_BRAND, null)
         if not (block is Dictionary):
             continue
@@ -742,8 +754,11 @@ func _index_of_counters(by_product) -> Dictionary:
 # mention gets nothing.
 func _restore_fame_prices() -> void:
     _fame_price_share.clear()
-    for pid in GameData.products:
-        var product: Dictionary = GameData.products[pid]
+    var owners: Array = GameData.products.values()
+    owners.append_array(GameData.fame_groups)
+    for product in owners:
+        if not (product is Dictionary):
+            continue
         var block = product.get(TIER_REPUTATION, null)
         if not (block is Dictionary):
             continue
