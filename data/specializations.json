@@ -174,7 +174,7 @@
       "id": "leather_specialization",
       "name": "Leather",
       "full_name": "Specialization of leather",
-      "description": "The leather and morocco leather clothes of the city are known by name. They bring more in trade and its workshops produce them faster.",
+      "description": "The leather, morocco leather and branded leather clothes of the city are known by name. They bring more in trade and its workshops produce them faster.",
       "icon": "leather.png",
       "unlock": { "type": "challenge", "id": "leather_challenge" },
       "bonuses": [

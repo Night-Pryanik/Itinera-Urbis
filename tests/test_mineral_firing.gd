@@ -114,7 +114,8 @@ func _test_records(gd: Node, city: Node) -> void:
     _check(leather.get("resources", {}).keys() == ["hide", "@tannins"],
         "leatherworking consumes hides and tanning agents")
     _check(leather.get("result", {}).keys() == ["leather"], "leatherworking produces leather")
-    _check(leather.get("produced_in", []) == ["leatherworker_house"], "leather keeps its workshop")
+    _check(leather.get("produced_in", []) == ["leatherworker_house", "leatherworker_workshop"],
+        "leather is produced in the tanner's house and workshop")
     _check(str(leather.get("unlock_tech", "")) == "leatherworking", "leather keeps its technology gate")
 
     _check(gd.product_groups.has("tannins"), "tannins group exists under its internal id")

@@ -127,6 +127,17 @@
       "description": "Finishes hides into the city's renowned leather."
     },
     {
+      "id": "branded_leather_clothes",
+      "name": "Branded Leather Clothes",
+      "produced_in": [ "leatherworker_house", "leatherworker_workshop" ],
+      "resources": { "branded_leather": 20 },
+      "result": { "branded_leather_clothes": 10 },
+      "extra_kinds": [ "dye" ],
+      "time": 6.0,
+      "unlock_tech": "leatherworking",
+      "description": "Sews branded clothes from the city's renowned leather."
+    },
+    {
       "id": "morocco_leather_clothes",
       "name": "Morocco Leather Clothes",
       "produced_in": [ "leatherworker_workshop" ],

@@ -11001,7 +11001,7 @@ msgid "Leather Clothes the Towns Ask for by Name"
 msgstr ""
 
 msgctxt "resources.challenge.description"
-msgid "A thousand units of exceptional leather or morocco leather clothes sold to the towns earn the city a name for its leatherwork."
+msgid "A thousand units of exceptional leather, morocco leather or branded leather clothes sold to the towns earn the city a name for its leatherwork."
 msgstr ""
 
 msgctxt "specializations.name"
@@ -11013,7 +11013,7 @@ msgid "Specialization of leather"
 msgstr ""
 
 msgctxt "specializations.description"
-msgid "The leather and morocco leather clothes of the city are known by name. They bring more in trade and its workshops produce them faster."
+msgid "The leather, morocco leather and branded leather clothes of the city are known by name. They bring more in trade and its workshops produce them faster."
 msgstr ""
 
 msgctxt "product_groups.name"
@@ -11021,4 +11021,16 @@ msgid "Leather Clothes"
 msgstr ""
 
 msgid "The fame of a good names a nonexistent goods group"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Leather Clothes \"<city_name>\""
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Branded Leather Clothes"
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Sews branded clothes from the city's renowned leather."
 msgstr ""

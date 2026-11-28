@@ -22,7 +22,7 @@
     {
       "id": "leather_clothing_goods",
       "name": "Leather Clothes",
-      "products": [ "leather_clothes", "morocco_leather_clothes" ]
+      "products": [ "leather_clothes", "morocco_leather_clothes", "branded_leather_clothes" ]
     },
     {
       "id": "cheese_goods",
