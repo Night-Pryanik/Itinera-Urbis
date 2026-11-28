@@ -1,4 +1,4 @@
-# Headless regression test for the optics technology and the scholar's lenses.
+# Headless regression test for the optics technology, the optical workshop and the scholar's lenses.
 extends SceneTree
 
 const WATCHDOG = preload("res://tests/watchdog.gd")
@@ -24,6 +24,7 @@ func _run() -> void:
     city.setup()
 
     _test_technology(gd)
+    _test_building(gd)
     for item in OPTICAL:
         _test_product(gd, item)
         _test_recipe(gd, city, item)
@@ -55,6 +56,19 @@ func _test_technology(gd: Node) -> void:
         _check(str(entry.get("tech_id", "")) != "optics",
             "optics has no free scholar multiplier; the lenses carry the bonus")
 
+func _test_building(gd: Node) -> void:
+    var workshop := _record(gd.buildings, "optical_workshop")
+    _check(not workshop.is_empty(), "the optical workshop is a building")
+    if workshop.is_empty():
+        return
+    _check(str(workshop.get("unlock_tech", "")) == "optics",
+        "the optical workshop is unlocked by optics")
+    _check(str(workshop.get("profession", "")) == "glassmaker",
+        "the optical workshop is worked by the glassmaker")
+    _check(float(workshop.get("production_slots", 0)) >= 1.0,
+        "the optical workshop has at least one production slot")
+    _check(str(workshop.get("icon", "")) != "", "the optical workshop names an icon")
+
 func _test_product(gd: Node, item: Dictionary) -> void:
     var pid := str(item["product"])
     var product: Dictionary = gd.products.get(pid, {})
@@ -73,7 +87,7 @@ func _test_recipe(gd: Node, city: Node, item: Dictionary) -> void:
     _check(not recipe.is_empty(), "recipe exists: " + pid)
     if recipe.is_empty():
         return
-    _check(recipe.get("produced_in", []) == ["glassmaker_house"], "lenses are ground in the glasshouse: " + pid)
+    _check(recipe.get("produced_in", []) == ["optical_workshop"], "lenses are ground in the optical workshop: " + pid)
     _check(str(recipe.get("unlock_tech", "")) == "optics", "the lens recipe keeps its gate: " + pid)
     _check(float(recipe.get("time", 0)) == float(item["time"]), "the lens keeps its time: " + pid)
     _check(int(recipe.get("result", {}).get(pid, 0)) == 10, "the recipe yields ten lenses: " + pid)

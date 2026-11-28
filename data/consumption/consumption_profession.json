@@ -367,16 +367,16 @@
       }
     },
     {
-      // Crown glass glazes the walls of the scholar's workplaces: a wall of glass lets
-      // daylight fall on the desk, so the library, scriptorium and university work faster
-      // while panes are in stock. It is a material of construction, spent in the buildings
-      // that need its light — not a good the citizens write off.
+      // Crown glass glazes the walls the builder raises: glazing is part of construction,
+      // so the builder's yard spends the panes and works faster while they are in stock.
+      // The bonus is deliberately modest — a material of construction, not a precision
+      // instrument.
       "resource": "crown_glass",
-      "profession": [ "scientist" ],
-      "buildings": [ "library", "scriptorium", "university" ],
+      "profession": [ "builder" ],
+      "buildings": [ "builders_yard" ],
       "amount": 10,
       "interval": 20,
-      "production_bonus": 0.20
+      "production_bonus": 0.10
     },
     {
       // Molten lead draws base impurities out of silver and gold in cupellation and assaying.

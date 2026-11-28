@@ -421,6 +421,20 @@
       "default_recipes": [ "crown_glass" ]
     },
     {
+      "id": "optical_workshop",
+      "name": "Optical Workshop",
+      "description": "Grinds and polishes clear glass into lenses, magnifying glasses and spectacles.",
+      "flavor": "A lens is a curve ground so exactly that it bends light to a point. In the optical workshop, clear glass is cut, ground against abrasives and polished until a curved face magnifies, focuses or corrects; the craft needs a steady hand and a patient eye, and it turns a piece of glass into the instrument that lets a scholar read what the unaided eye cannot.",
+      "work_cost": 40,
+      "maintenance_cost": 12.0,
+      "additional_cost": [ { "planks": 120 }, { "@processed_construction_materials": 60 } ],
+      "icon": "optical_workshop.png",
+      "profession": "glassmaker",
+      "production_slots": 1.0,
+      "unlock_tech": "optics",
+      "default_recipes": [ "magnifying_glass" ]
+    },
+    {
       "id": "ropemaker_house",
       "name": "Ropemaker's House",
       "description": "A workshop for twisting ropes and cables.",

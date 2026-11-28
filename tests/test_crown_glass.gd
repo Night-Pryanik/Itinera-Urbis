@@ -103,13 +103,13 @@ func _test_consumption(gd: Node) -> void:
         if str(rule.get("resource", "")) != "crown_glass":
             continue
         found = true
-        _check(("scientist" in (rule.get("profession", []) as Array)),
-            "the scholar consumes crown glass")
+        _check(("builder" in (rule.get("profession", []) as Array)),
+            "the builder consumes crown glass")
         var buildings: Array = rule.get("buildings", [])
-        _check(buildings == ["library", "scriptorium", "university"],
-            "crown glass is spent in the scholar's workplaces")
-        _check(absf(float(rule.get("production_bonus", -1)) - 0.20) < 0.0001,
-            "glazed windows grant the scholar +20%")
+        _check(buildings == ["builders_yard"],
+            "crown glass is spent at the builder's yard")
+        _check(absf(float(rule.get("production_bonus", -1)) - 0.10) < 0.0001,
+            "glazed windows grant the builder +10%")
     _check(found, "a consumption rule for crown glass exists")
 
 func _test_cycle(city: Node, recipe: Dictionary, inputs: Dictionary, output: String) -> void:

@@ -415,7 +415,7 @@
     {
       "id": "magnifying_glass",
       "name": "Magnifying Glass",
-      "produced_in": [ "glassmaker_house" ],
+      "produced_in": [ "optical_workshop" ],
       "resources": [
         { "quartz_sand": 20 },
         [ { "soda": 10 }, { "potash": 10 } ]
@@ -430,7 +430,7 @@
       // ground thin enough for a frame. Lead belongs in optics, not in mirrors.
       "id": "spectacles",
       "name": "Spectacles",
-      "produced_in": [ "glassmaker_house" ],
+      "produced_in": [ "optical_workshop" ],
       "resources": { "quartz_sand": 20, "potash": 10, "lead": 10 },
       "result": { "spectacles": 10 },
       "time": 16.0,
