@@ -135,7 +135,7 @@
       "science_cost": 5.0,
       "icon": "optics.png",
       "prerequisites": [ [ "glassmaking", "precision_instruments" ] ],
-      "description": "Unlocks the optical workshop: ground lenses, magnifying glasses and spectacles for the scholar's work.",
+      "description": "Unlocks the optical workshop: ground lenses, magnifying glasses and spectacles for the scholar's work. The later chemistry of flint glass adds the prism, the scholar's finest optical aid.",
       "flavor": "A drop of glass bends a ray as surely as a lever lifts a stone. Grinders working crystal and the clear bath of a glass furnace learned to curve a surface until distant letters swam into focus; two such curves set in a frame gave a scholar back the years his eyes had lost. The instrument was small, but the boundary it moved — between what could be read and what could only be guessed — was enormous."
     },
     {

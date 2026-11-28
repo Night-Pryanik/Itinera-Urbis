@@ -111,8 +111,8 @@ func _test_recipe(gd: Node, city: Node, item: Dictionary) -> void:
 
 func _test_group(gd: Node) -> void:
     var group: Array = gd.product_groups.get("optical_instruments", [])
-    _check(group == ["magnifying_glass", "spectacles"],
-        "the plainer lens comes first and the finer one last")
+    _check(group == ["magnifying_glass", "spectacles", "prism"],
+        "the plainer lens comes first, spectacles next and the flint-glass prism last")
 
 func _test_emery(gd: Node, city: Node) -> void:
     var product: Dictionary = gd.products.get("emery", {})
