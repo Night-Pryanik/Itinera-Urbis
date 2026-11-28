@@ -395,6 +395,24 @@
       "description": "Melts quartz sand with soda or potash into glass and deposits a film of silver on it."
     },
     {
+      // Crown glass is melted from the same raw batch as the other glass goods — like the
+      // mirrors, it spends sand and alkali rather than finished vessels, so it does not
+      // compete with the citizens' glassware. Spinning the gob into a flat crown and annealing
+      // it takes an extra firing, hence the furnace fuel.
+      "id": "crown_glass",
+      "name": "Crown Glass",
+      "produced_in": [ "glass_workshop" ],
+      "resources": [
+        { "quartz_sand": 20 },
+        [ { "soda": 10 }, { "potash": 10 } ],
+        { "@smelting_fuel": 10 }
+      ],
+      "result": { "crown_glass": 10 },
+      "time": 8.0,
+      "unlock_tech": "crown_glass",
+      "description": "Melts quartz sand with soda or potash, spins the gob into a flat crown and cuts it into window panes."
+    },
+    {
       "id": "magnifying_glass",
       "name": "Magnifying Glass",
       "produced_in": [ "glassmaker_house" ],

@@ -403,7 +403,22 @@
       "profession": "glassmaker",
       "production_slots": 1.0,
       "unlock_tech": "glassmaking",
+      "upgrades_into": "glass_workshop",
       "default_recipes": [  ]
+    },
+    {
+      "id": "glass_workshop",
+      "name": "Glass Workshop",
+      "description": "Spins molten glass into a flat crown and cuts it into window panes.",
+      "flavor": "The glass workshop takes the melt a step beyond blowing vessels. A worker gathers a gob, blows it into a globe, transfers it to a pontil rod and sets it spinning in the furnace until centrifugal force opens it into a great flat disc. Radial cuts turn the disc into a stack of clear window panes. The craft needs a steady furnace and a steady hand, and it gives the town the glass that lets daylight into the walls of its buildings.",
+      "work_cost": 50,
+      "maintenance_cost": 15.0,
+      "additional_cost": [ { "planks": 150 }, { "@processed_construction_materials": 100 } ],
+      "icon": "glass_workshop.png",
+      "profession": "glassmaker",
+      "production_slots": 2.0,
+      "unlock_tech": "crown_glass",
+      "default_recipes": [ "crown_glass" ]
     },
     {
       "id": "ropemaker_house",

@@ -112,6 +112,16 @@
       "flavor": "Clear glass alone gives back a feeble reflection. A foil of tin wetted with mercury and laid against its back gave an image no polished metal could match. The still supplied the mercury and the smelter the tin; the new craft taught glass to look back."
     },
     {
+      "id": "crown_glass",
+      "name": "Crown Glass",
+      "era": "medieval",
+      "science_cost": 5.0,
+      "icon": "crown_glass.png",
+      "prerequisites": [ [ "optics", "glassmaking" ] ],
+      "description": "Allows you to build the glass workshop (2 production slots) and upgrade the glassmaker's house into it. Unlocks crown glass: large flat window panes spun from a molten crown.",
+      "flavor": "A blown globe, reheated and set spinning on the end of a rod, flings itself open into a flat disc under its own weight. Cut radially from the centre outward, the disc yields a stack of large, clear panes — crown glass, the great window glass of the age. Before it, a window was a mosaic of small leaded quarries or a few thick, greenish sheets; the crown let a wall become a sheet of light, and the craft spread wherever a glasshouse could keep a furnace hot."
+    },
+    {
       // The press multiplies one setting of type: the workshop pulls sheet after
       // sheet from the same forme and binds them while the ink dries.
       "id": "printing",

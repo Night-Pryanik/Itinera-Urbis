@@ -367,6 +367,18 @@
       }
     },
     {
+      // Crown glass glazes the walls of the scholar's workplaces: a wall of glass lets
+      // daylight fall on the desk, so the library, scriptorium and university work faster
+      // while panes are in stock. It is a material of construction, spent in the buildings
+      // that need its light — not a good the citizens write off.
+      "resource": "crown_glass",
+      "profession": [ "scientist" ],
+      "buildings": [ "library", "scriptorium", "university" ],
+      "amount": 10,
+      "interval": 20,
+      "production_bonus": 0.20
+    },
+    {
       // Molten lead draws base impurities out of silver and gold in cupellation and assaying.
       "resource": "lead",
       "profession": [ "smelter", "jeweler" ],
