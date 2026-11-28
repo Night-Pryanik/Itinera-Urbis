@@ -132,8 +132,8 @@ func _test_bonus(gd: Node, city: Node) -> void:
     _check(absf(city.get_building_production_multiplier("optical_workshop", false) - 1.0) < 0.0001,
         "crown glass gives no bonus before it is researched")
     city.unlocked_technologies.append("crown_glass")
-    _check(absf(city.get_building_production_multiplier("optical_workshop", false) - 1.2) < 0.0001,
-        "crown glass raises the optical workshop output by 20%")
+    _check(absf(city.get_building_production_multiplier("optical_workshop", false) - 1.1) < 0.0001,
+        "crown glass raises the optical workshop output by 10%")
     city.unlocked_technologies = saved_techs
 
 func _test_cycle(city: Node, recipe: Dictionary, inputs: Dictionary, output: String) -> void:
