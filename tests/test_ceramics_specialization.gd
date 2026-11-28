@@ -27,15 +27,15 @@ func _run() -> void:
         city.unlocked_technologies.append("pottery")
     main_map.town_manager.towns.append({"id": "ceramics_test", "name": "Testville",
         "treasury": 1000000, "buy_pool": GOODS.duplicate()})
-    var product: Dictionary = gd.products["pottery"]
+    var product: Dictionary = _fame_group(gd, "ceramics")
     var challenge: Dictionary = product["challenge"]
     _check(gd.product_groups.get("ceramics_goods", []) == GOODS, "ceramics group contains all six goods")
-    _check(str(product.get("fame_group", "")) == "ceramics_goods", "all fame tiers count the ceramics group")
+    _check(str(product.get("product_group", "")) == "ceramics_goods", "all fame tiers count the ceramics group")
     for record in fame.fame_records():
-        if str(record.get("product", "")) == "pottery":
+        if str(record.get("product", "")) == "fame_group:ceramics":
             _check(str(record.get("product_name", "")) == gd.get_product_group_name("ceramics_goods"),
                 "fame conditions name the ceramics group")
-    var reputation_text: String = fame.reward_text(product["reputation"]["reward"], "pottery")
+    var reputation_text: String = fame.reward_text(product["reputation"]["reward"], "@ceramics_goods")
     _check(reputation_text.contains(gd.get_product_group_name("ceramics_goods")), "reputation reward names the ceramics group")
     _check(not city.is_craft_available(gd.find_craft("porcelain")), "porcelain starts locked")
     _sell(city, trade, "bricks", 1000, "exceptional")
@@ -92,6 +92,13 @@ func _run() -> void:
     WATCHDOG.report_skipped()
     print("CERAMICS SPECIALIZATION TEST FAILED" if _failed else "CERAMICS SPECIALIZATION TEST OK")
     quit(1 if _failed else 0)
+
+func _fame_group(gd: Node, id: String) -> Dictionary:
+    for group in gd.fame_groups:
+        if str(group.get("id", "")) == id:
+            return group
+    _check(false, "missing fame group: " + id)
+    return {}
 
 func _sell(city: Node, trade: Node, pid: String, amount: int, quality: String) -> void:
     city.add_to_storage(pid, amount, quality)

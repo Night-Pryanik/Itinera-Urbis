@@ -27,7 +27,7 @@ func _run() -> void:
         city.unlocked_technologies.append("steel_making")
     main_map.town_manager.towns.append({"id": "weapons_test", "name": "Testville",
         "treasury": 1000000, "buy_pool": WEAPONS.duplicate()})
-    var product: Dictionary = gd.products["steel_weapons"]
+    var product: Dictionary = _fame_group(gd, "weapons")
     var challenge: Dictionary = product["challenge"]
     var brand: Dictionary = gd.find_craft("damascus_steel")
     var branded_weapons: Dictionary = gd.find_craft("damascus_weapons")
@@ -35,12 +35,12 @@ func _run() -> void:
     for pid in gd.products:
         if gd.products[pid].get("category", "") == "weapons":
             _check(pid in WEAPONS, str(pid) + " belongs to the weapon group")
-    _check(str(product.get("fame_group", "")) == "weapons_goods", "all fame tiers count the weapon group")
+    _check(str(product.get("product_group", "")) == "weapons_goods", "all fame tiers count the weapon group")
     for record in fame.fame_records():
-        if str(record.get("product", "")) == "steel_weapons":
+        if str(record.get("product", "")) == "fame_group:weapons":
             _check(str(record.get("product_name", "")) == gd.get_product_group_name("weapons_goods"),
                 "fame conditions name the weapon group")
-    var reputation_text: String = fame.reward_text(product["reputation"]["reward"], "steel_weapons")
+    var reputation_text: String = fame.reward_text(product["reputation"]["reward"], "@weapons_goods")
     _check(reputation_text.contains(gd.get_product_group_name("weapons_goods")), "reputation reward names the group")
     _check(not city.is_craft_available(brand) and not city.is_craft_available(branded_weapons), "brand and its weapons start locked")
 
@@ -105,6 +105,13 @@ func _run() -> void:
     WATCHDOG.report_skipped()
     print("WEAPONS SPECIALIZATION TEST FAILED" if _failed else "WEAPONS SPECIALIZATION TEST OK")
     quit(1 if _failed else 0)
+
+func _fame_group(gd: Node, id: String) -> Dictionary:
+    for group in gd.fame_groups:
+        if str(group.get("id", "")) == id:
+            return group
+    _check(false, "missing fame group: " + id)
+    return {}
 
 func _sell(city: Node, trade: Node, pid: String, amount: int, quality: String) -> void:
     city.add_to_storage(pid, amount, quality)

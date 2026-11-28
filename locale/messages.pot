@@ -6391,19 +6391,19 @@ msgctxt "resources.challenge.description"
 msgid "A thousand units of cheese of exceptional quality sold to the towns — and cheese begins to be asked by the name of the town."
 msgstr ""
 
-msgctxt "resources.challenge.description"
+msgctxt "fame_groups.challenge.description"
 msgid "A thousand units of weapons of exceptional quality sold to the towns — and weapons begin to be asked by the name of the town."
 msgstr ""
 
-msgctxt "resources.challenge.description"
+msgctxt "fame_groups.challenge.description"
 msgid "A thousand ceramic goods of exceptional quality sold to the towns — pottery, bricks, amphorae, porcelain, fine ceramics or clay tablets — earn the city a name for its kilns."
 msgstr ""
 
-msgctxt "resources.challenge.name"
+msgctxt "fame_groups.challenge.name"
 msgid "A Blade with the Name of the Town"
 msgstr ""
 
-msgctxt "resources.challenge.name"
+msgctxt "fame_groups.challenge.name"
 msgid "A Mark on Fired Clay"
 msgstr ""
 
@@ -10996,11 +10996,11 @@ msgctxt "crafts.description"
 msgid "Sews clothes from supple morocco leather."
 msgstr ""
 
-msgctxt "resources.challenge.name"
+msgctxt "fame_groups.challenge.name"
 msgid "Leather Clothes the Towns Ask for by Name"
 msgstr ""
 
-msgctxt "resources.challenge.description"
+msgctxt "fame_groups.challenge.description"
 msgid "A thousand units of exceptional leather, morocco leather or branded leather clothes sold to the towns earn the city a name for its leatherwork."
 msgstr ""
 
@@ -11020,7 +11020,7 @@ msgctxt "product_groups.name"
 msgid "Leather Clothes"
 msgstr ""
 
-msgid "The fame of a good names a nonexistent goods group"
+msgid "Fame group references a nonexistent goods group"
 msgstr ""
 
 msgctxt "resources.name"
@@ -11033,4 +11033,16 @@ msgstr ""
 
 msgctxt "crafts.description"
 msgid "Sews branded clothes from the city's renowned leather."
+msgstr ""
+
+msgctxt "validator_entity_title_fame_group"
+msgid "Fame group"
+msgstr ""
+
+msgctxt "validator_entity_ref_fame_group"
+msgid "this fame group"
+msgstr ""
+
+msgctxt "validator_entity_source_fame_group"
+msgid "fame group"
 msgstr ""

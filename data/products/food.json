@@ -21,8 +21,8 @@
   //               { "type": "specialization", "id": <id> }     the branch, and a pick for it;
   //               { "type": "effect_stub", "id": <id> }       a place for an effect of the code.
   //
-  // "fame_group" optionally names a product group whose members share this ladder. The tier
-  // counters add qualifying sales or production of all members, and its price reward covers them.
+  // A fame group is a separate entity in data/fame_groups.json. It owns the same tiers for every
+  // member of its product group; a product may instead carry tiers of its own here.
   //
   // "name" and "description" belong to the challenge only: it is the one block the player accepts
   // on purpose, so it is the one that needs a title of its own.

@@ -269,7 +269,7 @@ func _ladder_name(manager, records: Array, product: String) -> String:
             var name := str(record.get("name", ""))
             if name != "":
                 return name
-    return GameData.get_product_name(product)
+    return str(records[0].get("product_name", product))
 
 # The head of a fold: the mark of what stands under it, its name, and how far the city has come
 # along it. Collapsed, it still answers the question the closed list would otherwise hide — whether
@@ -333,7 +333,7 @@ func _fame_plate(record: Dictionary, manager) -> Control:
             else UI_THEME.color("text_secondary")))
 
     _add_rewards(body, _rewards_of(record.get("reward", null)),
-            str(record.get("product", "")), manager)
+            str(record.get("reward_product", record.get("product", ""))), manager)
     if reached:
         body.add_child(_line(tr("Reached"), UI_THEME.color("income")))
     return plate
