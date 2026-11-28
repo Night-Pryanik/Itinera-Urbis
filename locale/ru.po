@@ -10932,16 +10932,12 @@ msgctxt "crafts.description"
 msgid "Burns limestone with furnace fuel, slakes the resulting lime and mixes it with volcanic tuff and stone aggregate into pozzolanic concrete in one production cycle."
 msgstr "За один производственный цикл обжигает известняк с печным топливом, гасит полученную известь и смешивает её с вулканическим туфом и каменным заполнителем в пуццолановый бетон."
 
-msgctxt "resources.challenge.description"
-msgid ""
-"A thousand units of wool clothes of exceptional quality sold to the towns "
-"earn the city a name for its wool."
-msgstr ""
-"Тысяча единиц шерстяной одежды исключительного качества, проданных городкам,"
-" прославит шерсть города."
+msgctxt "fame_groups.challenge.description"
+msgid "A thousand units of exceptional wool clothes, ordinary or branded, sold to the towns earn the city a name for its wool."
+msgstr "Тысяча единиц обычной или брендированной шерстяной одежды исключительного качества, проданных городкам, прославит шерсть города."
 
 
-msgctxt "resources.challenge.name"
+msgctxt "fame_groups.challenge.name"
 msgid "Wool Clothes the Towns Ask for by Name"
 msgstr "Шерстяная одежда, которую спрашивают по имени"
 
@@ -10981,18 +10977,14 @@ msgid "Makes delicate garments from lustrous sea silk."
 msgstr "Изготавливает изящную одежду из блестящего морского шёлка."
 
 
-msgctxt "resources.challenge.name"
+msgctxt "fame_groups.challenge.name"
 msgid "Cloth Clothes the Towns Ask for by Name"
 msgstr "Тканевая одежда, которую спрашивают по имени"
 
 
-msgctxt "resources.challenge.description"
-msgid ""
-"A thousand units of cloth clothes of exceptional quality sold to the towns "
-"earn the city a name for its textiles."
-msgstr ""
-"Тысяча единиц тканевой одежды исключительного качества, проданных городкам, "
-"прославит ткани города."
+msgctxt "fame_groups.challenge.description"
+msgid "A thousand units of exceptional cloth clothes, ordinary or branded, sold to the towns earn the city a name for its textiles."
+msgstr "Тысяча единиц обычной или брендированной тканевой одежды исключительного качества, проданных городкам, прославит ткани города."
 
 
 msgctxt "resources.name"
@@ -11170,3 +11162,11 @@ msgstr "эту группу известности"
 msgctxt "validator_entity_source_fame_group"
 msgid "fame group"
 msgstr "группе известности"
+
+msgctxt "product_groups.name"
+msgid "Cloth Clothes"
+msgstr "Тканевая одежда"
+
+msgctxt "product_groups.name"
+msgid "Wool Clothes"
+msgstr "Шерстяная одежда"

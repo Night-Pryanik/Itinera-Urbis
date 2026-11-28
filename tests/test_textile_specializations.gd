@@ -72,14 +72,19 @@ func _run() -> void:
     var town := {"id": "textile_test", "name": "Testville", "treasury": 1000000,
         "buy_pool": pools.get("buy_pool", [])}
     main_map.town_manager.towns.append(town)
-    for line in [["fabric_clothes", "linen_byssus", "fabric_specialization", "branded_fabric_clothes"],
-                 ["wool_clothes", "cashmere", "wool_specialization", "branded_wool_clothes"]]:
+    for line in [["fabric_clothes", "linen_byssus", "fabric_specialization", "branded_fabric_clothes", "fabric_clothing"],
+                 ["wool_clothes", "cashmere", "wool_specialization", "branded_wool_clothes", "wool_clothing"]]:
         var pid: String = line[0]
         var prestige: String = line[1]
         var spec_id: String = line[2]
         var branded: String = line[3]
         var garment_recipe: Dictionary = gd.find_craft(branded)
-        var product: Dictionary = gd.products[pid]
+        var product: Dictionary = _fame_group(gd, line[4])
+        _check(gd.product_groups.get(str(product.get("product_group", "")), []) == [pid, branded],
+            pid + " group includes only the ordinary and branded garment")
+        _check(not gd.products[pid].has("challenge"), pid + " does not own the group ladder")
+        _check(fame.challenge_id(product, product["reputation"]) == pid + "_challenge", pid + " reputation id is preserved")
+        _check(fame.challenge_id(product, product["brand"]) == pid + "_challenge", pid + " brand id is preserved")
         var recipe: Dictionary = gd.find_craft(prestige)
         var brand_threshold := int(product["brand"]["threshold"])
         var challenge_threshold := int(product["challenge"]["threshold"])
@@ -89,6 +94,10 @@ func _run() -> void:
         _check(not city.is_craft_available(garment_recipe), branded + " starts locked")
         _check(garment_recipe.get("resources", {}).has(prestige), branded + " uses the prestige material")
         _check(not city.is_specialization_available(city.get_specialization(spec_id)), spec_id + " starts locked")
+        _check(fame.tier_counter(product, product["challenge"]) == 0, pid + " starts independently of the other line")
+        fame.record_sale(prestige, {"exceptional": 50})
+        fame.record_production(branded, 50, "exceptional")
+        _check(fame.tier_counter(product, product["challenge"]) == 0, "materials and production do not count as garment sales")
         city.add_to_storage(pid, 1, "common")
         _check(bool(_sell(trade, pid, 1).get("ok", false)), pid + " common-quality sale succeeds")
         _check(not city.is_craft_available(recipe), pid + " common quality does not count toward the brand")
@@ -100,19 +109,38 @@ func _run() -> void:
         _check(city.is_craft_available(recipe), prestige + " opens at the brand threshold")
         _check(city.is_craft_available(garment_recipe), branded + " opens at the brand threshold")
         _check(not city.is_specialization_available(city.get_specialization(spec_id)), spec_id + " waits for the challenge")
+        _check(is_equal_approx(fame.get_fame_trade_price_share(branded), 0.10), branded + " receives group reputation")
+        city.add_to_storage(branded, 1, "fine")
+        _check(bool(_sell(trade, branded, 1).get("ok", false)), branded + " fine sale succeeds")
+        _check(fame.tier_counter(product, product["challenge"]) == brand_threshold, branded + " below exceptional does not count")
+        city.add_to_storage(branded, 200, "exceptional")
+        _check(bool(_sell(trade, branded, 200).get("ok", false)), branded + " exceptional sale succeeds")
+        _check(fame.tier_counter(product, product["challenge"]) == brand_threshold + 200, branded + " counts toward challenge")
         var dyed_id: String = gd.make_generated_id(pid, "woad")
         gd.materialise_generated(dyed_id)
-        city.add_to_storage(dyed_id, challenge_threshold - brand_threshold, gd.make_quality_key("exceptional", "common"))
-        _check(bool(_sell(trade, dyed_id, challenge_threshold - brand_threshold).get("ok", false)), pid + " dyed sale succeeds")
+        city.add_to_storage(dyed_id, 1, gd.make_quality_key("exceptional", "common"))
+        _check(bool(_sell(trade, dyed_id, 1).get("ok", false)), pid + " dyed ordinary sale succeeds")
+        var dyed_brand: String = gd.make_generated_id(branded, "woad")
+        gd.materialise_generated(dyed_brand)
+        var remaining := challenge_threshold - brand_threshold - 201
+        city.add_to_storage(dyed_brand, remaining - 1, gd.make_quality_key("exceptional", "common"))
+        _check(bool(_sell(trade, dyed_brand, remaining - 1).get("ok", false)), pid + " dyed branded sale succeeds")
+        _check(fame.tier_counter(product, product["challenge"]) == challenge_threshold - 1, "dyed brand counts once")
+        _check(not fame.is_challenge_completed(str(product["challenge"]["id"])), pid + " challenge waits for threshold")
+        city.add_to_storage(dyed_brand, 1, gd.make_quality_key("exceptional", "common"))
+        _check(bool(_sell(trade, dyed_brand, 1).get("ok", false)), pid + " final dyed branded sale succeeds")
         _check(fame.is_challenge_completed(str(product["challenge"]["id"])), pid + " challenge is complete")
         _check(city.is_specialization_available(city.get_specialization(spec_id)), spec_id + " is independently available")
+        _check(is_zero_approx(fame.get_fame_trade_price_share(prestige)), prestige + " is not in the clothing fame group")
 
     var saved: Dictionary = fame.serialize()
     fame.deserialize(saved)
-    for pid in ["fabric_clothes", "wool_clothes"]:
-        var product: Dictionary = gd.products[pid]
-        _check(fame.tier_counter(product, product["challenge"]) == 1000, pid + " sale progress survives save")
-        _check(fame.is_challenge_completed(str(product["challenge"]["id"])), pid + " completion survives save")
+    for group_id in ["fabric_clothing", "wool_clothing"]:
+        var product: Dictionary = _fame_group(gd, group_id)
+        _check(fame.tier_counter(product, product["challenge"]) == 1000, group_id + " sale progress survives save")
+        _check(fame.is_challenge_completed(str(product["challenge"]["id"])), group_id + " completion survives save")
+        for pid in gd.product_groups[product["product_group"]]:
+            _check(is_equal_approx(fame.get_fame_trade_price_share(pid), 0.10), pid + " reputation survives save")
     _check(city.get_pending_specialization_picks() == 2, "both challenges grant their own pick")
     _check(city.choose_specialization("wool_specialization"), "wool specialization can be chosen")
     _check_textile_bonuses(city, gd, 0.20, 0.15)
@@ -175,6 +203,13 @@ func _run() -> void:
 
     main_map.queue_free()
     _finish()
+
+func _fame_group(gd: Node, id: String) -> Dictionary:
+    for group in gd.fame_groups:
+        if str(group.get("id", "")) == id:
+            return group
+    _check(false, "missing fame group: " + id)
+    return {}
 
 # Both branches cover all clothing for production and town prices, never its inputs.
 func _check_textile_bonuses(city: Node, gd: Node, production: float, price: float) -> void:
