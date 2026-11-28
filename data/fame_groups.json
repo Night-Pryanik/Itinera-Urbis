@@ -7,6 +7,66 @@
   // Explicit reputation and brand ids below retain their original serialized identities.
   "fame_groups": [
     {
+      "id": "fabric_clothing",
+      "product_group": "fabric_clothing_goods",
+      "icon": "fabric_clothes.png",
+      "reputation": {
+        "id": "fabric_clothes_challenge",
+        "threshold": 200,
+        "trigger": "sell",
+        "reward": { "type": "trade_price", "value": 0.10 }
+      },
+      "brand": {
+        "id": "fabric_clothes_challenge",
+        "threshold": 500,
+        "trigger": "sell",
+        "min_quality": "fine",
+        "reward": [
+          { "type": "brand_product", "product": "linen_byssus" },
+          { "type": "brand_product", "product": "branded_fabric_clothes" }
+        ]
+      },
+      "challenge": {
+        "id": "fabric_challenge",
+        "threshold": 1000,
+        "trigger": "sell",
+        "min_quality": "exceptional",
+        "name": "Cloth Clothes the Towns Ask for by Name",
+        "description": "A thousand units of exceptional cloth clothes, ordinary or branded, sold to the towns earn the city a name for its textiles.",
+        "reward": { "type": "specialization", "id": "fabric_specialization" }
+      }
+    },
+    {
+      "id": "wool_clothing",
+      "product_group": "wool_clothing_goods",
+      "icon": "wool_clothes.png",
+      "reputation": {
+        "id": "wool_clothes_challenge",
+        "threshold": 200,
+        "trigger": "sell",
+        "reward": { "type": "trade_price", "value": 0.10 }
+      },
+      "brand": {
+        "id": "wool_clothes_challenge",
+        "threshold": 500,
+        "trigger": "sell",
+        "min_quality": "fine",
+        "reward": [
+          { "type": "brand_product", "product": "cashmere" },
+          { "type": "brand_product", "product": "branded_wool_clothes" }
+        ]
+      },
+      "challenge": {
+        "id": "wool_challenge",
+        "threshold": 1000,
+        "trigger": "sell",
+        "min_quality": "exceptional",
+        "name": "Wool Clothes the Towns Ask for by Name",
+        "description": "A thousand units of exceptional wool clothes, ordinary or branded, sold to the towns earn the city a name for its wool.",
+        "reward": { "type": "specialization", "id": "wool_specialization" }
+      }
+    },
+    {
       "id": "ceramics",
       "product_group": "ceramics_goods",
       "icon": "pottery.png",

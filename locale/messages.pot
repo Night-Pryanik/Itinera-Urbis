@@ -10813,14 +10813,12 @@ msgctxt "crafts.description"
 msgid "Burns limestone with furnace fuel, slakes the resulting lime and mixes it with volcanic tuff and stone aggregate into pozzolanic concrete in one production cycle."
 msgstr ""
 
-msgctxt "resources.challenge.description"
-msgid ""
-"A thousand units of wool clothes of exceptional quality sold to the towns "
-"earn the city a name for its wool."
+msgctxt "fame_groups.challenge.description"
+msgid "A thousand units of exceptional wool clothes, ordinary or branded, sold to the towns earn the city a name for its wool."
 msgstr ""
 
 
-msgctxt "resources.challenge.name"
+msgctxt "fame_groups.challenge.name"
 msgid "Wool Clothes the Towns Ask for by Name"
 msgstr ""
 
@@ -10860,15 +10858,13 @@ msgid "Makes delicate garments from lustrous sea silk."
 msgstr ""
 
 
-msgctxt "resources.challenge.name"
+msgctxt "fame_groups.challenge.name"
 msgid "Cloth Clothes the Towns Ask for by Name"
 msgstr ""
 
 
-msgctxt "resources.challenge.description"
-msgid ""
-"A thousand units of cloth clothes of exceptional quality sold to the towns "
-"earn the city a name for its textiles."
+msgctxt "fame_groups.challenge.description"
+msgid "A thousand units of exceptional cloth clothes, ordinary or branded, sold to the towns earn the city a name for its textiles."
 msgstr ""
 
 
@@ -11045,4 +11041,12 @@ msgstr ""
 
 msgctxt "validator_entity_source_fame_group"
 msgid "fame group"
+msgstr ""
+
+msgctxt "product_groups.name"
+msgid "Cloth Clothes"
+msgstr ""
+
+msgctxt "product_groups.name"
+msgid "Wool Clothes"
 msgstr ""

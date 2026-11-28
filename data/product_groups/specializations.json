@@ -19,6 +19,16 @@
   // with that group's members. A group must not nest in itself, directly or through other groups.
   "product_groups": [
     {
+      "id": "fabric_clothing_goods",
+      "name": "Cloth Clothes",
+      "products": [ "fabric_clothes", "branded_fabric_clothes" ]
+    },
+    {
+      "id": "wool_clothing_goods",
+      "name": "Wool Clothes",
+      "products": [ "wool_clothes", "branded_wool_clothes" ]
+    },
+    {
       "id": "leather_clothing_goods",
       "name": "Leather Clothes",
       "products": [ "leather_clothes", "morocco_leather_clothes", "branded_leather_clothes" ]
