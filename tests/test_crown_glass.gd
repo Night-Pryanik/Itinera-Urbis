@@ -82,8 +82,8 @@ func _test_recipe(gd: Node, city: Node) -> void:
     _check(not recipe.is_empty(), "recipe exists: crown_glass")
     if recipe.is_empty():
         return
-    _check(recipe.get("produced_in", []) == ["glass_workshop"],
-        "crown glass is spun in the glass workshop, not the glassmaker's house")
+    _check(recipe.get("produced_in", []) == ["glassmaker_house", "glass_workshop"],
+        "crown glass is craftable in the glassmaker's house and its upgrade, the glass workshop")
     _check(str(recipe.get("unlock_tech", "")) == "crown_glass",
         "the crown glass recipe keeps its gate")
     _check(int(recipe.get("result", {}).get("crown_glass", 0)) == 10,

@@ -411,10 +411,12 @@
       // Crown glass is melted from the same raw batch as the other glass goods — like the
       // mirrors, it spends sand and alkali rather than finished vessels, so it does not
       // compete with the citizens' glassware. Spinning the gob into a flat crown and annealing
-      // it takes an extra firing, hence the furnace fuel.
+      // it takes an extra firing, hence the furnace fuel. The recipe stays craftable in the
+      // glassmaker's house as well as its upgrade: a basic building keeps its advanced
+      // recipes, and the workshop only adds the extra production slots.
       "id": "crown_glass",
       "name": "Crown Glass",
-      "produced_in": [ "glass_workshop" ],
+      "produced_in": [ "glassmaker_house", "glass_workshop" ],
       "resources": [
         { "quartz_sand": 20 },
         [ { "soda": 10 }, { "potash": 10 } ],
