@@ -126,7 +126,7 @@ func _test_consumption(gd: Node, city: Node) -> void:
     city.city_storage.clear()
     city.add_to_storage("prism", 10, "common")
     _check(absf(wm._entry_effective_bonus(rule) - 0.45) < 0.0001,
-        "a stocked prism grants the optical group +45%, got +%f" % wm._entry_effective_bonus(rule))
+        "a stocked prism grants the optical group +45%%, got +%f" % wm._entry_effective_bonus(rule))
 
     city.city_storage.clear()
     city.add_to_storage("copper_precision_instruments", 10, "common")
