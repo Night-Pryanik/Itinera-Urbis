@@ -116,7 +116,7 @@ func _test_consumption(gd: Node) -> void:
 func _test_bonus(gd: Node, city: Node) -> void:
     # The optician is a profession of its own: the master grinds the glassmaker's
     # glass into lenses rather than melting the batch.
-    _check(_record(gd.professions, "optician").is_empty() == false,
+    _check(gd.professions.has("optician"),
         "the optician is a profession")
     var workshop := _record(gd.buildings, "optical_workshop")
     if workshop.is_empty():
