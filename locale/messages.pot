@@ -6392,7 +6392,7 @@ msgid "A thousand units of cheese of exceptional quality sold to the towns — a
 msgstr ""
 
 msgctxt "resources.challenge.description"
-msgid "A thousand units of steel weapons of exceptional quality sold to the towns — and weapons begin to be asked by the name of the town."
+msgid "A thousand units of weapons of exceptional quality sold to the towns — and weapons begin to be asked by the name of the town."
 msgstr ""
 
 msgctxt "resources.challenge.description"

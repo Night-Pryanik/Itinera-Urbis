@@ -76,14 +76,13 @@
       "icon": "iron_weapons.png"
     },
     {
-      // The fame of the steel line is earned by the blade, not by the bar: a town asks for the
-      // weapons of a named city, while steel as a material is what the forge sells to everyone. The
-      // three tiers are the ladder of this good — see the header comment of data/products/food.json.
+      // The weapons of every metal earn the fame that opens the city's branded steel.
       "id": "steel_weapons", "price": 165,
       "name": "Steel Weapons",
       "type": "product",
       "category": "weapons",
       "icon": "steel_weapons.png",
+      "fame_group": "weapons_goods",
       "reputation": {
         "threshold": 200,
         "trigger": "sell",
@@ -101,7 +100,7 @@
         "trigger": "sell",
         "min_quality": "exceptional",
         "name": "A Blade with the Name of the Town",
-        "description": "A thousand units of steel weapons of exceptional quality sold to the towns — and weapons begin to be asked by the name of the town.",
+        "description": "A thousand units of weapons of exceptional quality sold to the towns — and weapons begin to be asked by the name of the town.",
         "reward": { "type": "specialization", "id": "weaponsmith_specialization" }
       }
     },
