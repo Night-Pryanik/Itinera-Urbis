@@ -8,6 +8,7 @@
       "category": "household_items",
       "unlock_tech": "pottery",
       "icon": "pottery.png",
+      "fame_group": "ceramics_goods",
       "reputation": {
         "threshold": 200,
         "trigger": "sell",
@@ -25,7 +26,7 @@
         "trigger": "sell",
         "min_quality": "exceptional",
         "name": "A Mark on Fired Clay",
-        "description": "A thousand vessels of clay of exceptional quality sold to the towns — and they are known by the mark of the town.",
+        "description": "A thousand ceramic goods of exceptional quality sold to the towns — pottery, bricks, amphorae, porcelain, fine ceramics or clay tablets — earn the city a name for its kilns.",
         "reward": { "type": "specialization", "id": "ceramics_specialization" }
       }
     },

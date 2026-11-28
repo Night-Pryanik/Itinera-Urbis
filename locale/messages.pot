@@ -6396,7 +6396,7 @@ msgid "A thousand units of steel weapons of exceptional quality sold to the town
 msgstr ""
 
 msgctxt "resources.challenge.description"
-msgid "A thousand vessels of clay of exceptional quality sold to the towns — and they are known by the mark of the town."
+msgid "A thousand ceramic goods of exceptional quality sold to the towns — pottery, bricks, amphorae, porcelain, fine ceramics or clay tablets — earn the city a name for its kilns."
 msgstr ""
 
 msgctxt "resources.challenge.name"
