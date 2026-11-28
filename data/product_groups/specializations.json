@@ -4,10 +4,9 @@
   // the resource of a consumption rule, by the goods a specialization bonus acts on.
   //
   // The registry is split by the mechanic that reads it, and this file holds the lines of prestige a
-  // specialization branch pays for (see data/specializations.json). These groups exist for the bonus,
-  // not for a recipe: a branch of the cheese cellars is a branch of the whole line — the good the city
-  // makes and the named good its brand tier opens — and the same list has to be read by the price of a
-  // town, by the output of a building and by the line of the plate without being written three times.
+  // specialization branch pays for (see data/specializations.json). These groups cover whole product
+  // lines, including their branded goods, for price and production bonuses; a fame tier may also use
+  // the same group to count sales.
   // The identifier of a group is global, so a group lives in exactly one file even when a second
   // mechanic names it; the file of that mechanic says so.
   //
@@ -32,7 +31,7 @@
     {
       "id": "ceramics_goods",
       "name": "Ceramics",
-      "products": [ "pottery", "amphora", "fine_ceramics", "porcelain" ]
+      "products": [ "pottery", "bricks", "amphora", "porcelain", "fine_ceramics", "clay_tablets" ]
     },
     {
       // The branch of the smiths is a branch of blades of every metal the forge knows, not of the bar,

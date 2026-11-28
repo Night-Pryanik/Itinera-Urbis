@@ -6476,8 +6476,8 @@ msgid "A thousand units of steel weapons of exceptional quality sold to the town
 msgstr "Тысяча единиц стального оружия исключительного качества, проданных городкам, — и оружие начинают спрашивать по имени города."
 
 msgctxt "resources.challenge.description"
-msgid "A thousand vessels of clay of exceptional quality sold to the towns — and they are known by the mark of the town."
-msgstr "Тысяча изделий из глины исключительного качества, проданных городкам, — и их узнают по клейму города."
+msgid "A thousand ceramic goods of exceptional quality sold to the towns — pottery, bricks, amphorae, porcelain, fine ceramics or clay tablets — earn the city a name for its kilns."
+msgstr "Тысяча керамических товаров исключительного качества, проданных городкам, — посуды, кирпичей, амфор, фарфора, тонкой керамики или глиняных табличек — прославит печи города."
 
 msgctxt "resources.challenge.name"
 msgid "A Blade with the Name of the Town"

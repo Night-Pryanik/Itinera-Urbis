@@ -318,7 +318,7 @@ func _fame_record(product: Dictionary, tier: String, block: Dictionary) -> Dicti
         "id": challenge_id(product, block),
         "tier": tier,
         "product": str(product.get("id", "")),
-        "product_name": GameData.get_product_name(str(product.get("id", ""))),
+        "product_name": _fame_product_name(str(product.get("id", ""))),
         "icon": str(block.get("icon", product.get("icon", ""))),
         "name": str(block.get("name", "")),
         "description": str(block.get("description", "")),
@@ -422,6 +422,15 @@ func get_fame_trade_price_share(pid: String) -> float:
     return float(_fame_price_share.get(base if not base.is_empty() else pid, 0.0))
 
 
+func _fame_product_name(pid: String) -> String:
+    var group := str(GameData.products.get(pid, {}).get("fame_group", ""))
+    if not group.is_empty():
+        var name := GameData.get_product_group_name(group)
+        if not name.is_empty():
+            return name
+    return GameData.get_product_name(pid)
+
+
 # The reward of a tier or of a challenge in the words of the view that lists them. The manager owns
 # what a reward type does, so it is the one that can say what the player will get; a plate that
 # invented its own phrasing would drift from the grant.
@@ -433,7 +442,7 @@ func reward_text(reward: Dictionary, product_id: String = "") -> String:
                         float(reward.get("value", 0.0)))
             return tr("The town pays %s more for %s") % [
                     CityData.format_signed_percent(float(reward.get("value", 0.0))),
-                    GameData.get_product_name(product_id)]
+                    _fame_product_name(product_id)]
         REWARD_BRAND_PRODUCT:
             return tr("Unlock the recipe of %s") % GameData.get_product_name(
                     str(reward.get("product", "")))
