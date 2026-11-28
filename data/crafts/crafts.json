@@ -413,29 +413,29 @@
       "description": "Melts quartz sand with soda or potash, spins the gob into a flat crown and cuts it into window panes."
     },
     {
+      // The optician grinds the glassmaker's finished glass, not raw batch: the craft is
+      // the curve, not the melt. A vessel of clear glassware yields a stack of simple lenses.
       "id": "magnifying_glass",
       "name": "Magnifying Glass",
       "produced_in": [ "optical_workshop" ],
-      "resources": [
-        { "quartz_sand": 20 },
-        [ { "soda": 10 }, { "potash": 10 } ]
-      ],
+      "resources": { "glassware": 10 },
       "result": { "magnifying_glass": 10 },
       "time": 12.0,
       "unlock_tech": "optics",
       "description": "Grinds and polishes a clear glass lens into a magnifier."
     },
     {
-      // Flint glass: lead raises the refractive index, which lets matched lenses be
-      // ground thin enough for a frame. Lead belongs in optics, not in mirrors.
+      // Flint character for the finer spectacles: lead raises the refractive index, which
+      // lets matched lenses be ground thin enough for a frame. The optician grinds the
+      // glassmaker's glassware into the two lenses and sets them in a frame.
       "id": "spectacles",
       "name": "Spectacles",
       "produced_in": [ "optical_workshop" ],
-      "resources": { "quartz_sand": 20, "potash": 10, "lead": 10 },
+      "resources": { "glassware": 20, "lead": 10 },
       "result": { "spectacles": 10 },
       "time": 16.0,
       "unlock_tech": "optics",
-      "description": "Fuses lead-potash flint glass and grinds two matched lenses into spectacles."
+      "description": "Grinds two matched lenses from lead-fluxed glass and sets them in a frame."
     },
     {
       "id": "ropes",

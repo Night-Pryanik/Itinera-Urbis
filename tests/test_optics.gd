@@ -5,10 +5,9 @@ const WATCHDOG = preload("res://tests/watchdog.gd")
 
 const OPTICAL := [
     { "product": "magnifying_glass", "price": 40, "time": 12.0,
-      "inputs": { "quartz_sand": 20, "soda": 10 },
-      "alt_inputs": { "quartz_sand": 20, "potash": 10 } },
+      "inputs": { "glassware": 10 } },
     { "product": "spectacles", "price": 70, "time": 16.0,
-      "inputs": { "quartz_sand": 20, "potash": 10, "lead": 10 } },
+      "inputs": { "glassware": 20, "lead": 10 } },
 ]
 
 var _failed := false
@@ -63,8 +62,8 @@ func _test_building(gd: Node) -> void:
         return
     _check(str(workshop.get("unlock_tech", "")) == "optics",
         "the optical workshop is unlocked by optics")
-    _check(str(workshop.get("profession", "")) == "glassmaker",
-        "the optical workshop is worked by the glassmaker")
+    _check(str(workshop.get("profession", "")) == "optician",
+        "the optical workshop is worked by the optician")
     _check(float(workshop.get("production_slots", 0)) >= 1.0,
         "the optical workshop has at least one production slot")
     _check(str(workshop.get("icon", "")) != "", "the optical workshop names an icon")
@@ -92,14 +91,12 @@ func _test_recipe(gd: Node, city: Node, item: Dictionary) -> void:
     _check(float(recipe.get("time", 0)) == float(item["time"]), "the lens keeps its time: " + pid)
     _check(int(recipe.get("result", {}).get(pid, 0)) == 10, "the recipe yields ten lenses: " + pid)
     var ingredient_ids := _ingredient_ids(recipe.get("resources", {}))
-    _check(not ingredient_ids.has("glassware"),
-        "lenses are ground from batch, not from finished vessels: " + pid)
+    _check(ingredient_ids.has("glassware"),
+        "lenses are ground from the glassmaker's finished glassware: " + pid)
     for abrasive in ["@abrasives", "pumice", "ochre", "emery"]:
         _check(not ingredient_ids.has(abrasive), pid + " needs no additional abrasive ingredient")
 
-    if item.has("alt_inputs"):
-        _check(_has_alkali_alternative(gd, recipe), "soda and potash are alternatives: " + pid)
-    for input_set in [item["inputs"], item.get("alt_inputs", item["inputs"])]:
+    for input_set in [item["inputs"]]:
         _test_cycle(city, recipe, input_set, pid)
         for missing in input_set:
             var partial: Dictionary = input_set.duplicate()

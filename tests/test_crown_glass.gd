@@ -2,8 +2,8 @@
 #
 # Crown glass is the medieval window glass: a technology that needs optics and
 # glassmaking, a glass workshop that upgrades the glassmaker's house (2 slots),
-# the crown glass product, and the scholar buildings that consume the panes for
-# the daylight of their work.
+# the crown glass product, the builder's yard that consumes the panes, and the
+# bonus crown glass grants to the optician's lens grinding.
 extends SceneTree
 
 const WATCHDOG = preload("res://tests/watchdog.gd")
@@ -25,6 +25,7 @@ func _run() -> void:
     _test_product(gd)
     _test_recipe(gd, city)
     _test_consumption(gd)
+    _test_bonus(gd, city)
 
     WATCHDOG.report_skipped()
     print("CROWN GLASS TEST FAILED" if _failed else "CROWN GLASS TEST OK")
@@ -111,6 +112,29 @@ func _test_consumption(gd: Node) -> void:
         _check(absf(float(rule.get("production_bonus", -1)) - 0.10) < 0.0001,
             "glazed windows grant the builder +10%")
     _check(found, "a consumption rule for crown glass exists")
+
+func _test_bonus(gd: Node, city: Node) -> void:
+    # The optician is a profession of its own: the master grinds the glassmaker's
+    # glass into lenses rather than melting the batch.
+    _check(_record(gd.professions, "optician").is_empty() == false,
+        "the optician is a profession")
+    var workshop := _record(gd.buildings, "optical_workshop")
+    if workshop.is_empty():
+        _check(false, "the optical workshop is a building for the bonus check")
+        return
+    _check(str(workshop.get("profession", "")) == "optician",
+        "the optical workshop is worked by the optician")
+
+    # Mastering crown glass improves the optician's lens grinding: the thick
+    # bullseye centre of the disc is the finest blank for a lens.
+    var saved_techs: Array = city.unlocked_technologies.duplicate()
+    city.unlocked_technologies = []
+    _check(absf(city.get_building_production_multiplier("optical_workshop", false) - 1.0) < 0.0001,
+        "crown glass gives no bonus before it is researched")
+    city.unlocked_technologies.append("crown_glass")
+    _check(absf(city.get_building_production_multiplier("optical_workshop", false) - 1.2) < 0.0001,
+        "crown glass raises the optical workshop output by 20%")
+    city.unlocked_technologies = saved_techs
 
 func _test_cycle(city: Node, recipe: Dictionary, inputs: Dictionary, output: String) -> void:
     city.city_storage.clear()
