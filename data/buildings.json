@@ -395,7 +395,7 @@
       "id": "glassmaker_house",
       "name": "Glassmaker's House",
       "description": "Fuses glass and blows glassware.",
-      "flavor": "Glass is made by melting sand with a flux, and it can be blown into shape while hot. The craft appeared in several ancient regions and travelled with the workers who knew the recipe. A glassmaker's house gives the town vessels and windows that clay and wood cannot.",
+      "flavor": "Glass is made by melting sand with a flux, and it can be blown into shape while hot. The craft appeared in several ancient regions and travelled with the workers who knew the recipe. A glassmaker's house gives the town vessels and glassware that clay and wood cannot.",
       "work_cost": 50,
       "maintenance_cost": 15.0,
       "additional_cost": [ { "planks": 120 }, { "@processed_construction_materials": 100 } ],
