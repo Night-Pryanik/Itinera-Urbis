@@ -17,7 +17,7 @@
     // deliberately absent: its grapes are dry-farmed.
     "fresh_water": {
       "production_multiplier": { "farm": 1.5, "plantation": 1.5 },
-      "building_production_multiplier": { "leatherworker_house": 1.25, "distillery": 1.25 }
+      "building_production_multiplier": { "leatherworker_house": 1.25, "leatherworker_workshop": 1.25, "distillery": 1.25 }
     },
     "tech_modifiers": [
       {

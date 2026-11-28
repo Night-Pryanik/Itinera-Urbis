@@ -10935,3 +10935,102 @@ msgstr ""
 msgctxt "crafts.description"
 msgid "Distils fermented sugar cane juice into rum."
 msgstr ""
+
+msgctxt "technologies.name"
+msgid "Morocco Leather"
+msgstr ""
+
+msgctxt "technologies.description"
+msgid "Unlocks the tanner's workshop, morocco leather and morocco leather clothes."
+msgstr ""
+
+msgctxt "technologies.flavor"
+msgid "Careful tanning, softening and finishing turn hides into supple, fine-grained leather. Dyed in rich colors, it serves garments, bindings and other prized goods."
+msgstr ""
+
+msgctxt "buildings.name"
+msgid "Tanner's Workshop"
+msgstr ""
+
+msgctxt "buildings.description"
+msgid "Tans and finishes leather and sews leather goods."
+msgstr ""
+
+msgctxt "buildings.flavor"
+msgid "Separate vats and workbenches let tanners prepare hides and finish fine leather alongside their other work."
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Morocco Leather"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Morocco Leather Clothes"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Leather \"<city_name>\""
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Morocco Leather"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Morocco Leather Clothes"
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Branded Leather"
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Tans and finishes hides into supple, fine-grained leather."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Finishes hides into the city's renowned leather."
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Sews clothes from supple morocco leather."
+msgstr ""
+
+msgctxt "resources.challenge.name"
+msgid "Leather Clothes the Towns Ask for by Name"
+msgstr ""
+
+msgctxt "resources.challenge.description"
+msgid "A thousand units of exceptional leather, morocco leather or branded leather clothes sold to the towns earn the city a name for its leatherwork."
+msgstr ""
+
+msgctxt "specializations.name"
+msgid "Leather"
+msgstr ""
+
+msgctxt "specializations.full_name"
+msgid "Specialization of leather"
+msgstr ""
+
+msgctxt "specializations.description"
+msgid "The leather, morocco leather and branded leather clothes of the city are known by name. They bring more in trade and its workshops produce them faster."
+msgstr ""
+
+msgctxt "product_groups.name"
+msgid "Leather Clothes"
+msgstr ""
+
+msgid "The fame of a good names a nonexistent goods group"
+msgstr ""
+
+msgctxt "resources.name"
+msgid "Leather Clothes \"<city_name>\""
+msgstr ""
+
+msgctxt "crafts.name"
+msgid "Branded Leather Clothes"
+msgstr ""
+
+msgctxt "crafts.description"
+msgid "Sews branded clothes from the city's renowned leather."
+msgstr ""

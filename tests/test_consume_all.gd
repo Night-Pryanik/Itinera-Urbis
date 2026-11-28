@@ -125,6 +125,18 @@ func _run() -> void:
     gdata.consumption_rules.remove_at(gdata.consumption_rules.size() - 1)
     gdata.product_groups.erase("test_basket")
 
+    # Branded leather clothes are a separate member of the residents' clothing basket.
+    var clothes = _find(all_rules, "@clothes")
+    check(clothes != null and "branded_leather_clothes" in clothes.get("group_members", []),
+        "the clothing basket includes branded leather clothes", state)
+    if clothes != null:
+        _clear_stock(city)
+        var clothes_amount := int(clothes.get("amount", 0))
+        _set_one(city, "branded_leather_clothes", clothes_amount * 2)
+        wm.tick_city_consumption(float(clothes.get("interval", 1.0)))
+        check(city.get_storage_amount("branded_leather_clothes") == clothes_amount,
+            "residents consume branded leather clothes", state)
+
     # --- The professional default: one member per tick, rotating ---
     var rotate_members: Array = ["honey", "sugar", "carob_syrup"]
     gdata.product_groups["rotate_basket"] = rotate_members

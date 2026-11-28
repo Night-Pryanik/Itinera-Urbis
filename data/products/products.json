@@ -159,6 +159,49 @@
       "type": "product",
       "category": "clothes",
       "unlock_tech": "leatherworking",
+      "icon": "leather_clothes.png",
+      "fame_group": "leather_clothing_goods",
+      "reputation": {
+        "threshold": 200,
+        "trigger": "sell",
+        "reward": { "type": "trade_price", "value": 0.10 }
+      },
+      "brand": {
+        "threshold": 500,
+        "trigger": "sell",
+        "min_quality": "fine",
+        "reward": [
+          { "type": "brand_product", "product": "branded_leather" },
+          { "type": "brand_product", "product": "branded_leather_clothes" }
+        ]
+      },
+      "challenge": {
+        "id": "leather_challenge",
+        "threshold": 1000,
+        "trigger": "sell",
+        "min_quality": "exceptional",
+        "name": "Leather Clothes the Towns Ask for by Name",
+        "description": "A thousand units of exceptional leather, morocco leather or branded leather clothes sold to the towns earn the city a name for its leatherwork.",
+        "reward": { "type": "specialization", "id": "leather_specialization" }
+      }
+    },
+    {
+      "id": "morocco_leather_clothes",
+      "price": 56,
+      "name": "Morocco Leather Clothes",
+      "type": "product",
+      "category": "clothes",
+      "unlock_tech": "morocco_leather",
+      "icon": "leather_clothes.png"
+    },
+    {
+      "id": "branded_leather_clothes",
+      "price": 84,
+      "name": "Leather Clothes \"<city_name>\"",
+      "type": "product",
+      "category": "clothes",
+      "brand_of": "leather_clothes",
+      "unlock_tech": "leatherworking",
       "icon": "leather_clothes.png"
     },
     {

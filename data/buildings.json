@@ -273,6 +273,21 @@
       "profession": "tanner",
       "production_slots": 1.0,
       "unlock_tech": "leatherworking",
+      "upgrades_into": "leatherworker_workshop",
+      "default_recipes": [ "leather" ]
+    },
+    {
+      "id": "leatherworker_workshop",
+      "name": "Tanner's Workshop",
+      "description": "Tans and finishes leather and sews leather goods.",
+      "flavor": "Separate vats and workbenches let tanners prepare hides and finish fine leather alongside their other work.",
+      "work_cost": 50,
+      "maintenance_cost": 31.5,
+      "additional_cost": [ { "planks": 150 }, { "@processed_construction_materials": 100 } ],
+      "icon": "leatherworker_house.png",
+      "profession": "tanner",
+      "production_slots": 2.0,
+      "unlock_tech": "morocco_leather",
       "default_recipes": [ "leather" ]
     },
     {

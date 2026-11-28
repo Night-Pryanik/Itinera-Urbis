@@ -1,6 +1,16 @@
 {
   "technologies": [
     {
+      "id": "morocco_leather",
+      "name": "Morocco Leather",
+      "era": "medieval",
+      "science_cost": 5.0,
+      "prerequisites": [ [ "leatherworking" ] ],
+      "icon": "leatherworking.png",
+      "description": "Unlocks the tanner's workshop, morocco leather and morocco leather clothes.",
+      "flavor": "Careful tanning, softening and finishing turn hides into supple, fine-grained leather. Dyed in rich colors, it serves garments, bindings and other prized goods."
+    },
+    {
       "id": "hopping",
       "name": "Hopping",
       "era": "medieval",
