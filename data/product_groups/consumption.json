@@ -223,11 +223,12 @@
       ]
     },
     {
-      // Lenses ground from glass: the scholar draws one optical aid at a time,
-      // the plainer magnifier first and the finer spectacles last.
+      // Optical aids ground from glass: the scholar draws one optical aid at a time,
+      // the plainer magnifier first, the finer spectacles next, and the flint-glass
+      // prism last — the top tier that only chemistry's flint glass unlocks.
       "id": "optical_instruments",
       "name": "Optical Instruments",
-      "products": [ "magnifying_glass", "spectacles" ]
+      "products": [ "magnifying_glass", "spectacles", "prism" ]
     },
     {
       // Furniture the citizens write off: both the everyday piece and the

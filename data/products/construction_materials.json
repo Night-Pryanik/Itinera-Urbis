@@ -103,6 +103,16 @@
       "category": "construction_material",
       "unlock_tech": "limestone_burning",
       "icon": "plaster.png"
+    },
+    {
+      // Window glass: the flat panes a building is glazed with. It is a material of
+      // construction, not a vessel or an ornament, so the citizens do not write it off.
+      "id": "crown_glass", "price": 28,
+      "name": "Crown Glass",
+      "type": "product",
+      "category": "construction_material",
+      "unlock_tech": "crown_glass",
+      "icon": "crown_glass.png"
     }
   ]
 }

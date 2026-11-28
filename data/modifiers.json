@@ -214,6 +214,15 @@
           { "target": "max_scouting_expeditions", "value": 2 },
           { "target": "max_scroll_distance", "type": "percent", "value": 25 }
         ]
+      },
+      {
+        // The thick centre of a crown-glass disc — the bullseye — is the finest piece of
+        // glass in the melt for grinding: a clear, dense blank for a lens. Mastering crown
+        // glass therefore gives the optician a modest boost to lens grinding.
+        "tech_id": "crown_glass",
+        "icon": "production_bonus.png",
+        "name": "Optical workshop: +10% production",
+        "building_production_multiplier": { "optical_workshop": 1.1 }
       }
     ],
     "terrain_modifiers": [

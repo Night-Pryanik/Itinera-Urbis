@@ -1,14 +1,13 @@
-# Headless regression test for the optics technology and the scholar's lenses.
+# Headless regression test for the optics technology, the optical workshop and the scholar's lenses.
 extends SceneTree
 
 const WATCHDOG = preload("res://tests/watchdog.gd")
 
 const OPTICAL := [
     { "product": "magnifying_glass", "price": 40, "time": 12.0,
-      "inputs": { "quartz_sand": 20, "soda": 10 },
-      "alt_inputs": { "quartz_sand": 20, "potash": 10 } },
+      "inputs": { "glassware": 10 } },
     { "product": "spectacles", "price": 70, "time": 16.0,
-      "inputs": { "quartz_sand": 20, "potash": 10, "lead": 10 } },
+      "inputs": { "glassware": 20, "lead": 10 } },
 ]
 
 var _failed := false
@@ -24,6 +23,7 @@ func _run() -> void:
     city.setup()
 
     _test_technology(gd)
+    _test_building(gd)
     for item in OPTICAL:
         _test_product(gd, item)
         _test_recipe(gd, city, item)
@@ -55,6 +55,19 @@ func _test_technology(gd: Node) -> void:
         _check(str(entry.get("tech_id", "")) != "optics",
             "optics has no free scholar multiplier; the lenses carry the bonus")
 
+func _test_building(gd: Node) -> void:
+    var workshop := _record(gd.buildings, "optical_workshop")
+    _check(not workshop.is_empty(), "the optical workshop is a building")
+    if workshop.is_empty():
+        return
+    _check(str(workshop.get("unlock_tech", "")) == "optics",
+        "the optical workshop is unlocked by optics")
+    _check(str(workshop.get("profession", "")) == "optician",
+        "the optical workshop is worked by the optician")
+    _check(float(workshop.get("production_slots", 0)) >= 1.0,
+        "the optical workshop has at least one production slot")
+    _check(str(workshop.get("icon", "")) != "", "the optical workshop names an icon")
+
 func _test_product(gd: Node, item: Dictionary) -> void:
     var pid := str(item["product"])
     var product: Dictionary = gd.products.get(pid, {})
@@ -73,19 +86,17 @@ func _test_recipe(gd: Node, city: Node, item: Dictionary) -> void:
     _check(not recipe.is_empty(), "recipe exists: " + pid)
     if recipe.is_empty():
         return
-    _check(recipe.get("produced_in", []) == ["glassmaker_house"], "lenses are ground in the glasshouse: " + pid)
+    _check(recipe.get("produced_in", []) == ["optical_workshop"], "lenses are ground in the optical workshop: " + pid)
     _check(str(recipe.get("unlock_tech", "")) == "optics", "the lens recipe keeps its gate: " + pid)
     _check(float(recipe.get("time", 0)) == float(item["time"]), "the lens keeps its time: " + pid)
     _check(int(recipe.get("result", {}).get(pid, 0)) == 10, "the recipe yields ten lenses: " + pid)
     var ingredient_ids := _ingredient_ids(recipe.get("resources", {}))
-    _check(not ingredient_ids.has("glassware"),
-        "lenses are ground from batch, not from finished vessels: " + pid)
+    _check(ingredient_ids.has("glassware"),
+        "lenses are ground from the glassmaker's finished glassware: " + pid)
     for abrasive in ["@abrasives", "pumice", "ochre", "emery"]:
         _check(not ingredient_ids.has(abrasive), pid + " needs no additional abrasive ingredient")
 
-    if item.has("alt_inputs"):
-        _check(_has_alkali_alternative(gd, recipe), "soda and potash are alternatives: " + pid)
-    for input_set in [item["inputs"], item.get("alt_inputs", item["inputs"])]:
+    for input_set in [item["inputs"]]:
         _test_cycle(city, recipe, input_set, pid)
         for missing in input_set:
             var partial: Dictionary = input_set.duplicate()
@@ -100,8 +111,8 @@ func _test_recipe(gd: Node, city: Node, item: Dictionary) -> void:
 
 func _test_group(gd: Node) -> void:
     var group: Array = gd.product_groups.get("optical_instruments", [])
-    _check(group == ["magnifying_glass", "spectacles"],
-        "the plainer lens comes first and the finer one last")
+    _check(group == ["magnifying_glass", "spectacles", "prism"],
+        "the plainer lens comes first, spectacles next and the flint-glass prism last")
 
 func _test_emery(gd: Node, city: Node) -> void:
     var product: Dictionary = gd.products.get("emery", {})

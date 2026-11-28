@@ -380,6 +380,19 @@
       "icon": "crystal_glassware.png"
     },
     {
+      // Lead-fluxed flint glass: the high refractive index of the oxide makes it the
+      // clearest, densest glass of the melt, which is why the optician grinds it into
+      // prisms and the finest lenses. The same lead batch as crystal tableware, but its
+      // place is the optical workshop, not the table.
+      "id": "flint_glass",
+      "price": 30,
+      "name": "Flint Glass",
+      "type": "product",
+      "category": "material",
+      "unlock_tech": "chemistry",
+      "icon": "flint_glass.png"
+    },
+    {
       // The mirror ladder follows the technique that makes the reflecting surface rather
       // than the date a kind of mirror reached any one region: polishing bronze is known
       // from ancient workshops on several continents, a mercury-tin backing needs the
@@ -429,6 +442,18 @@
       "category": "tools",
       "unlock_tech": "optics",
       "icon": "spectacles.png"
+    },
+    {
+      // The finest optical instrument of the scholar: a ground prism of flint glass,
+      // which splits light into its colours. It needs the lead-fluxed flint glass that
+      // chemistry unlocks, so the prism is the top tier of the scholar's optical aids.
+      "id": "prism",
+      "price": 90,
+      "name": "Prism",
+      "type": "product",
+      "category": "tools",
+      "unlock_tech": "chemistry",
+      "icon": "prism.png"
     },
     {
       // Heavy cast cauldrons, pots and skillets poured from molten cast iron.

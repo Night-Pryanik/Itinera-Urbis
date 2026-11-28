@@ -199,6 +199,13 @@
       "description": "Turns sand and soda into glass."
     },
     {
+      "id": "optician",
+      "flavor": "A lens is not made in the furnace: it is ground out of glass that is already clear. The optician takes a piece of glass, cuts and grinds it against abrasives to the curve that bends light, and sets it in a frame — a magnifier for reading, spectacles for the eye that has lost its youth. The craft depends on the glassmaker's melt, but its own skill is the patience of the curve, not the heat of the pot.",
+      "name": "Optician",
+      "icon": "profession_optician.png",
+      "description": "Grinds glass into lenses and sets them in frames."
+    },
+    {
       "id": "smelter",
       "flavor": "Extracting metal from ore by heat is an ancient, widespread art: copper was reduced from its ores in Anatolia, the Balkans, the Andes and Africa, each tradition developing its own furnace and flux. Smelters built clay shafts or bowl furnaces, layered ore with charcoal, and tapped the resulting metal or bloom. The basic chemistry changed little for millennia, though bellows, water power and larger furnaces steadily raised output. What changed most was scale, not the fundamental act of separating metal from stone.",
       "name": "Smelter Worker",

@@ -350,6 +350,19 @@
       "description": "Fuses quartz sand with lead and potash into clear, brilliant crystal tableware."
     },
     {
+      // The same lead-fluxed batch as crystal tableware, but kept as a raw material: the
+      // optician grinds this flint glass into prisms and the finest lenses, so it is a
+      // supply for the optical workshop rather than a good for the table.
+      "id": "flint_glass",
+      "name": "Flint Glass",
+      "produced_in": [ "glassmaker_house" ],
+      "resources": { "quartz_sand": 20, "lead": 10, "potash": 10 },
+      "result": { "flint_glass": 10 },
+      "time": 8.0,
+      "unlock_tech": "chemistry",
+      "description": "Fuses quartz sand with lead and potash into dense, clear flint glass for grinding prisms and lenses."
+    },
+    {
       "id": "bronze_mirror",
       "name": "Bronze Mirror",
       "produced_in": [ "jeweler_house" ],
@@ -395,29 +408,62 @@
       "description": "Melts quartz sand with soda or potash into glass and deposits a film of silver on it."
     },
     {
-      "id": "magnifying_glass",
-      "name": "Magnifying Glass",
-      "produced_in": [ "glassmaker_house" ],
+      // Crown glass is melted from the same raw batch as the other glass goods — like the
+      // mirrors, it spends sand and alkali rather than finished vessels, so it does not
+      // compete with the citizens' glassware. Spinning the gob into a flat crown and annealing
+      // it takes an extra firing, hence the furnace fuel. The recipe stays craftable in the
+      // glassmaker's house as well as its upgrade: a basic building keeps its advanced
+      // recipes, and the workshop only adds the extra production slots.
+      "id": "crown_glass",
+      "name": "Crown Glass",
+      "produced_in": [ "glassmaker_house", "glass_workshop" ],
       "resources": [
         { "quartz_sand": 20 },
-        [ { "soda": 10 }, { "potash": 10 } ]
+        [ { "soda": 10 }, { "potash": 10 } ],
+        { "@smelting_fuel": 10 }
       ],
+      "result": { "crown_glass": 10 },
+      "time": 8.0,
+      "unlock_tech": "crown_glass",
+      "description": "Melts quartz sand with soda or potash, spins the gob into a flat crown and cuts it into window panes."
+    },
+    {
+      // The optician grinds the glassmaker's finished glass, not raw batch: the craft is
+      // the curve, not the melt. A vessel of clear glassware yields a stack of simple lenses.
+      "id": "magnifying_glass",
+      "name": "Magnifying Glass",
+      "produced_in": [ "optical_workshop" ],
+      "resources": { "glassware": 10 },
       "result": { "magnifying_glass": 10 },
       "time": 12.0,
       "unlock_tech": "optics",
       "description": "Grinds and polishes a clear glass lens into a magnifier."
     },
     {
-      // Flint glass: lead raises the refractive index, which lets matched lenses be
-      // ground thin enough for a frame. Lead belongs in optics, not in mirrors.
+      // Flint character for the finer spectacles: lead raises the refractive index, which
+      // lets matched lenses be ground thin enough for a frame. The optician grinds the
+      // glassmaker's glassware into the two lenses and sets them in a frame.
       "id": "spectacles",
       "name": "Spectacles",
-      "produced_in": [ "glassmaker_house" ],
-      "resources": { "quartz_sand": 20, "potash": 10, "lead": 10 },
+      "produced_in": [ "optical_workshop" ],
+      "resources": { "glassware": 20, "lead": 10 },
       "result": { "spectacles": 10 },
       "time": 16.0,
       "unlock_tech": "optics",
-      "description": "Fuses lead-potash flint glass and grinds two matched lenses into spectacles."
+      "description": "Grinds two matched lenses from lead-fluxed glass and sets them in a frame."
+    },
+    {
+      // The optician's finest work: a prism ground from flint glass. The high refractive
+      // index of the lead flux is what lets the prism split light into its colours, so it
+      // needs the chemistry-unlocked flint glass rather than ordinary glassware.
+      "id": "prism",
+      "name": "Prism",
+      "produced_in": [ "optical_workshop" ],
+      "resources": { "flint_glass": 10 },
+      "result": { "prism": 10 },
+      "time": 16.0,
+      "unlock_tech": "chemistry",
+      "description": "Grinds and polishes a flint-glass prism that splits light into its colours."
     },
     {
       "id": "ropes",

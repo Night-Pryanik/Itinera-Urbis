@@ -355,16 +355,31 @@
     },
     {
       // Ground lenses are a different supply chain from metal instruments, so the
-      // scholar's two group bonuses add up. One kind of lens is drawn at a time,
-      // the better one first, and flint-glass spectacles outlast a simple magnifier.
+      // scholar's two group bonuses add up. One optical aid is drawn at a time, the
+      // better one first: a simple magnifier, then spectacles, then the flint-glass
+      // prism — the finest aid, ground from the lead-fluxed glass chemistry unlocks,
+      // which also outlasts the others.
       "resource": "@optical_instruments",
       "profession": [ "scientist" ],
       "amount": 10,
       "interval": 20,
       "members": {
         "magnifying_glass": { "production_bonus": 0.25 },
-        "spectacles": { "production_bonus": 0.35 }
+        "spectacles": { "production_bonus": 0.35 },
+        "prism": { "production_bonus": 0.45, "interval": 25 }
       }
+    },
+    {
+      // Crown glass glazes the walls the builder raises: glazing is part of construction,
+      // so the builder's yard spends the panes and works faster while they are in stock.
+      // The bonus is deliberately modest — a material of construction, not a precision
+      // instrument.
+      "resource": "crown_glass",
+      "profession": [ "builder" ],
+      "buildings": [ "builders_yard" ],
+      "amount": 10,
+      "interval": 20,
+      "production_bonus": 0.10
     },
     {
       // Molten lead draws base impurities out of silver and gold in cupellation and assaying.
